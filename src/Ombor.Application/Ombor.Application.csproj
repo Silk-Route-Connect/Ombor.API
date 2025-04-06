@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ombor.Contracts\Ombor.Contracts.csproj" />
+    <ProjectReference Include="..\Ombor.Domain\Ombor.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

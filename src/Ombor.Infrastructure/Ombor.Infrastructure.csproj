@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ombor.Application\Ombor.Application.csproj" />
+  </ItemGroup>
+
 </Project>
