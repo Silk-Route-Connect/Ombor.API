@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Ombor.Contracts\Ombor.Contracts.csproj" />
     <ProjectReference Include="..\Ombor.Domain\Ombor.Domain.csproj" />
   </ItemGroup>
