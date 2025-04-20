@@ -2,9 +2,11 @@
 
 public enum UnitOfMeasurement
 {
-    Piece = 1,
+    Gram = 1,
     Kilogram = 2,
-    Gram = 3,
-    Liter = 4,
+    Ton = 3,
+    Piece = 4,
+    Box = 5,
+    Unit = 6,
     None = 100,
 }

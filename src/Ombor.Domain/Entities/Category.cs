@@ -2,7 +2,7 @@
 
 namespace Ombor.Domain.Entities;
 
-public class Category : AuditableEntity
+public class Category : EntityBase
 {
     public required string Name { get; set; }
     public string? Description { get; set; }

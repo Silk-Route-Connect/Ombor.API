@@ -17,12 +17,7 @@ public partial class Initial_Create : Migration
                 Id = table.Column<int>(type: "int", nullable: false)
                     .Annotation("SqlServer:Identity", "1, 1"),
                 Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
             },
             constraints: table =>
             {
@@ -41,14 +36,12 @@ public partial class Initial_Create : Migration
                 Barcode = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                 SalePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                 SupplyPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                RetailPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                 QuantityInStock = table.Column<int>(type: "int", nullable: false),
+                LowStockThreshold = table.Column<int>(type: "int", nullable: false),
                 Measurement = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                CategoryId = table.Column<int>(type: "int", nullable: false),
-                CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                ExpireDate = table.Column<DateOnly>(type: "date", nullable: true),
+                CategoryId = table.Column<int>(type: "int", nullable: false)
             },
             constraints: table =>
             {
@@ -65,6 +58,12 @@ public partial class Initial_Create : Migration
             name: "IX_Product_CategoryId",
             table: "Product",
             column: "CategoryId");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Product_SKU",
+            table: "Product",
+            column: "SKU",
+            unique: true);
     }
 
     /// <inheritdoc />
