@@ -1,0 +1,50 @@
+﻿using Bogus;
+using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
+
+namespace Ombor.TestDataGenerator.Generators.Entities;
+
+internal static class ProductGenerator
+{
+    private static readonly Random _rng = new();
+
+    public static Product Generate(int[] categories)
+        => GetGenerator(categories).Generate();
+
+    public static IEnumerable<Product> Generate(int[] categories, int count)
+        => GetGenerator(categories).Generate(count);
+
+    private static Faker<Product> GetGenerator(int[] categories) => new Faker<Product>("ru")
+        .RuleFor(x => x.Name, f => f.Commerce.ProductName())
+        .RuleFor(x => x.CategoryId, f => f.PickRandom(categories))
+        .RuleFor(x => x.SKU, (_, p) => GenerateSku(p.Name, p.CategoryId))
+        .RuleFor(x => x.Description, f => f.Commerce.ProductDescription())
+        .RuleFor(x => x.Barcode, f => f.Commerce.Ean13())
+        .RuleFor(x => x.SupplyPrice, f => f.Random.Decimal(10_000, 1_000_000))
+        .RuleFor(x => x.SalePrice, (f, p) => f.Random.Decimal(p.SupplyPrice + 10_000, p.SupplyPrice + 50_000))
+        .RuleFor(x => x.RetailPrice, (f, p) => f.Random.Decimal(p.SupplyPrice + 2_000, p.SupplyPrice + 10_000))
+        .RuleFor(x => x.QuantityInStock, f => f.Random.Number(10, 10_000))
+        .RuleFor(x => x.LowStockThreshold, f => f.Random.Number(10, 100))
+        .RuleFor(x => x.Measurement, f => f.Random.Enum<UnitOfMeasurement>())
+        .RuleFor(x => x.ExpireDate, f => f.Date.FutureDateOnly());
+
+    private static string GenerateSku(string productName, int categoryId)
+    {
+        // Prefix: first 3 letters of name, letters only, uppercase
+        var prefix = new string(
+            productName
+                .Where(char.IsLetter)
+                .Take(3)
+                .Select(char.ToUpper)
+                .ToArray()
+        );
+
+        if (prefix.Length < 3)
+            prefix = prefix.PadRight(3, 'X');   // pad if name is too short
+
+        var randomPart = _rng.Next(0, 10_000)
+                             .ToString("D4");
+
+        return $"{prefix}-{categoryId}-{randomPart}";
+    }
+}

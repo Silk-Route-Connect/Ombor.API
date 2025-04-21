@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ombor.Infrastructure\Ombor.Infrastructure.csproj" />
+    <ProjectReference Include="..\Ombor.TestDataGenerator\Ombor.TestDataGenerator.csproj" />
   </ItemGroup>
 
 </Project>

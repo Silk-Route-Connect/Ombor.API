@@ -1,13 +1,15 @@
 using Ombor.API.Extensions;
 using Ombor.Application.Extensions;
 using Ombor.Infrastructure.Extensions;
+using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApi(builder.Configuration)
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+    .AddApplication(builder.Configuration)
+    .AddInfrastructure(builder.Configuration)
+    .AddTestDataGenerator(builder.Configuration);
 
 var app = builder.Build();
 
@@ -24,5 +26,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+await app.UseDatabaseSeederAsync();
 
 await app.RunAsync();
