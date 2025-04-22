@@ -8,6 +8,8 @@ internal sealed class RequestValidator(IServiceProvider serviceProvider) : IRequ
 {
     public void ValidateAndThrow<T>(T request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var validator = GetValidator<T>();
 
         validator.ValidateAndThrow(request);
@@ -15,6 +17,8 @@ internal sealed class RequestValidator(IServiceProvider serviceProvider) : IRequ
 
     public Task ValidateAndThrowAsync<T>(T request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var validator = GetValidator<T>();
 
         return validator.ValidateAndThrowAsync(request, cancellationToken);

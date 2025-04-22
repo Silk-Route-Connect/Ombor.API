@@ -23,15 +23,14 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
                 (x.Description != null && x.Description.Contains(request.SearchTerm)));
         }
 
-        return query
-            .Select(x => new CategoryDto(x.Id, x.Name, x.Description))
+        return query.Select(x => new CategoryDto(x.Id, x.Name, x.Description))
             .AsNoTracking()
             .ToArrayAsync();
     }
 
     public async Task<CategoryDto> GetByIdAsync(GetCategoryByIdRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        validator.ValidateAndThrow(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 
@@ -43,10 +42,10 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
         validator.ValidateAndThrow(request);
 
         var entity = request.ToEntity();
-        var entry = context.Categories.Add(entity);
+        context.Categories.Add(entity);
         await context.SaveChangesAsync();
 
-        return entry.Entity.ToCreateResponse();
+        return entity.ToCreateResponse();
     }
 
     public async Task<UpdateCategoryResponse> UpdateAsync(UpdateCategoryRequest request)

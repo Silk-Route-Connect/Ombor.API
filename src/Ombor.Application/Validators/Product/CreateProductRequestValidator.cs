@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Enums;
@@ -13,8 +12,8 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
         RuleFor(x => x.CategoryId)
             .GreaterThan(0)
             .WithMessage("Category ID must be greater than zero.")
-            .MustAsync((categoryId, canellationToken) => context.Categories.AnyAsync(x => x.Id == categoryId, canellationToken))
-            .WithMessage("Invalid category ID."); ;
+            .Must((categoryId) => context.Categories.Any(x => x.Id == categoryId))
+            .WithMessage("Invalid category ID.");
 
         RuleFor(x => x.Name)
             .NotEmpty()

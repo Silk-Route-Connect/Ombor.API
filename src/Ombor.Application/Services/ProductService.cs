@@ -10,26 +10,6 @@ namespace Ombor.Application.Services;
 
 internal sealed class ProductService(IApplicationDbContext context, IRequestValidator validator) : IProductService
 {
-    public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)
-    {
-        validator.ValidateAndThrow(request);
-
-        var entity = request.ToEntity();
-        var entry = context.Products.Add(entity);
-        await context.SaveChangesAsync();
-
-        return entry.Entity.ToCreateResponse();
-    }
-
-    public async Task DeleteAsync(DeleteProductRequest request)
-    {
-        validator.ValidateAndThrow(request);
-
-        var entity = await GetOrThrowAsync(request.Id);
-        context.Products.Remove(entity);
-        await context.SaveChangesAsync();
-    }
-
     public Task<ProductDto[]> GetAsync(GetProductsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -62,11 +42,24 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        validator.ValidateAndThrow(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 
         return entity.ToDto();
+    }
+
+    public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)
+    {
+        validator.ValidateAndThrow(request);
+
+        var entity = request.ToEntity();
+        context.Products.Add(entity);
+        await context.SaveChangesAsync();
+
+        var createdProduct = await GetOrThrowAsync(entity.Id);
+
+        return createdProduct.ToCreateResponse();
     }
 
     public async Task<UpdateProductResponse> UpdateAsync(UpdateProductRequest request)
@@ -78,6 +71,15 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
         await context.SaveChangesAsync();
 
         return entity.ToUpdateResponse();
+    }
+
+    public async Task DeleteAsync(DeleteProductRequest request)
+    {
+        validator.ValidateAndThrow(request);
+
+        var entity = await GetOrThrowAsync(request.Id);
+        context.Products.Remove(entity);
+        await context.SaveChangesAsync();
     }
 
     private async Task<Product> GetOrThrowAsync(int id) =>

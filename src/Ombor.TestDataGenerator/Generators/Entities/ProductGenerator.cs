@@ -1,10 +1,11 @@
 ﻿using Bogus;
+using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 
 namespace Ombor.TestDataGenerator.Generators.Entities;
 
-internal static class ProductGenerator
+public static class ProductGenerator
 {
     private static readonly Random _rng = new();
 
@@ -27,6 +28,45 @@ internal static class ProductGenerator
         .RuleFor(x => x.LowStockThreshold, f => f.Random.Number(10, 100))
         .RuleFor(x => x.Measurement, f => f.Random.Enum<UnitOfMeasurement>())
         .RuleFor(x => x.ExpireDate, f => f.Date.FutureDateOnly());
+
+    public static CreateProductRequest GenerateCreateRequest()
+    {
+        var entity = Generate([1, 2, 3]);
+
+        return new CreateProductRequest(
+            CategoryId: entity.CategoryId,
+            Name: entity.Name,
+            SKU: entity.SKU,
+            Measurement: entity.Measurement.ToString(),
+            Description: entity.Description,
+            Barcode: entity.Barcode,
+            SalePrice: entity.SalePrice,
+            SupplyPrice: entity.SupplyPrice,
+            RetailPrice: entity.RetailPrice,
+            QuantityInStock: entity.QuantityInStock,
+            LowStockThreshold: entity.LowStockThreshold,
+            ExpireDate: entity.ExpireDate);
+    }
+
+    public static UpdateProductRequest GenerateUpdateRequest()
+    {
+        var entity = Generate([1, 2, 3]);
+
+        return new UpdateProductRequest(
+            Id: _rng.Next(),
+            CategoryId: entity.CategoryId,
+            Name: entity.Name,
+            SKU: entity.SKU,
+            Measurement: entity.Measurement.ToString(),
+            Description: entity.Description,
+            Barcode: entity.Barcode,
+            SalePrice: entity.SalePrice,
+            SupplyPrice: entity.SupplyPrice,
+            RetailPrice: entity.RetailPrice,
+            QuantityInStock: entity.QuantityInStock,
+            LowStockThreshold: entity.LowStockThreshold,
+            ExpireDate: entity.ExpireDate);
+    }
 
     private static string GenerateSku(string productName, int categoryId)
     {

@@ -3,7 +3,7 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.TestDataGenerator.Generators.Entities;
 
-internal static class CategoryGenerator
+public static class CategoryGenerator
 {
     public static Category Generate() => new Faker<Category>("ru")
         .RuleFor(x => x.Name, f => f.Commerce.Categories(1)[0])
