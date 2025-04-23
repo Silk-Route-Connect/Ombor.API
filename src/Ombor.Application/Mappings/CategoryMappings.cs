@@ -15,16 +15,6 @@ internal static class CategoryMappings
         };
     }
 
-    public static Category ToEntity(this UpdateCategoryRequest request)
-    {
-        return new Category
-        {
-            Id = request.Id,
-            Name = request.Name,
-            Description = request.Description
-        };
-    }
-
     public static CreateCategoryResponse ToCreateResponse(this Category category)
     {
         return new CreateCategoryResponse(

@@ -2,30 +2,26 @@
 
 namespace Ombor.Domain.Exceptions;
 
-public sealed class EntityNotFoundException<TEntity> : Exception
-    where TEntity : EntityBase
+public abstract class EntityNotFoundException : Exception
 {
-    public string EntityType => typeof(TEntity).Name;
-    public string ExceptionType => nameof(EntityNotFoundException<TEntity>);
-    public object? Id { get; }
+    public string EntityType { get; }
+    public string ExceptionType { get; }
+    public object Id { get; }
 
-    public EntityNotFoundException()
+    protected EntityNotFoundException(Type entityType, object id)
+        : base($"Entity of type {entityType.Name} with ID {id} was not found.")
     {
-    }
-
-    public EntityNotFoundException(object id)
-        : base($"Entity of type {typeof(TEntity).Name} with ID {id} was not found.")
-    {
+        EntityType = entityType.Name;
+        ExceptionType = nameof(EntityNotFoundException);
         Id = id;
     }
+}
 
-    public EntityNotFoundException(string? message)
-        : base(message)
-    {
-    }
-
-    public EntityNotFoundException(string? message, Exception? innerException)
-        : base(message, innerException)
+public sealed class EntityNotFoundException<TEntity> : EntityNotFoundException
+    where TEntity : EntityBase
+{
+    public EntityNotFoundException(object id)
+        : base(typeof(TEntity), id)
     {
     }
 }

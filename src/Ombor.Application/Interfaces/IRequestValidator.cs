@@ -1,32 +1,27 @@
-﻿using FluentValidation.Results;
-
-namespace Ombor.Application.Interfaces;
+﻿namespace Ombor.Application.Interfaces;
 
 /// <summary>
-/// Defines a contract for validating request objects.
+/// Contract for validating request objects, throwing on failure.
 /// </summary>
 public interface IRequestValidator
 {
     /// <summary>
-    /// Validates the specified request synchronously.
+    /// Validates the specified request synchronously, throwing a <see cref="ValidationException"/> on failure.
     /// </summary>
-    /// <typeparam name="T">The type of the request object to validate.</typeparam>
-    /// <param name="request">The instance of <typeparamref name="T"/> to validate.</param>
-    /// <returns>
-    /// A <see cref="ValidationResult"/> that indicates whether the request is valid and contains any validation failures.
-    /// </returns>
+    /// <typeparam name="T">The request type.</typeparam>
+    /// <param name="request">The instance to validate.</param>
+    /// <exception cref="ArgumentNullException">If <paramref name="request"/> is null.</exception>
+    /// <exception cref="ValidationException">If validation fails.</exception>
     void ValidateAndThrow<T>(T request);
 
     /// <summary>
-    /// Validates the specified request asynchronously.
+    /// Validates the specified request asynchronously, throwing a <see cref="ValidationException"/> on failure.
     /// </summary>
-    /// <typeparam name="T">The type of the request object to validate.</typeparam>
-    /// <param name="request">The instance of <typeparamref name="T"/> to validate.</param>
-    /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
-    /// <returns>
-    /// A <see cref="Task{ValidationResult}"/> that, when completed, returns a
-    /// <see cref="ValidationResult"/> indicating whether the request is valid
-    /// and containing any validation failures.
-    /// </returns>
+    /// <typeparam name="T">The request type.</typeparam>
+    /// <param name="request">The instance to validate.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
+    /// <returns>A completed <see cref="Task"/> on success.</returns>
+    /// <exception cref="ArgumentNullException">If <paramref name="request"/> is null.</exception>
+    /// <exception cref="ValidationException">If validation fails.</exception>
     Task ValidateAndThrowAsync<T>(T request, CancellationToken cancellationToken);
 }

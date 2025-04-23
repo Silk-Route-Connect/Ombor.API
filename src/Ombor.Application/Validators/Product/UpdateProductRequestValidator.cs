@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Enums;
@@ -15,10 +14,10 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .WithMessage("Product ID must be greater than zero.");
 
         RuleFor(x => x.CategoryId)
-            .GreaterThan(0)
-            .WithMessage("Category ID must be greater than zero.")
-            .MustAsync((categoryId, canellationToken) => context.Categories.AnyAsync(x => x.Id == categoryId, canellationToken))
-            .WithMessage("Invalid category ID.");
+    .GreaterThan(0)
+    .WithMessage("Category ID must be greater than zero.")
+    .Must((categoryId) => context.Categories.Any(x => x.Id == categoryId))
+    .WithMessage("Invalid category ID.");
 
         RuleFor(x => x.Name)
             .NotEmpty()
@@ -53,8 +52,16 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .GreaterThan(0)
             .WithMessage("Supply price must be greater than zero.");
 
+        RuleFor(x => x.RetailPrice)
+            .GreaterThan(0)
+            .WithMessage("Retail price must be greater than zero.");
+
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Quantity in stock must be greater than or equal to zero.");
+
+        RuleFor(x => x.LowStockThreshold)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Low stock threshold must be greater than or equal to zero.");
     }
 }

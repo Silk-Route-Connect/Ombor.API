@@ -42,7 +42,7 @@ public sealed class ProductServiceTests : ServiceTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = new GetProductsRequest(null, null, null, null);
+        var request = _fixture.Create<GetProductsRequest>();
         SetupProducts([]);
 
         // Act
@@ -50,11 +50,10 @@ public sealed class ProductServiceTests : ServiceTestsBase
 
         // Assert
         Assert.Empty(result);
-        _mockContext.Verify(c => c.Products, Times.Once);
     }
 
     [Fact]
-    public async Task GetAsync_ShouldReturnAll_WhenNoSearchTermProvided()
+    public async Task GetAsync_ShouldReturnAll_WhenNoQueryParameterProvided()
     {
         // Arrange
         var request = new GetProductsRequest(null, null, null, null);
@@ -64,7 +63,6 @@ public sealed class ProductServiceTests : ServiceTestsBase
 
         // Assert
         Assert.Equal(_defaultProducts.Length, response.Length);
-        _mockContext.Verify(c => c.Products, Times.Once);
     }
 
     [Fact]
@@ -124,7 +122,6 @@ public sealed class ProductServiceTests : ServiceTestsBase
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Description, actual.Description);
         });
-        _mockContext.Verify(c => c.Products, Times.Once);
     }
 
     [Fact]
@@ -140,20 +137,26 @@ public sealed class ProductServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.GetByIdAsync(request));
 
-        _mockContext.Verify(
-            c => c.Products.FindAsync(It.IsAny<int>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
     public async Task GetByIdAsync_ShouldThrowNotFound_WhenProductDoesNotExist()
     {
         // Arrange
-        var request = new GetProductByIdRequest(999);
+        var request = new GetProductByIdRequest(99);
+        Product? expected = null;
+
+        _mockContext.Setup(c => c.Products.FindAsync(request.Id))
+            .ReturnsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.GetByIdAsync(request));
+
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
@@ -161,11 +164,11 @@ public sealed class ProductServiceTests : ServiceTestsBase
     {
         // Arrange
         var expected = _defaultProducts.PickRandom();
-        expected.Category = new Category { Id = expected.CategoryId, Name = "SomeCat" };
-
+        expected.Category = new Category { Id = expected.CategoryId, Name = "Test Category" };
         var request = new GetProductByIdRequest(expected.Id);
+
         _mockContext.Setup(c => c.Products.FindAsync(request.Id))
-                    .ReturnsAsync(expected);
+            .ReturnsAsync(expected);
 
         // Act
         var actual = await _service.GetByIdAsync(request);
@@ -176,6 +179,7 @@ public sealed class ProductServiceTests : ServiceTestsBase
         Assert.Equal(expected.SKU, actual.SKU);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
 
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
     }
 
@@ -186,15 +190,17 @@ public sealed class ProductServiceTests : ServiceTestsBase
         var request = ProductGenerator.GenerateCreateRequest();
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request))
-                      .Throws(new ValidationException("Validation errors."));
+            .Throws(new ValidationException("Validation errors."));
 
-        // Act & Assert
+        // Act
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
         // Assert
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Products.Add(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -234,18 +240,10 @@ public sealed class ProductServiceTests : ServiceTestsBase
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(It.IsAny<CreateProductRequest>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.Products.Add(It.IsAny<Product>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.Products.FindAsync(It.IsAny<int>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Products.Add(It.IsAny<Product>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
@@ -255,14 +253,15 @@ public sealed class ProductServiceTests : ServiceTestsBase
         var request = _fixture.Create<UpdateProductRequest>();
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request))
-                      .Throws(new ValidationException("err"));
+            .Throws(new ValidationException("err"));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
         // Assert
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Never);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -271,14 +270,15 @@ public sealed class ProductServiceTests : ServiceTestsBase
     {
         // Arrange
         var request = _fixture.Create<UpdateProductRequest>();
+        Product? expected = null;
         _mockContext.Setup(c => c.Products.FindAsync(request.Id))
-                    .ReturnsAsync((Product?)null);
+            .ReturnsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.UpdateAsync(request));
 
-        // Assert
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -293,7 +293,7 @@ public sealed class ProductServiceTests : ServiceTestsBase
         SetupProducts([.. _defaultProducts, productToUpdate]);
 
         _mockContext.Setup(c => c.Products.FindAsync(request.Id))
-                    .ReturnsAsync(productToUpdate);
+            .ReturnsAsync(productToUpdate);
 
         // Act
         var response = await _service.UpdateAsync(request);
@@ -312,12 +312,9 @@ public sealed class ProductServiceTests : ServiceTestsBase
         Assert.Equal(request.ExpireDate, response.ExpireDate);
         Assert.Equal(request.CategoryId, response.CategoryId);
 
-        _mockContext.Verify(
-            c => c.Products.FindAsync(It.IsAny<int>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -327,19 +324,17 @@ public sealed class ProductServiceTests : ServiceTestsBase
         var request = _fixture.Create<DeleteProductRequest>();
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request))
-                      .Throws(new ValidationException("err"));
+            .Throws(new ValidationException("Validation error."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.DeleteAsync(request));
 
         // Assert
-        _mockContext.Verify(
-            c => c.Products.FindAsync(It.IsAny<int>()),
-            Times.Never);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Never);
+        _mockContext.Verify(c => c.Products.Remove(It.IsAny<Product>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -348,14 +343,16 @@ public sealed class ProductServiceTests : ServiceTestsBase
         // Arrange
         var request = _fixture.Create<DeleteProductRequest>();
         _mockContext.Setup(c => c.Products.FindAsync(request.Id))
-                    .ReturnsAsync((Product?)null);
+            .ReturnsAsync((Product?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.DeleteAsync(request));
 
         // Assert
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.Products.Remove(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -363,18 +360,19 @@ public sealed class ProductServiceTests : ServiceTestsBase
     public async Task DeleteAsync_ShouldRemoveProduct_WhenProductExists()
     {
         // Arrange
-        var toDelete = ProductGenerator.Generate(new[] { 1 });
-        toDelete.Category = new Category { Id = 1, Name = "Cat1" };
-
+        var toDelete = ProductGenerator.Generate([1, 2]);
+        toDelete.Category = new Category { Id = 1, Name = "Test Category 1" };
         var request = _fixture.Create<DeleteProductRequest>();
+
         _mockContext.Setup(c => c.Products.FindAsync(request.Id))
-                    .ReturnsAsync(toDelete);
+            .ReturnsAsync(toDelete);
         _mockContext.Setup(c => c.Products.Remove(toDelete));
 
         // Act
         await _service.DeleteAsync(request);
 
         // Assert
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(c => c.Products.FindAsync(It.IsAny<int>()), Times.Once);
         _mockContext.Verify(c => c.Products.Remove(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

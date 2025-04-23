@@ -48,8 +48,16 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .GreaterThan(0)
             .WithMessage("Supply price must be greater than zero.");
 
+        RuleFor(x => x.RetailPrice)
+            .GreaterThan(0)
+            .WithMessage("Retail price must be greater than zero.");
+
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Quantity in stock must be greater than or equal to zero.");
+
+        RuleFor(x => x.LowStockThreshold)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Low stock threshold must be greater than or equal to zero.");
     }
 }

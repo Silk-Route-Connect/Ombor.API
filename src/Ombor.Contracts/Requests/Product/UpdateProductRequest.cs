@@ -1,5 +1,21 @@
 ﻿namespace Ombor.Contracts.Requests.Product;
 
+/// <summary>
+/// Request to update an existing product.
+/// </summary>
+/// <param name="Id">The identifier of the product to update. Must be &gt; 0.</param>
+/// <param name="CategoryId">The new category identifier (must be &gt; 0).</param>
+/// <param name="Name">The new product name (required).</param>
+/// <param name="SKU">The new SKU value (required).</param>
+/// <param name="Measurement">The new unit of measurement.</param>
+/// <param name="Description">An optional new description.</param>
+/// <param name="Barcode">An optional new barcode.</param>
+/// <param name="SalePrice">The new sale price (must be &gt; 0).</param>
+/// <param name="SupplyPrice">The new supply price (must be &gt; 0).</param>
+/// <param name="RetailPrice">The new retail price (must be &gt; 0).</param>
+/// <param name="QuantityInStock">The updated stock quantity (must be ≥ 0).</param>
+/// <param name="LowStockThreshold">The updated low‑stock threshold (must be ≥ 0).</param>
+/// <param name="ExpireDate">An optional new expiration date.</param>
 public sealed record UpdateProductRequest(
     int Id,
     int CategoryId,

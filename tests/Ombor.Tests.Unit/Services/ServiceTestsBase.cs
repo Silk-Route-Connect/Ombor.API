@@ -13,4 +13,12 @@ public abstract class ServiceTestsBase : UnitTestsBase
         _mockValidator = new Mock<IRequestValidator>();
         _mockContext = new Mock<IApplicationDbContext>();
     }
+
+    public static TheoryData<string?> EmptySearchTerms => new()
+    {
+        { null },
+        { "" },
+        { " " },
+        { "    " },
+    };
 }

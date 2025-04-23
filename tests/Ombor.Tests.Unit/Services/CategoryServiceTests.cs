@@ -8,7 +8,6 @@ using Ombor.Contracts.Requests.Category;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 using Ombor.TestDataGenerator.Generators.Entities;
-using Ombor.Tests.Unit.Extensions;
 
 namespace Ombor.Tests.Unit.Services;
 
@@ -49,23 +48,19 @@ public sealed class CategoryServiceTests : ServiceTestsBase
 
         // Assert
         Assert.Empty(result);
-
-        _mockContext.Verify(c => c.Categories, Times.Once);
     }
 
-    [Fact]
-    public async Task GetAsync_ShouldReturnAll_WhenNoSearchTermProvided()
+    [Theory, MemberData(nameof(EmptySearchTerms))]
+    public async Task GetAsync_ShouldReturnAll_WhenNoSearchTermProvided(string? searchTerm)
     {
         // Arrange
-        var request = new GetCategoriesRequest(string.Empty);
+        var request = new GetCategoriesRequest(searchTerm);
 
         // Act
         var response = await _service.GetAsync(request);
 
         // Assert
         Assert.Equal(_defaultCategories.Length, response.Length);
-
-        _mockContext.Verify(c => c.Categories, Times.Once);
     }
 
     [Fact]
@@ -94,8 +89,6 @@ public sealed class CategoryServiceTests : ServiceTestsBase
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Description, actual.Description);
         });
-
-        _mockContext.Verify(c => c.Categories, Times.Once);
     }
 
     [Fact]
@@ -111,9 +104,8 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.GetByIdAsync(request));
 
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -121,27 +113,25 @@ public sealed class CategoryServiceTests : ServiceTestsBase
     {
         // Arrange
         var request = new GetCategoryByIdRequest(999);
+        Category? expected = null;
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request));
-        _mockContext.Setup(c => c.Categories.FindAsync(request.Id));
+        _mockContext.Setup(c => c.Categories.FindAsync(request.Id))
+            .ReturnsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(request),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
     public async Task GetByIdAsync_ShouldReturnDto_WhenCategoryIsFound()
     {
         // Arrange
-        var expected = _defaultCategories.PickRandom();
+        var expected = new Category { Id = 99, Name = "Test Category Name", Description = "Test Category Description" };
         var request = new GetCategoryByIdRequest(expected.Id);
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request));
@@ -156,12 +146,8 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         Assert.Equal(expected.Name, response.Name);
         Assert.Equal(expected.Description, response.Description);
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(request),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
@@ -177,40 +163,37 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(request),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.Add(It.IsAny<Category>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task CreateAsync_ShouldReturnCreatedCategory_WhenRequestIsValid()
     {
         // Arrange
-        var entity = CategoryGenerator.Generate();
-        var request = new CreateCategoryRequest(entity.Name, entity.Description);
+        var request = new CreateCategoryRequest("New Category Name", "New Category Description");
+        Category captured = null!;
 
         _mockContext.Setup(c => c.Categories.Add(
-            It.Is<Category>(e => e.Name == request.Name && e.Description == request.Description)));
+            It.Is<Category>(e => e.Name == request.Name && e.Description == request.Description)))
+            .Callback<Category>(e => captured = e);
+
+        _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1)
+            .Callback(() => captured.Id = 99);
 
         // Act
         var response = await _service.CreateAsync(request);
 
         // Assert
+        Assert.Equal(99, response.Id);
         Assert.Equal(request.Name, response.Name);
         Assert.Equal(request.Description, response.Description);
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(It.IsAny<CreateCategoryRequest>()),
-            Times.Once);
-        _mockContext.Verify(c => c.Categories.Add(
-            It.IsAny<Category>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<CreateCategoryRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.Add(It.IsAny<Category>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -226,12 +209,9 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(
-            v => v.ValidateAndThrow(It.IsAny<UpdateCategoryRequest>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<UpdateCategoryRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -248,20 +228,17 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
                () => _service.UpdateAsync(request));
 
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<UpdateCategoryRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task UpdateAsync_ShouldReturnUpdatedCategory_WhenRequestIsValid()
     {
         // Arrange
-        var categoryToUpdate = CategoryGenerator.Generate();
-        var request = _fixture.Create<UpdateCategoryRequest>();
+        var categoryToUpdate = new Category { Id = 99, Name = "Old Category Name", Description = "Old Category Descirption" };
+        var request = new UpdateCategoryRequest(99, "Updated Category Name", "Updated Category Description");
 
         _mockContext.Setup(c => c.Categories.FindAsync(request.Id))
             .ReturnsAsync(categoryToUpdate);
@@ -273,12 +250,9 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         Assert.Equal(request.Name, response.Name);
         Assert.Equal(request.Description, response.Description);
 
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -296,12 +270,10 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.DeleteAsync(request));
 
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Never);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<DeleteCategoryRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Never);
+        _mockContext.Verify(c => c.Categories.Remove(It.IsAny<Category>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -318,12 +290,10 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.DeleteAsync(request));
 
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.Remove(It.IsAny<Category>()), Times.Never);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -341,15 +311,10 @@ public sealed class CategoryServiceTests : ServiceTestsBase
         await _service.DeleteAsync(request);
 
         // Assert
-        _mockContext.Verify(
-            c => c.Categories.FindAsync(It.IsAny<int>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.Categories.Remove(It.IsAny<Category>()),
-            Times.Once);
-        _mockContext.Verify(
-            c => c.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockContext.Verify(c => c.Categories.Remove(It.IsAny<Category>()), Times.Once);
+        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private void SetupCategories(IEnumerable<Category> categories)

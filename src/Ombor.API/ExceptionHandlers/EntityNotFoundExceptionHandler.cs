@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Ombor.Domain.Common;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.API.ExceptionHandlers;
@@ -9,12 +8,11 @@ internal sealed class EntityNotFoundExceptionHandler(ILogger<EntityNotFoundExcep
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is not EntityNotFoundException<EntityBase> entityNotFoundException)
+        if (exception is not EntityNotFoundException entityNotFoundException)
         {
             return false;
         }
 
-        var problemDetailsService = httpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
         var problemDetails = new ProblemDetails
         {
             Title = "Not Found",
@@ -24,12 +22,8 @@ internal sealed class EntityNotFoundExceptionHandler(ILogger<EntityNotFoundExcep
             Instance = httpContext.Request.Path
         };
 
-        await problemDetailsService.WriteAsync(new ProblemDetailsContext
-        {
-            HttpContext = httpContext,
-            ProblemDetails = problemDetails,
-            Exception = entityNotFoundException
-        });
+        httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         logger.LogWarning(
             exception,

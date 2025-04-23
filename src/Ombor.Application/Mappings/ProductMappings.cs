@@ -11,37 +11,11 @@ internal static class ProductMappings
     {
         if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
         {
-            throw new ArgumentException($"Invalid measurement: {request.Measurement}");
+            measurement = UnitOfMeasurement.None;
         }
 
         return new Product
         {
-            Name = request.Name,
-            SKU = request.SKU,
-            Description = request.Description,
-            Barcode = request.Barcode,
-            SalePrice = request.SalePrice,
-            SupplyPrice = request.SupplyPrice,
-            RetailPrice = request.RetailPrice,
-            QuantityInStock = request.QuantityInStock,
-            LowStockThreshold = request.LowStockThreshold,
-            Measurement = measurement,
-            ExpireDate = request.ExpireDate,
-            CategoryId = request.CategoryId,
-            Category = null! // should be taken from CategoryId
-        };
-    }
-
-    public static Product ToEntity(this UpdateProductRequest request)
-    {
-        if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
-        {
-            throw new ArgumentException($"Invalid measurement: {request.Measurement}");
-        }
-
-        return new Product
-        {
-            Id = request.Id,
             Name = request.Name,
             SKU = request.SKU,
             Description = request.Description,
@@ -60,7 +34,7 @@ internal static class ProductMappings
 
     public static CreateProductResponse ToCreateResponse(this Product product)
     {
-        var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
+        var thresholdDate = GetThresholdDate();
 
         return new(
             Id: product.Id,
@@ -83,7 +57,7 @@ internal static class ProductMappings
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
     {
-        var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
+        var thresholdDate = GetThresholdDate();
 
         return new(
             Id: product.Id,
@@ -111,7 +85,7 @@ internal static class ProductMappings
             throw new InvalidOperationException("Cannot map product to DTO because category is null.");
         }
 
-        var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
+        var thresholdDate = GetThresholdDate();
 
         return new ProductDto(
             Id: product.Id,
@@ -152,4 +126,7 @@ internal static class ProductMappings
         product.ExpireDate = request.ExpireDate;
         product.CategoryId = request.CategoryId;
     }
+
+    private static DateOnly GetThresholdDate()
+        => DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
 }
