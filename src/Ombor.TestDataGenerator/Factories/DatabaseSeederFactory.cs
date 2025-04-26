@@ -17,8 +17,9 @@ internal sealed class DatabaseSeederFactory(IServiceScopeFactory serviceScopeFac
         return environment.EnvironmentName.ToLowerInvariant() switch
         {
             "development" => new DevelopmentDatabaseSeeder(settings),
+            "testing" => new DevelopmentDatabaseSeeder(settings),
             "production" => new ProductionDatabaseSeeder(settings),
-            _ => throw new ArgumentOutOfRangeException($"Could not resolve environment: {environment}."),
+            _ => throw new ArgumentOutOfRangeException($"Cannot create an instance of Database Seeder for environment: {environment}."),
         };
     }
 }

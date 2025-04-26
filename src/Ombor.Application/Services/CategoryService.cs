@@ -18,8 +18,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(
-                x => x.Name.Contains(request.SearchTerm) ||
+            query = query.Where(x => x.Name.Contains(request.SearchTerm) ||
                 (x.Description != null && x.Description.Contains(request.SearchTerm)));
         }
 

@@ -9,7 +9,7 @@ internal static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
 

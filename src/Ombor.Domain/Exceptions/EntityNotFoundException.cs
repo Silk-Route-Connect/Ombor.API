@@ -9,7 +9,7 @@ public abstract class EntityNotFoundException : Exception
     public object Id { get; }
 
     protected EntityNotFoundException(Type entityType, object id)
-        : base($"Entity of type {entityType.Name} with ID {id} was not found.")
+        : base($"{entityType.Name} with ID {id} was not found.")
     {
         EntityType = entityType.Name;
         ExceptionType = nameof(EntityNotFoundException);

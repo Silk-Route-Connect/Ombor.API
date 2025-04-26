@@ -27,7 +27,7 @@ internal sealed class EntityNotFoundExceptionHandler(ILogger<EntityNotFoundExcep
 
         logger.LogWarning(
             exception,
-            "{Type} entity with Id: {Id} was not found.",
+            "{Type} with ID: {Id} was not found.",
             entityNotFoundException.EntityType,
             entityNotFoundException.Id);
 
