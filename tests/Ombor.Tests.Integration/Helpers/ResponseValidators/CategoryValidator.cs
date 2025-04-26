@@ -12,13 +12,14 @@ public sealed class CategoryValidator(IApplicationDbContext context)
     {
         var expectedCategories = await GetCategoriesAsync(request);
 
-        foreach (var expected in expectedCategories)
+        Assert.Equal(expectedCategories.Length, response.Length);
+        Assert.All(expectedCategories, expected =>
         {
             var actual = response.FirstOrDefault(c => c.Id == expected.Id);
 
             Assert.NotNull(actual);
-            Assert.Equivalent(expected, actual);
-        }
+            AssertEquivalent(expected, actual);
+        });
     }
 
     public async Task ValidateGetByIdAsync(GetCategoryByIdRequest request, CategoryDto response)
@@ -27,7 +28,7 @@ public sealed class CategoryValidator(IApplicationDbContext context)
             .FirstOrDefaultAsync(c => c.Id == request.Id);
 
         Assert.NotNull(expected);
-        Assert.Equivalent(expected, response);
+        AssertEquivalent(expected, response);
     }
 
     public async Task ValidatePostAsync(CreateCategoryRequest request, CreateCategoryResponse response)
@@ -36,11 +37,8 @@ public sealed class CategoryValidator(IApplicationDbContext context)
             .FirstOrDefaultAsync(c => c.Id == response.Id);
 
         Assert.NotNull(category);
-        Assert.Equal(request.Name, category.Name);
-        Assert.Equal(request.Description, category.Description);
-        Assert.Equal(response.Id, category.Id);
-        Assert.Equal(response.Name, category.Name);
-        Assert.Equal(response.Description, category.Description);
+        AssertEquivalent(category, response);
+        AssertEquivalent(request, category);
     }
 
     public async Task ValidatePutAsync(UpdateCategoryRequest request, UpdateCategoryResponse response)
@@ -49,17 +47,14 @@ public sealed class CategoryValidator(IApplicationDbContext context)
             .FirstOrDefaultAsync(c => c.Id == request.Id);
 
         Assert.NotNull(category);
-        Assert.Equal(request.Name, category.Name);
-        Assert.Equal(request.Description, category.Description);
-        Assert.Equal(response.Id, category.Id);
-        Assert.Equal(response.Name, category.Name);
-        Assert.Equal(response.Description, category.Description);
+        AssertEquivalent(category, response);
+        AssertEquivalent(request, category);
     }
 
-    public async Task ValidateDeleteAsync(DeleteCategoryRequest request)
+    public async Task ValidateDeleteAsync(int categoryId)
     {
         var category = await context.Categories
-            .FirstOrDefaultAsync(c => c.Id == request.Id);
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
 
         Assert.Null(category);
     }
@@ -78,5 +73,38 @@ public sealed class CategoryValidator(IApplicationDbContext context)
             .AsNoTracking()
             .OrderBy(c => c.Name)
             .ToArrayAsync();
+    }
+
+    private static void AssertEquivalent(Category expected, CategoryDto actual)
+    {
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
+    }
+
+    private static void AssertEquivalent(Category expected, CreateCategoryResponse actual)
+    {
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
+    }
+
+    private static void AssertEquivalent(Category expected, UpdateCategoryResponse actual)
+    {
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
+    }
+
+    private static void AssertEquivalent(CreateCategoryRequest expected, Category actual)
+    {
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
+    }
+
+    private static void AssertEquivalent(UpdateCategoryRequest expected, Category actual)
+    {
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
     }
 }
