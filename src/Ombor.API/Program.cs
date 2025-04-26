@@ -19,7 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler(o => { });
+app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
 
