@@ -30,3 +30,7 @@ app.MapControllers();
 await app.UseDatabaseSeederAsync();
 
 await app.RunAsync();
+
+#pragma warning disable S1118 // For API tests
+public partial class Program;
+#pragma warning restore S1118

@@ -32,7 +32,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     /// </summary>
     /// <param name="request">Request containing the category ID.</param>
     /// <returns>The matching <see cref="CategoryDto"/>.</returns>
-    [HttpGet("{Id:int:min(1)}")]
+    [HttpGet("{id:int:min(1)}")]
     [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(

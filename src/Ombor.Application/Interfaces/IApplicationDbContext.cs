@@ -26,4 +26,12 @@ public interface IApplicationDbContext
     /// A <see cref="Task{Int32}"/> that returns the number of state entries written.
     /// </returns>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Saves all changes made in this context to the database.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="{Int32}"/> that returns the number of state entries written.
+    /// </returns>
+    int SaveChanges();
 }

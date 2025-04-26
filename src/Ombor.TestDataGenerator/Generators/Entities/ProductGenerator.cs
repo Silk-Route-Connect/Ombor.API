@@ -2,6 +2,7 @@
 using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.TestDataGenerator.Helpers;
 
 namespace Ombor.TestDataGenerator.Generators.Entities;
 
@@ -18,7 +19,7 @@ public static class ProductGenerator
     private static Faker<Product> GetGenerator(int[] categories) => new Faker<Product>("ru")
         .RuleFor(x => x.Name, f => f.Commerce.ProductName())
         .RuleFor(x => x.CategoryId, f => f.PickRandom(categories))
-        .RuleFor(x => x.SKU, (_, p) => GenerateSku(p.Name, p.CategoryId))
+        .RuleFor(x => x.SKU, (_, p) => ProductHelpers.GenerateSku(p.Name, p.CategoryId))
         .RuleFor(x => x.Description, f => f.Commerce.ProductDescription())
         .RuleFor(x => x.Barcode, f => f.Commerce.Ean13())
         .RuleFor(x => x.SupplyPrice, f => f.Random.Decimal(10_000, 1_000_000))
@@ -66,25 +67,5 @@ public static class ProductGenerator
             QuantityInStock: entity.QuantityInStock,
             LowStockThreshold: entity.LowStockThreshold,
             ExpireDate: entity.ExpireDate);
-    }
-
-    private static string GenerateSku(string productName, int categoryId)
-    {
-        // Prefix: first 3 letters of name, letters only, uppercase
-        var prefix = new string(
-            productName
-                .Where(char.IsLetter)
-                .Take(3)
-                .Select(char.ToUpper)
-                .ToArray()
-        );
-
-        if (prefix.Length < 3)
-            prefix = prefix.PadRight(3, 'X');   // pad if name is too short
-
-        var randomPart = _rng.Next(0, 10_000)
-                             .ToString("D4");
-
-        return $"{prefix}-{categoryId}-{randomPart}";
     }
 }
