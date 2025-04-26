@@ -24,7 +24,7 @@ public class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSee
             .DistinctBy(x => x.Name)
             .ToArray();
 
-        await context.Categories.AddRangeAsync(categories);
+        context.Categories.AddRange(categories);
         await context.SaveChangesAsync();
     }
 
@@ -48,7 +48,7 @@ public class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSee
             .DistinctBy(x => x.Name)
             .ToArray();
 
-        await context.Products.AddRangeAsync(products);
+        context.Products.AddRange(products);
         await context.SaveChangesAsync();
     }
 }
