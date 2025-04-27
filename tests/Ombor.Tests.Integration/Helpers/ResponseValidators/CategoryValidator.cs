@@ -22,10 +22,10 @@ public sealed class CategoryValidator(IApplicationDbContext context)
         });
     }
 
-    public async Task ValidateGetByIdAsync(GetCategoryByIdRequest request, CategoryDto response)
+    public async Task ValidateGetByIdAsync(int categoryId, CategoryDto response)
     {
         var expected = await context.Categories
-            .FirstOrDefaultAsync(c => c.Id == request.Id);
+            .FirstOrDefaultAsync(c => c.Id == categoryId);
 
         Assert.NotNull(expected);
         AssertEquivalent(expected, response);
