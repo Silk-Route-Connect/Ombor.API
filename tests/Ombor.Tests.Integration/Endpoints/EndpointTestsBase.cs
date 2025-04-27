@@ -10,6 +10,7 @@ namespace Ombor.Tests.Integration.Endpoints;
 [Collection(nameof(DatabaseCollection))]
 public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper) : IClassFixture<TestingWebApplicationFactory>
 {
+    protected const int _nonExistentEntityId = 99999;
     protected const string NotFoundTitle = "Not Found";
 
     protected readonly ITestOutputHelper _outputHelper = outputHelper;
@@ -19,6 +20,8 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
     protected readonly ApiClient _client = CreateApiClient(factory, outputHelper);
 
     public static readonly IEnumerable<object[]> InvalidIds = [[-10], [-1], [0]];
+
+    protected string NotFoundUrl => GetUrl(_nonExistentEntityId);
 
     protected abstract string GetUrl();
 

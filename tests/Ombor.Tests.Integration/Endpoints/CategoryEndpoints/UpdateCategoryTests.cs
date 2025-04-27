@@ -13,20 +13,35 @@ public class UpdateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     : CategoryTestsBase(factory, outputHelper)
 {
     [Fact]
-    public async Task UpdateAsync_ShouldReturnNotFound_WhenCategoryDoesNotExist()
+    public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange
-        var request = CreateValidRequest(_nonExistentCategoryId);
+        var categoryId = await CreateCategoryAsync();
+        var request = CreateValidRequest(categoryId);
+        var url = GetUrl(categoryId);
+
+        // Act
+        var response = await _client.PutAsync<UpdateCategoryResponse>(url, request);
+
+        // Assert
+        await _responseValidator.Category.ValidatePutAsync(request, response);
+    }
+
+    [Fact]
+    public async Task PutAsync_ShouldReturnNotFound_WhenCategoryDoesNotExist()
+    {
+        // Arrange
+        var request = CreateValidRequest(_nonExistentEntityId);
 
         // Act
         var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Category>(_nonExistentCategoryId);
+        response.NotFound<Category>(_nonExistentEntityId);
     }
 
     [Fact]
-    public async Task UpdateAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
+    public async Task PutAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
         var categoryId = await CreateCategoryAsync();
@@ -37,22 +52,8 @@ public class UpdateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.PutAsync<ValidationProblemDetails>(url, request, HttpStatusCode.BadRequest);
 
         // Assert
+        // TODO: Validate the error messages in the response
         Assert.NotNull(response);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_ShouldReturnOk_WhenRequestIsValid()
-    {
-        // Arrange
-        var categoryId = await CreateCategoryAsync();
-        var request = new UpdateCategoryRequest(categoryId, "Updated Category", "Updated Description");
-        var url = GetUrl(categoryId);
-
-        // Act
-        var response = await _client.PutAsync<UpdateCategoryResponse>(url, request);
-
-        // Assert
-        await _responseValidator.Category.ValidatePutAsync(request, response);
     }
 
     private static UpdateCategoryRequest CreateValidRequest(int id) =>

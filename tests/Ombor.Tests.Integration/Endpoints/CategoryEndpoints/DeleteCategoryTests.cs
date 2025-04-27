@@ -29,10 +29,10 @@ public class DeleteCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     {
         // Arrange
 
-        // Act & Assert
+        // Act
         var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Category>(_nonExistentCategoryId);
+        response.NotFound<Category>(_nonExistentEntityId);
     }
 }

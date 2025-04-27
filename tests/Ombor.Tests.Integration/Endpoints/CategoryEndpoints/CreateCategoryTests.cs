@@ -20,6 +20,7 @@ public class CreateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.PostAsync<CreateCategoryResponse>(Routes.Category, request, HttpStatusCode.Created);
 
         // Assert
+        // TODO: Validate the error messages in the response
         await _responseValidator.Category.ValidatePostAsync(request, response);
     }
 
