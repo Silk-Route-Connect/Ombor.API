@@ -83,7 +83,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
     }
 
     private async Task<Product> GetOrThrowAsync(int id) =>
-        await context.Products.FindAsync(id)
+        await context.Products.FirstOrDefaultAsync(x => x.Id == id)
         ?? throw new EntityNotFoundException<Product>(id);
 
     private IQueryable<Product> GetQuery(GetProductsRequest request)
