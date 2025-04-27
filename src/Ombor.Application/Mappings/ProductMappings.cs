@@ -110,7 +110,7 @@ internal static class ProductMappings
     {
         if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
         {
-            throw new ArgumentException($"Invalid measurement: {request.Measurement}");
+            measurement = UnitOfMeasurement.None;
         }
 
         product.Name = request.Name;

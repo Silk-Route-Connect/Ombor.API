@@ -14,10 +14,10 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .WithMessage("Product ID must be greater than zero.");
 
         RuleFor(x => x.CategoryId)
-    .GreaterThan(0)
-    .WithMessage("Category ID must be greater than zero.")
-    .Must((categoryId) => context.Categories.Any(x => x.Id == categoryId))
-    .WithMessage("Invalid category ID.");
+            .GreaterThan(0)
+            .WithMessage("Category ID must be greater than zero.")
+            .Must((categoryId) => context.Categories.Any(x => x.Id == categoryId))
+            .WithMessage("Invalid category ID.");
 
         RuleFor(x => x.Name)
             .NotEmpty()
