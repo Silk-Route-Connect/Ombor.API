@@ -17,7 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ombor.Application\Ombor.Application.csproj" />
-	  <InternalsVisibleTo Include="Ombor.Tests.Integration"/>
+	<InternalsVisibleTo Include="Ombor.Tests.Integration"/>
+	<InternalsVisibleTo Include="Ombor.Tests.Unit"/>  
   </ItemGroup>
 
 </Project>
