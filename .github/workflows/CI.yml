@@ -62,8 +62,9 @@ jobs:
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Prepare Decorated PR Comment with Dynamic Badge and Status
+    - name: Prepare Decorated PR Comment with Dynamic Badge and Clear Status
       run: |
+        # Create the comment file
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
@@ -81,20 +82,26 @@ jobs:
 
         # Check if any metric failed (looks for ❌ in markdown)
         if grep -q '❌' code-coverage-results.md; then
-          STATUS="❌ Coverage Failed"
+          STATUS="❌ **Code Coverage Check Failed**"
         else
-          STATUS="✅ Coverage Passed"
+          STATUS="✅ **Code Coverage Check Passed**"
         fi
 
         # Write Status
-        echo "**${STATUS}**" >> decorated-coverage-comment.md
+        echo "${STATUS}" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Write Badge
-        echo "![Coverage Badge](https://img.shields.io/badge/Coverage-${COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
+        # Write Dynamic Badge
+        echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Append the table
+        # Optional: Write quick note
+        if grep -q '❌' code-coverage-results.md; then
+          echo "_One or more projects have coverage below threshold._" >> decorated-coverage-comment.md
+          echo "" >> decorated-coverage-comment.md
+        fi
+
+        # Append the code coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Coverage Summary as PR Comment
