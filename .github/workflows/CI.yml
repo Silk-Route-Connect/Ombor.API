@@ -1,4 +1,4 @@
-﻿name: CI - Build, Test, and Coverage Check
+﻿name: CI - Build, Test, Analyze, and Coverage Check
 
 permissions:
   pull-requests: write
@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Test and Generate Coverage
+    name: Build, Test, Analyze, and Generate Coverage
     runs-on: ubuntu-latest
 
     env:
@@ -25,11 +25,28 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for SonarCloud PR analysis
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
+
+    - name: Setup Java for SonarCloud
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Install SonarCloud Scanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: Begin SonarCloud Analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths=coverage-report/Cobertura.xml
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
@@ -46,6 +63,11 @@ jobs:
         reports: "**/coverage.cobertura.xml"
         targetdir: "coverage-report"
         reporttypes: 'HtmlInline;Cobertura;TextSummary'
+
+    - name: End SonarCloud Analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Code Coverage Report
       id: coverage_summary
@@ -70,14 +92,11 @@ jobs:
       
     - name: Prepare Decorated PR Comment
       run: |
-        # Initialize comment file
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Extract overall summary coverage from the Summary line
         OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -1)
 
-        # Decide badge color
         if [ "$OVERALL_COVERAGE" -ge 90 ]; then
           OVERALL_COLOR="brightgreen"
         elif [ "$OVERALL_COVERAGE" -ge 80 ]; then
@@ -86,30 +105,25 @@ jobs:
           OVERALL_COLOR="red"
         fi
 
-        # Check if any project failed (looks for ❌)
         if grep -q '❌' code-coverage-results.md; then
           STATUS="❌ **Code Coverage Check Failed**"
         else
           STATUS="✅ **Code Coverage Check Passed**"
         fi
 
-        # Write Status
         echo "${STATUS}" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Write Overall Coverage Badge
         echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # If there are failing projects, add short paragraph
         if grep -q '❌' code-coverage-results.md; then
           echo "One or more projects have coverage below the minimum allowed threshold." >> decorated-coverage-comment.md
           echo "" >> decorated-coverage-comment.md
         fi
 
-        # Append the code coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
-        
+
     - name: Post Coverage Summary as PR Comment
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
