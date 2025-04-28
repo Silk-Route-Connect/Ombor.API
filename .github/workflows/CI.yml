@@ -1,6 +1,10 @@
 name: CI - Build, Test, Coverage
 
 on:
+  push:
+    branches:
+      - master
+      - development
   pull_request:
     branches:
       - master
@@ -18,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Adjust if needed
+        dotnet-version: '8.0.x'  # Adjust to your .NET version if needed
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
@@ -46,10 +50,10 @@ jobs:
       with:
         name: coverage-report
         path: coverage-report
-        retention-days: 30 # optional: keep artifacts for 30 days instead of 90
+        retention-days: 30
 
     - name: Post Coverage Summary as PR Comment
-      if: success()
+      if: github.event_name == 'pull_request' && success()
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         path: coverage-report/Summary.txt
