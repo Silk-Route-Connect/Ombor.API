@@ -100,6 +100,11 @@ jobs:
         echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
+        if grep -q '❌' code-coverage-results.md; then
+          echo "**One or more projects have coverage below the minimum allowed threshold.**" >> decorated-coverage-comment.md
+          echo "" >> decorated-coverage-comment.md
+        fi
+
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Code Coverage Report as PR Comment
