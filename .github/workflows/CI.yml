@@ -62,25 +62,25 @@ jobs:
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Prepare Decorated PR Comment with Dynamic Badge and Clear Status
+    - name: Prepare Decorated PR Comment with Dynamic Badges
       run: |
-        # Create the comment file
+        # Initialize comment file
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Extract coverage percentage
-        COVERAGE=$(grep -oP '\d+(?=%)' code-coverage-results.md | head -1)
+        # Extract overall summary coverage from the Summary line
+        OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -1)
 
-        # Decide badge color
-        if [ "$COVERAGE" -ge 90 ]; then
-          COLOR="brightgreen"
-        elif [ "$COVERAGE" -ge 80 ]; then
-          COLOR="yellow"
+        # Decide overall badge color
+        if [ "$OVERALL_COVERAGE" -ge 90 ]; then
+          OVERALL_COLOR="brightgreen"
+        elif [ "$OVERALL_COVERAGE" -ge 80 ]; then
+          OVERALL_COLOR="yellow"
         else
-          COLOR="red"
+          OVERALL_COLOR="red"
         fi
 
-        # Check if any metric failed (looks for ❌ in markdown)
+        # Check if any project failed (looks for ❌)
         if grep -q '❌' code-coverage-results.md; then
           STATUS="❌ **Code Coverage Check Failed**"
         else
@@ -91,17 +91,37 @@ jobs:
         echo "${STATUS}" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Write Dynamic Badge
-        echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
+        # Write Overall Coverage Badge
+        echo "![Overall Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # Optional: Write quick note
+        # If there are failing projects, add them individually
         if grep -q '❌' code-coverage-results.md; then
-          echo "_One or more projects have coverage below threshold._" >> decorated-coverage-comment.md
+          echo "_Projects with coverage below threshold:_ " >> decorated-coverage-comment.md
+          echo "" >> decorated-coverage-comment.md
+      
+          # For each failing project
+          grep '❌' code-coverage-results.md | while read -r line; do
+            PROJECT_NAME=$(echo "$line" | awk '{print $1}')
+            PROJECT_COVERAGE=$(echo "$line" | awk '{print $2}' | tr -d '%')
+
+            # Decide badge color per project
+            if [ "$PROJECT_COVERAGE" -ge 90 ]; then
+              COLOR="brightgreen"
+            elif [ "$PROJECT_COVERAGE" -ge 80 ]; then
+              COLOR="yellow"
+            else
+              COLOR="red"
+            fi
+
+            # Add project badge
+            echo "![${PROJECT_NAME} Coverage Badge](https://img.shields.io/badge/${PROJECT_NAME}-${PROJECT_COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
+          done
+
           echo "" >> decorated-coverage-comment.md
         fi
 
-        # Append the code coverage table
+        # Append the full coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Coverage Summary as PR Comment
