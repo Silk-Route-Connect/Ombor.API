@@ -82,6 +82,20 @@ jobs:
       run: |
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
+
+        OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -n 1)
+
+        if [ "$OVERALL_COVERAGE" -ge 90 ]; then
+          OVERALL_COLOR="brightgreen"
+        elif [ "$OVERALL_COVERAGE" -ge 80 ]; then
+          OVERALL_COLOR="yellow"
+        else
+          OVERALL_COLOR="red"
+        fi
+
+        echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
+        echo "" >> decorated-coverage-comment.md
+
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Code Coverage Report as PR Comment
