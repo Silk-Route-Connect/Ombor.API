@@ -16,37 +16,22 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Test, Analyze, and Generate Coverage
+    name: Build, Test, and Generate Coverage
     runs-on: ubuntu-latest
 
     env:
-      MINIMUM_LINE_RATE: 40
+      MINIMUM_LINE_RATE: 50
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Needed for SonarCloud PR decoration
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-
-    - name: Setup Java for SonarCloud
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Install SonarCloud Scanner
-      run: dotnet tool install --global dotnet-sonarscanner
-
-    - name: Begin SonarCloud Analysis
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: |
-        dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage-report/coverage.opencover.xml
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
@@ -61,14 +46,9 @@ jobs:
     - name: Generate Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
       with:
-        reports: "**/coverage.opencover.xml"  # Reading OpenCover now
+        reports: "**/coverage.opencover.xml"
         targetdir: "coverage-report"
         reporttypes: 'HtmlInline;Cobertura;TextSummary'
-
-    - name: End SonarCloud Analysis
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Code Coverage Report
       id: coverage_summary
@@ -139,6 +119,45 @@ jobs:
         name: coverage-report
         path: coverage-report/
         retention-days: 5
+
+  sonarcloud-scan:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup Java for SonarCloud
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Install SonarCloud Scanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: Begin SonarCloud Analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage-report/coverage.opencover.xml
+
+    - name: Minimal Build for SonarCloud
+      run: dotnet build Ombor.sln --no-restore --configuration Release
+
+    - name: End SonarCloud Analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Label PR if SonarCloud Quality Gate Failed
       if: github.event_name == 'pull_request'
