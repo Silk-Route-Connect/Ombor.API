@@ -180,6 +180,7 @@ jobs:
     - name: Label PR if SonarCloud Quality Gate Failed
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7
+      id: sonar_quality_gate
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -190,15 +191,12 @@ jobs:
           });
 
           const qualityGate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
-
-          if (qualityGate && qualityGate.conclusion === 'failure') {
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              labels: ['needs-code-fix']
-            });
+          if (qualityGate) {
+            console.log(`SonarCloud Quality Gate Status: ${qualityGate.conclusion}`);
+            return { status: qualityGate.conclusion };
           }
+          console.log("SonarCloud Quality Gate Check not found");
+          return { status: 'unknown' };
 
     - name: Minimize Old SonarCloud Comments
       if: github.event_name == 'pull_request'
@@ -225,15 +223,6 @@ jobs:
             }
           }
 
-    - name: Check SonarCloud Quality Gate Status
-      id: sonar_quality_gate
-      if: github.event_name == 'pull_request'
-      uses: sonarsource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
     - name: Generate CI Summary
       run: |
         echo "### 🚀 CI Summary" > ci-summary.md
@@ -249,7 +238,7 @@ jobs:
 
         echo "- 📊 **Code Coverage**: ${OVERALL_COVERAGE}%" >> ci-summary.md
 
-        if [ "${{ steps.sonar_quality_gate.outputs.quality_gate_passed }}" == "true" ]; then
+        if [ "${{ steps.sonar_quality_gate.outputs.status }}" == "success" ]; then
           echo "- ☀️ **SonarCloud Quality Gate**: ✅ Passed" >> ci-summary.md
         else
           echo "- ☁️ **SonarCloud Quality Gate**: ❌ Failed" >> ci-summary.md
