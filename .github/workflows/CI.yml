@@ -43,10 +43,15 @@ jobs:
       run: |
         dotnet test Ombor.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
+    - name: Move coverage file
+      run: |
+        mkdir -p coverage-report
+        cp $(find . -type f -name 'coverage.opencover.xml') coverage-report/coverage.opencover.xml
+
     - name: Generate Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
       with:
-        reports: "**/coverage.opencover.xml"
+        reports: "coverage-report/coverage.opencover.xml"
         targetdir: "coverage-report"
         reporttypes: 'HtmlInline;Cobertura;TextSummary'
 
