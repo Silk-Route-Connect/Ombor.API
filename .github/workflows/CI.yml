@@ -113,7 +113,7 @@ jobs:
       with:
         path: decorated-coverage-comment.md
         header: "Code Coverage Report"
-        recreate: true   # <<== Important fix to always update comment!
+        recreate: true
 
     - name: Upload Coverage Report Artifact
       uses: actions/upload-artifact@v4
