@@ -41,10 +41,12 @@ jobs:
 
     - name: Run tests and collect coverage
       run: |
-        dotnet test Ombor.sln --no-build --configuration Release --verbosity normal \
-          /p:CollectCoverage=true \
-          /p:CoverletOutput=./coverage-report/coverage.opencover.xml \
-          /p:CoverletOutputFormat=opencover
+        dotnet test Ombor.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+
+    - name: Move coverage file
+      run: |
+        mkdir -p coverage-report
+        cp $(find . -type f -name 'coverage.opencover.xml') coverage-report/coverage.opencover.xml
 
     - name: Generate Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
