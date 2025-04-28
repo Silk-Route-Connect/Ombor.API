@@ -19,6 +19,9 @@ jobs:
     name: Build, Test and Generate Coverage
     runs-on: ubuntu-latest
 
+    env:
+      MINIMUM_LINE_RATE: 80
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -51,19 +54,19 @@ jobs:
         filename: "coverage-report/Cobertura.xml"
         badge: false
         fail_below_min: true
-        minimum_coverage: 80
+        minimum_coverage: ${{ env.MINIMUM_LINE_RATE }}
         format: markdown
         hide_branch_rate: false
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "80 80"
+        thresholds: "${{ env.MINIMUM_LINE_RATE }} 80"
 
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
     - name: Fix Minimum Line Rate Note (Bold it)
-      run: sed -i 's/_Minimum allowed line rate is \(.*\)_/**Minimum allowed line rate is \1.**/' code-coverage-results.md
+      run: sed -i "s/_Minimum allowed line rate is .*/**Minimum allowed line rate is $MINIMUM_LINE_RATE%.**/" code-coverage-results.md
       
     - name: Prepare Decorated PR Comment
       run: |
@@ -106,10 +109,6 @@ jobs:
 
         # Append the code coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
-
-        # At the bottom, bold the minimum line rate note
-        echo "" >> decorated-coverage-comment.md
-        echo "**Minimum allowed line rate is 80%.**" >> decorated-coverage-comment.md
         
     - name: Post Coverage Summary as PR Comment
       if: github.event_name == 'pull_request'
