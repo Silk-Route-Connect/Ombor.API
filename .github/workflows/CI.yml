@@ -26,7 +26,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Needed for SonarCloud PR analysis
+        fetch-depth: 0  # Needed for SonarCloud PR decoration
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -46,7 +46,7 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.coverageReportPaths=coverage-report/Cobertura.xml
+        dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage-report/coverage.opencover.xml
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
@@ -55,12 +55,13 @@ jobs:
       run: dotnet build Ombor.sln --no-restore --configuration Release
 
     - name: Run tests and collect coverage
-      run: dotnet test Ombor.sln --no-build --configuration Release --verbosity normal --settings coverlet.runsettings
+      run: |
+        dotnet test Ombor.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
     - name: Generate Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
       with:
-        reports: "**/coverage.cobertura.xml"
+        reports: "**/coverage.opencover.xml"  # Reading OpenCover now
         targetdir: "coverage-report"
         reporttypes: 'HtmlInline;Cobertura;TextSummary'
 
@@ -89,7 +90,7 @@ jobs:
 
     - name: Fix Minimum Line Rate Note (Bold it)
       run: sed -i "s/_Minimum allowed line rate is .*/**Minimum allowed line rate is $MINIMUM_LINE_RATE%.**/" code-coverage-results.md
-      
+
     - name: Prepare Decorated PR Comment
       run: |
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
@@ -136,3 +137,26 @@ jobs:
         name: coverage-report
         path: coverage-report/
         retention-days: 5
+
+    - name: Label PR if SonarCloud Quality Gate Failed
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const checks = await github.rest.checks.listForRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.payload.pull_request.head.sha
+          });
+
+          const qualityGate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
+
+          if (qualityGate && qualityGate.conclusion === 'failure') {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['needs-code-fix']
+            });
+          }
