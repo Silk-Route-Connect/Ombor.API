@@ -1,5 +1,9 @@
 ﻿name: CI - Build, Test, and Coverage Check
 
+permissions:
+  pull-requests: write
+  contents: read
+
 on:
   pull_request:
     branches:
