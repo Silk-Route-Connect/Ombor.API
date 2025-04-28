@@ -205,27 +205,3 @@ jobs:
               });
             }
           }
-
-    - name: Generate CI Summary
-      run: |
-        echo "### 🚀 CI Summary" > ci-summary.md
-        echo "" >> ci-summary.md
-        echo "- 🛠️ **Build**: ✅ Success" >> ci-summary.md
-        echo "- 🧪 **Tests**: ✅ Passed" >> ci-summary.md
-        COVERAGE=$(grep -oP '\*\*Line coverage\*\*: \K[0-9]+(?=%)' code-coverage-results.md | head -n 1)
-        if [ -z "$COVERAGE" ]; then
-          COVERAGE="Unknown"
-        fi
-        echo "- 📊 **Code Coverage**: ${COVERAGE}%" >> ci-summary.md
-        if [ "${{ steps.sonarcloud_qualitygate.outputs.status }}" == "success" ]; then
-          echo "- ☀️ **SonarCloud Quality Gate**: ✅ Passed" >> ci-summary.md
-        else
-          echo "- ☁️ **SonarCloud Quality Gate**: ❌ Failed" >> ci-summary.md
-        fi
-
-    - name: Post CI Summary Comment
-      if: github.event_name == 'pull_request'
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        path: ci-summary.md
-        header: "CI Summary"
