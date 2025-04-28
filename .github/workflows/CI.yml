@@ -78,12 +78,16 @@ jobs:
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Prepare Decorated PR Coverage
+    - name: Prepare Decorated PR Coverage Comment
       run: |
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
         OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -n 1)
+
+        if [ -z "$OVERALL_COVERAGE" ]; then
+          OVERALL_COVERAGE="0"
+        fi
 
         if [ "$OVERALL_COVERAGE" -ge 90 ]; then
           OVERALL_COLOR="brightgreen"
@@ -104,6 +108,7 @@ jobs:
       with:
         path: decorated-coverage-comment.md
         header: "Code Coverage Report"
+        recreate: true   # <<== Important fix to always update comment!
 
     - name: Upload Coverage Report Artifact
       uses: actions/upload-artifact@v4
