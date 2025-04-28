@@ -46,7 +46,13 @@ jobs:
     - name: Move coverage file
       run: |
         mkdir -p coverage-report
-        cp $(find . -type f -name 'coverage.opencover.xml') coverage-report/coverage.opencover.xml
+        file=$(find . -type f -name 'coverage.cobertura.xml' | head -n 1)
+        if [ -z "$file" ]; then
+          echo "Coverage file not found!"
+          exit 1
+        fi
+        cp "$file" coverage-report/coverage.opencover.xml
+
 
     - name: Generate Coverage Report
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
