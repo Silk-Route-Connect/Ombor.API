@@ -1,0 +1,55 @@
+name: CI - Build, Test, Coverage
+
+on:
+  pull_request:
+    branches:
+      - master
+      - development
+
+jobs:
+  build-and-test:
+    name: Build, Test and Generate Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'  # Adjust if needed
+
+    - name: Restore dependencies
+      run: dotnet restore Ombor.sln
+
+    - name: Build Solution
+      run: dotnet build Ombor.sln --no-restore --configuration Release
+
+    - name: Run Tests with Coverage
+      run: |
+        dotnet test Ombor.sln --no-build --configuration Release \
+          --collect:"XPlat Code Coverage" \
+          --settings coverlet.runsettings
+
+    - name: Generate Coverage Report
+      if: success()
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      with:
+        reports: '**/coverage.cobertura.xml'
+        targetdir: 'coverage-report'
+        reporttypes: 'HtmlInline;Cobertura;TextSummary'
+
+    - name: Upload Coverage Report Artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage-report
+        retention-days: 30 # optional: keep artifacts for 30 days instead of 90
+
+    - name: Post Coverage Summary as PR Comment
+      if: success()
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        path: coverage-report/Summary.txt
