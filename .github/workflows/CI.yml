@@ -78,44 +78,13 @@ jobs:
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Fix Minimum Line Rate Note (Bold it)
-      run: sed -i "s/_Minimum allowed line rate is .*/**Minimum allowed line rate is $MINIMUM_LINE_RATE%.**/" code-coverage-results.md
-
-    - name: Prepare Decorated PR Comment
+    - name: Prepare Decorated PR Coverage
       run: |
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
-
-        OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -1)
-
-        if [ "$OVERALL_COVERAGE" -ge 90 ]; then
-          OVERALL_COLOR="brightgreen"
-        elif [ "$OVERALL_COVERAGE" -ge 80 ]; then
-          OVERALL_COLOR="yellow"
-        else
-          OVERALL_COLOR="red"
-        fi
-
-        if grep -q '❌' code-coverage-results.md; then
-          STATUS="❌ **Code Coverage Check Failed**"
-        else
-          STATUS="✅ **Code Coverage Check Passed**"
-        fi
-
-        echo "${STATUS}" >> decorated-coverage-comment.md
-        echo "" >> decorated-coverage-comment.md
-
-        echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
-        echo "" >> decorated-coverage-comment.md
-
-        if grep -q '❌' code-coverage-results.md; then
-          echo "One or more projects have coverage below the minimum allowed threshold." >> decorated-coverage-comment.md
-          echo "" >> decorated-coverage-comment.md
-        fi
-
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
-    - name: Post Coverage Summary as PR Comment
+    - name: Post Code Coverage Report as PR Comment
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
       with:
@@ -177,10 +146,10 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
-    - name: Label PR if SonarCloud Quality Gate Failed
+    - name: Check SonarCloud Quality Gate Result
+      id: sonarcloud_qualitygate
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v7
-      id: sonar_quality_gate
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -189,13 +158,12 @@ jobs:
             repo: context.repo.repo,
             ref: context.payload.pull_request.head.sha
           });
-
-          const qualityGate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
-          if (qualityGate) {
-            console.log(`SonarCloud Quality Gate Status: ${qualityGate.conclusion}`);
-            return { status: qualityGate.conclusion };
+          const sonarCheck = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
+          if (sonarCheck) {
+            console.log(`SonarCloud Quality Gate status: ${sonarCheck.conclusion}`);
+            return { status: sonarCheck.conclusion };
           }
-          console.log("SonarCloud Quality Gate Check not found");
+          console.log("SonarCloud Quality Gate not found");
           return { status: 'unknown' };
 
     - name: Minimize Old SonarCloud Comments
@@ -212,13 +180,14 @@ jobs:
 
           for (const comment of comments.data) {
             if (comment.user.login === "sonarcloud[bot]" && comment.body.includes('Quality Gate')) {
+              console.log(`Minimizing SonarCloud comment: ${comment.id}`);
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: comment.id,
-                body: comment.body + "\n\n_Minimized old SonarCloud comment to keep PR clean._"
+                body: comment.body + "\n\n_Minimized to keep PR clean._"
               }).catch((err) => {
-                console.log(`Failed to update comment id ${comment.id}:`, err.message);
+                console.log(`Failed to minimize comment ${comment.id}: ${err.message}`);
               });
             }
           }
@@ -229,16 +198,12 @@ jobs:
         echo "" >> ci-summary.md
         echo "- 🛠️ **Build**: ✅ Success" >> ci-summary.md
         echo "- 🧪 **Tests**: ✅ Passed" >> ci-summary.md
-
-        OVERALL_COVERAGE=$(grep 'Summary' coverage-report/Summary.txt | grep -oP '\d+(?=%)' | head -1)
-
-        if [ -z "$OVERALL_COVERAGE" ]; then
-          OVERALL_COVERAGE="Unknown"
+        COVERAGE=$(grep -oP '\*\*Line coverage\*\*: \K[0-9]+(?=%)' code-coverage-results.md | head -n 1)
+        if [ -z "$COVERAGE" ]; then
+          COVERAGE="Unknown"
         fi
-
-        echo "- 📊 **Code Coverage**: ${OVERALL_COVERAGE}%" >> ci-summary.md
-
-        if [ "${{ steps.sonar_quality_gate.outputs.status }}" == "success" ]; then
+        echo "- 📊 **Code Coverage**: ${COVERAGE}%" >> ci-summary.md
+        if [ "${{ steps.sonarcloud_qualitygate.outputs.status }}" == "success" ]; then
           echo "- ☀️ **SonarCloud Quality Gate**: ✅ Passed" >> ci-summary.md
         else
           echo "- ☁️ **SonarCloud Quality Gate**: ❌ Failed" >> ci-summary.md
@@ -248,5 +213,5 @@ jobs:
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
       with:
-        header: "CI Summary"
         path: ci-summary.md
+        header: "CI Summary"
