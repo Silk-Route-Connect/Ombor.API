@@ -62,7 +62,7 @@ jobs:
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Prepare Decorated PR Comment with Dynamic Badges
+    - name: Prepare Decorated PR Comment
       run: |
         # Initialize comment file
         echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
@@ -71,7 +71,7 @@ jobs:
         # Extract overall summary coverage from the Summary line
         OVERALL_COVERAGE=$(grep 'Summary' code-coverage-results.md | grep -oP '\d+(?=%)' | head -1)
 
-        # Decide overall badge color
+        # Decide badge color
         if [ "$OVERALL_COVERAGE" -ge 90 ]; then
           OVERALL_COLOR="brightgreen"
         elif [ "$OVERALL_COVERAGE" -ge 80 ]; then
@@ -92,38 +92,22 @@ jobs:
         echo "" >> decorated-coverage-comment.md
 
         # Write Overall Coverage Badge
-        echo "![Overall Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
+        echo "![Code Coverage Badge](https://img.shields.io/badge/Code%20Coverage-${OVERALL_COVERAGE}%25-${OVERALL_COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
 
-        # If there are failing projects, add them individually
+        # If there are failing projects, add short paragraph
         if grep -q '❌' code-coverage-results.md; then
-          echo "_Projects with coverage below threshold:_ " >> decorated-coverage-comment.md
-          echo "" >> decorated-coverage-comment.md
-      
-          # For each failing project
-          grep '❌' code-coverage-results.md | while read -r line; do
-            PROJECT_NAME=$(echo "$line" | awk '{print $1}')
-            PROJECT_COVERAGE=$(echo "$line" | awk '{print $2}' | tr -d '%')
-
-            # Decide badge color per project
-            if [ "$PROJECT_COVERAGE" -ge 90 ]; then
-              COLOR="brightgreen"
-            elif [ "$PROJECT_COVERAGE" -ge 80 ]; then
-              COLOR="yellow"
-            else
-              COLOR="red"
-            fi
-
-            # Add project badge
-            echo "![${PROJECT_NAME} Coverage Badge](https://img.shields.io/badge/${PROJECT_NAME}-${PROJECT_COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
-          done
-
+          echo "One or more projects have coverage below the minimum allowed threshold." >> decorated-coverage-comment.md
           echo "" >> decorated-coverage-comment.md
         fi
 
-        # Append the full coverage table
+        # Append the code coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
+        # At the bottom, bold the minimum line rate note
+        echo "" >> decorated-coverage-comment.md
+        echo "**Minimum allowed line rate is 80%.**" >> decorated-coverage-comment.md
+        
     - name: Post Coverage Summary as PR Comment
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
