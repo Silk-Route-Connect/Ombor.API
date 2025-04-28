@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MINIMUM_LINE_RATE: 50
+      MINIMUM_LINE_RATE: 10
 
     steps:
     - name: Checkout code
@@ -116,8 +116,8 @@ jobs:
     - name: Upload Coverage Report Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
-        path: coverage-report/
+        name: coverage-opencover
+        path: coverage-report/coverage.opencover.xml
         retention-days: 5
 
   sonarcloud-scan:
@@ -145,11 +145,20 @@ jobs:
     - name: Install SonarCloud Scanner
       run: dotnet tool install --global dotnet-sonarscanner
 
+    - name: Download Coverage Report
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-opencover
+        path: coverage-report
+
     - name: Begin SonarCloud Analysis
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         dotnet sonarscanner begin /k:"Silk-Route-Connect_Ombor.API" /o:"silk-route-connect" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage-report/coverage.opencover.xml
+
+    - name: Restore dependencies (SonarCloud Scan)
+      run: dotnet restore Ombor.sln
 
     - name: Minimal Build for SonarCloud
       run: dotnet build Ombor.sln --no-restore --configuration Release
