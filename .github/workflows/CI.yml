@@ -1,11 +1,11 @@
-name: CI - Build, Test, Coverage Check
+name: CI - Build, Test, and Coverage Check
 
 on:
-  push:
+  pull_request:
     branches:
       - master
       - development
-  pull_request:
+  push:
     branches:
       - master
       - development
@@ -22,12 +22,12 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '8.0.x'  # Adjust if needed
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
 
-    - name: Build Solution
+    - name: Build solution
       run: dotnet build Ombor.sln --no-restore --configuration Release
 
     - name: Run tests and collect coverage
@@ -44,7 +44,7 @@ jobs:
       id: coverage_summary
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "coverage-report/Cobertura.xml" # Adjust if needed
+        filename: "coverage-report/Cobertura.xml"
         badge: true
         fail_below_min: true
         minimum_coverage: 80
@@ -53,16 +53,24 @@ jobs:
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "10 30"
+        thresholds: "80 80" # Line and Branch coverage thresholds
 
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Prepare Decorated PR Comment
+      run: |
+        echo "### ??? Code Coverage Report ???" > decorated-coverage-comment.md
+        echo "" >> decorated-coverage-comment.md
+        echo "![Coverage Badge](https://img.shields.io/badge/Coverage-$(grep -oP '\d+%' code-coverage-results.md | head -1 | tr -d '%')%25-brightgreen)" >> decorated-coverage-comment.md
+        echo "" >> decorated-coverage-comment.md
+        cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Coverage Summary as PR Comment
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
       with:
-        path: code-coverage-results.md
+        path: decorated-coverage-comment.md
 
     - name: Upload Coverage Report Artifact
       uses: actions/upload-artifact@v4
