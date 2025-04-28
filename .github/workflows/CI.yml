@@ -224,3 +224,40 @@ jobs:
               });
             }
           }
+
+    - name: Check SonarCloud Quality Gate Status
+      id: sonar_quality_gate
+      if: github.event_name == 'pull_request'
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: .
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Generate CI Summary
+      run: |
+        echo "### 🚀 CI Summary" > ci-summary.md
+        echo "" >> ci-summary.md
+        echo "- 🛠️ **Build**: ✅ Success" >> ci-summary.md
+        echo "- 🧪 **Tests**: ✅ Passed" >> ci-summary.md
+
+        OVERALL_COVERAGE=$(grep 'Summary' coverage-report/Summary.txt | grep -oP '\d+(?=%)' | head -1)
+
+        if [ -z "$OVERALL_COVERAGE" ]; then
+          OVERALL_COVERAGE="Unknown"
+        fi
+
+        echo "- 📊 **Code Coverage**: ${OVERALL_COVERAGE}%" >> ci-summary.md
+
+        if [ "${{ steps.sonar_quality_gate.outputs.quality_gate_passed }}" == "true" ]; then
+          echo "- ☀️ **SonarCloud Quality Gate**: ✅ Passed" >> ci-summary.md
+        else
+          echo "- ☁️ **SonarCloud Quality Gate**: ❌ Failed" >> ci-summary.md
+        fi
+
+    - name: Post CI Summary Comment
+      if: github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: "CI Summary"
+        path: ci-summary.md
