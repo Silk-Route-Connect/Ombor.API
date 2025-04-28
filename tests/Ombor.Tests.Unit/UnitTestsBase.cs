@@ -1,15 +1,18 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using Bogus;
 
 namespace Ombor.Tests.Unit;
 
 public abstract class UnitTestsBase
 {
     protected readonly Fixture _fixture;
+    protected readonly Faker _faker;
 
     protected UnitTestsBase()
     {
         _fixture = CreateFixture();
+        _faker = new();
     }
 
     private static Fixture CreateFixture()

@@ -7,6 +7,8 @@ namespace Ombor.Tests.Unit.Services;
 
 public abstract class ServiceTestsBase : UnitTestsBase
 {
+    protected const int NonExistentEntityId = 9999999;
+
     protected readonly Mock<IRequestValidator> _mockValidator;
     protected readonly Mock<IApplicationDbContext> _mockContext;
     protected readonly ITestDataBuilder _builder;
@@ -17,12 +19,4 @@ public abstract class ServiceTestsBase : UnitTestsBase
         _mockContext = new Mock<IApplicationDbContext>();
         _builder = new TestDataBuilder();
     }
-
-    public static TheoryData<string?> EmptySearchTerms => new()
-    {
-        { null },
-        { "" },
-        { " " },
-        { "    " },
-    };
 }

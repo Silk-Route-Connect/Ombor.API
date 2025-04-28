@@ -9,9 +9,7 @@ public sealed class TestDataBuilder : ITestDataBuilder
 {
     private static readonly Faker _faker = new();
 
-    private ICategoryBuilder? _category;
-    public ICategoryBuilder CategoryBuilder => _category ??= new CategoryBuilder(_faker);
+    public ICategoryBuilder CategoryBuilder => new CategoryBuilder(_faker);
 
-    private IProductBuilder? _product;
-    public IProductBuilder ProductBuilder => _product ??= new ProductBuilder(_faker);
+    public IProductBuilder ProductBuilder => new ProductBuilder(_faker);
 }
