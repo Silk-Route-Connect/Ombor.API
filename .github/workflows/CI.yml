@@ -1,4 +1,4 @@
-name: CI - Build, Test, and Coverage Check
+﻿name: CI - Build, Test, and Coverage Check
 
 on:
   pull_request:
@@ -22,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'  # Adjust if needed
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: dotnet restore Ombor.sln
@@ -53,17 +53,33 @@ jobs:
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "80 80" # Line and Branch coverage thresholds
+        thresholds: "80 80"
 
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Prepare Decorated PR Comment
+    - name: Prepare Decorated PR Comment with Dynamic Badge
       run: |
-        echo "### ??? Code Coverage Report ???" > decorated-coverage-comment.md
+        echo "### 🛡️ Code Coverage Report 🛡️" > decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
-        echo "![Coverage Badge](https://img.shields.io/badge/Coverage-$(grep -oP '\d+%' code-coverage-results.md | head -1 | tr -d '%')%25-brightgreen)" >> decorated-coverage-comment.md
+
+        # Extract coverage percentage
+        COVERAGE=$(grep -oP '\d+(?=%)' code-coverage-results.md | head -1)
+
+        # Decide badge color
+        if [ "$COVERAGE" -ge 90 ]; then
+          COLOR="brightgreen"
+        elif [ "$COVERAGE" -ge 80 ]; then
+          COLOR="yellow"
+        else
+          COLOR="red"
+        fi
+
+        # Add badge to comment
+        echo "![Coverage Badge](https://img.shields.io/badge/Coverage-${COVERAGE}%25-${COLOR})" >> decorated-coverage-comment.md
         echo "" >> decorated-coverage-comment.md
+
+        # Append the code coverage table
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
     - name: Post Coverage Summary as PR Comment
