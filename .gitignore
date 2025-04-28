@@ -149,6 +149,9 @@ coverage*.json
 coverage*.xml
 coverage*.info
 
+# Coverlet / ReportGenerator HTML report
+coverage/
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
