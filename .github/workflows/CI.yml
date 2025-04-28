@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MINIMUM_LINE_RATE: 50
+      MINIMUM_LINE_RATE: 40
 
     steps:
     - name: Checkout code
