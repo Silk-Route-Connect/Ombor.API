@@ -10,11 +10,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ombor.Tests.Unit", "tests\Ombor.Tests.Unit\Ombor.Tests.Unit.csproj", "{2CA790F0-2B63-4140-A5CB-889A19DCC9E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F3393D60-393B-4518-AAA2-4CEAE2DFA6EA}"
+	ProjectSection(SolutionItems) = preProject
+		coverlet.runsettings = coverlet.runsettings
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.github\workflows\CI.yml = .github\workflows\CI.yml
 		global.json = global.json
 		LICENSE = LICENSE
 		README.md = README.md
