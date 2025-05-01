@@ -4,7 +4,7 @@ using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.TestDataGenerator.Helpers;
 
-namespace Ombor.TestDataGenerator.Generators.Entities;
+namespace Ombor.TestDataGenerator.Generators;
 
 public static class ProductGenerator
 {

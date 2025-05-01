@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using Ombor.Domain.Entities;
 
-namespace Ombor.TestDataGenerator.Generators.Entities;
+namespace Ombor.TestDataGenerator.Generators;
 
 public static class CategoryGenerator
 {

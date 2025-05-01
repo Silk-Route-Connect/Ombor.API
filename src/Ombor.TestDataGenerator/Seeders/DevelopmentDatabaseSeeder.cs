@@ -1,6 +1,6 @@
 ﻿using Ombor.Application.Interfaces;
 using Ombor.TestDataGenerator.Configurations;
-using Ombor.TestDataGenerator.Generators.Entities;
+using Ombor.TestDataGenerator.Generators;
 using Ombor.TestDataGenerator.Interfaces;
 
 namespace Ombor.TestDataGenerator.Seeders;

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ombor.API\Ombor.API.csproj" />
+    <ProjectReference Include="..\Ombor.Tests.Common\Ombor.Tests.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using Bogus;
 
-namespace Ombor.TestDataGenerator.Builders;
+namespace Ombor.Tests.Common.Builders;
 
 internal abstract class BuilderBase(Faker faker)
 {

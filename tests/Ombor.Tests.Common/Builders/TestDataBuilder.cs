@@ -1,9 +1,7 @@
 ﻿using Bogus;
-using Ombor.TestDataGenerator.Builders.Entity;
-using Ombor.TestDataGenerator.Interfaces.Builders;
-using Ombor.TestDataGenerator.Interfaces.Builders.Entity;
+using Ombor.Tests.Common.Interfaces;
 
-namespace Ombor.TestDataGenerator.Builders;
+namespace Ombor.Tests.Common.Builders;
 
 public sealed class TestDataBuilder : ITestDataBuilder
 {

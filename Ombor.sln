@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ombor.Infrastructure", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ombor.TestDataGenerator", "src\Ombor.TestDataGenerator\Ombor.TestDataGenerator.csproj", "{36559F3B-BCE8-4382-AE66-C00786B8F1EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ombor.Tests.Common", "tests\Ombor.Tests.Common\Ombor.Tests.Common.csproj", "{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{36559F3B-BCE8-4382-AE66-C00786B8F1EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36559F3B-BCE8-4382-AE66-C00786B8F1EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36559F3B-BCE8-4382-AE66-C00786B8F1EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{082C96DC-11DD-C8D5-39E2-535C71B165F1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{73486100-4039-5350-EB48-A0A4D219A25F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{36559F3B-BCE8-4382-AE66-C00786B8F1EC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{EAD9EC10-5A61-4F07-839B-3BEFFE1DD7FB} = {F3393D60-393B-4518-AAA2-4CEAE2DFA6EA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {53878D0A-D7F3-4153-9655-37FE1D9A1D88}

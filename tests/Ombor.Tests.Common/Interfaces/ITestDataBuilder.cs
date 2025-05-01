@@ -1,6 +1,4 @@
-﻿using Ombor.TestDataGenerator.Interfaces.Builders.Entity;
-
-namespace Ombor.TestDataGenerator.Interfaces.Builders;
+﻿namespace Ombor.Tests.Common.Interfaces;
 
 public interface ITestDataBuilder
 {

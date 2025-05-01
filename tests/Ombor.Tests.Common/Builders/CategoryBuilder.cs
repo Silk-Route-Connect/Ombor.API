@@ -1,9 +1,9 @@
 ﻿using Bogus;
 using Ombor.Domain.Entities;
-using Ombor.TestDataGenerator.Generators.Entities;
-using Ombor.TestDataGenerator.Interfaces.Builders.Entity;
+using Ombor.TestDataGenerator.Generators;
+using Ombor.Tests.Common.Interfaces;
 
-namespace Ombor.TestDataGenerator.Builders.Entity;
+namespace Ombor.Tests.Common.Builders;
 
 internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICategoryBuilder
 {

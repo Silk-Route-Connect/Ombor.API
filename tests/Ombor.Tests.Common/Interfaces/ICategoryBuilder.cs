@@ -1,6 +1,6 @@
 ﻿using Ombor.Domain.Entities;
 
-namespace Ombor.TestDataGenerator.Interfaces.Builders.Entity;
+namespace Ombor.Tests.Common.Interfaces;
 
 /// <summary>
 /// Fluent builder for creating <see cref="Category"/> instances,

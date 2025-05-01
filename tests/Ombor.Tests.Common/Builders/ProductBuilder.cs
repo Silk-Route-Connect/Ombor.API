@@ -1,11 +1,11 @@
 ﻿using Bogus;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
-using Ombor.TestDataGenerator.Configurations;
-using Ombor.TestDataGenerator.Generators.Entities;
-using Ombor.TestDataGenerator.Interfaces.Builders.Entity;
+using Ombor.TestDataGenerator.Generators;
+using Ombor.Tests.Common.Configurations;
+using Ombor.Tests.Common.Interfaces;
 
-namespace Ombor.TestDataGenerator.Builders.Entity;
+namespace Ombor.Tests.Common.Builders;
 
 internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProductBuilder
 {

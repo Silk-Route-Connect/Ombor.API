@@ -1,7 +1,7 @@
 ﻿using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 
-namespace Ombor.TestDataGenerator.Interfaces.Builders.Entity;
+namespace Ombor.Tests.Common.Interfaces;
 
 /// <summary>
 /// Fluent builder for creating <see cref="Product"/> instances,

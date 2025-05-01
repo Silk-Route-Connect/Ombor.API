@@ -1,4 +1,4 @@
-﻿namespace Ombor.TestDataGenerator.Configurations;
+﻿namespace Ombor.Tests.Common.Configurations;
 
 public static class BuilderConstants
 {
