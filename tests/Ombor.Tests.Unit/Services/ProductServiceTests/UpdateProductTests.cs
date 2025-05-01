@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Moq;
-using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 using Ombor.Tests.Common.Factories;
@@ -16,14 +15,14 @@ public sealed class UpdateProductTests : ProductTestsBase
         // Arrange
         var request = ProductRequestFactory.GenerateInvalidUpdateRequest(ProductId);
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation Errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation Errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -37,7 +36,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -58,7 +57,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(request, response);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

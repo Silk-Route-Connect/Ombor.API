@@ -106,7 +106,7 @@ internal static class ProductMappings
             IsExpirationClose: product.ExpireDate >= thresholdDate);
     }
 
-    public static void Update(this Product product, UpdateProductRequest request)
+    public static void ApplyUpdate(this Product product, UpdateProductRequest request)
     {
         if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
         {

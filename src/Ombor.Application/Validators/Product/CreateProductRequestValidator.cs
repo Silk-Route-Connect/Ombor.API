@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Enums;
@@ -12,7 +13,7 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
         RuleFor(x => x.CategoryId)
             .GreaterThan(0)
             .WithMessage("Category ID must be greater than zero.")
-            .Must((categoryId) => context.Categories.Any(x => x.Id == categoryId))
+            .MustAsync((categoryId, cancellation) => context.Categories.AnyAsync(x => x.Id == categoryId, cancellation))
             .WithMessage("Invalid category ID.");
 
         RuleFor(x => x.Name)
@@ -25,7 +26,10 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .NotEmpty()
             .WithMessage("Product SKU is required.")
             .MaximumLength(ValidationConstants.CodeLength)
-            .WithMessage($"Product SKU must not exceed {ValidationConstants.CodeLength} characters.");
+            .WithMessage($"Product SKU must not exceed {ValidationConstants.CodeLength} characters.")
+            .MustAsync(async (sku, cancellation) =>
+                !await context.Products.AnyAsync(p => p.SKU == sku, cancellation))
+            .WithMessage("A product with the same SKU already exists.");
 
         RuleFor(x => x.Description)
             .MaximumLength(ValidationConstants.MaxStringLength)
@@ -40,17 +44,23 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .WithMessage("Invalid measurement type. Valid values are: Piece, Kilogram, Liter, etc.")
             .When(x => !string.IsNullOrEmpty(x.Measurement));
 
-        RuleFor(x => x.SalePrice)
-            .GreaterThan(0)
-            .WithMessage("Sale price must be greater than zero.");
-
         RuleFor(x => x.SupplyPrice)
             .GreaterThan(0)
             .WithMessage("Supply price must be greater than zero.");
 
+        RuleFor(x => x.SalePrice)
+            .GreaterThan(0)
+            .WithMessage("Sale price must be greater than zero.")
+            .GreaterThan(x => x.SupplyPrice)
+            .WithMessage("Sale price must be greater than supply price.");
+
         RuleFor(x => x.RetailPrice)
             .GreaterThan(0)
-            .WithMessage("Retail price must be greater than zero.");
+            .WithMessage("Retail price must be greater than zero.")
+            .GreaterThan(x => x.SupplyPrice)
+            .WithMessage("Retail price must be greater than supply price.")
+            .LessThan(x => x.SalePrice)
+            .WithMessage("Retail price must be less than sale price.");
 
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0)

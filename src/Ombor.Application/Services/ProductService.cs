@@ -19,6 +19,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
         var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
 
         return query
+            .AsNoTracking()
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
@@ -36,7 +37,6 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
                 x.ExpireDate,
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.ExpireDate >= thresholdDate))
-            .AsNoTracking()
             .ToArrayAsync();
     }
 
@@ -51,7 +51,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
     public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request, default);
 
         var entity = request.ToEntity();
         context.Products.Add(entity);
@@ -64,10 +64,10 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
     public async Task<UpdateProductResponse> UpdateAsync(UpdateProductRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request, default);
 
         var entity = await GetOrThrowAsync(request.Id);
-        entity.Update(request);
+        entity.ApplyUpdate(request);
         await context.SaveChangesAsync();
 
         return entity.ToUpdateResponse();

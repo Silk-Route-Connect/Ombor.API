@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Moq;
-using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Factories;
@@ -16,14 +15,14 @@ public sealed class CreateProductTests : ProductTestsBase
         // Arrange
         var request = ProductRequestFactory.GenerateInvalidCreateRequest();
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -53,7 +52,7 @@ public sealed class CreateProductTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
