@@ -39,7 +39,7 @@ internal static class CategoryMappings
             category.Description);
     }
 
-    public static void Update(this Category category, UpdateCategoryRequest request)
+    public static void ApplyUpdate(this Category category, UpdateCategoryRequest request)
     {
         category.Name = request.Name;
         category.Description = request.Description;

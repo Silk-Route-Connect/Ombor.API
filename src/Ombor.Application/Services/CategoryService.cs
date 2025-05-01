@@ -14,7 +14,9 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Categories.AsQueryable();
+        var query = context.Categories
+            .AsNoTracking()
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -22,8 +24,8 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
                 (x.Description != null && x.Description.Contains(request.SearchTerm)));
         }
 
-        return query.Select(x => new CategoryDto(x.Id, x.Name, x.Description))
-            .AsNoTracking()
+        return query
+            .Select(x => new CategoryDto(x.Id, x.Name, x.Description))
             .ToArrayAsync();
     }
 
@@ -53,7 +55,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        entity.Update(request);
+        entity.ApplyUpdate(request);
         await context.SaveChangesAsync();
 
         return entity.ToUpdateResponse();
@@ -70,6 +72,6 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
     }
 
     private async Task<Category> GetOrThrowAsync(int id) =>
-        await context.Categories.FindAsync(id)
+        await context.Categories.FirstOrDefaultAsync(x => x.Id == id)
         ?? throw new EntityNotFoundException<Category>(id);
 }
