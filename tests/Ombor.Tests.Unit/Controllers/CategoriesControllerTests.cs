@@ -56,6 +56,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
+
         Assert.Equal(expected, actual.Value);
 
         _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
@@ -92,6 +93,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
+
         Assert.Equal(expected, actual.Value);
 
         _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
@@ -128,6 +130,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
 
         // Assert
         var actual = Assert.IsType<CreatedAtActionResult>(response.Result);
+
         Assert.Equal(expected, actual.Value);
         Assert.NotNull(actual.RouteValues);
         Assert.Equal(expected.Id, actual.RouteValues["id"]);
@@ -189,6 +192,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
+
         Assert.Equal(expected, actual.Value);
 
         _mockService.Verify(mock => mock.UpdateAsync(request), Times.Once);

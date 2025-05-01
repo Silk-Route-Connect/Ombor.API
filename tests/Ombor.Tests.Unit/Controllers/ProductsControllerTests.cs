@@ -74,6 +74,8 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.GetAsync(request));
+
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -109,6 +111,8 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.GetProductByIdAsync(request));
+
+        _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
 
     [Fact]
@@ -146,6 +150,8 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.PostAsync(request));
+
+        _mockService.Verify(mock => mock.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -204,6 +210,8 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.PutAsync(request.Id, request));
+
+        _mockService.Verify(mock => mock.UpdateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -236,5 +244,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.DeleteAsync(request));
+
+        _mockService.Verify(mock => mock.DeleteAsync(request), Times.Once);
     }
 }
