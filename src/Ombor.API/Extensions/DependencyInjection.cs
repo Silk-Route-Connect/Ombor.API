@@ -9,7 +9,9 @@ internal static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
+        services
+            .AddControllers(options => options.SuppressAsyncSuffixInActionNames = false)
+            .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
 
@@ -18,6 +20,7 @@ internal static class DependencyInjection
 
     private static void AddErrorHandlers(this IServiceCollection services)
     {
+        services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();

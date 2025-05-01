@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Interfaces;
@@ -23,10 +22,7 @@ public static class DependencyInjection
     /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddFluentValidationAutoValidation()
-            .AddFluentValidationClientsideAdapters()
-            .AddValidatorsFromAssembly(CurrentAssembly);
+        services.AddValidatorsFromAssembly(CurrentAssembly);
 
         services.AddScoped<IRequestValidator, RequestValidator>();
         services.AddScoped<IProductService, ProductService>();
