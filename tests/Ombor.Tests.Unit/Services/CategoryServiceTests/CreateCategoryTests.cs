@@ -15,14 +15,14 @@ public sealed class CreateCategoryTests : CategoryTestsBase
         // Arrange
         var request = CategoryRequestFactory.GenerateInvalidCreateRequest();
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -34,10 +34,10 @@ public sealed class CreateCategoryTests : CategoryTestsBase
         var request = CategoryRequestFactory.GenerateValidCreateRequest();
         Category expected = null!;
 
-        _mockContext.Setup(c => c.Categories.Add(It.Is<Category>(categoryToAdd => categoryToAdd.IsEquivalent(request))))
+        _mockContext.Setup(mock => mock.Categories.Add(It.Is<Category>(categoryToAdd => categoryToAdd.IsEquivalent(request))))
             .Callback<Category>(captured => expected = captured);
 
-        _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+        _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1)
             .Callback(() => expected.Id = 99);
 
@@ -47,9 +47,9 @@ public sealed class CreateCategoryTests : CategoryTestsBase
         // Assert
         CategoryAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories.Add(expected), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(mock => mock.Categories.Add(expected), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
     }

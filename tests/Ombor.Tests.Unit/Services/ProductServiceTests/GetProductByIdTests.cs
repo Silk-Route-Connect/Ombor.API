@@ -17,14 +17,14 @@ public sealed class GetProductByIdTests : ProductTestsBase
         // Arrange
         var request = new GetProductByIdRequest(ProductId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public sealed class GetProductByIdTests : ProductTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public sealed class GetProductByIdTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<GetProductByIdRequest>()), Times.Once);
     }
 }

@@ -23,7 +23,7 @@ public abstract class ProductTestsBase : ServiceTestsBase
     protected Mock<DbSet<Product>> SetupProducts(IEnumerable<Product> products)
     {
         var mockSet = products.AsQueryable().BuildMockDbSet();
-        _mockContext.Setup(c => c.Products).Returns(mockSet.Object);
+        _mockContext.Setup(mock => mock.Products).Returns(mockSet.Object);
 
         return mockSet;
     }

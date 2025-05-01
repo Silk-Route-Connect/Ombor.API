@@ -16,15 +16,15 @@ public sealed class UpdateProductTests : ProductTestsBase
         // Arrange
         var request = ProductRequestFactory.GenerateInvalidUpdateRequest(ProductId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation Errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public sealed class UpdateProductTests : ProductTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(request, response);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

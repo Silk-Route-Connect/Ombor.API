@@ -46,7 +46,7 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         // Assert
         Assert.Empty(actual);
 
-        _mockContext.Verify(c => c.Categories, Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -75,7 +75,7 @@ public sealed class GetCategoriesTests : CategoryTestsBase
             CategoryAssertionHelper.AssertEquivalent(expected, actual);
         });
 
-        _mockContext.Verify(c => c.Categories, Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
     }

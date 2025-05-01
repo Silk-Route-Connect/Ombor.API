@@ -15,14 +15,14 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         // Arrange
         var request = CategoryRequestFactory.GenerateInvalidUpdateRequest(CategoryId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -37,8 +37,8 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories, Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -54,7 +54,7 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
 
         SetupCategories([.. _defaultCategories, categoryToUpdate]);
 
-        _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+        _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         // Act
@@ -64,9 +64,9 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         CategoryAssertionHelper.AssertEquivalent(request, response);
         CategoryAssertionHelper.AssertEquivalent(request, categoryToUpdate);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(c => c.Categories, Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
     }

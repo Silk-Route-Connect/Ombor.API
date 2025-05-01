@@ -16,16 +16,16 @@ public sealed class CreateProductTests : ProductTestsBase
         // Arrange
         var request = ProductRequestFactory.GenerateInvalidCreateRequest();
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
-        _mockContext.Verify(c => c.Products.Add(It.IsAny<Product>()), Times.Never);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Never);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class CreateProductTests : ProductTestsBase
         var request = ProductRequestFactory.GenerateValidCreateRequest();
         Product expected = null!;
 
-        _mockContext.Setup(c => c.Products.Add(It.Is<Product>(productToAdd => productToAdd.IsEquivalent(request))))
+        _mockContext.Setup(mock => mock.Products.Add(It.Is<Product>(productToAdd => productToAdd.IsEquivalent(request))))
             .Callback<Product>(addedProduct =>
             {
                 addedProduct.Category = _builder.CategoryBuilder.BuildAndPopulate();
@@ -43,7 +43,7 @@ public sealed class CreateProductTests : ProductTestsBase
                 expected = addedProduct;
             });
 
-        _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+        _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1)
             .Callback(() => expected.Id = 99);
 
@@ -53,8 +53,8 @@ public sealed class CreateProductTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
-        _mockContext.Verify(c => c.Products.Add(It.IsAny<Product>()), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

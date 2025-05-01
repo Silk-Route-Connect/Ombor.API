@@ -14,14 +14,14 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
         // Arrange
         var request = new DeleteCategoryRequest(CategoryId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request))
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.DeleteAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -32,14 +32,14 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
         // Arrange
         var request = new DeleteCategoryRequest(NonExistentEntityId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request));
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request));
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.DeleteAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories, Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -53,22 +53,22 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
             .BuildAndPopulate();
         var request = new DeleteCategoryRequest(CategoryId);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request));
+        _mockValidator.Setup(mock => mock.ValidateAndThrow(request));
 
         var mockSet = SetupCategories([.. _defaultCategories, categoryToDelete]);
-        mockSet.Setup(c => c.Remove(categoryToDelete));
+        mockSet.Setup(mock => mock.Remove(categoryToDelete));
 
-        _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+        _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         // Act
         await _service.DeleteAsync(request);
 
         // Assert
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        mockSet.Verify(c => c.Remove(categoryToDelete), Times.Once);
-        _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(c => c.Categories, Times.Exactly(2));
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        mockSet.Verify(mock => mock.Remove(categoryToDelete), Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Exactly(2));
 
         VerifyNoOtherCalls();
     }

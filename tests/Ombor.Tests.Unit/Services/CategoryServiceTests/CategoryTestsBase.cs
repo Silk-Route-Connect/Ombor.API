@@ -26,7 +26,7 @@ public abstract class CategoryTestsBase : ServiceTestsBase
         Random.Shared.Shuffle(shuffledCategories);
 
         var mockDbSet = shuffledCategories.AsQueryable().BuildMockDbSet();
-        _mockContext.Setup(c => c.Categories)
+        _mockContext.Setup(mock => mock.Categories)
             .Returns(mockDbSet.Object);
 
         return mockDbSet;
