@@ -23,7 +23,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -37,7 +37,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<UpdateProductRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 

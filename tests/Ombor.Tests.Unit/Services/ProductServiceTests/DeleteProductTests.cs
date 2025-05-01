@@ -23,7 +23,7 @@ public sealed class DeleteProductTests : ProductTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.DeleteAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<DeleteProductRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(mock => mock.Products.Remove(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -56,7 +56,7 @@ public sealed class DeleteProductTests : ProductTestsBase
             .ReturnsAsync(1);
 
         var mockSet = SetupProducts([.. _defaultProducts, categoryToDelete]);
-        mockSet.Setup(s => s.Remove(It.Is<Product>(e => e == categoryToDelete)));
+        mockSet.Setup(mock => mock.Remove(It.Is<Product>(e => e == categoryToDelete)));
 
         // Act
         await _service.DeleteAsync(request);

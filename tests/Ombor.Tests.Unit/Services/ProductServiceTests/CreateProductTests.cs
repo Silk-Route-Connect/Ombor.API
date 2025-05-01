@@ -23,7 +23,7 @@ public sealed class CreateProductTests : ProductTestsBase
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -53,7 +53,7 @@ public sealed class CreateProductTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(It.IsAny<CreateProductRequest>()), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

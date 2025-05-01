@@ -11,13 +11,13 @@ namespace Ombor.Tests.Unit.Controllers;
 
 public sealed class ProductsControllerTests : ControllerTestsBase
 {
-    private readonly Mock<IProductService> _mockProductService;
+    private readonly Mock<IProductService> _mockService;
     private readonly ProductsController _controller;
 
     public ProductsControllerTests()
     {
-        _mockProductService = new Mock<IProductService>();
-        _controller = new ProductsController(_mockProductService.Object);
+        _mockService = new Mock<IProductService>(MockBehavior.Strict);
+        _controller = new ProductsController(_mockService.Object);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetProductsRequest>();
         var expected = _fixture.CreateArray<ProductDto>();
 
-        _mockProductService.Setup(s => s.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -38,9 +38,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         Assert.Equal(expected, actual.Value);
 
-        _mockProductService.Verify(
-            s => s.GetAsync(It.IsAny<GetProductsRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -50,7 +48,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetProductsRequest>();
         var expected = Array.Empty<ProductDto>();
 
-        _mockProductService.Setup(s => s.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -61,9 +59,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         Assert.Equal(expected, actual.Value);
 
-        _mockProductService.Verify(
-            s => s.GetAsync(It.IsAny<GetProductsRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -73,13 +69,11 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetProductsRequest>();
         var expected = _fixture.CreateException();
 
-        _mockProductService.Setup(s => s.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync(
-            expected.GetType(),
-            () => _controller.GetAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.GetAsync(request));
     }
 
     [Fact]
@@ -89,7 +83,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetProductByIdRequest>();
         var expected = _fixture.Create<ProductDto>();
 
-        _mockProductService.Setup(s => s.GetByIdAsync(request))
+        _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -100,9 +94,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         Assert.Equal(expected, actual.Value);
 
-        _mockProductService.Verify(
-            s => s.GetByIdAsync(It.IsAny<GetProductByIdRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
 
     [Fact]
@@ -112,13 +104,11 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetProductByIdRequest>();
         var expected = _fixture.CreateException();
 
-        _mockProductService.Setup(s => s.GetByIdAsync(request))
+        _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync(
-            expected.GetType(),
-            () => _controller.GetProductByIdAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.GetProductByIdAsync(request));
     }
 
     [Fact]
@@ -128,7 +118,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<CreateProductRequest>();
         var expected = _fixture.Create<CreateProductResponse>();
 
-        _mockProductService.Setup(s => s.CreateAsync(request))
+        _mockService.Setup(mock => mock.CreateAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -141,9 +131,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         Assert.NotNull(actual.RouteValues);
         Assert.Equal(expected.Id, actual.RouteValues["id"]);
 
-        _mockProductService.Verify(
-            s => s.CreateAsync(It.IsAny<CreateProductRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -153,13 +141,11 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<CreateProductRequest>();
         var expected = _fixture.CreateException();
 
-        _mockProductService.Setup(s => s.CreateAsync(request))
+        _mockService.Setup(mock => mock.CreateAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync(
-            expected.GetType(),
-            () => _controller.PostAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.PostAsync(request));
     }
 
     [Fact]
@@ -192,7 +178,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
             .With(r => r.Id, expected.Id)
             .Create();
 
-        _mockProductService.Setup(s => s.UpdateAsync(request))
+        _mockService.Setup(mock => mock.UpdateAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -203,9 +189,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
 
         Assert.Equal(expected, actual.Value);
 
-        _mockProductService.Verify(
-            s => s.UpdateAsync(It.IsAny<UpdateProductRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.UpdateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -215,13 +199,11 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var expected = _fixture.CreateException();
         var request = _fixture.Create<UpdateProductRequest>();
 
-        _mockProductService.Setup(s => s.UpdateAsync(It.IsAny<UpdateProductRequest>()))
+        _mockService.Setup(mock => mock.UpdateAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync(
-            expected.GetType(),
-            () => _controller.PutAsync(request.Id, request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.PutAsync(request.Id, request));
     }
 
     [Fact]
@@ -230,7 +212,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         // Arrange
         var request = _fixture.Create<DeleteProductRequest>();
 
-        _mockProductService.Setup(s => s.DeleteAsync(request))
+        _mockService.Setup(mock => mock.DeleteAsync(request))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -239,9 +221,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         // Assert
         Assert.IsType<NoContentResult>(response);
 
-        _mockProductService.Verify(
-            s => s.DeleteAsync(It.IsAny<DeleteProductRequest>()),
-            Times.Once);
+        _mockService.Verify(mock => mock.DeleteAsync(request), Times.Once);
     }
 
     [Fact]
@@ -251,12 +231,10 @@ public sealed class ProductsControllerTests : ControllerTestsBase
         var request = _fixture.Create<DeleteProductRequest>();
         var expected = _fixture.CreateException();
 
-        _mockProductService.Setup(s => s.DeleteAsync(It.IsAny<DeleteProductRequest>()))
+        _mockService.Setup(mock => mock.DeleteAsync(request))
             .Throws(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync(
-            expected.GetType(),
-            () => _controller.DeleteAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.DeleteAsync(request));
     }
 }

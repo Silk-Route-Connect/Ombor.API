@@ -11,13 +11,13 @@ namespace Ombor.Tests.Unit.Controllers;
 
 public sealed class CategoriesControllerTests : ControllerTestsBase
 {
-    private readonly Mock<ICategoryService> _mockCategoryService;
+    private readonly Mock<ICategoryService> _mockService;
     private readonly CategoriesController _controller;
 
     public CategoriesControllerTests()
     {
-        _mockCategoryService = new Mock<ICategoryService>();
-        _controller = new CategoriesController(_mockCategoryService.Object);
+        _mockService = new Mock<ICategoryService>(MockBehavior.Strict);
+        _controller = new CategoriesController(_mockService.Object);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetCategoriesRequest>();
         var expected = _fixture.CreateArray<CategoryDto>();
 
-        _mockCategoryService.Setup(mock => mock.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -35,9 +35,10 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
+
         Assert.Equal(expected, actual.Value);
 
-        _mockCategoryService.Verify(mock => mock.GetAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetCategoriesRequest>();
         var expected = Array.Empty<CategoryDto>();
 
-        _mockCategoryService.Setup(mock => mock.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -57,7 +58,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var actual = Assert.IsType<OkObjectResult>(response.Result);
         Assert.Equal(expected, actual.Value);
 
-        _mockCategoryService.Verify(mock => mock.GetAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -67,13 +68,13 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetCategoriesRequest>();
         var expected = _fixture.CreateException();
 
-        _mockCategoryService.Setup(mock => mock.GetAsync(request))
+        _mockService.Setup(mock => mock.GetAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.GetAsync(request));
 
-        _mockCategoryService.Verify(mock => mock.GetAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.GetAsync(request), Times.Once);
     }
 
     [Fact]
@@ -83,7 +84,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetCategoryByIdRequest>();
         var expected = _fixture.Create<CategoryDto>();
 
-        _mockCategoryService.Setup(mock => mock.GetByIdAsync(request))
+        _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -93,7 +94,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var actual = Assert.IsType<OkObjectResult>(response.Result);
         Assert.Equal(expected, actual.Value);
 
-        _mockCategoryService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
 
     [Fact]
@@ -103,13 +104,13 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<GetCategoryByIdRequest>();
         var expected = _fixture.CreateException();
 
-        _mockCategoryService.Setup(mock => mock.GetByIdAsync(request))
+        _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.GetCategoryByIdAsync(request));
 
-        _mockCategoryService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
 
     [Fact]
@@ -119,7 +120,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<CreateCategoryRequest>();
         var expected = _fixture.Create<CreateCategoryResponse>();
 
-        _mockCategoryService.Setup(mock => mock.CreateAsync(request))
+        _mockService.Setup(mock => mock.CreateAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -128,9 +129,10 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         // Assert
         var actual = Assert.IsType<CreatedAtActionResult>(response.Result);
         Assert.Equal(expected, actual.Value);
+        Assert.NotNull(actual.RouteValues);
         Assert.Equal(expected.Id, actual.RouteValues["id"]);
 
-        _mockCategoryService.Verify(mock => mock.CreateAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -140,13 +142,13 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<CreateCategoryRequest>();
         var expected = _fixture.CreateException();
 
-        _mockCategoryService.Setup(mock => mock.CreateAsync(request))
+        _mockService.Setup(mock => mock.CreateAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.PostAsync(request));
 
-        _mockCategoryService.Verify(mock => mock.CreateAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -179,7 +181,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
             .With(r => r.Id, expected.Id)
             .Create();
 
-        _mockCategoryService.Setup(mock => mock.UpdateAsync(request))
+        _mockService.Setup(mock => mock.UpdateAsync(request))
             .ReturnsAsync(expected);
 
         // Act
@@ -189,7 +191,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var actual = Assert.IsType<OkObjectResult>(response.Result);
         Assert.Equal(expected, actual.Value);
 
-        _mockCategoryService.Verify(mock => mock.UpdateAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.UpdateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -199,13 +201,13 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<UpdateCategoryRequest>();
         var expected = _fixture.CreateException();
 
-        _mockCategoryService.Setup(mock => mock.UpdateAsync(request))
+        _mockService.Setup(mock => mock.UpdateAsync(request))
             .ThrowsAsync(expected);
 
         // Act
         await Assert.ThrowsAsync<Exception>(() => _controller.PutAsync(request.Id, request));
 
-        _mockCategoryService.Verify(mock => mock.UpdateAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.UpdateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -214,7 +216,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         // Arrange
         var request = _fixture.Create<DeleteCategoryRequest>();
 
-        _mockCategoryService.Setup(mock => mock.DeleteAsync(request))
+        _mockService.Setup(mock => mock.DeleteAsync(request))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -223,7 +225,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         // Assert
         Assert.IsType<NoContentResult>(response);
 
-        _mockCategoryService.Verify(mock => mock.DeleteAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.DeleteAsync(request), Times.Once);
     }
 
     [Fact]
@@ -233,13 +235,12 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
         var request = _fixture.Create<DeleteCategoryRequest>();
         var expected = _fixture.CreateException();
 
-        _mockCategoryService.Setup(mock => mock.DeleteAsync(request))
+        _mockService.Setup(mock => mock.DeleteAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(() => _controller.DeleteAsync(request));
 
-        _mockCategoryService.Verify(mock => mock.DeleteAsync(request), Times.Once);
+        _mockService.Verify(mock => mock.DeleteAsync(request), Times.Once);
     }
 }
-
