@@ -1,10 +1,24 @@
-﻿using Ombor.Contracts.Requests.Category;
+﻿using Moq;
+using Ombor.Contracts.Requests.Category;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
+using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Unit.Services.CategoryServiceTests;
 
 public sealed class GetCategoriesTests : CategoryTestsBase
 {
+    private const string MatchingSearchTerm = "Test Match";
+
+    public static TheoryData<GetCategoriesRequest> GetRequests => new()
+    {
+        { new GetCategoriesRequest(null) },
+        { new GetCategoriesRequest(string.Empty) },
+        { new GetCategoriesRequest(" ") },
+        { new GetCategoriesRequest("   ") },
+        { new GetCategoriesRequest(MatchingSearchTerm) },
+    };
+
     [Fact]
     public async Task GetAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
     {
@@ -15,6 +29,8 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         await Assert.ThrowsAsync<ArgumentNullException>(
             nameof(request),
             () => _service.GetAsync(request));
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -25,49 +41,52 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         SetupCategories([]);
 
         // Act
-        var result = await _service.GetAsync(request);
+        var actual = await _service.GetAsync(request);
 
         // Assert
-        Assert.Empty(result);
+        Assert.Empty(actual);
+
+        _mockContext.Verify(c => c.Categories, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
-    [Theory, MemberData(nameof(EmptyRequests))]
-    public async Task GetAsync_ShouldReturnAll_WhenNoSearchTermProvided(GetCategoriesRequest request)
+    [Theory, MemberData(nameof(GetRequests))]
+    public async Task GetAsync_ShouldReturnMatchingCategories(GetCategoriesRequest request)
     {
         // Arrange
-
-        // Act
-        var response = await _service.GetAsync(request);
-
-        // Assert
-        Assert.Equal(_defaultCategories.Length, response.Length);
-    }
-
-    [Fact]
-    public async Task GetAsync_ShouldReturnMatchingCategories_WhenSearchTermIsProvided()
-    {
-        // Arrange
-        var request = new GetCategoriesRequest("Test Match");
         var matchingCategories = CreateMatchingCategories(request);
+        Category[] allCategories = [.. _defaultCategories, .. matchingCategories];
+        var expectedCategories = request.IsEmpty()
+            ? allCategories
+            : matchingCategories;
+
         SetupCategories([.. _defaultCategories, .. matchingCategories]);
 
         // Act
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(matchingCategories.Length, response.Length);
+        Assert.Equal(expectedCategories.Length, response.Length);
         Assert.All(response, actual =>
         {
-            var expected = matchingCategories.SingleOrDefault(x => x.Id == actual.Id);
+            var expected = expectedCategories.SingleOrDefault(x => x.Id == actual.Id);
 
-            Assert.NotNull(expected);
-            Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.Description, actual.Description);
+            CategoryAssertionHelper.AssertEquivalent(expected, actual);
         });
+
+        _mockContext.Verify(c => c.Categories, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     private Category[] CreateMatchingCategories(GetCategoriesRequest request)
     {
+        if (request.IsEmpty())
+        {
+            return [];
+        }
+
         var matchingName = _builder.CategoryBuilder
             .WithId(100)
             .WithName(request.SearchTerm)

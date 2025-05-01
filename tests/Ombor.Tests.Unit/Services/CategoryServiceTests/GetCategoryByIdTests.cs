@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AutoFixture;
 using Moq;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
+using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Unit.Services.CategoryServiceTests;
 
@@ -13,7 +13,7 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
     public async Task GetByIdAsync_ShouldThrowValidationException_WhenValidatorFails()
     {
         // Arrange
-        var request = _fixture.Create<GetCategoryByIdRequest>();
+        var request = new GetCategoryByIdRequest(CategoryId);
 
         _mockValidator.Setup(v => v.ValidateAndThrow(request))
             .Throws(new ValidationException("Validation errors."));
@@ -23,48 +23,46 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
             () => _service.GetByIdAsync(request));
 
         _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Never);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task GetByIdAsync_ShouldThrowNotFound_WhenCategoryDoesNotExist()
     {
         // Arrange
-        var request = new GetCategoryByIdRequest(999);
-        Category? expected = null;
-
-        _mockValidator.Setup(v => v.ValidateAndThrow(request));
-        _mockContext.Setup(c => c.Categories.FindAsync(request.Id))
-            .ReturnsAsync(expected);
+        var request = new GetCategoryByIdRequest(NonExistentEntityId);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetCategoryByIdRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task GetByIdAsync_ShouldReturnDto_WhenCategoryIsFound()
     {
         // Arrange
-        var expected = new Category { Id = 99, Name = "Test Category Name", Description = "Test Category Description" };
+        var expected = _builder.CategoryBuilder
+            .WithId(CategoryId)
+            .BuildAndPopulate();
         var request = new GetCategoryByIdRequest(expected.Id);
 
-        _mockValidator.Setup(v => v.ValidateAndThrow(request));
-        _mockContext.Setup(c => c.Categories.FindAsync(request.Id))
-            .ReturnsAsync(expected);
+        SetupCategories([.. _defaultCategories, expected]);
 
         // Act
-        var response = await _service.GetByIdAsync(request);
+        var actual = await _service.GetByIdAsync(request);
 
         // Assert
-        Assert.Equal(expected.Id, response.Id);
-        Assert.Equal(expected.Name, response.Name);
-        Assert.Equal(expected.Description, response.Description);
+        CategoryAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(v => v.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(c => c.Categories.FindAsync(It.IsAny<int>()), Times.Once);
+        _mockValidator.Verify(v => v.ValidateAndThrow(It.IsAny<GetCategoryByIdRequest>()), Times.Once);
+        _mockContext.Verify(c => c.Categories, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 }

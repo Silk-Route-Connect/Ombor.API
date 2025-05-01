@@ -1,12 +1,30 @@
-﻿using AutoFixture;
-using Ombor.Contracts.Requests.Product;
+﻿using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
-using Ombor.Tests.Unit.Extensions;
+using Ombor.Tests.Common.Extensions;
+using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Unit.Services.ProductServiceTests;
 
 public sealed class GetProductsTests : ProductTestsBase
 {
+    private const string MatchingSearchTerm = "Test Match";
+    private const int MatchingCategoryId = 50;
+    private const decimal MatchingMinPrice = 100m;
+    private const decimal MatchingMaxPrice = 1_000m;
+
+    public static TheoryData<GetProductsRequest> GetRequests =>
+        new()
+        {
+            new GetProductsRequest(null, null, null, null),
+            new GetProductsRequest(string.Empty, null, null, null),
+            new GetProductsRequest(" ", null, null, null),
+            new GetProductsRequest("   ", null, null, null),
+            new GetProductsRequest(MatchingSearchTerm, null, null, null),
+            new GetProductsRequest(null, MatchingCategoryId, null, null),
+            new GetProductsRequest(null, null, MatchingMinPrice, MatchingMaxPrice),
+            new GetProductsRequest(MatchingSearchTerm, MatchingCategoryId, MatchingMinPrice, MatchingMaxPrice)
+        };
+
     [Fact]
     public async Task GetAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
     {
@@ -23,38 +41,23 @@ public sealed class GetProductsTests : ProductTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = _fixture.Create<GetProductsRequest>();
+        var request = new GetProductsRequest(string.Empty, null, null, null);
         SetupProducts([]);
 
         // Act
-        var result = await _service.GetAsync(request);
+        var actual = await _service.GetAsync(request);
 
         // Assert
-        Assert.Empty(result);
-    }
-
-    [Fact]
-    public async Task GetAsync_ShouldReturnAll_WhenNoQueryParameterProvided()
-    {
-        // Arrange
-        var request = new GetProductsRequest(null, null, null, null);
-
-        // Act
-        var response = await _service.GetAsync(request);
-
-        // Assert
-        Assert.Equal(_defaultProducts.Length, response.Length);
+        Assert.Empty(actual);
     }
 
     [Theory]
     [MemberData(nameof(GetRequests))]
-    public async Task GetAsync_ShouldReturnMatchingProducts_WhenSearchTermIsProvided(GetProductsRequest request)
+    public async Task GetAsync_ShouldReturnMatchingProducts(GetProductsRequest request)
     {
         // Arrange
         var matchingProducts = CreateMatchingProducts(request);
-        var randomProducts = CreateRandomProducts();
-        Product[] allProducts = [.. randomProducts, .. matchingProducts];
-        Random.Shared.Shuffle(allProducts);
+        Product[] allProducts = [.. _defaultProducts, .. matchingProducts];
         var expectedProducts = request.IsEmpty()
             ? allProducts
             : matchingProducts;
@@ -62,17 +65,15 @@ public sealed class GetProductsTests : ProductTestsBase
         SetupProducts(allProducts);
 
         // Act
-        var result = await _service.GetAsync(request);
+        var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedProducts.Length, result.Length);
-        Assert.All(result, actual =>
+        Assert.Equal(expectedProducts.Length, response.Length);
+        Assert.All(response, actual =>
         {
             var expected = expectedProducts.SingleOrDefault(x => x.Id == actual.Id);
 
-            Assert.NotNull(expected);
-            Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.Description, actual.Description);
+            ProductAssertionHelper.AssertEquivalent(expected, actual);
         });
     }
 
