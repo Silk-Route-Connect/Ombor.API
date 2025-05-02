@@ -63,7 +63,7 @@ jobs:
       with:
         reports: "coverage-report/coverage.opencover.xml"
         targetdir: "coverage-report/html"
-        reporttypes: 'HtmlInline;Cobertura;TextSummary'
+        reporttypes: 'Html;Cobertura;TextSummary'
 
     - name: Publish Code Coverage Report
       id: coverage_summary
