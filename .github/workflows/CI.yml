@@ -144,7 +144,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: coverage-report/html
-          publish_branch: gh-pages
+          publish_branch: github-pages
           user_name: github-actions
           user_email: github-actions@github.com
 
