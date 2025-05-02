@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Test, and Generate Coverage
+    name: Build, Test, Generate Coverage & Deploy
     runs-on: ubuntu-latest
 
     env:
@@ -128,6 +128,16 @@ jobs:
         name: coverage-opencover
         path: coverage-report/coverage.opencover.xml
         retention-days: 5
+
+    - name: Deploy Coverage to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: coverage-report/html
+        publish_branch: github-pages
+        user_name: github-actions
+        user_email: github-actions@github.com
 
   publish-coverage:
     name: Publish Coverage to GitHub Pages
