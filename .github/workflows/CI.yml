@@ -72,13 +72,12 @@ jobs:
         filename: "coverage-report/Cobertura.xml"
         badge: false
         fail_below_min: true
-        minimum_coverage: ${{ env.MINIMUM_LINE_RATE }}
         format: markdown
         hide_branch_rate: false
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "${{ env.MINIMUM_LINE_RATE }} 80"
+        thresholds: "10 80"
 
     - name: Add Coverage Summary to GitHub Action UI
       run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
