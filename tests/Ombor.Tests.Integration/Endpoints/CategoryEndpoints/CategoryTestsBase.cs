@@ -28,4 +28,12 @@ public abstract class CategoryTestsBase(TestingWebApplicationFactory factory, IT
 
         return category.Id;
     }
+
+    protected async Task<int> CreateCategoryAsync(Category category)
+    {
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        return category.Id;
+    }
 }

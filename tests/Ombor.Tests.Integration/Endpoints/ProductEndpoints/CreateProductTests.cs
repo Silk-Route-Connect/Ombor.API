@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Product;
+using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -14,7 +15,7 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task CreateAsync_ShouldReturnCreated_WhenRequestIsValid()
     {
         // Arrange
-        var request = ProductRequestFactory.GenerateValidCreateRequest(categoryId: 1);
+        var request = ProductRequestFactory.GenerateValidCreateRequest(DefaultCategoryId);
 
         // Act
         var response = await _client.PostAsync<CreateProductResponse>(GetUrl(), request);
@@ -27,13 +28,13 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task CreateAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var request = ProductRequestFactory.GenerateInvalidCreateRequest(categoryId: 1);
+        var request = ProductRequestFactory.GenerateInvalidCreateRequest(DefaultCategoryId);
 
         // Act
-        var response = await _client.PostAsync<ProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
+        var response = await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
 
         // Assert
-        // TODO: Validate the error messages in the response
         Assert.NotNull(response);
+        Assert.Contains(nameof(Product.Name), response.Errors.Keys);
     }
 }

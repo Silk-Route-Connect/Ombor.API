@@ -15,7 +15,11 @@ public class GetProductByIdTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task GetByIdAsync_ShouldReturnOk_WhenProductExists()
     {
         // Arrange
-        var productId = await CreateProductAsync(1);
+        var product = _builder.ProductBuilder
+            .WithName("Product To Fetch")
+            .WithCategoryId(DefaultCategoryId)
+            .Build();
+        var productId = await CreateProductAsync(product);
         var url = GetUrl(productId);
 
         // Act
@@ -34,6 +38,6 @@ public class GetProductByIdTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.GetAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Product>(_nonExistentEntityId);
+        response.ShouldBeNotFound<Product>(NonExistentEntityId);
     }
 }

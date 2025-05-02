@@ -112,11 +112,13 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithId(100)
             .WithName(searchTerm)
             .WithDescription()
+            .WithCategory()
             .Build();
         var matchingDescription = _builder.ProductBuilder
             .WithId(101)
             .WithName()
             .WithDescription(searchTerm)
+            .WithCategory()
             .Build();
 
         return [productMatchingName, matchingDescription];
@@ -143,12 +145,14 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithName()
             .WithDescription()
             .WithSalePrice(minPrice)
+            .WithCategory()
             .Build();
         var productMatchingMaxPrice = _builder.ProductBuilder
             .WithId(104)
             .WithName()
             .WithDescription()
             .WithSalePrice(maxPrice)
+            .WithCategory()
             .Build();
 
         return [productMatchingMinPrice, productMatchingMaxPrice];

@@ -15,7 +15,10 @@ public class GetCategoryByIdTests(TestingWebApplicationFactory factory, ITestOut
     public async Task GetByIdAsync_ShouldReturnOk_WhenCategoryExists()
     {
         // Arrange
-        var categoryId = await CreateCategoryAsync();
+        var category = _builder.CategoryBuilder
+            .WithName("Category To Be Fetched")
+            .Build();
+        var categoryId = await CreateCategoryAsync(category);
         var url = GetUrl(categoryId);
 
         // Act
@@ -34,6 +37,6 @@ public class GetCategoryByIdTests(TestingWebApplicationFactory factory, ITestOut
         var response = await _client.GetAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Category>(_nonExistentEntityId);
+        response.ShouldBeNotFound<Category>(NonExistentEntityId);
     }
 }

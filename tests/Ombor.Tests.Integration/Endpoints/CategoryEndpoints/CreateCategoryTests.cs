@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Responses.Category;
+using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -11,16 +12,15 @@ public class CreateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     : CategoryTestsBase(factory, outputHelper)
 {
     [Fact]
-    public async Task CreateAsync_ShouldReturnCreated_WhenCategoryIsValid()
+    public async Task PostAsync_ShouldReturnCreated_WhenCategoryIsValid()
     {
         // Arrange
-        var request = GetValidRequest();
+        var request = CategoryRequestFactory.GenerateValidCreateRequest();
 
         // Act
         var response = await _client.PostAsync<CreateCategoryResponse>(Routes.Category, request, HttpStatusCode.Created);
 
         // Assert
-        // TODO: Validate the error messages in the response
         await _responseValidator.Category.ValidatePostAsync(request, response);
     }
 
@@ -28,18 +28,13 @@ public class CreateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task PostAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var request = GetInvalidRequest();
+        var request = CategoryRequestFactory.GenerateInvalidCreateRequest();
 
         // Act
         var response = await _client.PostAsync<ValidationProblemDetails>(Routes.Category, request, HttpStatusCode.BadRequest);
 
         // Assert
         Assert.NotNull(response);
+        Assert.Contains(nameof(Category.Name), response.Errors.Keys);
     }
-
-    private static CreateCategoryRequest GetValidRequest() =>
-        new("Electronics", "Devices and gadgets");
-
-    private static CreateCategoryRequest GetInvalidRequest() =>
-        new(string.Empty, string.Empty); // Invalid name
 }

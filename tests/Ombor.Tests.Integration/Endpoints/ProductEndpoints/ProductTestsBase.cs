@@ -5,8 +5,11 @@ using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Endpoints.ProductEndpoints;
 
-public class ProductTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper) : EndpointTestsBase(factory, outputHelper)
+public class ProductTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
+    : EndpointTestsBase(factory, outputHelper)
 {
+    protected const int DefaultCategoryId = 5;
+
     protected override string GetUrl()
         => Routes.Product;
 
@@ -32,6 +35,14 @@ public class ProductTestsBase(TestingWebApplicationFactory factory, ITestOutputH
             Category = null!
         };
 
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return product.Id;
+    }
+
+    protected async Task<int> CreateProductAsync(Product product)
+    {
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 

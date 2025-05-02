@@ -16,7 +16,11 @@ public class UpdateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange
-        var categoryId = await CreateCategoryAsync();
+        var category = _builder.CategoryBuilder
+            .WithName("Category To Update")
+            .WithDescription("Category Description Before Update")
+            .Build();
+        var categoryId = await CreateCategoryAsync(category);
         var request = CreateValidRequest(categoryId);
         var url = GetUrl(categoryId);
 
@@ -31,13 +35,13 @@ public class UpdateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task PutAsync_ShouldReturnNotFound_WhenCategoryDoesNotExist()
     {
         // Arrange
-        var request = CreateValidRequest(_nonExistentEntityId);
+        var request = CreateValidRequest(NonExistentEntityId);
 
         // Act
         var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Category>(_nonExistentEntityId);
+        response.ShouldBeNotFound<Category>(NonExistentEntityId);
     }
 
     [Fact]
@@ -52,8 +56,8 @@ public class UpdateCategoryTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.PutAsync<ValidationProblemDetails>(url, request, HttpStatusCode.BadRequest);
 
         // Assert
-        // TODO: Validate the error messages in the response
         Assert.NotNull(response);
+        Assert.Contains(nameof(Category.Name), response.Errors.Keys);
     }
 
     private static UpdateCategoryRequest CreateValidRequest(int id) =>

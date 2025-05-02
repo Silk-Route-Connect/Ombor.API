@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using Bogus;
 using Ombor.Application.Interfaces;
+using Ombor.Tests.Common.Builders;
+using Ombor.Tests.Common.Interfaces;
 using Ombor.Tests.Integration.Helpers;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
 using Xunit.Abstractions;
@@ -8,9 +10,10 @@ using Xunit.Abstractions;
 namespace Ombor.Tests.Integration.Endpoints;
 
 [Collection(nameof(DatabaseCollection))]
-public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper) : IClassFixture<TestingWebApplicationFactory>
+public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
+    : IClassFixture<TestingWebApplicationFactory>
 {
-    protected const int _nonExistentEntityId = 99999;
+    protected const int NonExistentEntityId = 99999;
     protected const string NotFoundTitle = "Not Found";
 
     protected readonly ITestOutputHelper _outputHelper = outputHelper;
@@ -18,10 +21,11 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
     protected readonly ResponseValidator _responseValidator = factory.ResponseValidator;
     protected readonly Faker _faker = new();
     protected readonly ApiClient _client = CreateApiClient(factory, outputHelper);
+    protected readonly ITestDataBuilder _builder = new TestDataBuilder();
 
     public static readonly IEnumerable<object[]> InvalidIds = [[-10], [-1], [0]];
 
-    protected string NotFoundUrl => GetUrl(_nonExistentEntityId);
+    protected string NotFoundUrl => GetUrl(NonExistentEntityId);
 
     protected abstract string GetUrl();
 
@@ -58,7 +62,7 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         return new ApiClient(client, outputHelper);
     }
 
-    protected static class Routes
+    private protected static class Routes
     {
         public const string Category = "categories";
         public const string Product = "products";

@@ -14,7 +14,10 @@ public class DeleteCategoryTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task DeleteAsync_ShouldReturnNoContent_WhenCategoryExists()
     {
         // Arrange
-        var categoryId = await CreateCategoryAsync();
+        var categoryToDelete = _builder.CategoryBuilder
+            .WithName("Category To Delete")
+            .Build();
+        var categoryId = await CreateCategoryAsync(categoryToDelete);
         var url = GetUrl(categoryId);
 
         // Act
@@ -33,6 +36,6 @@ public class DeleteCategoryTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Category>(_nonExistentEntityId);
+        response.ShouldBeNotFound<Category>(NonExistentEntityId);
     }
 }

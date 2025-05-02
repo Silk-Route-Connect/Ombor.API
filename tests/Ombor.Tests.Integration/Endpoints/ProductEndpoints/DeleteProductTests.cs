@@ -14,7 +14,7 @@ public class DeleteProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task DeleteAsync_ShouldReturnNoContent_WhenProductExists()
     {
         // Arrange
-        var productId = await CreateProductAsync(categoryId: 1);
+        var productId = await CreateProductAsync(DefaultCategoryId);
         var url = GetUrl(productId);
 
         // Act
@@ -33,6 +33,6 @@ public class DeleteProductTests(TestingWebApplicationFactory factory, ITestOutpu
         var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
-        response.NotFound<Product>(_nonExistentEntityId);
+        response.ShouldBeNotFound<Product>(NonExistentEntityId);
     }
 }
