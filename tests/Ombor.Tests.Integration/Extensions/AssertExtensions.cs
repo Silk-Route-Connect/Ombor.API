@@ -4,7 +4,7 @@ namespace Ombor.Tests.Integration.Extensions;
 
 public static class AssertExtensions
 {
-    public static void NotFound<TEntity>(this ProblemDetails problemDetails, int id)
+    public static void ShouldBeNotFound<TEntity>(this ProblemDetails problemDetails, int id)
     {
         var typeName = typeof(TEntity).Name;
 
