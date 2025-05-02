@@ -9,12 +9,11 @@
 					<!-- never instrument generated or obsolete code -->
 					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
 
-					<!-- drop any files under the Migrations folder, add a new folder to include separated with comma -->
-					<ExcludeByFile>**/Migrations/*.cs</ExcludeByFile>
+					<!-- drop any files under given folders, add a new folder to include separated with comma -->
+					<ExcludeByFile>**/Migrations/*.cs,**/Ombor.TestDataGenerator/**/*.cs</ExcludeByFile>
 
 					<!-- exclude those two assemblies entirely -->
 					<Exclude>[Ombor.Tests.Common]*</Exclude>
-					<Exclude>[Ombor.TestDataGenerator]*</Exclude>
 
 					<!-- skip compiler‐generated auto‐props -->
 					<SkipAutoProps>true</SkipAutoProps>
