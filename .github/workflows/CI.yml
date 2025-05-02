@@ -69,7 +69,7 @@ jobs:
       id: coverage_summary
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "coverage-report/Cobertura.xml"
+        filename: "coverage-report/html/Cobertura.xml"
         badge: false
         fail_below_min: true
         format: markdown
