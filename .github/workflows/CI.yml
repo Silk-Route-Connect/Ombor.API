@@ -41,7 +41,12 @@ jobs:
 
     - name: Run tests and collect coverage
       run: |
-        dotnet test Ombor.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+        dotnet test Ombor.sln \
+         --no-build \
+         --configuration Release \
+         --verbosity normal \
+         --collect:"XPlat Code Coverage" \
+         --settings coverlet.runsettings
 
     - name: Move coverage file
       run: |
