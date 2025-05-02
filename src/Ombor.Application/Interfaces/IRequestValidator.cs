@@ -6,22 +6,41 @@
 public interface IRequestValidator
 {
     /// <summary>
-    /// Validates the specified request synchronously, throwing a <see cref="ValidationException"/> on failure.
+    /// Validates the specified <paramref name="request"/>.
     /// </summary>
-    /// <typeparam name="T">The request type.</typeparam>
-    /// <param name="request">The instance to validate.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="request"/> is null.</exception>
-    /// <exception cref="ValidationException">If validation fails.</exception>
-    void ValidateAndThrow<T>(T request);
+    /// <typeparam name="TRequest">Type of the request to validate.</typeparam>
+    /// <param name="request">The instance to validate. Cannot be <c>null</c>.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="request"/> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if no <see cref="FluentValidation.IValidator{TRequest}"/> is registered for <typeparamref name="TRequest"/>.
+    /// </exception>
+    /// <exception cref="FluentValidation.ValidationException">
+    /// Thrown if one or more validation rules fail.
+    /// </exception>
+    void ValidateAndThrow<TRequest>(TRequest request);
 
     /// <summary>
-    /// Validates the specified request asynchronously, throwing a <see cref="ValidationException"/> on failure.
+    /// Validates the specified <paramref name="request"/> asynchronously.
     /// </summary>
-    /// <typeparam name="T">The request type.</typeparam>
-    /// <param name="request">The instance to validate.</param>
-    /// <param name="cancellationToken">Token to cancel the operation.</param>
-    /// <returns>A completed <see cref="Task"/> on success.</returns>
-    /// <exception cref="ArgumentNullException">If <paramref name="request"/> is null.</exception>
-    /// <exception cref="ValidationException">If validation fails.</exception>
-    Task ValidateAndThrowAsync<T>(T request, CancellationToken cancellationToken);
+    /// <typeparam name="TRequest">Type of the request to validate.</typeparam>
+    /// <param name="request">The instance to validate. Cannot be <c>null</c>.</param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken"/> to observe while waiting for the validation to complete.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> that completes if validation succeeds, or faults with
+    /// <see cref="FluentValidation.ValidationException"/> if validation fails.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown if <paramref name="request"/> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if no <see cref="FluentValidation.IValidator{TRequest}"/> is registered for <typeparamref name="TRequest"/>.
+    /// </exception>
+    /// <exception cref="FluentValidation.ValidationException">
+    /// Thrown if one or more validation rules fail.
+    /// </exception>
+    Task ValidateAndThrowAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default);
 }

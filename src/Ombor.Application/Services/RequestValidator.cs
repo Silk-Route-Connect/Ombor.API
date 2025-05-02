@@ -6,25 +6,29 @@ namespace Ombor.Application.Services;
 
 internal sealed class RequestValidator(IServiceProvider serviceProvider) : IRequestValidator
 {
-    public void ValidateAndThrow<T>(T request)
+    public void ValidateAndThrow<TRequest>(TRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var validator = GetValidator<T>();
+        var validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
+        var result = validator.Validate(request);
 
-        validator.ValidateAndThrow(request);
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result.Errors);
+        }
     }
 
-    public Task ValidateAndThrowAsync<T>(T request, CancellationToken cancellationToken)
+    public async Task ValidateAndThrowAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var validator = GetValidator<T>();
+        var validator = serviceProvider.GetRequiredService<IValidator<TRequest>>();
+        var result = await validator.ValidateAsync(request, cancellationToken);
 
-        return validator.ValidateAndThrowAsync(request, cancellationToken);
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result.Errors);
+        }
     }
-
-    private IValidator<T> GetValidator<T>() =>
-        serviceProvider.GetRequiredService<IValidator<T>>()
-        ?? throw new InvalidOperationException($"Validator for type {typeof(T).Name} not found.");
 }

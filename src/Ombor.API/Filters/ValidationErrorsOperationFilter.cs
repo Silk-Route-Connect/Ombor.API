@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -6,7 +7,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Ombor.API.Filters;
 
-public class ValidationErrorsOperationFilter(IServiceScopeFactory scopeFactory) : IOperationFilter
+[ExcludeFromCodeCoverage]
+internal sealed class ValidationErrorsOperationFilter(IServiceScopeFactory scopeFactory) : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

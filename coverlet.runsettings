@@ -1,15 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
 	<DataCollectionRunSettings>
 		<DataCollectors>
 			<DataCollector friendlyName="XPlat code coverage">
 				<Configuration>
 					<Format>cobertura</Format>
+
+					<!-- never instrument generated or obsolete code -->
 					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
-					<ExcludeByFile>**/Migrations/*.cs,</ExcludeByFile>
-					<Exclude>[Ombor.Tests.Common*]*</Exclude>
-					<Exclude>[Ombor.TestDataGenerator*]*</Exclude>
-					<!-- Globbing filter -->
+
+					<!-- drop any files under the Migrations folder, add a new folder to include separated with comma -->
+					<ExcludeByFile>**/Migrations/*.cs</ExcludeByFile>
+
+					<!-- exclude those two assemblies entirely -->
+					<Exclude>[Ombor.Tests.Common]*</Exclude>
+					<Exclude>[Ombor.TestDataGenerator]*</Exclude>
+
+					<!-- skip compiler‐generated auto‐props -->
 					<SkipAutoProps>true</SkipAutoProps>
 				</Configuration>
 			</DataCollector>
