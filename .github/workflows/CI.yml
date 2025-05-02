@@ -108,25 +108,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
     if: always()
-
+    
     steps:
-      - name: Download HTML Report Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-html
-          path: coverage-report/html-down
+    - name: Download HTML Report Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-html
+        path: coverage-report/html-down
 
-      - name: Move into publish folder
-        run: mv coverage-report/html-down/* coverage-report/html
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: coverage-report/html
-          publish_branch: github-pages
-          user_name: github-actions
-          user_email: github-actions@github.com
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: coverage-report/html-down
+        publish_branch: github-pages
+        user_name: github-actions
+        user_email: github-actions@github.com
 
   sonarcloud-scan:
     name: SonarCloud Analysis
