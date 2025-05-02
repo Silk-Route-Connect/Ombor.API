@@ -122,10 +122,18 @@ public interface IProductBuilder
     IProductBuilder WithCategory(Category? category = null);
 
     /// <summary>
+    /// Specifies the <see cref="Product.CategoryId"/>.
+    /// If <paramref name="categoryId"/> is <c>null</c>, a random integer will be assigned./>
+    /// </summary>
+    /// <param name="categoryId">The ID of the category, or <c>null</c> to generate a random one.</param>
+    /// <returns>The same <see cref="IProductBuilder"/> instance for chaining.</returns>
+    IProductBuilder WithCategoryId(int? categoryId = null);
+
+    /// <summary>
     /// Constructs a <see cref="Product"/> using only explicitly set values.
     /// Any properties not set will use minimal defaults:
     /// <list type="bullet">
-    ///   <item><term><c>Id</c></term><description> random integer if not set</description></item>
+    ///   <item><term><c>Id</c></term><description> CLR default if not set</description></item>
     ///   <item><term><c>Name</c></term><description> random product name if not set</description></item>
     ///   <item><term><c>SKU</c></term><description> random GUID string if not set</description></item>
     ///   <item><term><c>Description</c></term><description> <c>null</c> if not set</description></item>

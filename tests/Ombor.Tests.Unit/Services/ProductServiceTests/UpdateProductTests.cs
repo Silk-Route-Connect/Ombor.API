@@ -44,12 +44,16 @@ public sealed class UpdateProductTests : ProductTestsBase
     public async Task UpdateAsync_ShouldReturnUpdatedProduct_WhenRequestIsValid()
     {
         // Arrange
+        var category = _builder.CategoryBuilder
+            .BuildAndPopulate();
         var productToUpdate = _builder.ProductBuilder
             .WithId(ProductId)
+            .WithCategory(category)
             .BuildAndPopulate();
-        var request = ProductRequestFactory.GenerateValidUpdateRequest(productToUpdate.Id);
+        var request = ProductRequestFactory.GenerateValidUpdateRequest(productToUpdate.Id, category.Id);
 
         SetupProducts([.. _defaultProducts, productToUpdate]);
+        SetupCategories([category]);
 
         // Act
         var response = await _service.UpdateAsync(request);

@@ -11,7 +11,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
     : ProductTestsBase(factory, outputHelper)
 {
     private const string _matchingSearchTerm = "Test Product";
-    private const int _matchingCategoryId = 1;
+    private const int _matchingCategoryId = 4;
     private const decimal _minPrice = 10.00m;
     private const decimal _maxPrice = 100.00m;
 

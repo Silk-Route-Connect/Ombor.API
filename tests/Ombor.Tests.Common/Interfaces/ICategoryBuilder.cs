@@ -48,10 +48,10 @@ public interface ICategoryBuilder
     /// Constructs a <see cref="Category"/> using only the explicitly set values.
     /// Any properties not set will use defaults:
     /// <list type="bullet">
-    ///   <item><term><c>Id</c></term><description>random if not set</description></item>
-    ///   <item><term><c>Name</c></term><description>random if not set</description></item>
-    ///   <item><term><c>Description</c></term><description>null if not set</description></item>
-    ///   <item><term><c>Products</c></term><description>empty if not set</description></item>
+    ///   <item><term><c>Id</c></term><description> CLR default if not set</description></item>
+    ///   <item><term><c>Name</c></term><description> random if not set</description></item>
+    ///   <item><term><c>Description</c></term><description> null if not set</description></item>
+    ///   <item><term><c>Products</c></term><description> empty if not set</description></item>
     /// </list>
     /// </summary>
     /// <returns>A <see cref="Category"/> instance with required and explicitly set properties.</returns>
@@ -60,10 +60,10 @@ public interface ICategoryBuilder
     /// <summary>
     /// Constructs a <see cref="Category"/> and populates <em>all</em> unspecified properties with random data:
     /// <list type="bullet">
-    ///   <item><term><c>Id</c></term><description>random if not set</description></item>
-    ///   <item><term><c>Name</c></term><description>random if not set</description></item>
-    ///   <item><term><c>Description</c></term><description>random if not set</description></item>
-    ///   <item><term><c>Products</c></term><description>randomly generated list if not set</description></item>
+    ///   <item><term><c>Id</c></term><description> random if not set</description></item>
+    ///   <item><term><c>Name</c></term><description> random if not set</description></item>
+    ///   <item><term><c>Description</c></term><description> random if not set</description></item>
+    ///   <item><term><c>Products</c></term><description> randomly generated list if not set</description></item>
     /// </list>
     /// Explicit overrides (via <c>With…</c> calls) are always honored.
     /// </summary>

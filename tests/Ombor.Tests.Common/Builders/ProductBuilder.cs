@@ -21,6 +21,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
     private DateOnly? _expireDate;
+    private int? _categoryId;
     private Category? _category;
 
     public IProductBuilder WithId(int? id = null)
@@ -95,7 +96,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     public IProductBuilder WithMeasurement(UnitOfMeasurement? measurement = null)
     {
-        _measurement = measurement ?? _faker.PickRandom<UnitOfMeasurement>();
+        _measurement = measurement ?? _faker.Random.Enum<UnitOfMeasurement>();
 
         return this;
     }
@@ -109,7 +110,16 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     public IProductBuilder WithCategory(Category? category = null)
     {
-        _category = category ?? GetRandomCategory();
+        category ??= GetRandomCategory();
+        _category = category;
+        _categoryId = category.Id;
+
+        return this;
+    }
+
+    public IProductBuilder WithCategoryId(int? categoryId = null)
+    {
+        _categoryId = categoryId ?? _faker.Random.Number();
 
         return this;
     }
@@ -117,22 +127,23 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     public Product Build()
     {
         var category = _category ?? GetRandomCategory();
+        var categoryId = _categoryId ?? category.Id;
 
         return new()
         {
-            Id = _id ?? _faker.Random.Number(),
+            Id = _id ?? default,
             Name = _name ?? _faker.Commerce.ProductName(),
             SKU = _sku ?? _faker.Random.Guid().ToString(),
-            Description = _description,
-            Barcode = _barcode,
-            SalePrice = _salePrice ?? 0,
-            SupplyPrice = _supplyPrice ?? 0,
-            RetailPrice = _retailPrice ?? 0,
-            QuantityInStock = _quantityInStock ?? 0,
-            LowStockThreshold = _lowStockThreshold ?? 0,
+            Description = _description ?? default!,
+            Barcode = _barcode ?? default,
+            SalePrice = _salePrice ?? default,
+            SupplyPrice = _supplyPrice ?? default,
+            RetailPrice = _retailPrice ?? default,
+            QuantityInStock = _quantityInStock ?? default,
+            LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
-            ExpireDate = _expireDate,
-            CategoryId = category.Id,
+            ExpireDate = _expireDate ?? default,
+            CategoryId = categoryId,
             Category = category
         };
     }
@@ -140,6 +151,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     public Product BuildAndPopulate()
     {
         var category = _category ?? GetRandomCategory();
+        var categoryId = _categoryId ?? category.Id;
 
         return new()
         {
@@ -155,7 +167,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
             ExpireDate = _expireDate ?? _faker.Date.FutureDateOnly(),
-            CategoryId = category.Id,
+            CategoryId = categoryId,
             Category = category
         };
     }

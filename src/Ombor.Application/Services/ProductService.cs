@@ -69,6 +69,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
         var entity = await GetOrThrowAsync(request.Id);
         entity.ApplyUpdate(request);
         await context.SaveChangesAsync();
+        entity.Category = await context.Categories.FirstAsync(x => x.Id == request.CategoryId);
 
         return entity.ToUpdateResponse();
     }

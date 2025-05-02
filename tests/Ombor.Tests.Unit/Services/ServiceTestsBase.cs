@@ -1,5 +1,8 @@
-﻿using Moq;
+﻿using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using Moq;
 using Ombor.Application.Interfaces;
+using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Builders;
 using Ombor.Tests.Common.Interfaces;
 
@@ -24,5 +27,25 @@ public abstract class ServiceTestsBase : UnitTestsBase
     {
         _mockValidator.VerifyNoOtherCalls();
         _mockContext.VerifyNoOtherCalls();
+    }
+
+    protected Mock<DbSet<Product>> SetupProducts(IEnumerable<Product> products)
+    {
+        var mockSet = products.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Products).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<Category>> SetupCategories(IEnumerable<Category> categories)
+    {
+        var shuffledCategories = categories.ToArray();
+        Random.Shared.Shuffle(shuffledCategories);
+
+        var mockDbSet = shuffledCategories.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Categories)
+            .Returns(mockDbSet.Object);
+
+        return mockDbSet;
     }
 }

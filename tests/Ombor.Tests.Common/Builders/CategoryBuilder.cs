@@ -10,7 +10,7 @@ internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICatego
     private int? _id;
     private string? _name;
     private string? _description;
-    private Product[]? _products;
+    private List<Product>? _products;
 
     public ICategoryBuilder WithId(int? id = null)
     {
@@ -47,10 +47,10 @@ internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICatego
     public Category Build() =>
         new()
         {
-            Id = _id ?? _faker.Random.Number(),
+            Id = _id ?? default,
             Name = _name ?? _faker.Commerce.Categories(1)[0],
             Description = _description,
-            Products = _products ?? []
+            Products = _products ?? [],
         };
 
     public Category BuildAndPopulate()

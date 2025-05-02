@@ -6,7 +6,7 @@ namespace Ombor.Tests.Common.Factories;
 public static class ProductRequestFactory
 {
     private const int DefaultProductId = 10;
-    private const int DefaultCategoryId = 10;
+    private const int DefaultCategoryId = 5;
 
     public static CreateProductRequest GenerateValidCreateRequest(int? categoryId = null)
         => new(
@@ -42,11 +42,11 @@ public static class ProductRequestFactory
         => new(
             Id: productId ?? DefaultProductId,
             CategoryId: categoryId ?? DefaultCategoryId,
-            Name: "Product Name Before Update",
-            SKU: "Product SKU Before Update",
+            Name: "Updated Name",
+            SKU: $"SKU - {Guid.NewGuid()}",
             Measurement: nameof(UnitOfMeasurement.Kilogram),
-            Description: "Product Description Before Update",
-            Barcode: "Product Barcode Before Update",
+            Description: "Updated Description",
+            Barcode: "Updated Barcode",
             SalePrice: 100,
             SupplyPrice: 90,
             RetailPrice: 95,

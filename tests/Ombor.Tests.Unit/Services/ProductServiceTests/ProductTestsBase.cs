@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MockQueryable.Moq;
-using Moq;
-using Ombor.Application.Services;
+﻿using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Tests.Unit.Services.ProductServiceTests;
@@ -18,14 +15,6 @@ public abstract class ProductTestsBase : ServiceTestsBase
         SetupProducts(_defaultProducts);
 
         _service = new ProductService(_mockContext.Object, _mockValidator.Object);
-    }
-
-    protected Mock<DbSet<Product>> SetupProducts(IEnumerable<Product> products)
-    {
-        var mockSet = products.AsQueryable().BuildMockDbSet();
-        _mockContext.Setup(mock => mock.Products).Returns(mockSet.Object);
-
-        return mockSet;
     }
 
     protected Product[] CreateRandomProducts(int count = 5)

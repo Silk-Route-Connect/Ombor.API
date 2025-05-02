@@ -56,7 +56,7 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Id, response.Id);
         Assert.Equal(request.Name, response.Name);
         Assert.Equal(request.SKU, response.SKU);
-        Assert.Equal(request.Measurement.ToString(), response.Measurement);
+        Assert.Equal(request.Measurement, response.Measurement);
         Assert.Equal(request.Description, response.Description);
         Assert.Equal(request.Barcode, response.Barcode);
         Assert.Equal(request.SalePrice, response.SalePrice);

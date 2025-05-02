@@ -17,11 +17,7 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange
-        var product = _builder.ProductBuilder
-            .WithName("Product To Be Updated")
-            .WithCategoryId(DefaultCategoryId)
-            .Build();
-        var productId = await CreateProductAsync(product);
+        var productId = await CreateProductAsync();
         var request = ProductRequestFactory.GenerateValidUpdateRequest(productId, DefaultCategoryId);
         var url = GetUrl(productId);
 
@@ -51,11 +47,7 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task PutAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var product = _builder.ProductBuilder
-            .WithName("Product To Be Updated")
-            .WithCategoryId(DefaultCategoryId)
-            .Build();
-        var productId = await CreateProductAsync(product);
+        var productId = await CreateProductAsync();
         var request = ProductRequestFactory.GenerateInvalidUpdateRequest(productId);
         var url = GetUrl(productId);
 
@@ -66,5 +58,18 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         // Assert
         Assert.NotNull(response);
         Assert.Contains(nameof(Product.Name), response.Errors.Keys);
+    }
+
+    private Task<int> CreateProductAsync()
+    {
+        var category = _builder.CategoryBuilder
+            .WithName("Category for updating product")
+            .Build();
+        var product = _builder.ProductBuilder
+            .WithName("Product To Be Updated")
+            .WithCategory(category)
+            .Build();
+
+        return CreateProductAsync(product);
     }
 }

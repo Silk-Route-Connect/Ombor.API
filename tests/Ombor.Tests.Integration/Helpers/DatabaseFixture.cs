@@ -54,7 +54,7 @@ public class DatabaseFixture : IAsyncLifetime
 
             await _context.Database.EnsureDeletedAsync();
             await _context.Database.MigrateAsync();
-            await _context.Database.OpenConnectionAsync();
+            // await _context.Database.OpenConnectionAsync();
         }
         catch (Exception ex)
         {

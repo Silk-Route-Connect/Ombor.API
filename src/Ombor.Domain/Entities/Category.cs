@@ -24,6 +24,6 @@ public class Category : EntityBase
 
     public Category()
     {
-        Products = [];
+        Products = new HashSet<Product>();
     }
 }
