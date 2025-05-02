@@ -62,7 +62,7 @@ jobs:
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
       with:
         reports: "coverage-report/coverage.opencover.xml"
-        targetdir: "coverage-report"
+        targetdir: "coverage-report/html"
         reporttypes: 'HtmlInline;Cobertura;TextSummary'
 
     - name: Publish Code Coverage Report
@@ -112,6 +112,9 @@ jobs:
 
         cat code-coverage-results.md >> decorated-coverage-comment.md
 
+        echo "" >> decorated-coverage-comment.md
+        echo "**[View full coverage report](https://silk-route-connect.github.io/ombor.api/)**" >> decorated-coverage-comment.md
+
     - name: Post Code Coverage Report as PR Comment
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
@@ -126,6 +129,25 @@ jobs:
         name: coverage-opencover
         path: coverage-report/coverage.opencover.xml
         retention-days: 5
+
+  publish-coverage:
+    name: Publish Coverage to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Deploy coverage-report/html → gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: coverage-report/html
+          publish_branch: gh-pages
+          user_name: github-actions
+          user_email: github-actions@github.com
 
   sonarcloud-scan:
     name: SonarCloud Analysis
