@@ -46,16 +46,16 @@ jobs:
 
       - name: Move coverage file
         run: |
-          mkdir -p coverage-report
-          file=$(find . -type f -name 'coverage.cobertura.xml' | head -n1)
-          cp "$file" coverage-report/coverage.opencover.xml
+            mkdir -p coverage-report
+            find . -type f -name 'coverage.cobertura.xml' \
+              -exec bash -c 'cp "$0" coverage-report/"$(basename $(dirname $(dirname "$0")))-coverage.xml"' {} \;
 
-      - name: Generate HTML & Cobertura
+      - name: Generate Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
-          reports: coverage-report/coverage.opencover.xml
-          targetdir: coverage-report/html
-          reporttypes: 'Html;Cobertura;TextSummary'
+         reports: "coverage-report/*-coverage.xml"
+         targetdir: "coverage-report/html"
+         reporttypes: 'Html;Cobertura;TextSummary'
 
       - name: Upload HTML Report Artifact
         uses: actions/upload-artifact@v4
