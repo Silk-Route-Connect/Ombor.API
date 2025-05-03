@@ -57,7 +57,7 @@ jobs:
       - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
-          reports: "coverage-report/coverage.opencover.xml"
+          reports: "coverage-report/*-coverage.xml"
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
 
