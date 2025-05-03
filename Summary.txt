@@ -1,43 +1,43 @@
 Summary
-  Generated on: 05/02/2025 - 20:44:58
-  Coverage date: 05/02/2025 - 20:44:36
+  Generated on: 05/03/2025 - 05:40:36
+  Coverage date: 05/03/2025 - 05:40:35
   Parser: Cobertura
   Assemblies: 6
   Classes: 24
   Files: 23
-  Line coverage: 39.5%
-  Covered lines: 171
-  Uncovered lines: 261
+  Line coverage: 99.3%
+  Covered lines: 429
+  Uncovered lines: 3
   Coverable lines: 432
   Total lines: 1152
-  Branch coverage: 87.5% (21 of 24)
-  Covered branches: 21
+  Branch coverage: 75% (18 of 24)
+  Covered branches: 18
   Total branches: 24
-  Method coverage: 50% (19 of 38)
-  Covered methods: 19
+  Method coverage: 100% (38 of 38)
+  Covered methods: 38
   Total methods: 38
-  Tag: 85_14803068615
+  Tag: 86_14807981424
 
-Ombor.API                                                                  6.2%
+Ombor.API                                                                100.0%
   Ombor.API.Controllers.CategoriesController                             100.0%
   Ombor.API.Controllers.ProductsController                               100.0%
-  Ombor.API.Extensions.DependencyInjection                                 0.0%
+  Ombor.API.Extensions.DependencyInjection                               100.0%
 
-Ombor.Application                                                         51.5%
-  Ombor.Application.Extensions.DependencyInjection                         0.0%
+Ombor.Application                                                         99.0%
+  Ombor.Application.Extensions.DependencyInjection                       100.0%
   Ombor.Application.Mappings.CategoryMappings                            100.0%
-  Ombor.Application.Mappings.ProductMappings                             100.0%
+  Ombor.Application.Mappings.ProductMappings                              96.6%
   Ombor.Application.Services.CategoryService                             100.0%
   Ombor.Application.Services.ProductService                              100.0%
   Ombor.Application.Services.RequestValidator                            100.0%
-  Ombor.Application.Validators.Category.CreateCategoryRequestValidator     0.0%
-  Ombor.Application.Validators.Category.DeleteCategoryRequestValidator     0.0%
-  Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator    0.0%
-  Ombor.Application.Validators.Category.UpdateCategoryRequestValidator     0.0%
-  Ombor.Application.Validators.Product.CreateProductRequestValidator       0.0%
-  Ombor.Application.Validators.Product.DeleteProductRequestValidator       0.0%
-  Ombor.Application.Validators.Product.GetProductByIdRequestValidator      0.0%
-  Ombor.Application.Validators.Product.UpdateProductRequestValidator       0.0%
+  Ombor.Application.Validators.Category.CreateCategoryRequestValidator   100.0%
+  Ombor.Application.Validators.Category.DeleteCategoryRequestValidator   100.0%
+  Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator  100.0%
+  Ombor.Application.Validators.Category.UpdateCategoryRequestValidator   100.0%
+  Ombor.Application.Validators.Product.CreateProductRequestValidator     100.0%
+  Ombor.Application.Validators.Product.DeleteProductRequestValidator     100.0%
+  Ombor.Application.Validators.Product.GetProductByIdRequestValidator    100.0%
+  Ombor.Application.Validators.Product.UpdateProductRequestValidator     100.0%
 
 Ombor.Contracts                                                                
 
@@ -45,11 +45,11 @@ Ombor.Domain                                                             100.0%
   Ombor.Domain.Exceptions.EntityNotFoundException                        100.0%
   Ombor.Domain.Exceptions.EntityNotFoundException<T>                     100.0%
 
-Ombor.Infrastructure                                                       0.0%
-  Ombor.Infrastructure.Extensions.DependencyInjection                      0.0%
-  Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                0.0%
-  Ombor.Infrastructure.Persistence.ApplicationDbContext                    0.0%
-  Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration    0.0%
-  Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration     0.0%
+Ombor.Infrastructure                                                     100.0%
+  Ombor.Infrastructure.Extensions.DependencyInjection                    100.0%
+  Ombor.Infrastructure.Extensions.PropertyBuilderExtensions              100.0%
+  Ombor.Infrastructure.Persistence.ApplicationDbContext                  100.0%
+  Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration  100.0%
+  Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration   100.0%
 
 Ombor.TestDataGenerator                                                        
