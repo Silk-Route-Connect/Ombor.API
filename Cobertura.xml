@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9930555555555556" branch-rate="0.75" lines-covered="429" lines-valid="432" branches-covered="18" branches-valid="24" complexity="54" version="0" timestamp="1746251491">
-  <sources>
-    <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
-  </sources>
+<coverage line-rate="0.9930555555555556" branch-rate="0.75" lines-covered="429" lines-valid="432" branches-covered="18" branches-valid="24" complexity="53" version="0" timestamp="1746253007">
+  <sources />
   <packages>
     <package name="Ombor.API" line-rate="1" branch-rate="1" complexity="5">
       <classes>
@@ -111,11 +109,11 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.9905660377358491" branch-rate="0.75" complexity="41">
+    <package name="Ombor.Application" line-rate="0.9905660377358491" branch-rate="0.75" complexity="40">
       <classes>
-        <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="2">
+        <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
-            <method name="get_CurrentAssembly" signature="()" line-rate="1" branch-rate="1" complexity="1">
+            <method name="CurrentAssembly" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
                 <line number="15" hits="10" branch="false" />
               </lines>
