@@ -14,10 +14,8 @@ jobs:
   build-and-test:
     name: Build, Test & Generate Coverage
     runs-on: ubuntu-latest
-
     env:
       MINIMUM_LINE_RATE: 10
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -47,17 +45,18 @@ jobs:
       - name: Gather all coverage files
         run: |
           mkdir -p coverage-report
-          # Copy every Cobertura
+          # Copy each test’s Cobertura and OpenCover outputs,
+          # naming them after their project folder so nothing is overwritten:
           find . -type f -name 'coverage.cobertura.xml' \
-            -exec cp {} coverage-report/coverage.cobertura.xml \;
-          # Copy every OpenCover
+            -exec bash -c 'proj=$(basename $(dirname $(dirname "$0"))); cp "$0" coverage-report/"$proj".cobertura.xml' {} \;
           find . -type f -name 'coverage.opencover.xml' \
-            -exec cp {} coverage-report/coverage.opencover.xml \;
+            -exec bash -c 'proj=$(basename $(dirname $(dirname "$0"))); cp "$0" coverage-report/"$proj".opencover.xml' {} \;
 
       - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
-          reports: "coverage-report/*-coverage.xml"
+          # Merge *all* the opencover files so branch coverage isn’t lost
+          reports: "coverage-report/*.opencover.xml"
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
 
@@ -111,8 +110,8 @@ jobs:
     name: Publish Coverage to GitHub Pages
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: always()
-
+    # Only deploy if build-and-test succeeded
+    if: ${{ needs.build-and-test.result == 'success' }}
     steps:
       - name: Download HTML Report Artifact
         uses: actions/download-artifact@v4
@@ -133,7 +132,8 @@ jobs:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
     needs: build-and-test
-
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -161,15 +161,13 @@ jobs:
           path: coverage-report
 
       - name: Begin SonarCloud Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin \
             /k:"Silk-Route-Connect_Ombor.API" \
             /o:"silk-route-connect" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.token="${{ env.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="coverage-report/*-coverage.xml"
+            /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml"
 
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
@@ -178,9 +176,7 @@ jobs:
         run: dotnet build Ombor.sln --no-restore --configuration Release
 
       - name: End SonarCloud Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        run: dotnet sonarscanner end /d:sonar.token="${{ env.SONAR_TOKEN }}"
 
       - name: Check SonarCloud Quality Gate Result
         if: github.event_name == 'pull_request'
@@ -195,7 +191,7 @@ jobs:
               ref: context.payload.pull_request.head.sha
             });
             const gate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
-            return { status: gate ? gate.conclusion : 'unknown' };
+            return { status: gate ? gate.conclusion : 'unknown'; }
 
       - name: Minimize Old SonarCloud Comments
         if: github.event_name == 'pull_request'
