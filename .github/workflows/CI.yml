@@ -50,7 +50,7 @@ jobs:
           find . -type f -name 'coverage.cobertura.xml' \
             -exec bash -c 'cp "$0" coverage-report/"$(basename $(dirname $(dirname "$0")))-coverage.xml"' {} \;
 
-      - name: Generate Coverage Report
+      - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
           reports: "coverage-report/*-coverage.xml"
@@ -62,6 +62,12 @@ jobs:
         with:
           name: coverage-html
           path: coverage-report/html
+
+      - name: Upload Coverage XML Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage-report
 
       - name: Publish Code Coverage Summary
         id: coverage_summary
@@ -96,12 +102,6 @@ jobs:
           path: decorated-coverage-comment.md
           header: "Code Coverage Report"
           recreate: true
-
-      - name: Upload Coverage XML Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-opencover
-          path: coverage-report/coverage.opencover.xml
 
   publish-coverage:
     name: Publish Coverage to GitHub Pages
@@ -153,7 +153,7 @@ jobs:
       - name: Download Coverage XML Artifact
         uses: actions/download-artifact@v4
         with:
-          name: coverage-opencover
+          name: coverage-xml
           path: coverage-report
 
       - name: Begin SonarCloud Analysis
@@ -165,7 +165,7 @@ jobs:
             /o:"silk-route-connect" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths=coverage-report/coverage.opencover.xml
+            /d:sonar.cs.opencover.reportsPaths="coverage-report/*-coverage.xml"
 
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
