@@ -4,7 +4,7 @@
 		<DataCollectors>
 			<DataCollector friendlyName="XPlat code coverage">
 				<Configuration>
-					<Format>cobertura</Format>
+					<Format>opencover,cobertura</Format>
 
 					<!-- never instrument generated or obsolete code -->
 					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>

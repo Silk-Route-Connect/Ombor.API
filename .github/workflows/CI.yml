@@ -47,13 +47,17 @@ jobs:
       - name: Gather all coverage files
         run: |
           mkdir -p coverage-report
+          # Copy every Cobertura
           find . -type f -name 'coverage.cobertura.xml' \
-            -exec bash -c 'cp "$0" coverage-report/"$(basename $(dirname $(dirname "$0")))-coverage.xml"' {} \;
+            -exec cp {} coverage-report/coverage.cobertura.xml \;
+          # Copy every OpenCover
+          find . -type f -name 'coverage.opencover.xml' \
+            -exec cp {} coverage-report/coverage.opencover.xml \;
 
       - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
-          reports: "coverage-report/*-coverage.xml"
+          reports: "coverage-report/coverage.opencover.xml"
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
 
