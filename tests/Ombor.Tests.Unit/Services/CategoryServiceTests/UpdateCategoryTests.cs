@@ -47,9 +47,7 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
     public async Task UpdateAsync_ShouldReturnUpdatedCategory_WhenRequestIsValid()
     {
         // Arrange
-        var categoryToUpdate = _builder.CategoryBuilder
-            .WithId(CategoryId)
-            .BuildAndPopulate();
+        var categoryToUpdate = CreateCategory();
         var request = CategoryRequestFactory.GenerateValidUpdateRequest(categoryToUpdate.Id);
 
         SetupCategories([.. _defaultCategories, categoryToUpdate]);

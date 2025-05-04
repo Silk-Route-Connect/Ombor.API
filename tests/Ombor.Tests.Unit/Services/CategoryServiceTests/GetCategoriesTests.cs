@@ -41,10 +41,10 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         SetupCategories([]);
 
         // Act
-        var actual = await _service.GetAsync(request);
+        var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Empty(actual);
+        Assert.Empty(response);
 
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 

@@ -8,13 +8,11 @@ namespace Ombor.Tests.Unit.Services.ProductServiceTests;
 
 public sealed class DeleteProductTests : ProductTestsBase
 {
-    private const int CategoryId = 100;
-
     [Fact]
     public async Task DeleteAsync_ShouldThrowValidationException_WhenValidatorFails()
     {
         // Arrange
-        var request = new DeleteProductRequest(CategoryId);
+        var request = new DeleteProductRequest(ProductId);
 
         _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException("Validation errors."));
@@ -26,6 +24,8 @@ public sealed class DeleteProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Remove(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -41,22 +41,23 @@ public sealed class DeleteProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Remove(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _mockContext.Verify(mock => mock.Products, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task DeleteAsync_ShouldRemoveProduct_WhenProductExists()
     {
         // Arrange
-        var categoryToDelete = _builder.ProductBuilder
-            .WithId(CategoryId)
-            .BuildAndPopulate();
-        var request = new DeleteProductRequest(CategoryId);
+        var (productToDelete, _) = CreateProductWithCategory();
+        var request = new DeleteProductRequest(productToDelete.Id);
+
+        var mockSet = SetupProducts([.. _defaultProducts, productToDelete]);
+        mockSet.Setup(mock => mock.Remove(It.Is<Product>(e => e == productToDelete)));
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
-
-        var mockSet = SetupProducts([.. _defaultProducts, categoryToDelete]);
-        mockSet.Setup(mock => mock.Remove(It.Is<Product>(e => e == categoryToDelete)));
 
         // Act
         await _service.DeleteAsync(request);
@@ -65,5 +66,8 @@ public sealed class DeleteProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         mockSet.Verify(mock => mock.Remove(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Products, Times.Exactly(2));
+
+        VerifyNoOtherCalls();
     }
 }

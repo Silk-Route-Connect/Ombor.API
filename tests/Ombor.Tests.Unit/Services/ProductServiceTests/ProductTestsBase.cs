@@ -5,7 +5,7 @@ namespace Ombor.Tests.Unit.Services.ProductServiceTests;
 
 public abstract class ProductTestsBase : ServiceTestsBase
 {
-    protected const int ProductId = 100; // ID to be used in GetById, Update, Delete Tests
+    protected const int ProductId = 1_000; // ID to be used in GetById, Update, Delete Tests
     private protected readonly ProductService _service;
     protected readonly Product[] _defaultProducts;
 
@@ -37,5 +37,18 @@ public abstract class ProductTestsBase : ServiceTestsBase
                 .WithCategory(_faker.PickRandom(categories))
                 .BuildAndPopulate())
             .ToArray();
+    }
+
+    protected (Product Product, Category Category) CreateProductWithCategory()
+    {
+        var category = _builder.CategoryBuilder
+            .BuildAndPopulate();
+
+        var product = _builder.ProductBuilder
+            .WithId(ProductId)
+            .WithCategory(category)
+            .BuildAndPopulate();
+
+        return (product, category);
     }
 }

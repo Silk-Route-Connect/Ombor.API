@@ -31,7 +31,7 @@ public sealed class UpdateProductTests : ProductTestsBase
     public async Task UpdateAsync_ShouldThrowEntityNotFoundException_WhenProductDoesNotExist()
     {
         // Arrange
-        var request = ProductRequestFactory.GenerateValidUpdateRequest(ProductId);
+        var request = ProductRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
@@ -45,12 +45,7 @@ public sealed class UpdateProductTests : ProductTestsBase
     public async Task UpdateAsync_ShouldReturnUpdatedProduct_WhenRequestIsValid()
     {
         // Arrange
-        var category = _builder.CategoryBuilder
-            .BuildAndPopulate();
-        var productToUpdate = _builder.ProductBuilder
-            .WithId(ProductId)
-            .WithCategory(category)
-            .BuildAndPopulate();
+        var (productToUpdate, category) = CreateProductWithCategory();
         var request = ProductRequestFactory.GenerateValidUpdateRequest(productToUpdate.Id, category.Id);
 
         SetupProducts([.. _defaultProducts, productToUpdate]);
@@ -72,12 +67,7 @@ public sealed class UpdateProductTests : ProductTestsBase
     public async Task UpdateAsync_ShouldSetMeasurementToNone_WhenRequestMeasurementIsInvalid(string measurement)
     {
         // Arrange
-        var category = _builder.CategoryBuilder
-            .BuildAndPopulate();
-        var productToUpdate = _builder.ProductBuilder
-            .WithId(ProductId)
-            .WithCategory(category)
-            .BuildAndPopulate();
+        var (productToUpdate, category) = CreateProductWithCategory();
         var request = ProductRequestFactory.GenerateValidUpdateRequest(productToUpdate.Id, category.Id);
         request = request with { Measurement = measurement };
 

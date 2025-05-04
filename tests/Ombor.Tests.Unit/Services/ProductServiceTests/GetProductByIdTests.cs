@@ -23,6 +23,8 @@ public sealed class GetProductByIdTests : ProductTestsBase
             () => _service.GetByIdAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -36,25 +38,29 @@ public sealed class GetProductByIdTests : ProductTestsBase
             () => _service.GetByIdAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Products, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task GetByIdAsync_ShouldReturnDto_WhenProductIsFound()
     {
         // Arrange
-        var expected = _builder.ProductBuilder
-            .WithId(ProductId)
-            .BuildAndPopulate();
+        var (expected, _) = CreateProductWithCategory();
         var request = new GetProductByIdRequest(expected.Id);
 
         SetupProducts([.. _defaultProducts, expected]);
 
         // Act
-        var actual = await _service.GetByIdAsync(request);
+        var response = await _service.GetByIdAsync(request);
 
         // Assert
-        ProductAssertionHelper.AssertEquivalent(expected, actual);
+        ProductAssertionHelper.AssertEquivalent(expected, response);
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Products, Times.Once);
+
+        VerifyNoOtherCalls();
     }
 }

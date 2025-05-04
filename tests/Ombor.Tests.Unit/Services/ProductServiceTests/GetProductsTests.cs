@@ -45,10 +45,10 @@ public sealed class GetProductsTests : ProductTestsBase
         SetupProducts([]);
 
         // Act
-        var actual = await _service.GetAsync(request);
+        var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Empty(actual);
+        Assert.Empty(response);
     }
 
     [Theory]
@@ -103,12 +103,12 @@ public sealed class GetProductsTests : ProductTestsBase
             products.AddRange(CreateProductsMatchingPriceRange(minPrice, maxPrice));
         }
 
-        return products.ToArray();
+        return [.. products];
     }
 
     private Product[] CreateProductsMatchingSearch(string searchTerm)
     {
-        var productMatchingName = _builder.ProductBuilder
+        var matchingName = _builder.ProductBuilder
             .WithId(100)
             .WithName(searchTerm)
             .WithDescription()
@@ -121,7 +121,7 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithCategory()
             .Build();
 
-        return [productMatchingName, matchingDescription];
+        return [matchingName, matchingDescription];
     }
 
     private Product[] CreateProductsMatchingCategory(int categoryId)
@@ -130,24 +130,24 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithId(categoryId)
             .Build();
 
-        var productMatchingCategory = _builder.ProductBuilder
+        var matchingCategory = _builder.ProductBuilder
             .WithId(102)
             .WithCategory(category)
             .Build();
 
-        return [productMatchingCategory];
+        return [matchingCategory];
     }
 
     private Product[] CreateProductsMatchingPriceRange(decimal minPrice, decimal maxPrice)
     {
-        var productMatchingMinPrice = _builder.ProductBuilder
+        var matchingMinPrice = _builder.ProductBuilder
             .WithId(103)
             .WithName()
             .WithDescription()
             .WithSalePrice(minPrice)
             .WithCategory()
             .Build();
-        var productMatchingMaxPrice = _builder.ProductBuilder
+        var matchingMaxPrice = _builder.ProductBuilder
             .WithId(104)
             .WithName()
             .WithDescription()
@@ -155,7 +155,7 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithCategory()
             .Build();
 
-        return [productMatchingMinPrice, productMatchingMaxPrice];
+        return [matchingMinPrice, matchingMaxPrice];
     }
 
     private Product[] CreateProductsMatchingAllFilters(GetProductsRequest request)
@@ -164,7 +164,7 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithId(request.CategoryId!.Value)
             .Build();
 
-        var productMatchingAllFilters = _builder.ProductBuilder
+        var matchingAllFilters = _builder.ProductBuilder
             .WithId(105)
             .WithName(request.SearchTerm)
             .WithDescription(request.SearchTerm)
@@ -172,6 +172,6 @@ public sealed class GetProductsTests : ProductTestsBase
             .WithCategory(category)
             .Build();
 
-        return [productMatchingAllFilters];
+        return [matchingAllFilters];
     }
 }

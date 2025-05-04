@@ -47,18 +47,16 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
     public async Task GetByIdAsync_ShouldReturnDto_WhenCategoryIsFound()
     {
         // Arrange
-        var expected = _builder.CategoryBuilder
-            .WithId(CategoryId)
-            .BuildAndPopulate();
+        var expected = CreateCategory();
         var request = new GetCategoryByIdRequest(expected.Id);
 
         SetupCategories([.. _defaultCategories, expected]);
 
         // Act
-        var actual = await _service.GetByIdAsync(request);
+        var response = await _service.GetByIdAsync(request);
 
         // Assert
-        CategoryAssertionHelper.AssertEquivalent(expected, actual);
+        CategoryAssertionHelper.AssertEquivalent(expected, response);
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);

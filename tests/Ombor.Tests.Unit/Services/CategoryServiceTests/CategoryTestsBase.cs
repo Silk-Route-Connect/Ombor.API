@@ -5,9 +5,9 @@ namespace Ombor.Tests.Unit.Services.CategoryServiceTests;
 
 public abstract class CategoryTestsBase : ServiceTestsBase
 {
-    protected const int CategoryId = 1_000;
-    private protected readonly CategoryService _service;
+    protected readonly int CategoryId = 1_000; // ID to be used in GetById, Update, Delete Tests
     protected readonly Category[] _defaultCategories;
+    private protected readonly CategoryService _service;
 
     protected CategoryTestsBase()
     {
@@ -19,8 +19,10 @@ public abstract class CategoryTestsBase : ServiceTestsBase
 
     protected Category[] GenerateRandomCategories(int count = 5)
         => Enumerable.Range(1, count)
-        .Select(i => _builder.CategoryBuilder
-            .WithId(i)
-            .BuildAndPopulate())
+        .Select(i => CreateCategory(i))
         .ToArray();
+
+    protected Category CreateCategory(int? id = null) => _builder.CategoryBuilder
+        .WithId(id ?? CategoryId)
+        .BuildAndPopulate();
 }

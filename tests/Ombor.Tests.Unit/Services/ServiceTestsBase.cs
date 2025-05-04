@@ -23,7 +23,7 @@ public abstract class ServiceTestsBase : UnitTestsBase
         _builder = new TestDataBuilder();
     }
 
-    protected void VerifyNoOtherCalls()
+    protected virtual void VerifyNoOtherCalls()
     {
         _mockValidator.VerifyNoOtherCalls();
         _mockContext.VerifyNoOtherCalls();

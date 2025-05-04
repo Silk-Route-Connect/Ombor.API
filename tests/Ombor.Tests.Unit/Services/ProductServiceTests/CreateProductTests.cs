@@ -26,6 +26,8 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+
+        VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -64,6 +66,8 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        VerifyNoOtherCalls();
     }
 
     [Theory, MemberData(nameof(InvalidMeasurements))]
@@ -96,5 +100,7 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        VerifyNoOtherCalls();
     }
 }

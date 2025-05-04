@@ -46,10 +46,8 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
     public async Task DeleteAsync_ShouldRemoveCategory_WhenCategoryExists()
     {
         // Arrange
-        var categoryToDelete = _builder.CategoryBuilder
-            .WithId(CategoryId)
-            .BuildAndPopulate();
-        var request = new DeleteCategoryRequest(CategoryId);
+        var categoryToDelete = CreateCategory();
+        var request = new DeleteCategoryRequest(categoryToDelete.Id);
 
         var mockSet = SetupCategories([.. _defaultCategories, categoryToDelete]);
         mockSet.Setup(mock => mock.Remove(categoryToDelete));
