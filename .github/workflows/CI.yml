@@ -163,7 +163,10 @@ jobs:
           path: coverage-report
 
       - name: Begin SonarCloud Analysis
-        run: dotnet sonarscanner begin /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        run: dotnet sonarscanner begin \
+          /k:"Silk-Route-Connect_Ombor.API" \
+          /o:"silk-route-connect" \
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
