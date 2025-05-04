@@ -143,7 +143,7 @@ public static class ProductAssertionHelper
     /// </summary>
     /// <param name="expected">The update request.</param>
     /// <param name="actual">The entity after ApplyUpdate.</param>
-    public static void AssertEquivalent(UpdateProductRequest? expected, Product actual)
+    public static void AssertEquivalent(UpdateProductRequest? expected, Product? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);

@@ -1,18 +1,11 @@
 ﻿using System.Net;
 using System.Text;
-using System.Text.Json;
 using Newtonsoft.Json;
-using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Helpers;
 
-public sealed class ApiClient(HttpClient client, ITestOutputHelper outputHelper)
+public sealed class ApiClient(HttpClient client)
 {
-    private static readonly JsonSerializerOptions _jsonPrintOptions = new()
-    {
-        WriteIndented = true
-    };
-
     public Task GetAsync(string url, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
         => SendAsync(HttpMethod.Get, url, expectedStatusCode);
 
@@ -54,9 +47,7 @@ public sealed class ApiClient(HttpClient client, ITestOutputHelper outputHelper)
 
         var response = await client.SendAsync(request);
 
-        var result = await DeserializeAndCheckResponseAsync<TResult>(response, expectedStatusCode);
-
-        return result;
+        return await DeserializeAndCheckResponseAsync<TResult>(response, expectedStatusCode);
     }
 
     private async Task SendAsync(HttpMethod method, string url, HttpStatusCode expectedStatusCode, object? body = null)
@@ -74,10 +65,9 @@ public sealed class ApiClient(HttpClient client, ITestOutputHelper outputHelper)
         Assert.Equal(expectedStatusCode, response.StatusCode);
     }
 
-    private async Task<T> DeserializeAndCheckResponseAsync<T>(HttpResponseMessage response, HttpStatusCode expectedStatus)
+    private static async Task<T> DeserializeAndCheckResponseAsync<T>(HttpResponseMessage response, HttpStatusCode expectedStatus)
     {
         var stringContent = await response.Content.ReadAsStringAsync();
-        WriteOutput(stringContent);
 
         var result = JsonConvert.DeserializeObject<T>(stringContent);
 
@@ -85,23 +75,6 @@ public sealed class ApiClient(HttpClient client, ITestOutputHelper outputHelper)
         Assert.Equal(expectedStatus, response.StatusCode);
 
         return result;
-    }
-
-    private void WriteOutput(string stringContent)
-    {
-        string? outputText;
-
-        try
-        {
-            var jsonContent = JsonDocument.Parse(stringContent);
-            outputText = System.Text.Json.JsonSerializer.Serialize(jsonContent, _jsonPrintOptions);
-        }
-        catch
-        {
-            outputText = stringContent;
-        }
-
-        outputHelper.WriteLine(outputText);
     }
 
     private static StringContent GetStringContent(HttpMethod method, object content)

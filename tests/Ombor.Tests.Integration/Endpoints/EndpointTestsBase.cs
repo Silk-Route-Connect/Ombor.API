@@ -2,6 +2,7 @@
 using Bogus;
 using Ombor.Application.Interfaces;
 using Ombor.Tests.Common.Builders;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Common.Interfaces;
 using Ombor.Tests.Integration.Helpers;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
@@ -53,13 +54,13 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
 
     private static ApiClient CreateApiClient(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     {
-        factory.ClientOptions.BaseAddress = new Uri("https://localhost/api/");
-        factory.ClientOptions.AllowAutoRedirect = false;
+        var uri = new Uri("https://localhost/api/");
+        var loggingHandler = new LoggingHandler(outputHelper);
 
-        var client = factory.CreateClient();
+        var client = factory.CreateDefaultClient(uri, loggingHandler);
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        return new ApiClient(client, outputHelper);
+        return new ApiClient(client);
     }
 
     private protected static class Routes
