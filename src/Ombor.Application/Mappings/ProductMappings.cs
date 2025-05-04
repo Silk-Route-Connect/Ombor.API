@@ -7,6 +7,34 @@ namespace Ombor.Application.Mappings;
 
 internal static class ProductMappings
 {
+    public static ProductDto ToDto(this Product product)
+    {
+        if (product.Category is null)
+        {
+            throw new InvalidOperationException("Cannot map product to DTO because category is null.");
+        }
+
+        var thresholdDate = GetThresholdDate();
+
+        return new(
+            Id: product.Id,
+            CategoryId: product.CategoryId,
+            CategoryName: product.Category.Name,
+            Name: product.Name,
+            SKU: product.SKU,
+            Measurement: product.Measurement.ToString(),
+            Description: product.Description,
+            Barcode: product.Barcode,
+            SalePrice: product.SalePrice,
+            SupplyPrice: product.SupplyPrice,
+            RetailPrice: product.RetailPrice,
+            QuantityInStock: product.QuantityInStock,
+            LowStockThreshold: product.LowStockThreshold,
+            ExpireDate: product.ExpireDate,
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            IsExpirationClose: product.ExpireDate >= thresholdDate);
+    }
+
     public static Product ToEntity(this CreateProductRequest request)
     {
         if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
@@ -14,7 +42,7 @@ internal static class ProductMappings
             measurement = UnitOfMeasurement.None;
         }
 
-        return new Product
+        return new()
         {
             Name = request.Name,
             SKU = request.SKU,
@@ -60,34 +88,6 @@ internal static class ProductMappings
         var thresholdDate = GetThresholdDate();
 
         return new(
-            Id: product.Id,
-            CategoryId: product.CategoryId,
-            CategoryName: product.Category.Name,
-            Name: product.Name,
-            SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
-            Description: product.Description,
-            Barcode: product.Barcode,
-            SalePrice: product.SalePrice,
-            SupplyPrice: product.SupplyPrice,
-            RetailPrice: product.RetailPrice,
-            QuantityInStock: product.QuantityInStock,
-            LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
-    }
-
-    public static ProductDto ToDto(this Product product)
-    {
-        if (product.Category is null)
-        {
-            throw new InvalidOperationException("Cannot map product to DTO because category is null.");
-        }
-
-        var thresholdDate = GetThresholdDate();
-
-        return new ProductDto(
             Id: product.Id,
             CategoryId: product.CategoryId,
             CategoryName: product.Category.Name,
