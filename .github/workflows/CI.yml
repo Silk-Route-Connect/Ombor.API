@@ -163,13 +163,7 @@ jobs:
           path: coverage-report
 
       - name: Begin SonarCloud Analysis
-        run: |
-          dotnet sonarscanner begin \
-            /k:"Silk-Route-Connect_Ombor.API" \
-            /o:"silk-route-connect" \
-            /d:sonar.token="${{ env.SONAR_TOKEN }}" \
-            /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml"
+        run: dotnet sonarscanner begin /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
@@ -178,7 +172,7 @@ jobs:
         run: dotnet build Ombor.sln --no-restore --configuration Release
 
       - name: End SonarCloud Analysis
-        run: dotnet sonarscanner end /d:sonar.token="${{ env.SONAR_TOKEN }}"
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
       - name: Check SonarCloud Quality Gate Result
         if: github.event_name == 'pull_request'
