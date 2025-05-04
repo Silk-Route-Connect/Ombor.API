@@ -42,7 +42,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 
@@ -76,7 +76,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
     public async Task DeleteAsync(DeleteProductRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
         context.Products.Remove(entity);

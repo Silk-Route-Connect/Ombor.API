@@ -9,22 +9,20 @@ namespace Ombor.Tests.Unit.Services.ProductServiceTests;
 
 public sealed class GetProductByIdTests : ProductTestsBase
 {
-    private const int ProductId = 100;
-
     [Fact]
     public async Task GetByIdAsync_ShouldThrowValidationException_WhenValidatorFails()
     {
         // Arrange
         var request = new GetProductByIdRequest(ProductId);
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -37,7 +35,7 @@ public sealed class GetProductByIdTests : ProductTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Product>>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -57,6 +55,6 @@ public sealed class GetProductByIdTests : ProductTestsBase
         // Assert
         ProductAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

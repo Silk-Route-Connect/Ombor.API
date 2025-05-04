@@ -14,9 +14,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Categories
-            .AsNoTracking()
-            .AsQueryable();
+        var query = context.Categories.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -25,13 +23,14 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
         }
 
         return query
+            .AsNoTracking()
             .Select(x => new CategoryDto(x.Id, x.Name, x.Description))
             .ToArrayAsync();
     }
 
     public async Task<CategoryDto> GetByIdAsync(GetCategoryByIdRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 
@@ -40,7 +39,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
     public async Task<CreateCategoryResponse> CreateAsync(CreateCategoryRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = request.ToEntity();
         context.Categories.Add(entity);
@@ -51,7 +50,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
     public async Task<UpdateCategoryResponse> UpdateAsync(UpdateCategoryRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 
@@ -63,7 +62,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
     public async Task DeleteAsync(DeleteCategoryRequest request)
     {
-        validator.ValidateAndThrow(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
 

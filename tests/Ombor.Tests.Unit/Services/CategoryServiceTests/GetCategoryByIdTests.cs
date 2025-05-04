@@ -15,14 +15,14 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
         // Arrange
         var request = new GetCategoryByIdRequest(CategoryId);
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -37,7 +37,7 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.GetByIdAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
@@ -60,7 +60,7 @@ public sealed class GetCategoryByIdTests : CategoryTestsBase
         // Assert
         CategoryAssertionHelper.AssertEquivalent(expected, actual);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();

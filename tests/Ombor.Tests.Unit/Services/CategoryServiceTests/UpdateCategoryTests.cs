@@ -15,14 +15,14 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         // Arrange
         var request = CategoryRequestFactory.GenerateInvalidUpdateRequest(CategoryId);
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -37,7 +37,7 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         await Assert.ThrowsAsync<EntityNotFoundException<Category>>(
             () => _service.UpdateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
@@ -63,8 +63,9 @@ public sealed class UpdateCategoryTests : CategoryTestsBase
         // Assert
         CategoryAssertionHelper.AssertEquivalent(request, response);
         CategoryAssertionHelper.AssertEquivalent(request, categoryToUpdate);
+        CategoryAssertionHelper.AssertEquivalent(categoryToUpdate, response);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 

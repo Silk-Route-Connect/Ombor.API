@@ -24,8 +24,9 @@ public abstract class UnitTestsBase
 
         fixture.Register(() =>
         {
-            var dt = fixture.Create<DateTime>();
-            return DateOnly.FromDateTime(dt);
+            var date = fixture.Create<DateTime>();
+
+            return DateOnly.FromDateTime(date);
         });
 
         fixture.Register(() =>

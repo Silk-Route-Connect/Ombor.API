@@ -1,5 +1,6 @@
 ﻿using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 
 namespace Ombor.Tests.Common.Extensions;
 
@@ -15,7 +16,17 @@ public static class ProductExtensions
         product.RetailPrice == request.RetailPrice &&
         product.QuantityInStock == request.QuantityInStock &&
         product.LowStockThreshold == request.LowStockThreshold &&
-        product.Measurement.ToString() == request.Measurement &&
+        IsMeasurementEqual(product.Measurement, request.Measurement) &&
         product.ExpireDate == request.ExpireDate &&
         product.CategoryId == request.CategoryId;
+
+    private static bool IsMeasurementEqual(UnitOfMeasurement mappedMeasurement, string requestMeasurement)
+    {
+        if (Enum.TryParse(requestMeasurement, out UnitOfMeasurement result))
+        {
+            return mappedMeasurement == result;
+        }
+
+        return mappedMeasurement == UnitOfMeasurement.None;
+    }
 }

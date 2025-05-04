@@ -15,14 +15,14 @@ public sealed class CreateCategoryTests : CategoryTestsBase
         // Arrange
         var request = CategoryRequestFactory.GenerateInvalidCreateRequest();
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request))
-            .Throws(new ValidationException("Validation errors."));
+        _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new ValidationException("Validation errors."));
 
         // Act & Assert
         await Assert.ThrowsAsync<ValidationException>(
             () => _service.CreateAsync(request));
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -32,23 +32,25 @@ public sealed class CreateCategoryTests : CategoryTestsBase
     {
         // Arrange
         var request = CategoryRequestFactory.GenerateValidCreateRequest();
-        Category expected = null!;
+        Category addedCategory = null!;
 
-        _mockContext.Setup(mock => mock.Categories.Add(It.Is<Category>(categoryToAdd => categoryToAdd.IsEquivalent(request))))
-            .Callback<Category>(captured => expected = captured);
+        _mockContext.Setup(mock => mock.Categories.Add(It.Is<Category>(category => category.IsEquivalent(request))))
+            .Callback<Category>(captured => addedCategory = captured);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1)
-            .Callback(() => expected.Id = 99);
+            .Callback(() => addedCategory.Id = 99);
 
         // Act
-        var actual = await _service.CreateAsync(request);
+        var response = await _service.CreateAsync(request);
 
         // Assert
-        CategoryAssertionHelper.AssertEquivalent(expected, actual);
+        CategoryAssertionHelper.AssertEquivalent(request, response);
+        CategoryAssertionHelper.AssertEquivalent(request, addedCategory);
+        CategoryAssertionHelper.AssertEquivalent(addedCategory, response);
 
-        _mockValidator.Verify(mock => mock.ValidateAndThrow(request), Times.Once);
-        _mockContext.Verify(mock => mock.Categories.Add(expected), Times.Once);
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Categories.Add(addedCategory), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
