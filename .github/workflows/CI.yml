@@ -163,10 +163,18 @@ jobs:
           path: coverage-report
 
       - name: Begin SonarCloud Analysis
-        run: dotnet sonarscanner begin \
-          /k:"Silk-Route-Connect_Ombor.API" \
-          /o:"silk-route-connect" \
-          /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        run: |
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              dotnet sonarscanner begin \
+                /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+                /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+                /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
+                /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}"
+            else
+              dotnet sonarscanner begin \
+                /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+            fi
+
 
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
