@@ -1,5 +1,5 @@
 Summary
-  Generated on: 05/04/2025 - 19:06:32
+  Generated on: 05/04/2025 - 19:15:45
   Parser: OpenCover
   Assemblies: 6
   Classes: 23
@@ -15,7 +15,7 @@ Summary
   Method coverage: 100% (37 of 37)
   Covered methods: 37
   Total methods: 37
-  Tag: 94_14824310795
+  Tag: 95_14824380172
 
 Ombor.API                                                                100.0%
   Ombor.API.Controllers.CategoriesController                             100.0%
