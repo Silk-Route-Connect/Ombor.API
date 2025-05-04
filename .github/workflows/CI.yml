@@ -22,6 +22,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Cache ReportGenerator tool
+        uses: actions/cache@v3
+        with:
+          path: reportgeneratortool
+          key: rgtool-${{ runner.os }}-5.2.5
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
