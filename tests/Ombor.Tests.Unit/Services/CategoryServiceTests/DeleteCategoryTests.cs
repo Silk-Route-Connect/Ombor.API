@@ -51,8 +51,6 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
             .BuildAndPopulate();
         var request = new DeleteCategoryRequest(CategoryId);
 
-        _mockValidator.Setup(mock => mock.ValidateAndThrow(request));
-
         var mockSet = SetupCategories([.. _defaultCategories, categoryToDelete]);
         mockSet.Setup(mock => mock.Remove(categoryToDelete));
 

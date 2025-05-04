@@ -6,22 +6,6 @@
 public interface IRequestValidator
 {
     /// <summary>
-    /// Validates the specified <paramref name="request"/>.
-    /// </summary>
-    /// <typeparam name="TRequest">Type of the request to validate.</typeparam>
-    /// <param name="request">The instance to validate. Cannot be <c>null</c>.</param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="request"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown if no <see cref="FluentValidation.IValidator{TRequest}"/> is registered for <typeparamref name="TRequest"/>.
-    /// </exception>
-    /// <exception cref="FluentValidation.ValidationException">
-    /// Thrown if one or more validation rules fail.
-    /// </exception>
-    void ValidateAndThrow<TRequest>(TRequest request);
-
-    /// <summary>
     /// Validates the specified <paramref name="request"/> asynchronously.
     /// </summary>
     /// <typeparam name="TRequest">Type of the request to validate.</typeparam>
