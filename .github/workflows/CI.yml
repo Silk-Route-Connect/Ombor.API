@@ -183,6 +183,7 @@ jobs:
                 /k:"Silk-Route-Connect_Ombor.API" \
                 /o:"silk-route-connect" \
                 /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+                /d:sonar.projectVersion="v${{ github.run_number }}" \
                 /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
                 /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
                 /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" \
@@ -196,6 +197,7 @@ jobs:
                 /k:"Silk-Route-Connect_Ombor.API" \
                 /o:"silk-route-connect" \
                 /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+                /d:sonar.projectVersion="v${{ github.run_number }}" \
                 /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
                 /d:sonar.sources="src" \
                 /d:sonar.tests="tests" \
