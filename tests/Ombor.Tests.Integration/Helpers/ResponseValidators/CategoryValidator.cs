@@ -3,6 +3,7 @@ using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Responses.Category;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 
@@ -17,8 +18,7 @@ public sealed class CategoryValidator(IApplicationDbContext context)
         {
             var actual = response.FirstOrDefault(c => c.Id == expected.Id);
 
-            Assert.NotNull(actual);
-            AssertEquivalent(expected, actual);
+            CategoryAssertionHelper.AssertEquivalent(expected, actual);
         });
     }
 
@@ -27,8 +27,7 @@ public sealed class CategoryValidator(IApplicationDbContext context)
         var expected = await context.Categories
             .FirstOrDefaultAsync(c => c.Id == categoryId);
 
-        Assert.NotNull(expected);
-        AssertEquivalent(expected, response);
+        CategoryAssertionHelper.AssertEquivalent(expected, response);
     }
 
     public async Task ValidatePostAsync(CreateCategoryRequest request, CreateCategoryResponse response)
@@ -36,9 +35,9 @@ public sealed class CategoryValidator(IApplicationDbContext context)
         var category = await context.Categories
             .FirstOrDefaultAsync(c => c.Id == response.Id);
 
-        Assert.NotNull(category);
-        AssertEquivalent(category, response);
-        AssertEquivalent(request, category);
+        CategoryAssertionHelper.AssertEquivalent(request, category);
+        CategoryAssertionHelper.AssertEquivalent(request, response);
+        CategoryAssertionHelper.AssertEquivalent(category, response);
     }
 
     public async Task ValidatePutAsync(UpdateCategoryRequest request, UpdateCategoryResponse response)
@@ -46,9 +45,9 @@ public sealed class CategoryValidator(IApplicationDbContext context)
         var category = await context.Categories
             .FirstOrDefaultAsync(c => c.Id == request.Id);
 
-        Assert.NotNull(category);
-        AssertEquivalent(category, response);
-        AssertEquivalent(request, category);
+        CategoryAssertionHelper.AssertEquivalent(request, category);
+        CategoryAssertionHelper.AssertEquivalent(request, response);
+        CategoryAssertionHelper.AssertEquivalent(category, response);
     }
 
     public async Task ValidateDeleteAsync(int categoryId)
@@ -73,38 +72,5 @@ public sealed class CategoryValidator(IApplicationDbContext context)
             .AsNoTracking()
             .OrderBy(c => c.Name)
             .ToArrayAsync();
-    }
-
-    private static void AssertEquivalent(Category expected, CategoryDto actual)
-    {
-        Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-    }
-
-    private static void AssertEquivalent(Category expected, CreateCategoryResponse actual)
-    {
-        Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-    }
-
-    private static void AssertEquivalent(Category expected, UpdateCategoryResponse actual)
-    {
-        Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-    }
-
-    private static void AssertEquivalent(CreateCategoryRequest expected, Category actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-    }
-
-    private static void AssertEquivalent(UpdateCategoryRequest expected, Category actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
     }
 }

@@ -2,7 +2,7 @@
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
-using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 
@@ -52,9 +52,9 @@ public class ProductValidator(IApplicationDbContext context)
             .Include(x => x.Category)
             .FirstOrDefaultAsync(c => c.Id == response.Id);
 
-        Assert.NotNull(actual);
-        AssertEquivalent(request, actual);
-        AssertEquivalent(actual, response);
+        ProductAssertionHelper.AssertEquivalent(request, actual);
+        ProductAssertionHelper.AssertEquivalent(request, response);
+        ProductAssertionHelper.AssertEquivalent(actual, response);
     }
 
     public async Task ValidatePutAsync(UpdateProductRequest request, UpdateProductResponse response)
@@ -64,9 +64,9 @@ public class ProductValidator(IApplicationDbContext context)
             .Include(x => x.Category)
             .FirstOrDefaultAsync(c => c.Id == request.Id);
 
-        Assert.NotNull(actual);
-        AssertEquivalent(request, actual);
-        AssertEquivalent(actual, response);
+        ProductAssertionHelper.AssertEquivalent(request, actual);
+        ProductAssertionHelper.AssertEquivalent(request, response);
+        ProductAssertionHelper.AssertEquivalent(actual, response);
     }
 
     public async Task ValidateDeleteAsync(int productId)
@@ -124,71 +124,5 @@ public class ProductValidator(IApplicationDbContext context)
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.ExpireDate >= thresholdDate))
             .ToArrayAsync();
-    }
-
-    private static void AssertEquivalent(CreateProductRequest expected, Product actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.SKU, actual.SKU);
-        Assert.Equal(expected.Barcode, actual.Barcode);
-        Assert.Equal(expected.SalePrice, actual.SalePrice);
-        Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.RetailPrice, actual.RetailPrice);
-        Assert.Equal(expected.QuantityInStock, actual.QuantityInStock);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
-        Assert.Equal(expected.Measurement, actual.Measurement.ToString());
-        Assert.Equal(expected.ExpireDate, actual.ExpireDate);
-    }
-
-    private static void AssertEquivalent(Product expected, CreateProductResponse actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.SKU, actual.SKU);
-        Assert.Equal(expected.Measurement.ToString(), actual.Measurement);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Barcode, actual.Barcode);
-        Assert.Equal(expected.SalePrice, actual.SalePrice);
-        Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.RetailPrice, actual.RetailPrice);
-        Assert.Equal(expected.QuantityInStock, actual.QuantityInStock);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
-        Assert.Equal(expected.ExpireDate, actual.ExpireDate);
-        Assert.Equal(expected.CategoryId, actual.CategoryId);
-        Assert.Equal(expected.Category.Name, actual.CategoryName);
-        Assert.Equal(expected.QuantityInStock <= expected.LowStockThreshold, actual.IsLowStock);
-    }
-
-    private static void AssertEquivalent(UpdateProductRequest expected, Product actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.SKU, actual.SKU);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Barcode, actual.Barcode);
-        Assert.Equal(expected.SalePrice, actual.SalePrice);
-        Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.RetailPrice, actual.RetailPrice);
-        Assert.Equal(expected.QuantityInStock, actual.QuantityInStock);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
-        Assert.Equal(expected.Measurement, actual.Measurement.ToString());
-        Assert.Equal(expected.ExpireDate, actual.ExpireDate);
-        Assert.Equal(expected.CategoryId, actual.CategoryId);
-    }
-
-    private static void AssertEquivalent(Product expected, UpdateProductResponse actual)
-    {
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.SKU, actual.SKU);
-        Assert.Equal(expected.Measurement.ToString(), actual.Measurement);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Barcode, actual.Barcode);
-        Assert.Equal(expected.SalePrice, actual.SalePrice);
-        Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.RetailPrice, actual.RetailPrice);
-        Assert.Equal(expected.QuantityInStock, actual.QuantityInStock);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
-        Assert.Equal(expected.ExpireDate, actual.ExpireDate);
-        Assert.Equal(expected.CategoryId, actual.CategoryId);
-        Assert.Equal(expected.Category.Name, actual.CategoryName);
     }
 }
