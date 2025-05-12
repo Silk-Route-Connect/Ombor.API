@@ -143,6 +143,11 @@ jobs:
           name: coverage-html
           path: coverage-report/html-down
 
+      - name: 'DEBUG: list html-down contents'
+        run: |
+          echo ">>> coverage-report/html-down directory:"
+          ls -R coverage-report/html-down || echo "(empty)"
+          
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
