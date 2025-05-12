@@ -230,9 +230,9 @@ var assemblies = [
     "classes": [
       { "name": "Ombor.Application.Extensions.DependencyInjection", "rp": "Ombor.Application_DependencyInjection.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 33, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Mappings.CategoryMappings", "rp": "Ombor.Application_CategoryMappings.html", "cl": 17, "ucl": 0, "cal": 17, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Mappings.ProductMappings", "rp": "Ombor.Application_ProductMappings.html", "cl": 90, "ucl": 0, "cal": 90, "tl": 132, "cb": 9, "tb": 12, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.CategoryService", "rp": "Ombor.Application_CategoryService.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 76, "cb": 2, "tb": 2, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.ProductService", "rp": "Ombor.Application_ProductService.html", "cl": 38, "ucl": 0, "cal": 38, "tl": 122, "cb": 8, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Mappings.ProductMappings", "rp": "Ombor.Application_ProductMappings.html", "cl": 90, "ucl": 0, "cal": 90, "tl": 132, "cb": 18, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.CategoryService", "rp": "Ombor.Application_CategoryService.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 76, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.ProductService", "rp": "Ombor.Application_ProductService.html", "cl": 38, "ucl": 0, "cal": 38, "tl": 122, "cb": 16, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.CreateCategoryRequestValidator", "rp": "Ombor.Application_CreateCategoryRequestValidator.html", "cl": 0, "ucl": 10, "cal": 10, "tl": 20, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.DeleteCategoryRequestValidator", "rp": "Ombor.Application_DeleteCategoryRequestValidator.html", "cl": 0, "ucl": 5, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator", "rp": "Ombor.Application_GetCategoryByIdRequestValidator.html", "cl": 0, "ucl": 5, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -267,7 +267,7 @@ var assemblies = [
     ]},
 ];
 
-var metrics = [{ "name": "Cyclomatic complexity", "abbreviation": "cc", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" }, { "name": "NPath complexity", "abbreviation": "npth", "explanationUrl": "https://modess.io/npath-complexity-cyclomatic-complexity-explained" }, { "name": "Sequence coverage", "abbreviation": "seq", "explanationUrl": "https://en.wikipedia.org/wiki/Code_coverage" }, { "name": "Branch coverage", "abbreviation": "bcov", "explanationUrl": "https://en.wikipedia.org/wiki/Code_coverage" }];
+var metrics = [{ "name": "Crap Score", "abbreviation": "crp", "explanationUrl": "https://googletesting.blogspot.de/2011/02/this-code-is-crap.html" }, { "name": "Cyclomatic complexity", "abbreviation": "cc", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" }, { "name": "Line coverage", "abbreviation": "cov", "explanationUrl": "https://en.wikipedia.org/wiki/Code_coverage" }, { "name": "Branch coverage", "abbreviation": "bcov", "explanationUrl": "https://en.wikipedia.org/wiki/Code_coverage" }, { "name": "NPath complexity", "abbreviation": "npth", "explanationUrl": "https://modess.io/npath-complexity-cyclomatic-complexity-explained" }, { "name": "Sequence coverage", "abbreviation": "seq", "explanationUrl": "https://en.wikipedia.org/wiki/Code_coverage" }];
 
 var historicCoverageExecutionTimes = [];
 
