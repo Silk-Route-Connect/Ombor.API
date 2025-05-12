@@ -72,9 +72,7 @@ jobs:
       - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
-          reports: |
-              coverage-report/*.cobertura.xml
-              coverage-report/*.opencover.xml
+          reports: "coverage-report/*.opencover.xml"
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
 
