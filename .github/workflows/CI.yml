@@ -60,20 +60,17 @@ jobs:
         run: |
           mkdir -p coverage-report
 
-          # Cobertura outputs
-          find . -type f -name 'coverage.cobertura.xml' \
-            -exec bash -c '
-              # climb up 3 levels to get project folder name:
-              proj=$(basename "$(dirname "$(dirname "$(dirname "$1")")")")
-              cp "$1" coverage-report/"$proj".cobertura.xml
-            ' _ {} \;
+          # Copy every Cobertura report
+          for file in $(find . -type f -name 'coverage.cobertura.xml'); do
+            proj=$(basename "$(dirname "$(dirname "$file")")")
+            cp "$file" coverage-report/"$proj".cobertura.xml
+          done
 
-          # OpenCover outputs
-          find . -type f -name 'coverage.opencover.xml' \
-            -exec bash -c '
-              proj=$(basename "$(dirname "$(dirname "$(dirname "$1")")")")
-              cp "$1" coverage-report/"$proj".opencover.xml
-            ' _ {} \;'
+          # Copy every OpenCover report
+          for file in $(find . -type f -name 'coverage.opencover.xml'); do
+            proj=$(basename "$(dirname "$(dirname "$file")")")
+            cp "$file" coverage-report/"$proj".opencover.xml
+          done
 
       - name: "DEBUG: List gathered coverage files"
         run: |
