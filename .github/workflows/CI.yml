@@ -81,7 +81,7 @@ jobs:
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
         with:
           # combine both formats
-          reports: "coverage-report/*.cobertura.xml,coverage-report/*.opencover.xml"
+          reports: "coverage-report/*.cobertura.xml;coverage-report/*.opencover.xml"
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
 
