@@ -68,11 +68,6 @@ jobs:
             -exec bash -c \
               'proj=$(basename "$(dirname "$(dirname "$1")")"); \
                cp "$1" coverage-report/"$proj".opencover.xml' _ {} \;
-
-      - name: "DEBUG: List gathered coverage files"
-        run: |
-            echo ">>> coverage-report directory contents:"
-            ls -R coverage-report || echo "(none found)"
             
       - name: Generate merged Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
@@ -82,6 +77,11 @@ jobs:
               coverage-report/*.opencover.xml
           targetdir: "coverage-report/html"
           reporttypes: "Html;Cobertura;TextSummary"
+
+      - name: "DEBUG: List gathered coverage files"
+        run: |
+            echo ">>> coverage-report directory contents:"
+            ls -R coverage-report || echo "(none found)"
 
       - name: Upload HTML Report Artifact
         uses: actions/upload-artifact@v4
