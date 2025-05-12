@@ -183,12 +183,11 @@ jobs:
               /k:"Silk-Route-Connect_Ombor.API" \
               /o:"silk-route-connect" \
               /v:"v${{ github.run_number }}" \
-              /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
               /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
-              /d:sonar.sources="src/Ombor.API;src/Ombor.Application;src/Ombor.Domain;src/Ombor.Infrastructure;src/Ombor.Contracts" \
-              /d:sonar.tests="tests/Ombor.Tests.Unit;tests/Ombor.Tests.Integration" \
-              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,tests/**,src/Ombor.TestDataGenerator/**" \
-              /d:sonar.cpd.exclusions="tests/**,src/Ombor.TestDataGenerator/**" \
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,src/Ombor.TestDataGenerator/**,tests/Ombor.Tests.Common/**" \
+              /d:sonar.cpd.exclusions="src/Ombor.TestDataGenerator/**,tests/Ombor.Tests.Common/**" \
+              /d:sonar.scanner.scanAll=false \
               /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
               /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
               /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}"
@@ -197,12 +196,11 @@ jobs:
               /k:"Silk-Route-Connect_Ombor.API" \
               /o:"silk-route-connect" \
               /v:"v${{ github.run_number }}" \
-              /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
               /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
-              /d:sonar.sources="src/Ombor.API;src/Ombor.Application;src/Ombor.Domain;src/Ombor.Infrastructure;src/Ombor.Contracts" \
-              /d:sonar.tests="tests/Ombor.Tests.Unit;tests/Ombor.Tests.Integration" \
-              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,tests/**,src/Ombor.TestDataGenerator/**" \
-              /d:sonar.cpd.exclusions="tests/**,src/Ombor.TestDataGenerator/**"
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,src/Ombor.TestDataGenerator/**" \
+              /d:sonar.cpd.exclusions="src/Ombor.TestDataGenerator/**" \
+              /d:sonar.scanner.scanAll=false
           fi
 
       - name: Restore dependencies
