@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MINIMUM_LINE_RATE: 10
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,28 +59,35 @@ jobs:
       - name: Gather all coverage files
         run: |
           mkdir -p coverage-report
+
           # Cobertura outputs
           find . -type f -name 'coverage.cobertura.xml' \
-            -exec bash -c \
-              'proj=$(basename "$(dirname "$(dirname "$1")")"); \
-               cp "$1" coverage-report/"$proj".cobertura.xml' _ {} \;
+            -exec bash -c '
+              # climb up 3 levels to get project folder name:
+              proj=$(basename "$(dirname "$(dirname "$(dirname "$1")")")")
+              cp "$1" coverage-report/"$proj".cobertura.xml
+            ' _ {} \;
+
           # OpenCover outputs
           find . -type f -name 'coverage.opencover.xml' \
-            -exec bash -c \
-              'proj=$(basename "$(dirname "$(dirname "$1")")"); \
-               cp "$1" coverage-report/"$proj".opencover.xml' _ {} \;
-            
-      - name: Generate merged Coverage Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
-        with:
-          reports: "coverage-report/*.opencover.xml"
-          targetdir: "coverage-report/html"
-          reporttypes: "Html;Cobertura;TextSummary"
+            -exec bash -c '
+              proj=$(basename "$(dirname "$(dirname "$(dirname "$1")")")")
+              cp "$1" coverage-report/"$proj".opencover.xml
+            ' _ {} \;
 
       - name: "DEBUG: List gathered coverage files"
         run: |
-            echo ">>> coverage-report directory contents:"
-            ls -R coverage-report || echo "(none found)"
+          echo ">>> coverage-report directory contents:"
+          ls -R coverage-report || echo "(none found)"
+
+      - name: Generate merged Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.2.5
+        with:
+          reports: |
+            coverage-report/*.cobertura.xml
+            coverage-report/*.opencover.xml
+          targetdir: "coverage-report/html"
+          reporttypes: "Html;Cobertura;TextSummary"
 
       - name: Upload HTML Report Artifact
         uses: actions/upload-artifact@v4
@@ -132,6 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-test
     if: ${{ needs.build-and-test.result == 'success' }}
+
     steps:
       - name: Download HTML Report Artifact
         uses: actions/download-artifact@v4
@@ -154,6 +163,7 @@ jobs:
     needs: build-and-test
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -179,36 +189,36 @@ jobs:
         with:
           name: coverage-xml
           path: coverage-report
-          
+
       - name: Begin SonarCloud Analysis
         run: |
-            if [ "${{ github.event_name }}" = "pull_request" ]; then
-              dotnet sonarscanner begin \
-                /k:"Silk-Route-Connect_Ombor.API" \
-                /o:"silk-route-connect" \
-                /v:"v${{ github.run_number }}" \
-                /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-                /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
-                /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
-                /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" \
-                /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
-                /d:sonar.sources="src" \
-                /d:sonar.tests="tests" \
-                /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml" \
-                /d:sonar.coverage.exclusions="**/Mappings/*.cs,**/Generated/**/*.cs"
-            else
-              dotnet sonarscanner begin \
-                /k:"Silk-Route-Connect_Ombor.API" \
-                /o:"silk-route-connect" \
-                /v:"v${{ github.run_number }}" \
-                /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-                /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
-                /d:sonar.sources="src" \
-                /d:sonar.tests="tests" \
-                /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml" \
-                /d:sonar.coverage.exclusions="**/Mappings/*.cs,**/Generated/**/*.cs"
-            fi
-            
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            dotnet sonarscanner begin \
+              /k:"Silk-Route-Connect_Ombor.API" \
+              /o:"silk-route-connect" \
+              /v:"v${{ github.run_number }}" \
+              /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+              /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
+              /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" \
+              /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
+              /d:sonar.sources="src" \
+              /d:sonar.tests="tests" \
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml" \
+              /d:sonar.coverage.exclusions="**/Mappings/*.cs,**/Generated/**/*.cs"
+          else
+            dotnet sonarscanner begin \
+              /k:"Silk-Route-Connect_Ombor.API" \
+              /o:"silk-route-connect" \
+              /v:"v${{ github.run_number }}" \
+              /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
+              /d:sonar.sources="src" \
+              /d:sonar.tests="tests" \
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml" \
+              /d:sonar.coverage.exclusions="**/Mappings/*.cs,**/Generated/**/*.cs"
+          fi
+
       - name: Restore dependencies
         run: dotnet restore Ombor.sln
 
