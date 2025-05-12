@@ -225,7 +225,7 @@ jobs:
               ref: context.payload.pull_request.head.sha
             });
             const gate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
-            return { status: gate ? gate.conclusion : 'unknown'; }
+            return { status: gate ? gate.conclusion : 'unknown' }
 
       - name: Minimize SonarCloud Comments
         if: github.event_name == 'pull_request'
