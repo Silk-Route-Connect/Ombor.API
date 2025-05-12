@@ -210,7 +210,7 @@ jobs:
         run: dotnet build Ombor.sln --no-restore --configuration Release
 
       - name: End SonarCloud Analysis
-        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Check SonarCloud Quality Gate Result
         if: github.event_name == 'pull_request'
