@@ -167,7 +167,7 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Install SonarScanner for .NET
+      - name: Install SonarCloud Scanner
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Download Coverage XML Artifact
@@ -184,6 +184,11 @@ jobs:
               /o:"silk-route-connect" \
               /v:"v${{ github.run_number }}" \
               /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
+              /d:sonar.sources="src/Ombor.API;src/Ombor.Application;src/Ombor.Domain;src/Ombor.Infrastructure;src/Ombor.Contracts" \
+              /d:sonar.tests="tests/Ombor.Tests.Unit;tests/Ombor.Tests.Integration" \
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,tests/**,src/Ombor.TestDataGenerator/**" \
+              /d:sonar.cpd.exclusions="tests/**,src/Ombor.TestDataGenerator/**" \
               /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
               /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" \
               /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}"
@@ -192,7 +197,12 @@ jobs:
               /k:"Silk-Route-Connect_Ombor.API" \
               /o:"silk-route-connect" \
               /v:"v${{ github.run_number }}" \
-              /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+              /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+              /d:sonar.cs.opencover.reportsPaths="coverage-report/*.opencover.xml" \
+              /d:sonar.sources="src/Ombor.API;src/Ombor.Application;src/Ombor.Domain;src/Ombor.Infrastructure;src/Ombor.Contracts" \
+              /d:sonar.tests="tests/Ombor.Tests.Unit;tests/Ombor.Tests.Integration" \
+              /d:sonar.exclusions="**/coverage-report/**,**/*.opencover.xml,**/*.cobertura.xml,tests/**,src/Ombor.TestDataGenerator/**" \
+              /d:sonar.cpd.exclusions="tests/**,src/Ombor.TestDataGenerator/**"
           fi
 
       - name: Restore dependencies
@@ -219,7 +229,7 @@ jobs:
             const gate = checks.data.check_runs.find(c => c.name.includes('SonarCloud Quality Gate'));
             return { status: gate ? gate.conclusion : 'unknown'; }
 
-      - name: Minimize Old SonarCloud Comments
+      - name: Minimize SonarCloud Comments
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
@@ -232,7 +242,7 @@ jobs:
             });
             for (const c of comments.data) {
               if (c.user.login === "sonarcloud[bot]" && c.body.includes('Quality Gate')) {
-                github.rest.issues.updateComment({
+                await github.rest.issues.updateComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   comment_id: c.id,
