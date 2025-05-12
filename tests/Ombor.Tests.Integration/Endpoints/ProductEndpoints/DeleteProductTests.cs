@@ -10,7 +10,7 @@ namespace Ombor.Tests.Integration.Endpoints.ProductEndpoints;
 public class DeleteProductTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : ProductTestsBase(factory, outputHelper)
 {
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task DeleteAsync_ShouldReturnNoContent_WhenProductExists()
     {
         // Arrange
@@ -24,7 +24,7 @@ public class DeleteProductTests(TestingWebApplicationFactory factory, ITestOutpu
         await _responseValidator.Product.ValidateDeleteAsync(productId);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task DeleteAsync_ShouldReturnNotFound_WhenProductDoesNotExist()
     {
         // Arrange

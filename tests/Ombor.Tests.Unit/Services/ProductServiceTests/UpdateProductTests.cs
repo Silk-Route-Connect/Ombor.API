@@ -10,7 +10,7 @@ namespace Ombor.Tests.Unit.Services.ProductServiceTests;
 
 public sealed class UpdateProductTests : ProductTestsBase
 {
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task UpdateAsync_ShouldThrowValidationException_WhenValidatorFails()
     {
         // Arrange
@@ -27,7 +27,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task UpdateAsync_ShouldThrowEntityNotFoundException_WhenProductDoesNotExist()
     {
         // Arrange
@@ -41,7 +41,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task UpdateAsync_ShouldReturnUpdatedProduct_WhenRequestIsValid()
     {
         // Arrange

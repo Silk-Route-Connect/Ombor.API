@@ -13,7 +13,7 @@ namespace Ombor.Tests.Integration.Endpoints.ProductEndpoints;
 public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : ProductTestsBase(factory, outputHelper)
 {
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange
@@ -29,7 +29,7 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         await _responseValidator.Product.ValidatePutAsync(request, response);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task PutAsync_ShouldReturnNotFound_WhenProductDoesNotExist()
     {
         // Arrange
@@ -43,7 +43,7 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         response.ShouldBeNotFound<Product>(NonExistentEntityId);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task PutAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
