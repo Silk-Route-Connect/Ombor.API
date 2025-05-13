@@ -134,7 +134,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             Id = _id ?? default,
             Name = _name ?? _faker.Commerce.ProductName(),
             SKU = _sku ?? _faker.Random.Guid().ToString(),
-            Description = _description ?? default!,
+            Description = _description ?? default,
             Barcode = _barcode ?? default,
             SalePrice = _salePrice ?? default,
             SupplyPrice = _supplyPrice ?? default,

@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Ombor.Domain.Entities;
 using Ombor.TestDataGenerator.Generators;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Interfaces;
 
 namespace Ombor.Tests.Common.Builders;
@@ -21,7 +22,7 @@ internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICatego
 
     public ICategoryBuilder WithName(string? name)
     {
-        _name = name ?? _faker.Commerce.Categories(1)[0];
+        _name = name ?? _faker.Commerce.CategoryName();
 
         return this;
     }
@@ -48,7 +49,7 @@ internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICatego
         new()
         {
             Id = _id ?? default,
-            Name = _name ?? _faker.Commerce.Categories(1)[0],
+            Name = _name ?? _faker.Commerce.CategoryName(),
             Description = _description,
             Products = _products ?? [],
         };
@@ -56,13 +57,14 @@ internal sealed class CategoryBuilder(Faker faker) : BuilderBase(faker), ICatego
     public Category BuildAndPopulate()
     {
         var id = _id ?? _faker.Random.Number();
+        var products = _products ?? [.. ProductGenerator.Generate([id], 5)];
 
         return new()
         {
             Id = id,
-            Name = _name ?? _faker.Commerce.Categories(1)[0],
+            Name = _name ?? _faker.Commerce.CategoryName(),
             Description = _description ?? _faker.Lorem.Sentence(1),
-            Products = _products ?? [.. ProductGenerator.Generate([id], 5)]
+            Products = products
         };
     }
 }
