@@ -7,6 +7,9 @@ using Ombor.Tests.Common.Interfaces;
 
 namespace Ombor.Tests.Common.Builders;
 
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
 internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProductBuilder
 {
     private int? _id;
@@ -132,8 +135,8 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return new()
         {
             Id = _id ?? default,
-            Name = _name ?? _faker.Commerce.ProductName(),
-            SKU = _sku ?? _faker.Random.Guid().ToString(),
+            Name = _name ?? string.Empty,
+            SKU = _sku ?? string.Empty,
             Description = _description ?? default,
             Barcode = _barcode ?? default,
             SalePrice = _salePrice ?? default,
