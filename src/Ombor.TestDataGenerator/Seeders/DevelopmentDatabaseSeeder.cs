@@ -5,7 +5,7 @@ using Ombor.TestDataGenerator.Interfaces;
 
 namespace Ombor.TestDataGenerator.Seeders;
 
-public class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
+internal sealed class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
 {
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
@@ -20,7 +20,7 @@ public class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSee
             return;
         }
 
-        var categories = CategoryGenerator.Generate(settings.NumberOfCategories)
+        var categories = CategoryGenerator.Generate(settings.NumberOfCategories, settings.Locale)
             .DistinctBy(x => x.Name)
             .ToArray();
 
@@ -44,7 +44,7 @@ public class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDatabaseSee
             throw new InvalidOperationException("Cannot generate products without categories.");
         }
 
-        var products = ProductGenerator.Generate(categories, settings.NumberOfProducts)
+        var products = ProductGenerator.Generate(categories, settings.NumberOfProducts, settings.Locale)
             .DistinctBy(x => x.Name)
             .ToArray();
 

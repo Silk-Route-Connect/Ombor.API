@@ -9,7 +9,7 @@ namespace Ombor.TestDataGenerator.Seeders;
 
 internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
 {
-    private static readonly Faker _faker = new();
+    private readonly Faker _faker = new(settings.Locale);
 
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {

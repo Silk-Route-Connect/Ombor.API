@@ -4,10 +4,11 @@ using Ombor.TestDataGenerator.Interfaces;
 
 namespace Ombor.TestDataGenerator.Seeders;
 
-public sealed class ProductionDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
+internal sealed class ProductionDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
 {
     public Task SeedDatabaseAsync(IApplicationDbContext context)
     {
-        throw new NotImplementedException();
+        Console.WriteLine(settings.ToString());
+        return Task.CompletedTask;
     }
 }
