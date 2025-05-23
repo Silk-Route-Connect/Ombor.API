@@ -67,6 +67,9 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
             .Build();
         var product = _builder.ProductBuilder
             .WithName("Product To Be Updated")
+            .WithSKU()
+            .WithDescription()
+            .WithBarcode()
             .WithCategory(category)
             .Build();
 
