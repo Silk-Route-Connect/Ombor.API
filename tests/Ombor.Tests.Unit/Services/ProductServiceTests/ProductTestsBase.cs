@@ -9,13 +9,6 @@ public abstract class ProductTestsBase : ServiceTestsBase
     private protected readonly ProductService _service;
     protected readonly Product[] _defaultProducts;
 
-    public static TheoryData<string> InvalidMeasurements => new()
-    {
-        "",
-        " ",
-        "Measurement"
-    };
-
     protected ProductTestsBase()
     {
         _defaultProducts = CreateRandomProducts();
