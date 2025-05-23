@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Enums;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// Response returned after successfully updating a product.
@@ -23,7 +25,6 @@ public sealed record UpdateProductResponse(
     string CategoryName,
     string Name,
     string SKU,
-    string Measurement,
     string? Description,
     string? Barcode,
     decimal SalePrice,
@@ -31,4 +32,6 @@ public sealed record UpdateProductResponse(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
-    bool IsLowStock);
+    bool IsLowStock,
+    UnitOfMeasurement Measurement,
+    ProductType Type);

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
-using Ombor.Domain.Enums;
 
 namespace Ombor.Application.Validators.Product;
 
@@ -38,11 +37,6 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
         RuleFor(x => x.Barcode)
             .MaximumLength(ValidationConstants.CodeLength)
             .WithMessage($"Product barcode must not exceed {ValidationConstants.CodeLength} characters.");
-
-        RuleFor(x => x.Measurement)
-            .Must(x => Enum.TryParse<UnitOfMeasurement>(x, out _))
-            .WithMessage("Invalid measurement type. Valid values are: Piece, Kilogram, Liter, etc.")
-            .When(x => !string.IsNullOrEmpty(x.Measurement));
 
         RuleFor(x => x.SupplyPrice)
             .GreaterThan(0)
