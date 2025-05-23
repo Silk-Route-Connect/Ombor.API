@@ -1,4 +1,5 @@
-﻿using Ombor.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Interfaces;
 using Ombor.TestDataGenerator.Interfaces;
 
 namespace Ombor.API.Extensions;
@@ -11,6 +12,8 @@ public static class StartupExtensions
         var seederFactory = scope.ServiceProvider.GetRequiredService<IDatabaseSeederFactory>();
         var seeder = seederFactory.CreateSeeder();
         var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+
+        await context.Database.MigrateAsync();
 
         await seeder.SeedDatabaseAsync(context);
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Interfaces;
@@ -34,4 +35,9 @@ public interface IApplicationDbContext
     /// A <see cref="{Int32}"/> that returns the number of state entries written.
     /// </returns>
     int SaveChanges();
+
+    /// <summary>
+    /// Gets the <see cref="DatabaseFacade"/> instance that provides access to database-related operations for the 
+    /// </summary>
+    DatabaseFacade Database { get; }
 }
