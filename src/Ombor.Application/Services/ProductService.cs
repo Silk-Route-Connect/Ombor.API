@@ -25,7 +25,6 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
                 x.Category.Name,
                 x.Name,
                 x.SKU,
-                x.Measurement.ToString(),
                 x.Description,
                 x.Barcode,
                 x.SalePrice,
@@ -33,7 +32,9 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
                 x.RetailPrice,
                 x.QuantityInStock,
                 x.LowStockThreshold,
-                x.QuantityInStock <= x.LowStockThreshold))
+                x.QuantityInStock <= x.LowStockThreshold,
+                x.Measurement.ToString(),
+                x.Type.ToString()))
             .ToArrayAsync();
     }
 
