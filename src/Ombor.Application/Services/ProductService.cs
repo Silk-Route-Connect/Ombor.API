@@ -20,6 +20,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
         return query
             .AsNoTracking()
+            .OrderBy(x => x.Name)
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
