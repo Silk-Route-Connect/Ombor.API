@@ -23,6 +23,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private int? _quantityInStock;
     private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
+    private ProductType? _type;
     private int? _categoryId;
     private Category? _category;
 
@@ -103,6 +104,13 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return this;
     }
 
+    public IProductBuilder WithType(ProductType? type = null)
+    {
+        _type = type ?? _faker.Random.Enum<ProductType>();
+
+        return this;
+    }
+
     public IProductBuilder WithCategory(Category? category = null)
     {
         category ??= GetRandomCategory();
@@ -137,6 +145,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? default,
             LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
+            Type = _type ?? ProductType.SaleAndSupply,
             CategoryId = categoryId,
             Category = category
         };
@@ -160,6 +169,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? GetRandomStockAmount(),
             LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
+            Type = _type ?? _faker.Random.Enum<ProductType>(),
             CategoryId = categoryId,
             Category = category
         };

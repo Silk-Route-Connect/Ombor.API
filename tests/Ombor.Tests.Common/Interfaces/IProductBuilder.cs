@@ -102,11 +102,19 @@ public interface IProductBuilder
 
     /// <summary>
     /// Specifies the <see cref="Product.Measurement"/>.
-    /// If <paramref name="measurement"/> is <c>null</c>, <see cref="UnitOfMeasurement.None"/> will be used.
+    /// If <paramref name="measurement"/> is <c>null</c>, a random one will be assigned.
     /// </summary>
-    /// <param name="measurement">The unit of measurement, or <c>null</c> to default to None.</param>
+    /// <param name="measurement">The unit of measurement, or <c>null</c> to pick a random one.</param>
     /// <returns>The same builder instance.</returns>
     IProductBuilder WithMeasurement(UnitOfMeasurement? measurement = null);
+
+    /// <summary>
+    /// Specifies the <see cref="Product.Type"/>.
+    /// If <paramref name="type"/> is <c>null</c>, a random one will be assigned.
+    /// </summary>
+    /// <param name="type">The type of the product, or <c>null</c> to pick a random one.</param>
+    /// <returns>The same builder instance.</returns>
+    IProductBuilder WithType(ProductType? type = null);
 
     /// <summary>
     /// Specifies the <see cref="Product.Category"/> and <see cref="Product.CategoryId"/>.
@@ -139,7 +147,7 @@ public interface IProductBuilder
     ///   <item><term><c>QuantityInStock</c></term><description> <c>0</c> if not set.</description></item>
     ///   <item><term><c>LowStockThreshold</c></term><description> <c>0</c> if not set.</description></item>
     ///   <item><term><c>Measurement</c></term><description> <see cref="UnitOfMeasurement.None"/> if not set.</description></item>
-    ///   <item><term><c>ExpireDate</c></term><description> default if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> <see cref="ProductType.SaleAndSupply"/> if not set.</description></item>
     ///   <item><term><c>Category</c></term><description> generated via <see cref="CategoryGenerator.Generate(string)"/> and assigned random number to its <c>ID</c> if not set.</description></item>
     /// </list>
     /// </summary>
@@ -161,7 +169,7 @@ public interface IProductBuilder
     ///   <item><term><c>QuantityInStock</c></term><description> random if not set.</description></item>
     ///   <item><term><c>LowStockThreshold</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Measurement</c></term><description> random if not set.</description></item>
-    ///   <item><term><c>ExpireDate</c></term><description> random if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Category</c></term><description> generated via <see cref="CategoryGenerator.Generate(string)"/> and assigned random number to its <c>ID</c> if not set.</description></item>
     /// </list>
     /// </summary>
