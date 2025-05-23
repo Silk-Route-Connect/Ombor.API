@@ -40,6 +40,7 @@ public class ProductValidator(IApplicationDbContext context)
         Assert.Equal(expected.QuantityInStock, response.QuantityInStock);
         Assert.Equal(expected.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), response.Measurement);
+        Assert.Equal(expected.Type.ToString(), response.Type);
         Assert.Equal(expected.CategoryId, response.CategoryId);
         Assert.Equal(expected.Category.Name, response.CategoryName);
     }
@@ -109,7 +110,6 @@ public class ProductValidator(IApplicationDbContext context)
                 x.Category.Name,
                 x.Name,
                 x.SKU,
-                x.Measurement.ToString(),
                 x.Description,
                 x.Barcode,
                 x.SalePrice,
@@ -117,7 +117,9 @@ public class ProductValidator(IApplicationDbContext context)
                 x.RetailPrice,
                 x.QuantityInStock,
                 x.LowStockThreshold,
-                x.QuantityInStock <= x.LowStockThreshold))
+                x.QuantityInStock <= x.LowStockThreshold,
+                x.Measurement.ToString(),
+                x.Type.ToString()))
             .ToArrayAsync();
     }
 }

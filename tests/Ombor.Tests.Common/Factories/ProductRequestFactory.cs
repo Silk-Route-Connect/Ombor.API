@@ -1,5 +1,5 @@
-﻿using Ombor.Contracts.Requests.Product;
-using Ombor.Domain.Enums;
+﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Requests.Product;
 
 namespace Ombor.Tests.Common.Factories;
 
@@ -13,7 +13,6 @@ public static class ProductRequestFactory
             CategoryId: categoryId ?? DefaultCategoryId,
             Name: "Test Product Name",
             SKU: "Product SKU",
-            Measurement: nameof(UnitOfMeasurement.Kilogram),
             Description: "Product Description",
             Barcode: "Product Barcode",
             SalePrice: 100,
@@ -21,14 +20,14 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)));
+            Measurement: UnitOfMeasurement.Kilogram,
+            Type: Contracts.Enums.ProductType.SaleAndSupply);
 
     public static CreateProductRequest GenerateInvalidCreateRequest(int? categoryId = null)
         => new(
             CategoryId: categoryId ?? DefaultCategoryId,
             Name: "", // Invalid Name
             SKU: "", // Invalid SKU
-            Measurement: nameof(UnitOfMeasurement.Kilogram),
             Description: "Product Description",
             Barcode: "Product Barcode",
             SalePrice: 100,
@@ -36,7 +35,8 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)));
+            Measurement: UnitOfMeasurement.Kilogram,
+            Type: ProductType.SaleAndSupply);
 
     public static UpdateProductRequest GenerateValidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -44,7 +44,6 @@ public static class ProductRequestFactory
             CategoryId: categoryId ?? DefaultCategoryId,
             Name: "Updated Name",
             SKU: $"SKU - {Guid.NewGuid()}",
-            Measurement: nameof(UnitOfMeasurement.Kilogram),
             Description: "Updated Description",
             Barcode: "Updated Barcode",
             SalePrice: 100,
@@ -52,7 +51,8 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)));
+            Measurement: UnitOfMeasurement.Kilogram,
+            Type: ProductType.SaleAndSupply);
 
     public static UpdateProductRequest GenerateInvalidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -60,7 +60,6 @@ public static class ProductRequestFactory
             CategoryId: categoryId ?? DefaultCategoryId,
             Name: "", // Invalid Name
             SKU: "", // Invalid SKU
-            Measurement: nameof(UnitOfMeasurement.Kilogram),
             Description: "Product Description",
             Barcode: "Product Barcode",
             SalePrice: 100,
@@ -68,5 +67,6 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5)));
+            Measurement: UnitOfMeasurement.Kilogram,
+            Type: ProductType.SaleAndSupply);
 }
