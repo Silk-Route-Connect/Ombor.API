@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 
 namespace Ombor.Tests.Integration.Helpers;
 
@@ -10,7 +10,7 @@ public class DatabaseFixture : IAsyncLifetime
 {
     private const string DatabaseName = "TestDB";
 
-    private readonly MsSqlContainer _sqlServerContainer = new MsSqlBuilder()
+    private readonly PostgreSqlContainer _sqlServerContainer = new PostgreSqlBuilder()
         .WithName(DatabaseName)
         .Build();
 
@@ -22,7 +22,7 @@ public class DatabaseFixture : IAsyncLifetime
             if (_context is null)
             {
                 var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseSqlServer(SqlServerConnectionString)
+                    .UseNpgsql(DatabaseConnectionString)
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                     .Options;
 
@@ -33,7 +33,7 @@ public class DatabaseFixture : IAsyncLifetime
         }
     }
 
-    public string SqlServerConnectionString
+    public string DatabaseConnectionString
     {
         get
         {
@@ -80,7 +80,7 @@ public class DatabaseFixture : IAsyncLifetime
         await _sqlServerContainer.StartAsync();
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(SqlServerConnectionString)
+            .UseNpgsql(DatabaseConnectionString)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
 

@@ -37,7 +37,7 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(_databaseFixture.SqlServerConnectionString));
+                options.UseNpgsql(_databaseFixture.DatabaseConnectionString));
         });
 
         builder.UseEnvironment("Testing");
