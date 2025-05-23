@@ -40,7 +40,6 @@ public class ProductValidator(IApplicationDbContext context)
         Assert.Equal(expected.QuantityInStock, response.QuantityInStock);
         Assert.Equal(expected.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), response.Measurement);
-        Assert.Equal(expected.ExpireDate, response.ExpireDate);
         Assert.Equal(expected.CategoryId, response.CategoryId);
         Assert.Equal(expected.Category.Name, response.CategoryName);
     }
@@ -103,8 +102,6 @@ public class ProductValidator(IApplicationDbContext context)
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
-        var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
-
         return await query
             .Select(x => new ProductDto(
                 x.Id,
@@ -120,9 +117,7 @@ public class ProductValidator(IApplicationDbContext context)
                 x.RetailPrice,
                 x.QuantityInStock,
                 x.LowStockThreshold,
-                x.ExpireDate,
-                x.QuantityInStock <= x.LowStockThreshold,
-                x.ExpireDate >= thresholdDate))
+                x.QuantityInStock <= x.LowStockThreshold))
             .ToArrayAsync();
     }
 }

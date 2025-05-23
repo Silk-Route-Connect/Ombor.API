@@ -16,9 +16,7 @@
 /// <param name="RetailPrice">The updated retail price.</param>
 /// <param name="QuantityInStock">The updated stock level.</param>
 /// <param name="LowStockThreshold">The updated low‑stock threshold.</param>
-/// <param name="ExpireDate">The updated expiration date, if any.</param>
 /// <param name="IsLowStock">Whether stock ≤ threshold post‑update.</param>
-/// <param name="IsExpirationClose">Whether expiration ≥ 7 days ago post‑update.</param>
 public sealed record UpdateProductResponse(
     int Id,
     int CategoryId,
@@ -33,6 +31,4 @@ public sealed record UpdateProductResponse(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
-    DateOnly? ExpireDate,
-    bool IsLowStock,
-    bool IsExpirationClose);
+    bool IsLowStock);

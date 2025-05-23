@@ -16,9 +16,7 @@
 /// <param name="RetailPrice">The retail price.</param>
 /// <param name="QuantityInStock">The stock level.</param>
 /// <param name="LowStockThreshold">The low‑stock threshold.</param>
-/// <param name="ExpireDate">The expiration date, if any.</param>
 /// <param name="IsLowStock">Whether stock ≤ threshold.</param>
-/// <param name="IsExpirationClose">Whether expiration ≥ 7 days ago.</param>
 public sealed record ProductDto(
     int Id,
     int CategoryId,
@@ -33,6 +31,4 @@ public sealed record ProductDto(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
-    DateOnly? ExpireDate,
-    bool IsLowStock,
-    bool IsExpirationClose);
+    bool IsLowStock);

@@ -23,7 +23,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private int? _quantityInStock;
     private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
-    private DateOnly? _expireDate;
     private int? _categoryId;
     private Category? _category;
 
@@ -104,13 +103,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return this;
     }
 
-    public IProductBuilder WithExpireDate(DateOnly? expireDate = null)
-    {
-        _expireDate = expireDate ?? _faker.Date.FutureDateOnly();
-
-        return this;
-    }
-
     public IProductBuilder WithCategory(Category? category = null)
     {
         category ??= GetRandomCategory();
@@ -145,7 +137,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? default,
             LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
-            ExpireDate = _expireDate ?? default,
             CategoryId = categoryId,
             Category = category
         };
@@ -169,7 +160,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? GetRandomStockAmount(),
             LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
-            ExpireDate = _expireDate ?? _faker.Date.FutureDateOnly(),
             CategoryId = categoryId,
             Category = category
         };

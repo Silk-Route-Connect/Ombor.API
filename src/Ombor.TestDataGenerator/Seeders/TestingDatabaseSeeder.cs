@@ -57,7 +57,6 @@ internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDataba
                 QuantityInStock = _faker.Random.Number(),
                 LowStockThreshold = _faker.Random.Number(),
                 Measurement = _faker.Random.Enum<UnitOfMeasurement>(),
-                ExpireDate = _faker.Date.FutureDateOnly(),
                 CategoryId = _faker.PickRandom<int>(categoryIds),
                 Category = null!
             });

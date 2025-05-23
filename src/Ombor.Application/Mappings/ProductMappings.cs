@@ -11,10 +11,8 @@ internal static class ProductMappings
     {
         if (product.Category is null)
         {
-            throw new InvalidOperationException("Cannot map product to DTO because category is null.");
+            throw new InvalidOperationException("Cannot map product without Category.");
         }
-
-        var thresholdDate = GetThresholdDate();
 
         return new(
             Id: product.Id,
@@ -30,9 +28,7 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
     }
 
     public static Product ToEntity(this CreateProductRequest request)
@@ -54,7 +50,6 @@ internal static class ProductMappings
             QuantityInStock = request.QuantityInStock,
             LowStockThreshold = request.LowStockThreshold,
             Measurement = measurement,
-            ExpireDate = request.ExpireDate,
             CategoryId = request.CategoryId,
             Category = null! // should be taken from CategoryId
         };
@@ -62,7 +57,10 @@ internal static class ProductMappings
 
     public static CreateProductResponse ToCreateResponse(this Product product)
     {
-        var thresholdDate = GetThresholdDate();
+        if (product.Category is null)
+        {
+            throw new InvalidOperationException("Cannot map product without Category.");
+        }
 
         return new(
             Id: product.Id,
@@ -78,14 +76,15 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
     {
-        var thresholdDate = GetThresholdDate();
+        if (product.Category is null)
+        {
+            throw new InvalidOperationException("Cannot map product without Category.");
+        }
 
         return new(
             Id: product.Id,
@@ -101,9 +100,7 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
     }
 
     public static void ApplyUpdate(this Product product, UpdateProductRequest request)
@@ -123,10 +120,6 @@ internal static class ProductMappings
         product.QuantityInStock = request.QuantityInStock;
         product.LowStockThreshold = request.LowStockThreshold;
         product.Measurement = measurement;
-        product.ExpireDate = request.ExpireDate;
         product.CategoryId = request.CategoryId;
     }
-
-    private static DateOnly GetThresholdDate()
-        => DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
 }

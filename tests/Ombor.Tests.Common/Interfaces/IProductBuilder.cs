@@ -109,14 +109,6 @@ public interface IProductBuilder
     IProductBuilder WithMeasurement(UnitOfMeasurement? measurement = null);
 
     /// <summary>
-    /// Specifies the <see cref="Product.ExpireDate"/>.
-    /// If <paramref name="expireDate"/> is <c>null</c>, a future <see cref="DateOnly"/> will be assigned.
-    /// </summary>
-    /// <param name="expireDate">The expiration date, or <c>null</c> to generate a random one.</param>
-    /// <returns>The same builder instance.</returns>
-    IProductBuilder WithExpireDate(DateOnly? expireDate = null);
-
-    /// <summary>
     /// Specifies the <see cref="Product.Category"/> and <see cref="Product.CategoryId"/>.
     /// If <paramref name="category"/> is <c>null</c>, <see cref="CategoryGenerator.Generate(string)"/> will be used.
     /// </summary>

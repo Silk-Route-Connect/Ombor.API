@@ -38,8 +38,8 @@ public class Product : EntityBase
     /// <summary>Gets or sets the unit of measurement for the product.</summary>
     public UnitOfMeasurement Measurement { get; set; }
 
-    /// <summary>Gets or sets the optional expiration date.</summary>
-    public DateOnly? ExpireDate { get; set; }
+    /// <summary>Gets or sets type of the product.</summary>
+    public ProductType Type { get; set; }
 
     /// <summary>Gets or sets the foreign key to the Category entity.</summary>
     public int CategoryId { get; set; }

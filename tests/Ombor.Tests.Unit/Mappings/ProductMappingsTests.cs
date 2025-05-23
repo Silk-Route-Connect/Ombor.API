@@ -40,7 +40,6 @@ public class ProductMappingsTests
         Assert.Equal(50, entity.QuantityInStock);
         Assert.Equal(10, entity.LowStockThreshold);
         Assert.Equal(UnitOfMeasurement.Kilogram, entity.Measurement);
-        Assert.Equal(expireDate, entity.ExpireDate);
         Assert.Equal(5, entity.CategoryId);
         // Category is intentionally null after mapping
         Assert.Null(entity.Category);
@@ -93,7 +92,6 @@ public class ProductMappingsTests
             RetailPrice = 6m,
             QuantityInStock = 3,
             LowStockThreshold = 5,
-            ExpireDate = threshold.AddDays(1)
         };
 
         // Act
@@ -113,9 +111,7 @@ public class ProductMappingsTests
         Assert.Equal(6m, response.RetailPrice);
         Assert.Equal(3, response.QuantityInStock);
         Assert.Equal(5, response.LowStockThreshold);
-        Assert.Equal(threshold.AddDays(1), response.ExpireDate);
         Assert.True(response.IsLowStock);
-        Assert.True(response.IsExpirationClose);
     }
 
     [Fact]
@@ -140,7 +136,6 @@ public class ProductMappingsTests
             RetailPrice = 3m,
             QuantityInStock = 10,
             LowStockThreshold = 5,
-            ExpireDate = threshold.AddDays(-10)
         };
 
         // Act
@@ -148,7 +143,6 @@ public class ProductMappingsTests
 
         // Assert
         Assert.False(response.IsLowStock);
-        Assert.False(response.IsExpirationClose);
         Assert.Equal("Prod2", response.Name);
         Assert.Equal("P-101", response.SKU);
     }
@@ -175,7 +169,6 @@ public class ProductMappingsTests
             RetailPrice = 8m,
             QuantityInStock = 1,
             LowStockThreshold = 2,
-            ExpireDate = threshold
         };
 
         // Act
@@ -188,7 +181,6 @@ public class ProductMappingsTests
         Assert.Equal("Prod3", dto.Name);
         Assert.Equal("P-102", dto.SKU);
         Assert.True(dto.IsLowStock);
-        Assert.True(dto.IsExpirationClose);
     }
 
     [Fact]
@@ -218,7 +210,6 @@ public class ProductMappingsTests
             Measurement = UnitOfMeasurement.None,
             QuantityInStock = 1,
             LowStockThreshold = 1,
-            ExpireDate = DateOnly.FromDateTime(DateTime.UtcNow),
             CategoryId = 1,
             Category = new Category { Id = 1, Name = "C1", Description = "" }
         };
@@ -247,7 +238,6 @@ public class ProductMappingsTests
         Assert.Equal(20, product.QuantityInStock);
         Assert.Equal(15, product.LowStockThreshold);
         Assert.Equal(2, product.CategoryId);
-        Assert.Equal(request.ExpireDate, product.ExpireDate);
     }
 
     [Fact]

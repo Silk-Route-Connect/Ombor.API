@@ -17,7 +17,6 @@ public static class ProductExtensions
         product.QuantityInStock == request.QuantityInStock &&
         product.LowStockThreshold == request.LowStockThreshold &&
         IsMeasurementEqual(product.Measurement, request.Measurement) &&
-        product.ExpireDate == request.ExpireDate &&
         product.CategoryId == request.CategoryId;
 
     private static bool IsMeasurementEqual(UnitOfMeasurement mappedMeasurement, string requestMeasurement)
