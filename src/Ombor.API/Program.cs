@@ -23,6 +23,8 @@ app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
 
+app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
+
 app.UseAuthorization();
 
 app.MapControllers();

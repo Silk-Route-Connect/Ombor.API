@@ -7,6 +7,8 @@ namespace Ombor.API.Extensions;
 
 internal static class DependencyInjection
 {
+    public const string CorsPolicyName = "DefaultCorsPolicy";
+
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -14,6 +16,7 @@ internal static class DependencyInjection
             .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
+        services.AddCors(configuration);
 
         return services;
     }
@@ -46,5 +49,28 @@ internal static class DependencyInjection
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         }).AddSwaggerGenNewtonsoftSupport();
+    }
+
+    private static IServiceCollection AddCors(this IServiceCollection services, IConfiguration configuration)
+    {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
+        if (allowedOrigins is null || allowedOrigins.Length == 0)
+        {
+            throw new InvalidOperationException("Cannot configure CORS without allowed origins specified.");
+        }
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy(CorsPolicyName, builder =>
+            {
+                builder
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+        return services;
     }
 }
