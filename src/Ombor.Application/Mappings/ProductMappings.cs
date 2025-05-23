@@ -1,7 +1,6 @@
 ﻿using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 
 namespace Ombor.Application.Mappings;
 
@@ -20,7 +19,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -28,16 +26,13 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static Product ToEntity(this CreateProductRequest request)
     {
-        if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
-        {
-            measurement = UnitOfMeasurement.None;
-        }
-
         return new()
         {
             Name = request.Name,
@@ -49,7 +44,8 @@ internal static class ProductMappings
             RetailPrice = request.RetailPrice,
             QuantityInStock = request.QuantityInStock,
             LowStockThreshold = request.LowStockThreshold,
-            Measurement = measurement,
+            Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
+            Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
             CategoryId = request.CategoryId,
             Category = null! // should be taken from CategoryId
         };
@@ -68,7 +64,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -76,7 +71,9 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
@@ -92,7 +89,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -100,16 +96,13 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold);
+            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static void ApplyUpdate(this Product product, UpdateProductRequest request)
     {
-        if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
-        {
-            measurement = UnitOfMeasurement.None;
-        }
-
         product.Name = request.Name;
         product.SKU = request.SKU;
         product.Description = request.Description;
@@ -119,7 +112,8 @@ internal static class ProductMappings
         product.RetailPrice = request.RetailPrice;
         product.QuantityInStock = request.QuantityInStock;
         product.LowStockThreshold = request.LowStockThreshold;
-        product.Measurement = measurement;
+        product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
+        product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
         product.CategoryId = request.CategoryId;
     }
 }

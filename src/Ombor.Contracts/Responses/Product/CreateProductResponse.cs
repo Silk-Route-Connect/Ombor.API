@@ -1,6 +1,4 @@
-﻿using Ombor.Contracts.Enums;
-
-namespace Ombor.Contracts.Responses.Product;
+﻿namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// Response returned after successfully creating a product.
@@ -34,5 +32,5 @@ public sealed record CreateProductResponse(
     int QuantityInStock,
     int LowStockThreshold,
     bool IsLowStock,
-    UnitOfMeasurement Measurement,
-    ProductType Type);
+    string Measurement,
+    string Type);
