@@ -32,5 +32,6 @@ public static class ProductGenerator
         .RuleFor(x => x.RetailPrice, (f, p) => f.Random.Decimal(p.SupplyPrice + 2_000, p.SupplyPrice + 10_000))
         .RuleFor(x => x.QuantityInStock, f => f.Random.Number(10, 10_000))
         .RuleFor(x => x.LowStockThreshold, f => f.Random.Number(10, 100))
-        .RuleFor(x => x.Measurement, f => f.Random.Enum<UnitOfMeasurement>());
+        .RuleFor(x => x.Measurement, f => f.Random.Enum<UnitOfMeasurement>())
+        .RuleFor(x => x.Type, f => f.Random.Enum<ProductType>());
 }
