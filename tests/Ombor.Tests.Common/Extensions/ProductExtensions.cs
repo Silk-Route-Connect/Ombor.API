@@ -17,15 +17,12 @@ public static class ProductExtensions
         product.QuantityInStock == request.QuantityInStock &&
         product.LowStockThreshold == request.LowStockThreshold &&
         IsMeasurementEqual(product.Measurement, request.Measurement) &&
+        IsTypeEqual(product.Type, request.Type) &&
         product.CategoryId == request.CategoryId;
 
-    private static bool IsMeasurementEqual(UnitOfMeasurement mappedMeasurement, string requestMeasurement)
-    {
-        if (Enum.TryParse(requestMeasurement, out UnitOfMeasurement result))
-        {
-            return mappedMeasurement == result;
-        }
+    private static bool IsMeasurementEqual(UnitOfMeasurement mappedMeasurement, Contracts.Enums.UnitOfMeasurement requestMeasurement)
+        => (int)mappedMeasurement == (int)requestMeasurement;
 
-        return mappedMeasurement == UnitOfMeasurement.None;
-    }
+    private static bool IsTypeEqual(ProductType mappedType, Contracts.Enums.ProductType requestType)
+        => (int)mappedType == (int)requestType;
 }
