@@ -1,17 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
-using Testcontainers.PostgreSql;
+using Testcontainers.MsSql;
 
 namespace Ombor.Tests.Integration.Helpers;
 
 public class DatabaseFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:latest")
-        .WithDatabase("testdb")
-        .WithUsername("testuser")
-        .WithPassword("testpass")
+    private const string DatabaseName = "TestDB";
+
+    private readonly MsSqlContainer _sqlServerContainer = new MsSqlBuilder()
         .WithCleanUp(true)
         .Build();
 
@@ -23,7 +22,7 @@ public class DatabaseFixture : IAsyncLifetime
             if (_context is null)
             {
                 var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseNpgsql(DatabaseConnectionString)
+                    .UseSqlServer(DatabaseConnectionString)
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                     .EnableSensitiveDataLogging()
                     .Options;
@@ -35,7 +34,18 @@ public class DatabaseFixture : IAsyncLifetime
         }
     }
 
-    public string DatabaseConnectionString => _postgresContainer.GetConnectionString();
+    public string DatabaseConnectionString
+    {
+        get
+        {
+            var connectionString = new SqlConnectionStringBuilder(_sqlServerContainer.GetConnectionString())
+            {
+                InitialCatalog = DatabaseName,
+            };
+
+            return connectionString.ConnectionString;
+        }
+    }
 
     public async Task InitializeAsync()
     {
@@ -59,18 +69,18 @@ public class DatabaseFixture : IAsyncLifetime
             await _context.Database.EnsureDeletedAsync();
         }
 
-        if (_postgresContainer != null)
+        if (_sqlServerContainer != null)
         {
-            await _postgresContainer.DisposeAsync();
+            await _sqlServerContainer.DisposeAsync();
         }
     }
 
     private async Task<ApplicationDbContext> GetDbContext()
     {
-        await _postgresContainer.StartAsync();
+        await _sqlServerContainer.StartAsync();
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(DatabaseConnectionString)
+            .UseSqlServer(DatabaseConnectionString)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
 

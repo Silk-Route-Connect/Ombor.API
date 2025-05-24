@@ -36,11 +36,10 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(context);
             }
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options
-                .LogTo(Console.WriteLine, LogLevel.Information)
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
-                .UseNpgsql(_databaseFixture.DatabaseConnectionString));
+                .UseSqlServer(_databaseFixture.DatabaseConnectionString));
         });
 
         builder.UseEnvironment("Testing");
