@@ -1,11 +1,9 @@
-name: CD – Deploy to Render
+name: CD - Deploy to Render
 
 on:
   workflow_run:
-    workflows:
-      - 'CI - Build, Test, Analyze, and Coverage Check'
-    types:
-      - completed
+    workflows: ['CI - Build, Test, Analyze, and Coverage Check']
+    types: [completed]
 
 jobs:
   deploy:
@@ -19,10 +17,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Render CLI
-        run: npm install -g @render/cli
+        run: |
+          curl -L https://github.com/render-oss/cli/releases/download/v1.1.0/cli_1.1.0_linux_amd64.zip -o render.zip
+          unzip render.zip
+          sudo mv cli_v1.1.0 /usr/local/bin/render
 
-      - name: Deploy to Render
+      - name: Trigger deploy with Render CLI
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          render deploys create "${{ secrets.RENDER_SERVICE_ID }}" --wait
+          render deploys create "${{ secrets.RENDER_SERVICE_ID }}" --output json --confirm
