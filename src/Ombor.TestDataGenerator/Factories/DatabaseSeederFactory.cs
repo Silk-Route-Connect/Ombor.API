@@ -19,7 +19,8 @@ internal sealed class DatabaseSeederFactory(IServiceScopeFactory serviceScopeFac
             "development" => new DevelopmentDatabaseSeeder(settings),
             "testing" => new TestingDatabaseSeeder(settings),
             "production" => new ProductionDatabaseSeeder(settings),
-            _ => throw new ArgumentOutOfRangeException($"Cannot create an instance of Database Seeder for environment: {environment}."),
+            "staging" => new ProductionDatabaseSeeder(settings),
+            _ => throw new ArgumentOutOfRangeException($"Cannot create an instance of Database Seeder for environment: {environment.EnvironmentName}."),
         };
     }
 }
