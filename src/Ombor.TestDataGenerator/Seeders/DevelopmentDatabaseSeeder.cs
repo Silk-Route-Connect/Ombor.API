@@ -39,11 +39,6 @@ internal sealed class DevelopmentDatabaseSeeder(DataSeedSettings settings) : IDa
             .Select(x => x.Id)
             .ToArray();
 
-        if (categories.Length == 0)
-        {
-            throw new InvalidOperationException("Cannot generate products without categories.");
-        }
-
         var products = ProductGenerator.Generate(categories, settings.NumberOfProducts, settings.Locale)
             .DistinctBy(x => x.Name)
             .ToArray();
