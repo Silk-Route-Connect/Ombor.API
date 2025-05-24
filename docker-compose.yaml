@@ -9,20 +9,24 @@ services:
       - "5000:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=ombor;Username=ombor_user;Password=secure_pwd"
+      ConnectionStrings__DefaultConnection: >-
+        Server=sqlserver;
+        Database=ombor;
+        User Id=sa;
+        Password=fOR*DS10-9;
+        TrustServerCertificate=True;
     depends_on:
-      - postgres
+      - sqlserver
 
-  postgres:
-    image: postgres:15
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      POSTGRES_DB: ombor
-      POSTGRES_USER: ombor_user
-      POSTGRES_PASSWORD: secure_pwd
+      SA_PASSWORD: "fOR*DS10-9"
+      ACCEPT_EULA: "Y"
     ports:
-      - "5432:5432"
+      - "1433:1433"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mssqldata:/var/opt/mssql/data
 
 volumes:
-  pgdata:
+  mssqldata:
