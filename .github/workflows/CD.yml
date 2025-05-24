@@ -1,0 +1,28 @@
+name: CD – Deploy to Render
+
+on:
+  workflow_run:
+    workflows:
+      - 'CI - Build, Test, Analyze, and Coverage Check'
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Render CLI
+        run: npm install -g @render/cli
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render deploys create "${{ secrets.RENDER_SERVICE_ID }}" --wait
