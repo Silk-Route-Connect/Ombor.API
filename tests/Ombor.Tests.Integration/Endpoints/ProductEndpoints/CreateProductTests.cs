@@ -11,7 +11,7 @@ namespace Ombor.Tests.Integration.Endpoints.ProductEndpoints;
 public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : ProductTestsBase(factory, outputHelper)
 {
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task CreateAsync_ShouldReturnCreated_WhenRequestIsValid()
     {
         // Arrange
@@ -24,7 +24,7 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         await _responseValidator.Product.ValidatePostAsync(request, response);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task CreateAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange

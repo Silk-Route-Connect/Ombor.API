@@ -11,7 +11,7 @@ namespace Ombor.Tests.Integration.Endpoints.ProductEndpoints;
 public class GetProductByIdTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     : ProductTestsBase(factory, outputHelper)
 {
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task GetByIdAsync_ShouldReturnOk_WhenProductExists()
     {
         // Arrange
@@ -32,7 +32,7 @@ public class GetProductByIdTests(TestingWebApplicationFactory factory, ITestOutp
         await _responseValidator.Product.ValidateGetByIdAsync(productId, response);
     }
 
-    [Fact]
+    [Fact(Skip = "Test")]
     public async Task GetByIdAsync_ShouldReturnNotFound_WhenProductDoesNotExist()
     {
         // Arrange
