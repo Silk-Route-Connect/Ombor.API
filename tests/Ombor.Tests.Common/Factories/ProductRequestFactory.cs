@@ -21,7 +21,7 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: Contracts.Enums.ProductType.SaleAndSupply);
+            Type: Contracts.Enums.ProductType.All);
 
     public static CreateProductRequest GenerateInvalidCreateRequest(int? categoryId = null)
         => new(
@@ -36,7 +36,7 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.SaleAndSupply);
+            Type: ProductType.All);
 
     public static UpdateProductRequest GenerateValidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -52,7 +52,7 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.SaleAndSupply);
+            Type: ProductType.Supply);
 
     public static UpdateProductRequest GenerateInvalidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -68,5 +68,5 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.SaleAndSupply);
+            Type: ProductType.Sale);
 }

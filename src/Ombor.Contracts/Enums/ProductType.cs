@@ -15,5 +15,5 @@ public enum ProductType
     Supply = 2,
 
     /// <summary>Product is for both sale and supply.</summary>
-    SaleAndSupply = 3,
+    All = 100,
 }

@@ -108,7 +108,7 @@ public class ProductMappingsTests
             QuantityInStock = 10,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.Box,
-            Type = DomainType.SaleAndSupply
+            Type = DomainType.All
         };
 
         // Act
@@ -129,7 +129,7 @@ public class ProductMappingsTests
         Assert.Equal(2, response.LowStockThreshold);
         Assert.False(response.IsLowStock);
         Assert.Equal("Box", response.Measurement);
-        Assert.Equal("SaleAndSupply", response.Type);
+        Assert.Equal(nameof(DomainType.All), response.Type);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class ProductMappingsTests
             QuantityInStock: 3,
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
-            Type: ContractType.SaleAndSupply);
+            Type: ContractType.All);
 
         // Act
         product.ApplyUpdate(updateRequest);
@@ -281,7 +281,7 @@ public class ProductMappingsTests
         Assert.Equal(3, product.QuantityInStock);
         Assert.Equal(1, product.LowStockThreshold);
         Assert.Equal(DomainMeasurement.Ton, product.Measurement);
-        Assert.Equal(DomainType.SaleAndSupply, product.Type);
+        Assert.Equal(DomainType.All, product.Type);
         Assert.Equal(10, product.CategoryId);
 
         // Note: ApplyUpdate changes CategoryId but leaves the navigation property untouched.

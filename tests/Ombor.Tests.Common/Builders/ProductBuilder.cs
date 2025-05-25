@@ -145,7 +145,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? default,
             LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
-            Type = _type ?? ProductType.SaleAndSupply,
+            Type = _type ?? ProductType.All,
             CategoryId = categoryId,
             Category = category
         };
