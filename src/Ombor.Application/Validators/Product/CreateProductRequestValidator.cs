@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Product;
 
 namespace Ombor.Application.Validators.Product;
@@ -40,13 +41,15 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
 
         RuleFor(x => x.SupplyPrice)
             .GreaterThan(0)
-            .WithMessage("Supply price must be greater than zero.");
+            .WithMessage("Supply price must be greater than zero.")
+            .When(x => x.Type != ProductType.Sale);
 
         RuleFor(x => x.SalePrice)
             .GreaterThan(0)
             .WithMessage("Sale price must be greater than zero.")
             .GreaterThan(x => x.SupplyPrice)
-            .WithMessage("Sale price must be greater than supply price.");
+            .WithMessage("Sale price must be greater than supply price.")
+            .When(x => x.Type != ProductType.Supply);
 
         RuleFor(x => x.RetailPrice)
             .GreaterThan(0)
@@ -54,7 +57,8 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .GreaterThan(x => x.SupplyPrice)
             .WithMessage("Retail price must be greater than supply price.")
             .LessThan(x => x.SalePrice)
-            .WithMessage("Retail price must be less than sale price.");
+            .WithMessage("Retail price must be less than sale price")
+            .When(x => x.Type != ProductType.Supply);
 
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0)
