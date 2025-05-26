@@ -9,7 +9,7 @@ namespace Ombor.TestDataGenerator.Seeders;
 
 internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
 {
-    private static readonly Faker _faker = new();
+    private readonly Faker _faker = new(settings.Locale);
 
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
@@ -57,7 +57,6 @@ internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDataba
                 QuantityInStock = _faker.Random.Number(),
                 LowStockThreshold = _faker.Random.Number(),
                 Measurement = _faker.Random.Enum<UnitOfMeasurement>(),
-                ExpireDate = _faker.Date.FutureDateOnly(),
                 CategoryId = _faker.PickRandom<int>(categoryIds),
                 Category = null!
             });

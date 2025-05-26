@@ -36,8 +36,10 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(context);
             }
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(_databaseFixture.SqlServerConnectionString));
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .UseSqlServer(_databaseFixture.DatabaseConnectionString));
         });
 
         builder.UseEnvironment("Testing");

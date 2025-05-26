@@ -11,7 +11,7 @@ public class DatabaseFixture : IAsyncLifetime
     private const string DatabaseName = "TestDB";
 
     private readonly MsSqlContainer _sqlServerContainer = new MsSqlBuilder()
-        .WithName(DatabaseName)
+        .WithCleanUp(true)
         .Build();
 
     private ApplicationDbContext? _context;
@@ -22,8 +22,9 @@ public class DatabaseFixture : IAsyncLifetime
             if (_context is null)
             {
                 var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseSqlServer(SqlServerConnectionString)
+                    .UseSqlServer(DatabaseConnectionString)
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                    .EnableSensitiveDataLogging()
                     .Options;
 
                 _context = new ApplicationDbContext(options);
@@ -33,7 +34,7 @@ public class DatabaseFixture : IAsyncLifetime
         }
     }
 
-    public string SqlServerConnectionString
+    public string DatabaseConnectionString
     {
         get
         {
@@ -50,11 +51,10 @@ public class DatabaseFixture : IAsyncLifetime
     {
         try
         {
-            _context = await GetSqlServerAsync();
+            _context = await GetDbContext();
 
             await _context.Database.EnsureDeletedAsync();
             await _context.Database.MigrateAsync();
-            // await _context.Database.OpenConnectionAsync();
         }
         catch (Exception ex)
         {
@@ -75,12 +75,12 @@ public class DatabaseFixture : IAsyncLifetime
         }
     }
 
-    private async Task<ApplicationDbContext> GetSqlServerAsync()
+    private async Task<ApplicationDbContext> GetDbContext()
     {
         await _sqlServerContainer.StartAsync();
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(SqlServerConnectionString)
+            .UseSqlServer(DatabaseConnectionString)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
 

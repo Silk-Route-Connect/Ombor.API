@@ -24,6 +24,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 
         return query
             .AsNoTracking()
+            .OrderBy(x => x.Name)
             .Select(x => new CategoryDto(x.Id, x.Name, x.Description))
             .ToArrayAsync();
     }

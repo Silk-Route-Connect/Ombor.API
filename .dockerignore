@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.vs/
+
+.git/
+.github/
+
+coverage/
+
+*.user
+*.suo

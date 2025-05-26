@@ -76,8 +76,9 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder
-            .Property(p => p.ExpireDate)
-            .IsRequired(false);
+            .Property(p => p.Type)
+            .HasConversion<string>()
+            .IsRequired();
 
         #endregion
     }

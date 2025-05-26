@@ -1,7 +1,6 @@
 ﻿using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 
 namespace Ombor.Application.Mappings;
 
@@ -11,10 +10,8 @@ internal static class ProductMappings
     {
         if (product.Category is null)
         {
-            throw new InvalidOperationException("Cannot map product to DTO because category is null.");
+            throw new InvalidOperationException("Cannot map product without Category.");
         }
-
-        var thresholdDate = GetThresholdDate();
 
         return new(
             Id: product.Id,
@@ -22,7 +19,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -30,18 +26,13 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static Product ToEntity(this CreateProductRequest request)
     {
-        if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
-        {
-            measurement = UnitOfMeasurement.None;
-        }
-
         return new()
         {
             Name = request.Name,
@@ -53,8 +44,8 @@ internal static class ProductMappings
             RetailPrice = request.RetailPrice,
             QuantityInStock = request.QuantityInStock,
             LowStockThreshold = request.LowStockThreshold,
-            Measurement = measurement,
-            ExpireDate = request.ExpireDate,
+            Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
+            Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
             CategoryId = request.CategoryId,
             Category = null! // should be taken from CategoryId
         };
@@ -62,7 +53,10 @@ internal static class ProductMappings
 
     public static CreateProductResponse ToCreateResponse(this Product product)
     {
-        var thresholdDate = GetThresholdDate();
+        if (product.Category is null)
+        {
+            throw new InvalidOperationException("Cannot map product without Category.");
+        }
 
         return new(
             Id: product.Id,
@@ -70,7 +64,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -78,14 +71,17 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
     {
-        var thresholdDate = GetThresholdDate();
+        if (product.Category is null)
+        {
+            throw new InvalidOperationException("Cannot map product without Category.");
+        }
 
         return new(
             Id: product.Id,
@@ -93,7 +89,6 @@ internal static class ProductMappings
             CategoryName: product.Category.Name,
             Name: product.Name,
             SKU: product.SKU,
-            Measurement: product.Measurement.ToString(),
             Description: product.Description,
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
@@ -101,18 +96,13 @@ internal static class ProductMappings
             RetailPrice: product.RetailPrice,
             QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            ExpireDate: product.ExpireDate,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
-            IsExpirationClose: product.ExpireDate >= thresholdDate);
+            Measurement: product.Measurement.ToString(),
+            Type: product.Type.ToString());
     }
 
     public static void ApplyUpdate(this Product product, UpdateProductRequest request)
     {
-        if (!Enum.TryParse<UnitOfMeasurement>(request.Measurement, out var measurement))
-        {
-            measurement = UnitOfMeasurement.None;
-        }
-
         product.Name = request.Name;
         product.SKU = request.SKU;
         product.Description = request.Description;
@@ -122,11 +112,8 @@ internal static class ProductMappings
         product.RetailPrice = request.RetailPrice;
         product.QuantityInStock = request.QuantityInStock;
         product.LowStockThreshold = request.LowStockThreshold;
-        product.Measurement = measurement;
-        product.ExpireDate = request.ExpireDate;
+        product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
+        product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
         product.CategoryId = request.CategoryId;
     }
-
-    private static DateOnly GetThresholdDate()
-        => DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
 }

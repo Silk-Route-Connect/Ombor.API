@@ -40,7 +40,7 @@ public partial class Initial_Create : Migration
                 QuantityInStock = table.Column<int>(type: "int", nullable: false),
                 LowStockThreshold = table.Column<int>(type: "int", nullable: false),
                 Measurement = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                ExpireDate = table.Column<DateOnly>(type: "date", nullable: true),
+                Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                 CategoryId = table.Column<int>(type: "int", nullable: false)
             },
             constraints: table =>

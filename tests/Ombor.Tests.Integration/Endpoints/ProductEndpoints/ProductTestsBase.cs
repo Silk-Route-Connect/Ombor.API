@@ -24,7 +24,6 @@ public class ProductTestsBase(TestingWebApplicationFactory factory, ITestOutputH
             SKU = $"Test SKU {Guid.NewGuid()}",
             Barcode = "Test Barcode",
             Description = "Test Product Description",
-            ExpireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30)),
             SalePrice = 100.00m,
             SupplyPrice = 50.00m,
             RetailPrice = 90.00m,

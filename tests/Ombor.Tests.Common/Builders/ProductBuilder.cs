@@ -7,6 +7,9 @@ using Ombor.Tests.Common.Interfaces;
 
 namespace Ombor.Tests.Common.Builders;
 
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
 internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProductBuilder
 {
     private int? _id;
@@ -20,7 +23,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private int? _quantityInStock;
     private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
-    private DateOnly? _expireDate;
+    private ProductType? _type;
     private int? _categoryId;
     private Category? _category;
 
@@ -101,9 +104,9 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return this;
     }
 
-    public IProductBuilder WithExpireDate(DateOnly? expireDate = null)
+    public IProductBuilder WithType(ProductType? type = null)
     {
-        _expireDate = expireDate ?? _faker.Date.FutureDateOnly();
+        _type = type ?? _faker.Random.Enum<ProductType>();
 
         return this;
     }
@@ -132,9 +135,9 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return new()
         {
             Id = _id ?? default,
-            Name = _name ?? _faker.Commerce.ProductName(),
-            SKU = _sku ?? _faker.Random.Guid().ToString(),
-            Description = _description ?? default!,
+            Name = _name ?? string.Empty,
+            SKU = _sku ?? string.Empty,
+            Description = _description ?? default,
             Barcode = _barcode ?? default,
             SalePrice = _salePrice ?? default,
             SupplyPrice = _supplyPrice ?? default,
@@ -142,7 +145,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? default,
             LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
-            ExpireDate = _expireDate ?? default,
+            Type = _type ?? ProductType.All,
             CategoryId = categoryId,
             Category = category
         };
@@ -166,7 +169,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             QuantityInStock = _quantityInStock ?? GetRandomStockAmount(),
             LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
-            ExpireDate = _expireDate ?? _faker.Date.FutureDateOnly(),
+            Type = _type ?? _faker.Random.Enum<ProductType>(),
             CategoryId = categoryId,
             Category = category
         };

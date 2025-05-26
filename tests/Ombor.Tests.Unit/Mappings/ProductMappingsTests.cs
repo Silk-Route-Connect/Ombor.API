@@ -1,205 +1,25 @@
 ﻿using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
+using ContractMeasurement = Ombor.Contracts.Enums.UnitOfMeasurement;
+using ContractType = Ombor.Contracts.Enums.ProductType;
+using DomainMeasurement = Ombor.Domain.Enums.UnitOfMeasurement;
+using DomainType = Ombor.Domain.Enums.ProductType;
 
 namespace Ombor.Tests.Unit.Mappings;
 
 public class ProductMappingsTests
 {
     [Fact]
-    public void ToEntity_ShouldMapAllProperties_WithValidMeasurement()
-    {
-        // Arrange
-        var expireDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5));
-        var request = new CreateProductRequest(
-            CategoryId: 5,
-            Name: "Widget",
-            SKU: "WGT-001",
-            Measurement: "Kilogram",
-            Description: "Heavy widget",
-            Barcode: "123456",
-            SalePrice: 9.99m,
-            SupplyPrice: 7.50m,
-            RetailPrice: 12.00m,
-            QuantityInStock: 50,
-            LowStockThreshold: 10,
-            ExpireDate: expireDate);
-
-        // Act
-        var entity = request.ToEntity();
-
-        // Assert
-        Assert.Equal("Widget", entity.Name);
-        Assert.Equal("WGT-001", entity.SKU);
-        Assert.Equal("Heavy widget", entity.Description);
-        Assert.Equal("123456", entity.Barcode);
-        Assert.Equal(9.99m, entity.SalePrice);
-        Assert.Equal(7.50m, entity.SupplyPrice);
-        Assert.Equal(12.00m, entity.RetailPrice);
-        Assert.Equal(50, entity.QuantityInStock);
-        Assert.Equal(10, entity.LowStockThreshold);
-        Assert.Equal(UnitOfMeasurement.Kilogram, entity.Measurement);
-        Assert.Equal(expireDate, entity.ExpireDate);
-        Assert.Equal(5, entity.CategoryId);
-        // Category is intentionally null after mapping
-        Assert.Null(entity.Category);
-    }
-
-    [Fact]
-    public void ToEntity_ShouldDefaultMeasurementToNone_WhenInvalidMeasurement()
-    {
-        // Arrange
-        var request = new CreateProductRequest(
-            CategoryId: 6,
-            Name: "Gadget",
-            SKU: "GDT-002",
-            Measurement: "NotAUnit",
-            Description: null,
-            Barcode: null,
-            SalePrice: 1m,
-            SupplyPrice: 1m,
-            RetailPrice: 1m,
-            QuantityInStock: 0,
-            LowStockThreshold: 0,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow));
-
-        // Act
-        var entity = request.ToEntity();
-
-        // Assert
-        Assert.Equal(UnitOfMeasurement.None, entity.Measurement);
-    }
-
-    [Fact]
-    public void ToCreateResponse_ShouldMapAllProperties_AndCalculateFlags()
-    {
-        // Arrange
-        var now = DateTime.UtcNow;
-        var threshold = DateOnly.FromDateTime(now.AddDays(-7));
-        var category = new Category { Id = 7, Name = "Cat7", Description = "Desc7" };
-        var product = new Product
-        {
-            Id = 100,
-            CategoryId = 7,
-            Category = category,
-            Name = "Prod",
-            SKU = "P-100",
-            Measurement = UnitOfMeasurement.Piece,
-            Description = "Desc",
-            Barcode = "000",
-            SalePrice = 5m,
-            SupplyPrice = 4m,
-            RetailPrice = 6m,
-            QuantityInStock = 3,
-            LowStockThreshold = 5,
-            ExpireDate = threshold.AddDays(1)
-        };
-
-        // Act
-        var response = product.ToCreateResponse();
-
-        // Assert
-        Assert.Equal(100, response.Id);
-        Assert.Equal(7, response.CategoryId);
-        Assert.Equal("Cat7", response.CategoryName);
-        Assert.Equal("Prod", response.Name);
-        Assert.Equal("P-100", response.SKU);
-        Assert.Equal(nameof(UnitOfMeasurement.Piece), response.Measurement);
-        Assert.Equal("Desc", response.Description);
-        Assert.Equal("000", response.Barcode);
-        Assert.Equal(5m, response.SalePrice);
-        Assert.Equal(4m, response.SupplyPrice);
-        Assert.Equal(6m, response.RetailPrice);
-        Assert.Equal(3, response.QuantityInStock);
-        Assert.Equal(5, response.LowStockThreshold);
-        Assert.Equal(threshold.AddDays(1), response.ExpireDate);
-        Assert.True(response.IsLowStock);
-        Assert.True(response.IsExpirationClose);
-    }
-
-    [Fact]
-    public void ToUpdateResponse_ShouldMapAllProperties_AndCalculateFlags()
-    {
-        // Arrange
-        var now = DateTime.UtcNow;
-        var threshold = DateOnly.FromDateTime(now.AddDays(-7));
-        var category = new Category { Id = 8, Name = "Cat8", Description = "Desc8" };
-        var product = new Product
-        {
-            Id = 101,
-            CategoryId = 8,
-            Category = category,
-            Name = "Prod2",
-            SKU = "P-101",
-            Measurement = UnitOfMeasurement.Piece,
-            Description = "Desc2",
-            Barcode = "111",
-            SalePrice = 2m,
-            SupplyPrice = 1m,
-            RetailPrice = 3m,
-            QuantityInStock = 10,
-            LowStockThreshold = 5,
-            ExpireDate = threshold.AddDays(-10)
-        };
-
-        // Act
-        var response = product.ToUpdateResponse();
-
-        // Assert
-        Assert.False(response.IsLowStock);
-        Assert.False(response.IsExpirationClose);
-        Assert.Equal("Prod2", response.Name);
-        Assert.Equal("P-101", response.SKU);
-    }
-
-    [Fact]
-    public void ToDto_ShouldMapAllProperties_WhenCategoryIsNotNull()
-    {
-        // Arrange
-        var now = DateTime.UtcNow;
-        var threshold = DateOnly.FromDateTime(now.AddDays(-7));
-        var category = new Category { Id = 9, Name = "Cat9", Description = "Desc9" };
-        var product = new Product
-        {
-            Id = 102,
-            CategoryId = 9,
-            Category = category,
-            Name = "Prod3",
-            SKU = "P-102",
-            Measurement = UnitOfMeasurement.Box,
-            Description = "Desc3",
-            Barcode = "222",
-            SalePrice = 7m,
-            SupplyPrice = 6m,
-            RetailPrice = 8m,
-            QuantityInStock = 1,
-            LowStockThreshold = 2,
-            ExpireDate = threshold
-        };
-
-        // Act
-        var dto = product.ToDto();
-
-        // Assert
-        Assert.Equal(102, dto.Id);
-        Assert.Equal(9, dto.CategoryId);
-        Assert.Equal("Cat9", dto.CategoryName);
-        Assert.Equal("Prod3", dto.Name);
-        Assert.Equal("P-102", dto.SKU);
-        Assert.True(dto.IsLowStock);
-        Assert.True(dto.IsExpirationClose);
-    }
-
-    [Fact]
     public void ToDto_ShouldThrowInvalidOperationException_WhenCategoryIsNull()
     {
         // Arrange
         var product = new Product
         {
-            Id = 103,
-            Name = "Prod4",
-            SKU = "P-103",
+            Id = 42,
+            Name = "Test",
+            SKU = "SKU-123",
+            CategoryId = 99,
             Category = null!
         };
 
@@ -208,79 +28,313 @@ public class ProductMappingsTests
     }
 
     [Fact]
-    public void ApplyUpdate_ShouldOverwriteAllProperties_WithValidMeasurement()
+    public void ToDto_ShouldMapAllFieldsCorrectly_WhenProductHasCategory()
     {
         // Arrange
+        var category = new Category { Id = 99, Name = "Widgets" };
         var product = new Product
         {
-            Name = "Old",
-            SKU = "O-1",
-            Measurement = UnitOfMeasurement.None,
-            QuantityInStock = 1,
-            LowStockThreshold = 1,
-            ExpireDate = DateOnly.FromDateTime(DateTime.UtcNow),
-            CategoryId = 1,
-            Category = new Category { Id = 1, Name = "C1", Description = "" }
+            Id = 42,
+            CategoryId = 99,
+            Category = category,
+            Name = "Gizmo",
+            SKU = "GZ-01",
+            Description = "A useful gizmo",
+            Barcode = "1234567890",
+            SalePrice = 9.99m,
+            SupplyPrice = 5.00m,
+            RetailPrice = 12.50m,
+            QuantityInStock = 3,
+            LowStockThreshold = 5,
+            Measurement = DomainMeasurement.Kilogram,
+            Type = DomainType.Supply
         };
-        var request = new UpdateProductRequest(
-            Id: 1,
-            CategoryId: 2,
-            Name: "New",
-            SKU: "N-2",
-            Measurement: "Piece",
-            Description: "NewDesc",
-            Barcode: "999",
-            SalePrice: 9m,
-            SupplyPrice: 8m,
-            RetailPrice: 10m,
-            QuantityInStock: 20,
-            LowStockThreshold: 15,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow.AddDays(20)));
 
         // Act
-        product.ApplyUpdate(request);
+        var dto = product.ToDto();
 
         // Assert
-        Assert.Equal("New", product.Name);
-        Assert.Equal("N-2", product.SKU);
-        Assert.Equal(UnitOfMeasurement.Piece, product.Measurement);
-        Assert.Equal(20, product.QuantityInStock);
-        Assert.Equal(15, product.LowStockThreshold);
-        Assert.Equal(2, product.CategoryId);
-        Assert.Equal(request.ExpireDate, product.ExpireDate);
+        Assert.Equal(42, dto.Id);
+        Assert.Equal(99, dto.CategoryId);
+        Assert.Equal("Widgets", dto.CategoryName);
+        Assert.Equal("Gizmo", dto.Name);
+        Assert.Equal("GZ-01", dto.SKU);
+        Assert.Equal("A useful gizmo", dto.Description);
+        Assert.Equal("1234567890", dto.Barcode);
+        Assert.Equal(9.99m, dto.SalePrice);
+        Assert.Equal(5.00m, dto.SupplyPrice);
+        Assert.Equal(12.50m, dto.RetailPrice);
+        Assert.Equal(3, dto.QuantityInStock);
+        Assert.Equal(5, dto.LowStockThreshold);
+        Assert.True(dto.IsLowStock);
+        Assert.Equal("Kilogram", dto.Measurement);
+        Assert.Equal("Supply", dto.Type);
     }
 
     [Fact]
-    public void ApplyUpdate_ShouldDefaultMeasurementToNone_WhenInvalidMeasurement()
+    public void ToCreateResponse_ShouldThrowInvalidOperationException_WhenCategoryIsNull()
     {
         // Arrange
         var product = new Product
         {
-            Name = "OldX",
-            SKU = "OX-1",
-            Measurement = UnitOfMeasurement.Kilogram,
+            Id = 7,
+            Name = "Test Product",
+            SKU = "TP-01",
             CategoryId = 1,
-            Category = new Category { Id = 1, Name = "C1", Description = "" }
+            Category = null!
         };
-        var request = new UpdateProductRequest(
-            Id: 1,
-            CategoryId: 3,
-            Name: "X",
-            SKU: "X-1",
-            Measurement: "XXX",
-            Description: null,
-            Barcode: null,
-            SalePrice: 0m,
-            SupplyPrice: 0m,
-            RetailPrice: 0m,
-            QuantityInStock: 0,
-            LowStockThreshold: 0,
-            ExpireDate: DateOnly.FromDateTime(DateTime.UtcNow));
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => product.ToCreateResponse());
+    }
+
+    [Fact]
+    public void ToCreateResponse_ShouldMapAllFieldsCorrectly_WhenProductHasCategory()
+    {
+        // Arrange
+        var category = new Category { Id = 1, Name = "Books" };
+        var product = new Product
+        {
+            Id = 7,
+            CategoryId = 1,
+            Category = category,
+            Name = "C# In Depth",
+            SKU = "CSHARP-01",
+            Description = "Deep dive into C#",
+            Barcode = "0987654321",
+            SalePrice = 30m,
+            SupplyPrice = 20m,
+            RetailPrice = 35m,
+            QuantityInStock = 10,
+            LowStockThreshold = 2,
+            Measurement = DomainMeasurement.Box,
+            Type = DomainType.All
+        };
 
         // Act
-        product.ApplyUpdate(request);
+        var response = product.ToCreateResponse();
 
         // Assert
-        Assert.Equal(UnitOfMeasurement.None, product.Measurement);
+        Assert.Equal(7, response.Id);
+        Assert.Equal(1, response.CategoryId);
+        Assert.Equal("Books", response.CategoryName);
+        Assert.Equal("C# In Depth", response.Name);
+        Assert.Equal("CSHARP-01", response.SKU);
+        Assert.Equal("Deep dive into C#", response.Description);
+        Assert.Equal("0987654321", response.Barcode);
+        Assert.Equal(30m, response.SalePrice);
+        Assert.Equal(20m, response.SupplyPrice);
+        Assert.Equal(35m, response.RetailPrice);
+        Assert.Equal(10, response.QuantityInStock);
+        Assert.Equal(2, response.LowStockThreshold);
+        Assert.False(response.IsLowStock);
+        Assert.Equal("Box", response.Measurement);
+        Assert.Equal(nameof(DomainType.All), response.Type);
+    }
+
+    [Fact]
+    public void ToUpdateResponse_ShouldThrowInvalidOperationException_WhenCategoryIsNull()
+    {
+        // Arrange
+        var product = new Product
+        {
+            Id = 13,
+            Name = "Test Product",
+            SKU = "TP-02",
+            CategoryId = 5,
+            Category = null!
+        };
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => product.ToUpdateResponse());
+    }
+
+    [Fact]
+    public void ToUpdateResponse_ShouldMapAllFieldsCorrectly_WhenProductHasCategory()
+    {
+        // Arrange
+        var category = new Category { Id = 5, Name = "Garden" };
+        var product = new Product
+        {
+            Id = 13,
+            CategoryId = 5,
+            Category = category,
+            Name = "Shovel",
+            SKU = "SHV-100",
+            Description = "Sturdy shovel",
+            Barcode = "555444333",
+            SalePrice = 25m,
+            SupplyPrice = 15m,
+            RetailPrice = 28m,
+            QuantityInStock = 4,
+            LowStockThreshold = 2,
+            Measurement = DomainMeasurement.Ton,
+            Type = DomainType.Sale
+        };
+
+        // Act
+        var response = product.ToUpdateResponse();
+
+        // Assert
+        Assert.Equal(13, response.Id);
+        Assert.Equal(5, response.CategoryId);
+        Assert.Equal("Garden", response.CategoryName);
+        Assert.Equal("Shovel", response.Name);
+        Assert.Equal("SHV-100", response.SKU);
+        Assert.Equal("Sturdy shovel", response.Description);
+        Assert.Equal("555444333", response.Barcode);
+        Assert.Equal(25m, response.SalePrice);
+        Assert.Equal(15m, response.SupplyPrice);
+        Assert.Equal(28m, response.RetailPrice);
+        Assert.Equal(4, response.QuantityInStock);
+        Assert.Equal(2, response.LowStockThreshold);
+        Assert.False(response.IsLowStock);
+        Assert.Equal("Ton", response.Measurement);
+        Assert.Equal("Sale", response.Type);
+    }
+
+    [Fact]
+    public void ToEntity_ShouldMapAllFieldsCorrectly_WhenValidRequest()
+    {
+        // Arrange
+        var request = new CreateProductRequest(
+            CategoryId: 77,
+            Name: "Widget",
+            SKU: "WGT-01",
+            Description: "Test widget",
+            Barcode: "111222333",
+            SalePrice: 10m,
+            SupplyPrice: 6m,
+            RetailPrice: 12m,
+            QuantityInStock: 8,
+            LowStockThreshold: 3,
+            Measurement: ContractMeasurement.Piece,
+            Type: ContractType.Sale);
+
+        // Act
+        var entity = request.ToEntity();
+
+        // Assert
+        Assert.Equal("Widget", entity.Name);
+        Assert.Equal("WGT-01", entity.SKU);
+        Assert.Equal("Test widget", entity.Description);
+        Assert.Equal("111222333", entity.Barcode);
+        Assert.Equal(10m, entity.SalePrice);
+        Assert.Equal(6m, entity.SupplyPrice);
+        Assert.Equal(12m, entity.RetailPrice);
+        Assert.Equal(8, entity.QuantityInStock);
+        Assert.Equal(3, entity.LowStockThreshold);
+        Assert.Equal(DomainMeasurement.Piece, entity.Measurement);
+        Assert.Equal(DomainType.Sale, entity.Type);
+        Assert.Equal(77, entity.CategoryId);
+    }
+
+    [Fact]
+    public void ApplyUpdate_ShouldModifyAllFieldsCorrectly_WhenValidRequest()
+    {
+        // Arrange
+        var originalCategory = new Category { Id = 9, Name = "Tools" };
+        var product = new Product
+        {
+            Id = 21,
+            CategoryId = 9,
+            Category = originalCategory,
+            Name = "Hammer",
+            SKU = "HMR-01",
+            Description = "Steel hammer",
+            Barcode = "999888777",
+            SalePrice = 12m,
+            SupplyPrice = 7m,
+            RetailPrice = 14m,
+            QuantityInStock = 5,
+            LowStockThreshold = 2,
+            Measurement = DomainMeasurement.None,
+            Type = DomainType.Supply
+        };
+
+        var updateRequest = new UpdateProductRequest(
+            Id: product.Id,
+            CategoryId: 10,
+            Name: "Sledgehammer",
+            SKU: "SDG-01",
+            Description: "Heavy steel hammer",
+            Barcode: "777888999",
+            SalePrice: 20m,
+            SupplyPrice: 10m,
+            RetailPrice: 22m,
+            QuantityInStock: 3,
+            LowStockThreshold: 1,
+            Measurement: ContractMeasurement.Ton,
+            Type: ContractType.All);
+
+        // Act
+        product.ApplyUpdate(updateRequest);
+
+        // Assert
+        Assert.Equal("Sledgehammer", product.Name);
+        Assert.Equal("SDG-01", product.SKU);
+        Assert.Equal("Heavy steel hammer", product.Description);
+        Assert.Equal("777888999", product.Barcode);
+        Assert.Equal(20m, product.SalePrice);
+        Assert.Equal(10m, product.SupplyPrice);
+        Assert.Equal(22m, product.RetailPrice);
+        Assert.Equal(3, product.QuantityInStock);
+        Assert.Equal(1, product.LowStockThreshold);
+        Assert.Equal(DomainMeasurement.Ton, product.Measurement);
+        Assert.Equal(DomainType.All, product.Type);
+        Assert.Equal(10, product.CategoryId);
+
+        // Note: ApplyUpdate changes CategoryId but leaves the navigation property untouched.
+        // If you expect the Category reference to update (or clear), you may need to adjust the mapping.
+        Assert.Equal(9, originalCategory.Id);
+        Assert.Same(originalCategory, product.Category);
+    }
+
+    [Fact]
+    public void ContractUnitOfMeasurementEnum_ShouldParseToDomain_ForAllValues()
+    {
+        // Arrange & Act & Assert
+        foreach (var contractValue in Enum.GetValues(typeof(ContractMeasurement)).Cast<ContractMeasurement>())
+        {
+            var name = contractValue.ToString();
+            var domainValue = Enum.Parse<DomainMeasurement>(name);
+            Assert.Equal(name, domainValue.ToString());
+        }
+    }
+
+    [Fact]
+    public void DomainUnitOfMeasurementEnum_ShouldParseToContract_ForAllValues()
+    {
+        // Arrange & Act & Assert
+        foreach (var domainValue in Enum.GetValues(typeof(DomainMeasurement)).Cast<DomainMeasurement>())
+        {
+            var name = domainValue.ToString();
+            var contractValue = Enum.Parse<ContractMeasurement>(name);
+            Assert.Equal(name, contractValue.ToString());
+        }
+    }
+
+    [Fact]
+    public void ContractProductTypeEnum_ShouldParseToDomain_ForAllValues()
+    {
+        // Arrange & Act & Assert
+        foreach (var contractValue in Enum.GetValues(typeof(ContractType)).Cast<ContractType>())
+        {
+            var name = contractValue.ToString();
+            var domainValue = Enum.Parse<DomainType>(name);
+            Assert.Equal(name, domainValue.ToString());
+        }
+    }
+
+    [Fact]
+    public void DomainProductTypeEnum_ShouldParseToContract_ForAllValues()
+    {
+        // Arrange & Act & Assert
+        foreach (var domainValue in Enum.GetValues(typeof(DomainType)).Cast<DomainType>())
+        {
+            var name = domainValue.ToString();
+            var contractValue = Enum.Parse<ContractType>(name);
+            Assert.Equal(name, contractValue.ToString());
+        }
     }
 }

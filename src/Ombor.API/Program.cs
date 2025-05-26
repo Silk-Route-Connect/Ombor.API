@@ -13,7 +13,7 @@ builder.Services
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -22,6 +22,8 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler(_ => { });
 
 app.UseHttpsRedirection();
+
+app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
 
 app.UseAuthorization();
 

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Moq;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Common.Helpers;
@@ -58,28 +57,6 @@ public sealed class UpdateProductTests : ProductTestsBase
         ProductAssertionHelper.AssertEquivalent(request, response);
         ProductAssertionHelper.AssertEquivalent(request, productToUpdate);
         ProductAssertionHelper.AssertEquivalent(productToUpdate, response);
-
-        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Theory, MemberData(nameof(InvalidMeasurements))]
-    public async Task UpdateAsync_ShouldSetMeasurementToNone_WhenRequestMeasurementIsInvalid(string measurement)
-    {
-        // Arrange
-        var (productToUpdate, category) = CreateProductWithCategory();
-        var request = ProductRequestFactory.GenerateValidUpdateRequest(productToUpdate.Id, category.Id);
-        request = request with { Measurement = measurement };
-
-        SetupProducts([.. _defaultProducts, productToUpdate]);
-        SetupCategories([category]);
-
-        // Act
-        var response = await _service.UpdateAsync(request);
-
-        // Assert
-        Assert.Equal(nameof(UnitOfMeasurement.None), response.Measurement);
-        Assert.Equal(UnitOfMeasurement.None, productToUpdate.Measurement);
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

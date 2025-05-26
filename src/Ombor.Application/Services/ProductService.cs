@@ -16,17 +16,15 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
         var query = GetQuery(request);
 
-        var thresholdDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-7));
-
         return query
             .AsNoTracking()
+            .OrderBy(x => x.Name)
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
                 x.Category.Name,
                 x.Name,
                 x.SKU,
-                x.Measurement.ToString(),
                 x.Description,
                 x.Barcode,
                 x.SalePrice,
@@ -34,9 +32,9 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
                 x.RetailPrice,
                 x.QuantityInStock,
                 x.LowStockThreshold,
-                x.ExpireDate,
                 x.QuantityInStock <= x.LowStockThreshold,
-                x.ExpireDate >= thresholdDate))
+                x.Measurement.ToString(),
+                x.Type.ToString()))
             .ToArrayAsync();
     }
 
