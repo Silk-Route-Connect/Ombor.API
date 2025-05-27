@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Ombor.TestDataGenerator\Ombor.TestDataGenerator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\products\" />
+  </ItemGroup>
+
 </Project>

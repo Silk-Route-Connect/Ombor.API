@@ -1,9 +1,12 @@
+using Microsoft.Extensions.FileProviders;
 using Ombor.API.Extensions;
 using Ombor.Application.Extensions;
 using Ombor.Infrastructure.Extensions;
 using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseWebRoot("wwwroot");
 
 builder.Services
     .AddApi(builder.Configuration)
@@ -28,6 +31,15 @@ app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(app.Environment.WebRootPath, "uploads", "products")),
+    RequestPath = "/images/products",
+});
 
 await app.UseDatabaseSeederAsync();
 
