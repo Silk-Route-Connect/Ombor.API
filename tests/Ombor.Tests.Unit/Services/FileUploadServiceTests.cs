@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using SixLabors.ImageSharp;
 
 namespace Ombor.Tests.Unit.Services;
 
@@ -31,7 +30,8 @@ public sealed class FileUploadServiceTests
             MaxBytes = 1024,
             AllowedFileExtensions = [".png", ".jpg"],
             AllowedImageExtensions = [".png"],
-            ThumbnailSize = new Size(50, 50),
+            ThumbnailWidth = 50,
+            ThumbnailHeight = 50,
             OriginalsSubfolder = "orig",
             ThumbnailsSubfolder = "thumb"
         };

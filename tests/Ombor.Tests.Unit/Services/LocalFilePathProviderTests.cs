@@ -33,7 +33,8 @@ public sealed class LocalFilePathProviderTests
             MaxBytes = 1024,
             AllowedImageExtensions = [],
             AllowedFileExtensions = [],
-            ThumbnailSize = default,
+            ThumbnailWidth = default,
+            ThumbnailHeight = default,
             OriginalsSubfolder = "originals",
             ThumbnailsSubfolder = "thumbnails"
         };

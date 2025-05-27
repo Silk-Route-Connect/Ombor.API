@@ -9,7 +9,7 @@ namespace Ombor.Infrastructure.Services;
 
 internal sealed class ImageSharpThumbnailer(IOptions<FileSettings> settings) : IImageThumbnailer
 {
-    private readonly Size _size = settings.Value.ThumbnailSize;
+    private readonly Size _size = new(settings.Value.ThumbnailWidth, settings.Value.ThumbnailHeight);
 
     public async Task<Stream> GenerateThumbnailAsync(
         Stream source,

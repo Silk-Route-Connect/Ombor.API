@@ -93,7 +93,8 @@ public sealed class ImageSharpThumbnailerTests
             MaxBytes = long.MaxValue,
             AllowedImageExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif"],
             AllowedFileExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif"],
-            ThumbnailSize = new Size(thumbWidth, thumbHeight),
+            ThumbnailWidth = thumbWidth,
+            ThumbnailHeight = thumbHeight,
             OriginalsSubfolder = "orig",
             ThumbnailsSubfolder = "thumb"
         };

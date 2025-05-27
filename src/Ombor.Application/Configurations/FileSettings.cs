@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using SixLabors.ImageSharp;
 
 namespace Ombor.Application.Configurations;
 
@@ -34,8 +33,11 @@ public sealed class FileSettings
     [RegularExpression(@"^[^\\/:\*\?""<>\|]+$", ErrorMessage = "BasePath must not contain path separators or invalid characters.")]
     public required string BasePath { get; init; }
 
-    [Required(ErrorMessage = "Thumbnail size is required.")]
-    public required Size ThumbnailSize { get; init; }
+    [Required(ErrorMessage = "Thumbnail width is required.")]
+    public required int ThumbnailWidth { get; set; }
+
+    [Required(ErrorMessage = "Thumbnail height is required.")]
+    public required int ThumbnailHeight { get; set; }
 
     /// <summary>
     /// Physical path for originals subfolder.
