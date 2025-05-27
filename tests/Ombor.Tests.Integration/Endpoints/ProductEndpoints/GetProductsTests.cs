@@ -19,7 +19,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
     public async Task GetAsync_ShouldReturnFilteredProducts_WhenQueryParametersAreProvided()
     {
         // Arrange
-        var request = new GetProductsRequest(_matchingSearchTerm, _matchingCategoryId, _minPrice, _maxPrice);
+        var request = new GetProductsRequest(_matchingSearchTerm, _matchingCategoryId, _minPrice, _maxPrice, Contracts.Enums.ProductType.All);
         await CreateProductsAsync(request);
         var url = GetUrl(request);
 
