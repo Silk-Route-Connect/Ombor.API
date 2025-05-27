@@ -15,13 +15,39 @@ public abstract class EntityNotFoundException : Exception
         ExceptionType = nameof(EntityNotFoundException);
         Id = id;
     }
+
+    protected EntityNotFoundException() : base()
+    {
+        EntityType = string.Empty;
+        ExceptionType = nameof(EntityNotFoundException);
+        Id = string.Empty;
+    }
+
+    protected EntityNotFoundException(string? message) : base(message)
+    {
+        EntityType = string.Empty;
+        ExceptionType = nameof(EntityNotFoundException);
+        Id = string.Empty;
+    }
+
+    protected EntityNotFoundException(string? message, Exception? innerException) : base(message, innerException)
+    {
+        EntityType = string.Empty;
+        ExceptionType = nameof(EntityNotFoundException);
+        Id = string.Empty;
+    }
 }
 
 public sealed class EntityNotFoundException<TEntity> : EntityNotFoundException
     where TEntity : EntityBase
 {
-    public EntityNotFoundException(object id)
-        : base(typeof(TEntity), id)
-    {
-    }
+    public EntityNotFoundException() { }
+
+    public EntityNotFoundException(string? message) : base(message) { }
+
+    public EntityNotFoundException(string? message, Exception? innerException) : base(message, innerException) { }
+
+    public EntityNotFoundException(object id) : base(typeof(TEntity), id) { }
+
+    public EntityNotFoundException(Type entityType, object id) : base(entityType, id) { }
 }
