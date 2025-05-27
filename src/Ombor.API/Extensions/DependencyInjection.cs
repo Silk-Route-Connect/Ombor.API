@@ -25,6 +25,7 @@ internal static class DependencyInjection
     {
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
+        services.AddExceptionHandler<InvalidFileExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
     }
