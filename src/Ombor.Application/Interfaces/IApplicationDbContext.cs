@@ -20,6 +20,11 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; set; }
 
     /// <summary>
+    /// Gets or sets the product images set.
+    /// </summary>
+    DbSet<ProductImage> ProductImages { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>
