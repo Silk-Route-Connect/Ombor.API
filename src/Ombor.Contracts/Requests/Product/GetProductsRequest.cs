@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Requests.Product;
+﻿using Ombor.Contracts.Enums;
+
+namespace Ombor.Contracts.Requests.Product;
 
 /// <summary>
 /// Request to retrieve a list of products with optional filtering.
@@ -13,4 +15,5 @@ public sealed record GetProductsRequest(
     string? SearchTerm,
     int? CategoryId,
     decimal? MinPrice,
-    decimal? MaxPrice);
+    decimal? MaxPrice,
+    ProductType? Type);

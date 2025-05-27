@@ -13,6 +13,10 @@ internal static class ProductMappings
             throw new InvalidOperationException("Cannot map product without Category.");
         }
 
+        var images = product.Images
+            .Select(ToDto)
+            .ToArray();
+
         return new(
             Id: product.Id,
             CategoryId: product.CategoryId,
@@ -28,7 +32,8 @@ internal static class ProductMappings
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
-            Type: product.Type.ToString());
+            Type: product.Type.ToString(),
+            Images: images);
     }
 
     public static Product ToEntity(this CreateProductRequest request)
@@ -116,4 +121,11 @@ internal static class ProductMappings
         product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
         product.CategoryId = request.CategoryId;
     }
+
+    private static ProductImageDto ToDto(this ProductImage productImage)
+        => new(
+            Id: productImage.Id,
+            ImageName: productImage.ImageName,
+            ImageUrl: productImage.ImageUrl,
+            ThumbnailUrl: productImage.ThumnailUrl);
 }

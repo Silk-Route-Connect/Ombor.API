@@ -33,4 +33,5 @@ public sealed record ProductDto(
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
-    string Type);
+    string Type,
+    ProductImageDto[] Images);
