@@ -209,7 +209,8 @@ public class ProductMappingsTests
             QuantityInStock: 8,
             LowStockThreshold: 3,
             Measurement: ContractMeasurement.Piece,
-            Type: ContractType.Sale);
+            Type: ContractType.Sale,
+            Attachments: []);
 
         // Act
         var entity = request.ToEntity();

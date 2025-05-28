@@ -40,7 +40,11 @@ public sealed class ApiClient(HttpClient client)
     {
         var request = new HttpRequestMessage(method, url);
 
-        if (body is not null)
+        if (body is HttpContent httpContent)
+        {
+            request.Content = httpContent;
+        }
+        else if (body is not null)
         {
             request.Content = GetStringContent(method, body);
         }
@@ -54,7 +58,11 @@ public sealed class ApiClient(HttpClient client)
     {
         var request = new HttpRequestMessage(method, url);
 
-        if (body is not null)
+        if (body is HttpContent httpContent)
+        {
+            request.Content = httpContent;
+        }
+        else if (body is not null)
         {
             request.Content = GetStringContent(method, body);
         }

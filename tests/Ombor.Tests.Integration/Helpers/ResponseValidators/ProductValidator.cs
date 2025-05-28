@@ -103,7 +103,9 @@ public class ProductValidator(IApplicationDbContext context)
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
-        return await query
+        var products = await query.ToArrayAsync();
+
+        return products
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
@@ -119,7 +121,8 @@ public class ProductValidator(IApplicationDbContext context)
                 x.LowStockThreshold,
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.Measurement.ToString(),
-                x.Type.ToString()))
-            .ToArrayAsync();
+                x.Type.ToString(),
+                x.Images.Select(image => new ProductImageDto(image.Id, image.Name, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
+            .ToArray();
     }
 }
