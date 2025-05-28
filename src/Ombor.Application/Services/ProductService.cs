@@ -19,7 +19,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
         var query = GetQuery(request);
         var products = await query
-            .AsNoTracking()
+            .OrderBy(x => x.Name)
             .ToArrayAsync();
 
         return [.. products.Select(x => x.ToDto())];
@@ -79,7 +79,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Products.AsQueryable();
+        var query = context.Products.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {

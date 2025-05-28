@@ -13,13 +13,14 @@ public class ProductValidator(IApplicationDbContext context)
         var expectedProducts = await GetProductsAsync(request);
 
         Assert.Equal(expectedProducts.Length, response.Length);
-        Assert.All(expectedProducts, expected =>
-        {
-            var actual = response.FirstOrDefault(c => c.Id == expected.Id);
 
-            Assert.NotNull(actual);
-            Assert.Equivalent(expected, actual);
-        });
+        for (int i = 0; i < expectedProducts.Length; i++)
+        {
+            var expected = expectedProducts[i];
+            var actual = response[i];
+
+            Assert.Equivalent(expected, actual, true);
+        }
     }
 
     public async Task ValidateGetByIdAsync(int productId, ProductDto response)
@@ -103,7 +104,9 @@ public class ProductValidator(IApplicationDbContext context)
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
-        var products = await query.ToArrayAsync();
+        var products = await query
+            .OrderBy(x => x.Name)
+            .ToArrayAsync();
 
         return products
             .Select(x => new ProductDto(
