@@ -402,4 +402,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-/wwwroot/uploads/
+/wwwroot/uploads/**/*
