@@ -2,6 +2,6 @@
 
 public sealed record ProductImageDto(
     int Id,
-    string ImageName,
-    string ImageUrl,
+    string Name,
+    string OriginalUrl,
     string? ThumbnailUrl);
