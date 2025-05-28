@@ -32,7 +32,7 @@ public sealed class ProductsController(IProductService productService) : Control
     /// </summary>
     /// <param name="request">Request containing the product ID.</param>
     /// <returns>The matching <see cref="ProductDto"/>.</returns>
-    [HttpGet("{id:int:min(1)}")]
+    [HttpGet("{Id:int:min(1)}")]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductDto>> GetProductByIdAsync(
@@ -51,8 +51,9 @@ public sealed class ProductsController(IProductService productService) : Control
     [HttpPost]
     [ProducesResponseType(typeof(CreateProductResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [Consumes("multipart/form-data")]
     public async Task<ActionResult<CreateProductResponse>> PostAsync(
-        [FromBody] CreateProductRequest request)
+        [FromForm] CreateProductRequest request)
     {
         var response = await productService.CreateAsync(request);
 
