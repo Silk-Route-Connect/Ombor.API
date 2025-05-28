@@ -1,18 +1,21 @@
-﻿using Ombor.Contracts.Enums;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Product;
 
 namespace Ombor.Tests.Common.Factories;
 
 public static class ProductRequestFactory
 {
+    private const string ImageFolder = "Resources/Images";
     private const int DefaultProductId = 10;
     private const int DefaultCategoryId = 5;
 
-    public static CreateProductRequest GenerateValidCreateRequest(int? categoryId = null)
+    public static CreateProductRequest GenerateValidCreateRequestWithoutAttachments(int? categoryId = null, string? sku = null)
         => new(
             CategoryId: categoryId ?? DefaultCategoryId,
             Name: "Test Product Name",
-            SKU: "Product SKU",
+            SKU: sku ?? "Product SKU",
             Description: "Product Description",
             Barcode: "Product Barcode",
             SalePrice: 100,
@@ -21,7 +24,15 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: Contracts.Enums.ProductType.All);
+            Type: ProductType.All,
+            Attachments: []);
+
+    public static CreateProductRequest GenerateValidCreateRequestWithAttachments(int? categoryId = null, string? sku = null)
+    {
+        var request = GenerateValidCreateRequestWithoutAttachments(categoryId, sku);
+
+        return request with { Attachments = GenerateAttachments() };
+    }
 
     public static CreateProductRequest GenerateInvalidCreateRequest(int? categoryId = null)
         => new(
@@ -36,7 +47,11 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.All);
+            Type: ProductType.All,
+            Attachments: [
+                CreateTestFormFile("product-1.jpg", "image/jpg"),
+                CreateTestFormFile("product-2.jpg", "image/jpg")
+            ]);
 
     public static UpdateProductRequest GenerateValidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -69,4 +84,30 @@ public static class ProductRequestFactory
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.Sale);
+
+    private static FormFile[] GenerateAttachments()
+        =>
+        [
+            CreateTestFormFile("product-1.jpg", "image/jpeg"),
+            CreateTestFormFile("product-2.jpg", "image/jpeg")
+        ];
+
+    private static FormFile CreateTestFormFile(string fileName, string contentType)
+    {
+        var fullPath = Path.Combine(ImageFolder, fileName);
+        using var fileStream = File.OpenRead(fullPath);
+
+        var memoryStream = new MemoryStream();
+        fileStream.CopyTo(memoryStream);
+        memoryStream.Position = 0;
+
+        return new FormFile(memoryStream, 0, memoryStream.Length, "Attachments", fileName)
+        {
+            Headers = new HeaderDictionary(new Dictionary<string, StringValues>
+            {
+                ["Content-Type"] = contentType
+            }),
+            ContentType = contentType
+        };
+    }
 }
