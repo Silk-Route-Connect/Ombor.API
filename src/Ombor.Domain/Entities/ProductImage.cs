@@ -5,19 +5,19 @@ namespace Ombor.Domain.Entities;
 public class ProductImage : EntityBase
 {
     /// <summary>
-    /// Gets or sets the URL of the product image.
-    /// </summary>
-    public required string ImageUrl { get; set; }
-
-    /// <summary>
     /// Gets or sets the name of the product image file.
     /// </summary>
-    public required string ImageName { get; set; }
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of the product image.
+    /// </summary>
+    public required string OriginalUrl { get; set; }
 
     /// <summary>
     /// Gets or sets the thumbnail URL of the product image.
     /// </summary>
-    public string? ThumnailUrl { get; set; }
+    public string? ThumbnailUrl { get; set; }
 
     /// <summary>
     /// Gets or sets the product ID this image belongs to.

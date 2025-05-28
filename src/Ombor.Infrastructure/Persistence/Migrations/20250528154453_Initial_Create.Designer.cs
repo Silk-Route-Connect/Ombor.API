@@ -11,7 +11,7 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250527185240_Initial_Create")]
+    [Migration("20250528154453_Initial_Create")]
     partial class Initial_Create
     {
         /// <inheritdoc />
@@ -119,12 +119,12 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ImageName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("OriginalUrl")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -132,7 +132,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ThumnailUrl")
+                    b.Property<string>("ThumbnailUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 

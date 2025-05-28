@@ -22,17 +22,17 @@ internal sealed class ProductImageConfiguration : IEntityTypeConfiguration<Produ
         #region Properties
 
         builder
-            .Property(pi => pi.ImageName)
+            .Property(pi => pi.Name)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();
 
         builder
-            .Property(pi => pi.ImageUrl)
+            .Property(pi => pi.OriginalUrl)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired();
 
         builder
-            .Property(pi => pi.ThumnailUrl)
+            .Property(pi => pi.ThumbnailUrl)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);
 
