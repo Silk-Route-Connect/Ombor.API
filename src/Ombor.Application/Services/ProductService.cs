@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
@@ -8,34 +11,18 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class ProductService(IApplicationDbContext context, IRequestValidator validator) : IProductService
+internal sealed class ProductService(IApplicationDbContext context, IRequestValidator validator, IFileUploadService fileService) : IProductService
 {
-    public Task<ProductDto[]> GetAsync(GetProductsRequest request)
+    public async Task<ProductDto[]> GetAsync(GetProductsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var query = GetQuery(request);
-
-        return query
+        var products = await query
             .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .Select(x => new ProductDto(
-                x.Id,
-                x.CategoryId,
-                x.Category.Name,
-                x.Name,
-                x.SKU,
-                x.Description,
-                x.Barcode,
-                x.SalePrice,
-                x.SupplyPrice,
-                x.RetailPrice,
-                x.QuantityInStock,
-                x.LowStockThreshold,
-                x.QuantityInStock <= x.LowStockThreshold,
-                x.Measurement.ToString(),
-                x.Type.ToString()))
             .ToArrayAsync();
+
+        return [.. products.Select(x => x.ToDto())];
     }
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
@@ -52,6 +39,9 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
         await validator.ValidateAndThrowAsync(request, default);
 
         var entity = request.ToEntity();
+        var images = await CreateImages(request.Attachments);
+        entity.Images.AddRange(images);
+
         context.Products.Add(entity);
         await context.SaveChangesAsync();
 
@@ -115,6 +105,32 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
+        if (request.Type.HasValue)
+        {
+            var type = request.Type.Value.ToDomain();
+            query = query.Where(x => x.Type == type);
+        }
+
         return query;
+    }
+
+    private async Task<ProductImage[]> CreateImages(IEnumerable<IFormFile> attachments)
+    {
+        if (attachments?.Any() != true)
+        {
+            return [];
+        }
+
+        var fileUrls = await fileService.UploadAsync(attachments, FileSettings.ProductFileUploadsFolder);
+        var images = fileUrls
+            .Select(file => new ProductImage
+            {
+                OriginalUrl = file.Url,
+                Name = file.OriginalFileName,
+                ThumbnailUrl = file.ThumbnailUrl,
+                Product = null!
+            });
+
+        return [.. images];
     }
 }
