@@ -14,7 +14,7 @@ internal static class ProductMappings
         }
 
         var images = product.Images
-            .Select(ToDto)
+            .Select(x => x.ToDto())
             .ToArray();
 
         return new(
@@ -78,7 +78,8 @@ internal static class ProductMappings
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
-            Type: product.Type.ToString());
+            Type: product.Type.ToString(),
+            Images: product.Images.ToDto());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
@@ -122,10 +123,6 @@ internal static class ProductMappings
         product.CategoryId = request.CategoryId;
     }
 
-    private static ProductImageDto ToDto(this ProductImage productImage)
-        => new(
-            Id: productImage.Id,
-            ImageName: productImage.ImageName,
-            ImageUrl: productImage.ImageUrl,
-            ThumbnailUrl: productImage.ThumnailUrl);
+    public static Domain.Enums.ProductType ToDomain(this Contracts.Enums.ProductType type)
+        => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
 }
