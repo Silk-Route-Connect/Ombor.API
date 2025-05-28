@@ -1,4 +1,6 @@
-﻿using Ombor.Application.Services;
+﻿using Moq;
+using Ombor.Application.Interfaces.File;
+using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Tests.Unit.Services.ProductServiceTests;
@@ -9,12 +11,21 @@ public abstract class ProductTestsBase : ServiceTestsBase
     private protected readonly ProductService _service;
     protected readonly Product[] _defaultProducts;
 
+    protected readonly Mock<IFileUploadService> _mockFileService;
+
     protected ProductTestsBase()
     {
         _defaultProducts = CreateRandomProducts();
         SetupProducts(_defaultProducts);
 
-        _service = new ProductService(_mockContext.Object, _mockValidator.Object);
+        _mockFileService = new Mock<IFileUploadService>();
+        _service = new ProductService(_mockContext.Object, _mockValidator.Object, _mockFileService.Object);
+    }
+
+    protected override void VerifyNoOtherCalls()
+    {
+        _mockFileService.VerifyNoOtherCalls();
+        base.VerifyNoOtherCalls();
     }
 
     protected Product[] CreateRandomProducts(int count = 5)

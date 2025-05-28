@@ -15,14 +15,14 @@ public sealed class GetProductsTests : ProductTestsBase
     public static TheoryData<GetProductsRequest> GetRequests =>
         new()
         {
-            new GetProductsRequest(null, null, null, null),
-            new GetProductsRequest(string.Empty, null, null, null),
-            new GetProductsRequest(" ", null, null, null),
-            new GetProductsRequest("   ", null, null, null),
-            new GetProductsRequest(MatchingSearchTerm, null, null, null),
-            new GetProductsRequest(null, MatchingCategoryId, null, null),
-            new GetProductsRequest(null, null, MatchingMinPrice, MatchingMaxPrice),
-            new GetProductsRequest(MatchingSearchTerm, MatchingCategoryId, MatchingMinPrice, MatchingMaxPrice)
+            new GetProductsRequest(null, null, null, null, null),
+            new GetProductsRequest(string.Empty, null, null, null, null),
+            new GetProductsRequest(" ", null, null, null, null),
+            new GetProductsRequest("   ", null, null, null, null),
+            new GetProductsRequest(MatchingSearchTerm, null, null, null, null),
+            new GetProductsRequest(null, MatchingCategoryId, null, null, null),
+            new GetProductsRequest(null, null, MatchingMinPrice, MatchingMaxPrice, null),
+            new GetProductsRequest(MatchingSearchTerm, MatchingCategoryId, MatchingMinPrice, MatchingMaxPrice, Contracts.Enums.ProductType.All)
         };
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class GetProductsTests : ProductTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = new GetProductsRequest(string.Empty, null, null, null);
+        var request = new GetProductsRequest(string.Empty, null, null, null, null);
         SetupProducts([]);
 
         // Act
