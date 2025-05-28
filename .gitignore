@@ -402,4 +402,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-/wwwroot/uploads/**/*
+/src/Ombor.API/wwwroot/uploads
