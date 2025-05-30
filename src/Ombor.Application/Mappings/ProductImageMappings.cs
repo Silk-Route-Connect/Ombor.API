@@ -11,7 +11,7 @@ internal static class ProductImageMappings
     public static ProductImageDto ToDto(this ProductImage image)
         => new(
             Id: image.Id,
-            Name: image.Name,
+            Name: image.ImageName,
             OriginalUrl: image.OriginalUrl,
             ThumbnailUrl: image.ThumbnailUrl);
 }
