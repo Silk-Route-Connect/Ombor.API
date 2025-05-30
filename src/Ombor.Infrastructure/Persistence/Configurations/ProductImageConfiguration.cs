@@ -22,7 +22,12 @@ internal sealed class ProductImageConfiguration : IEntityTypeConfiguration<Produ
         #region Properties
 
         builder
-            .Property(pi => pi.Name)
+            .Property(pi => pi.FileName)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired();
+
+        builder
+            .Property(pi => pi.ImageName)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();
 

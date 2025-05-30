@@ -5,9 +5,14 @@ namespace Ombor.Domain.Entities;
 public class ProductImage : EntityBase
 {
     /// <summary>
+    /// Gets or sets the unique name for the product image file.
+    /// </summary>
+    public required string FileName { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the product image file.
     /// </summary>
-    public required string Name { get; set; }
+    public required string ImageName { get; set; }
 
     /// <summary>
     /// Gets or sets the URL of the product image.

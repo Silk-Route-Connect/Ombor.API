@@ -16,7 +16,7 @@ public partial class Initial_Create : Migration
             {
                 Id = table.Column<int>(type: "int", nullable: false)
                     .Annotation("SqlServer:Identity", "1, 1"),
-                Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                 Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
             },
             constraints: table =>
@@ -30,8 +30,8 @@ public partial class Initial_Create : Migration
             {
                 Id = table.Column<int>(type: "int", nullable: false)
                     .Annotation("SqlServer:Identity", "1, 1"),
-                Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                SKU = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                SKU = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                 Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                 Barcode = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                 SalePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -60,7 +60,8 @@ public partial class Initial_Create : Migration
             {
                 Id = table.Column<int>(type: "int", nullable: false)
                     .Annotation("SqlServer:Identity", "1, 1"),
-                Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                ImageName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                 OriginalUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                 ThumbnailUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                 ProductId = table.Column<int>(type: "int", nullable: false)
