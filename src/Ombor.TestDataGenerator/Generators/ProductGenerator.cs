@@ -24,6 +24,9 @@ public static class ProductGenerator
     public static List<ProductImage> GenerateImages(int count, string locale = DefaultLocale)
         => GenerateImage(locale).Generate(count);
 
+    public static List<ProductImage> GenerateImages(int count, int productId, string locale = DefaultLocale)
+        => GenerateImage(productId, locale).Generate(count);
+
     private static Faker<Product> GetGenerator(int[] categories, string locale) => new Faker<Product>(locale)
         .RuleFor(x => x.Name, f => f.Commerce.ProductName())
         .RuleFor(x => x.CategoryId, f => f.PickRandom(categories))
@@ -40,7 +43,10 @@ public static class ProductGenerator
         .RuleFor(x => x.Type, f => f.Random.Enum<ProductType>());
 
     private static Faker<ProductImage> GenerateImage(string locale) => new Faker<ProductImage>(locale)
-        .RuleFor(x => x.Name, f => f.System.FileName())
+        .RuleFor(x => x.ImageName, f => f.System.FileName())
         .RuleFor(x => x.OriginalUrl, f => f.Image.PicsumUrl())
         .RuleFor(x => x.ThumbnailUrl, f => f.Image.PicsumUrl());
+
+    private static Faker<ProductImage> GenerateImage(int productId, string locale)
+        => GenerateImage(locale).RuleFor(x => x.ProductId, productId);
 }
