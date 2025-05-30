@@ -17,4 +17,13 @@ internal sealed class LocalFilePathProvider(IOptions<FileSettings> settings) : I
 
         return Path.Combine(segments);
     }
+
+    public string BuildPublicUrl(string? subfolder, string section, string fileName)
+    {
+        var segments = new[] { _settings.PublicUrlPrefix }
+            .Concat(PathHelpers.BuildSegments(subfolder, section, fileName))
+            .ToArray();
+
+        return string.Join('/', segments);
+    }
 }

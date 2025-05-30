@@ -9,7 +9,7 @@ internal sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
     private readonly string _webRootPath = env.WebRootPath
         ?? throw new InvalidOperationException("Cannot construct local file storage without 'web root path'.");
 
-    public async Task<string> UploadAsync(
+    public async Task SaveAsync(
         Stream content,
         string storagePath,
         CancellationToken cancellationToken = default)
@@ -20,8 +20,8 @@ internal sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
         var relativePhysicalPath = Path.Combine(pathSegments);
         var fullPhysicalPath = Path.Combine(_webRootPath, relativePhysicalPath);
 
-        var directory = Path.GetDirectoryName(fullPhysicalPath)!;
-        if (!Directory.Exists(directory))
+        var directory = Path.GetDirectoryName(fullPhysicalPath);
+        if (directory is not null && !Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
         }
@@ -34,7 +34,5 @@ internal sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
             bufferSize: 81920,
             useAsync: true);
         await content.CopyToAsync(fileStream, cancellationToken);
-
-        return PathHelpers.BuildRelativePath(pathSegments);
     }
 }

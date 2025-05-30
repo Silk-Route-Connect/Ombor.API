@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces.File;
 using Ombor.Application.Models;
 using Ombor.Domain.Exceptions;
@@ -28,7 +29,7 @@ internal sealed class FileUploadService(
         var extension = file.GetNormalizedFileExtension();
         var generatedFileName = $"{Guid.NewGuid():N}{extension}";
 
-        var originalUrl = await SaveOriginalFile(
+        var originalUrl = await SaveOriginalFileAsync(
             file: file,
             fileName: generatedFileName,
             subfolder: subfolder,
@@ -41,6 +42,7 @@ internal sealed class FileUploadService(
             cancellationToken: cancellationToken);
 
         return new FileUploadResult(
+            FileName: generatedFileName,
             OriginalFileName: file.FileName,
             Url: originalUrl,
             ThumbnailUrl: thumbnailUrl);
@@ -80,7 +82,7 @@ internal sealed class FileUploadService(
         }
     }
 
-    private async Task<string> SaveOriginalFile(
+    private async Task<string> SaveOriginalFileAsync(
         IFormFile file,
         string fileName,
         string? subfolder,
@@ -89,10 +91,12 @@ internal sealed class FileUploadService(
         await using var originalStream = file.OpenReadStream();
         var originalStoragePath = pathResolver.BuildRelativePath(subfolder, _settings.OriginalsSubfolder, fileName);
 
-        return await storage.UploadAsync(
+        await storage.SaveAsync(
             originalStream,
             originalStoragePath,
             cancellationToken);
+
+        return pathResolver.BuildPublicUrl(subfolder, _settings.OriginalsSubfolder, fileName);
     }
 
     // This method swallows an error thrown by thumbnailer because failing to create thumbnail doesn't violate business rule.
@@ -111,16 +115,17 @@ internal sealed class FileUploadService(
 
         try
         {
-            var thumbnailFormat = GetFormat(extension);
+            var thumbnailFormat = ImageHelpers.GetFormat(extension);
             await using var thumbSourceStream = file.OpenReadStream();
             await using var thumbStream = await thumbnailer.GenerateThumbnailAsync(thumbSourceStream, thumbnailFormat, cancellationToken);
-
             var thumbnailStoragePath = pathResolver.BuildRelativePath(subfolder, _settings.ThumbnailsSubfolder, fileName);
 
-            return await storage.UploadAsync(
+            await storage.SaveAsync(
                 thumbStream,
                 thumbnailStoragePath,
                 cancellationToken);
+
+            return pathResolver.BuildPublicUrl(subfolder, _settings.OriginalsSubfolder, fileName);
         }
         catch (Exception ex)
         {
@@ -133,15 +138,4 @@ internal sealed class FileUploadService(
             return null;
         }
     }
-
-    private static ThumbnailFormat GetFormat(string extension) =>
-        extension switch
-        {
-            ".png" => ThumbnailFormat.Png,
-            ".jpg" => ThumbnailFormat.Jpg,
-            ".jpeg" => ThumbnailFormat.Jpeg,
-            ".webp" => ThumbnailFormat.Webp,
-            ".gif" => ThumbnailFormat.Gif,
-            _ => throw new ArgumentOutOfRangeException($"Thumbnailing of {extension} format is not supported."),
-        };
 }

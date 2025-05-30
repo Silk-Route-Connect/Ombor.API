@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
@@ -11,8 +13,14 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class ProductService(IApplicationDbContext context, IRequestValidator validator, IFileUploadService fileService) : IProductService
+internal sealed class ProductService(
+    IApplicationDbContext context,
+    IRequestValidator validator,
+    IFileUploadService fileService,
+    IOptions<FileSettings> fileSettings) : IProductService
 {
+    private readonly FileSettings fileSettings = fileSettings.Value;
+
     public async Task<ProductDto[]> GetAsync(GetProductsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -121,12 +129,13 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
             return [];
         }
 
-        var fileUrls = await fileService.UploadAsync(attachments, FileSettings.ProductFileUploadsFolder);
+        var fileUrls = await fileService.UploadAsync(attachments, fileSettings.ProductUploadsSection);
         var images = fileUrls
             .Select(file => new ProductImage
             {
+                FileName = file.FileName,
                 OriginalUrl = file.Url,
-                Name = file.OriginalFileName,
+                ImageName = file.OriginalFileName,
                 ThumbnailUrl = file.ThumbnailUrl,
                 Product = null!
             });

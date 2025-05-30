@@ -33,6 +33,13 @@ public sealed class FileSettings
     [RegularExpression(@"^[^\\/:\*\?""<>\|]+$", ErrorMessage = "BasePath must not contain path separators or invalid characters.")]
     public required string BasePath { get; init; }
 
+    /// <summary>
+    /// Public URL prefix for accessing files
+    /// </summary>
+    public required string PublicUrlPrefix { get; set; }
+
+    public required string ProductUploadsSection { get; set; }
+
     [Required(ErrorMessage = "Thumbnail width is required.")]
     public required int ThumbnailWidth { get; set; }
 
