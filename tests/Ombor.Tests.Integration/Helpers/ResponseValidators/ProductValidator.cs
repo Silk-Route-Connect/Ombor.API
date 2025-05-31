@@ -125,7 +125,7 @@ public class ProductValidator(IApplicationDbContext context)
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.Measurement.ToString(),
                 x.Type.ToString(),
-                x.Images.Select(image => new ProductImageDto(image.Id, image.Name, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
+                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
             .ToArray();
     }
 }
