@@ -118,7 +118,7 @@ public sealed class LocalFilePathProviderTests
         // Act
         string actualUrl = _provider.BuildPublicUrl(subfolder, section, fileName);
 
-        // Assert: segments joined by "/" (forward slash)
+        // Assert
         string expectedUrl = string.Join('/', expectedSegments);
         Assert.Equal(expectedUrl, actualUrl);
     }

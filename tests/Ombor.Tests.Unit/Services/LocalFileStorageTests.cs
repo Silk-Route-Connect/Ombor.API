@@ -23,12 +23,12 @@ public sealed class LocalFileStorageTests : IDisposable
 
     public static TheoryData<string, string[]> ValidPathData => new()
     {
-        { "file.txt", new[] { "file.txt" } },
-        { "sub/file.txt", new[] { "sub", "file.txt" } },
-        { "a/b/c.txt", new[] { "a", "b", "c.txt" } },
-        { "mixed\\separators.txt", new[] { "mixed", "separators.txt" } },
-        { "/leading/slash.txt", new[] { "leading", "slash.txt" } },
-        { "trailing/slash/", new[] { "trailing", "slash" } },
+        { "file.txt", [ "file.txt" ]},
+        { "sub/file.txt", [ "sub", "file.txt" ]},
+        { "a/b/c.txt", ["a", "b", "c.txt" ]},
+        { "mixed\\separators.txt", ["mixed", "separators.txt" ]},
+        { "/leading/slash.txt", ["leading", "slash.txt" ]},
+        { "trailing/slash/", ["trailing", "slash" ]},
     };
 
     public static TheoryData<string?, Type> InvalidPathData => new()
@@ -147,7 +147,7 @@ public sealed class LocalFileStorageTests : IDisposable
     [MemberData(nameof(InvalidPathData))]
     public async Task DeleteAsync_ShouldThrow_WhenStoragePathIsInvalid(
         string storagePath,
-        System.Type exceptionType)
+        Type exceptionType)
     {
         await Assert.ThrowsAsync(
             exceptionType,
