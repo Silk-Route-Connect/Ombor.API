@@ -35,4 +35,18 @@ internal sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
             useAsync: true);
         await content.CopyToAsync(fileStream, cancellationToken);
     }
+
+    public Task DeleteAsync(string storagePath, CancellationToken cancellationToken = default)
+    {
+        // storagePath comes in as "uploads/products/orig/abc123.png" (no leading slash)
+        var segments = PathHelpers.ExtractSegments(storagePath);
+        var physical = Path.Combine(_webRootPath, Path.Combine(segments));
+
+        if (File.Exists(physical))
+        {
+            File.Delete(physical);
+        }
+
+        return Task.CompletedTask;
+    }
 }
