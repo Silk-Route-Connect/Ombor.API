@@ -16,7 +16,7 @@ namespace Ombor.Application.Services;
 internal sealed class ProductService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    IFileUploadService fileService,
+    IFileService fileService,
     IOptions<FileSettings> fileSettings) : IProductService
 {
     private readonly FileSettings fileSettings = fileSettings.Value;

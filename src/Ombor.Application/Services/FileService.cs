@@ -10,12 +10,12 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class FileUploadService(
+internal sealed class FileService(
     IFileStorage storage,
     IImageThumbnailer thumbnailer,
     IFilePathProvider pathResolver,
     IOptions<FileSettings> options,
-    ILogger<FileUploadService> logger) : IFileUploadService
+    ILogger<FileService> logger) : IFileService
 {
     private readonly FileSettings _settings = options.Value;
 
@@ -150,7 +150,7 @@ internal sealed class FileUploadService(
                 thumbnailStoragePath,
                 cancellationToken);
 
-            return pathResolver.BuildPublicUrl(subfolder, _settings.OriginalsSubfolder, fileName);
+            return pathResolver.BuildPublicUrl(subfolder, _settings.ThumbnailsSubfolder, fileName);
         }
         catch (Exception ex)
         {

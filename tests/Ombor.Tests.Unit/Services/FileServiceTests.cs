@@ -1,142 +1,273 @@
-﻿namespace Ombor.Tests.Unit.Services;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
+using Ombor.Application.Configurations;
+using Ombor.Application.Interfaces.File;
+using Ombor.Application.Models;
+using Ombor.Application.Services;
+using Ombor.Domain.Exceptions;
 
-//public sealed class FileServiceTests : IDisposable
-//{
-//    private readonly string _tempRoot;
-//    private readonly FileService _service;
+namespace Ombor.Tests.Unit.Services;
 
-//    public FileServiceTests()
-//    {
-//        _tempRoot = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-//        Directory.CreateDirectory(_tempRoot);
+public sealed class FileServiceTests
+{
+    private readonly Mock<IFileStorage> _storageMock;
+    private readonly Mock<IImageThumbnailer> _thumbnailerMock;
+    private readonly Mock<IFilePathProvider> _pathResolverMock;
+    private readonly FileSettings _settings;
+    private readonly FileService _service;
 
-//        var fileSettings = new FileSettings
-//        {
-//            BasePath = "uploads",
-//            MaxBytes = 1024 * 1024,
-//            AllowedExtensions = new[] { ".txt", ".jpg" },
-//            ThumbnailSize = new Size(100, 100),
-//            OriginalsSubfolder = "originals",
-//            ThumbnailsSubfolder = "thumbs"
-//        };
+    public FileServiceTests()
+    {
+        _storageMock = new Mock<IFileStorage>(MockBehavior.Strict);
+        _thumbnailerMock = new Mock<IImageThumbnailer>(MockBehavior.Strict);
+        _pathResolverMock = new Mock<IFilePathProvider>(MockBehavior.Strict);
 
-//        var optionsMock = new Mock<IOptions<FileSettings>>();
-//        optionsMock.Setup(o => o.Value).Returns(fileSettings);
+        _settings = new()
+        {
+            BasePath = "uploads",
+            MaxBytes = 200,
+            AllowedFileExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif", ".pdf"],
+            AllowedImageExtensions = [".png", ".jpg", ".jpeg", ".webp", ".gif"],
+            ThumbnailWidth = 100,
+            ThumbnailHeight = 100,
+            OriginalsSubfolder = "originals",
+            ThumbnailsSubfolder = "thumbnails",
+            ProductUploadsSection = "products",
+            PublicUrlPrefix = "images"
+        };
+        var options = Options.Create(_settings);
 
-//        var envMock = new Mock<IWebHostEnvironment>();
-//        envMock.Setup(e => e.WebRootPath).Returns(_tempRoot);
+        _service = new FileService(
+            _storageMock.Object,
+            _thumbnailerMock.Object,
+            _pathResolverMock.Object,
+            options,
+            new NullLogger<FileService>());
+    }
 
-//        _service = new FileService(optionsMock.Object, envMock.Object);
-//    }
+    public static TheoryData<byte[]?, string?, Type> InvalidFileData => new()
+    {
+        { null, "file.png", typeof(ArgumentException) },
+        { Array.Empty<byte>(), "file.png", typeof(ArgumentException) },
+        { new byte[10], null, typeof(ArgumentException) },
+        { new byte[10], "", typeof(ArgumentException) },
+        { new byte[10], "  ", typeof(ArgumentException) },
+        { new byte[250], "file.png", typeof(FileTooLargeException) },
+        { new byte[10], "file.exe", typeof(UnsupportedFileFormatException) }
+    };
 
-//    public void Dispose()
-//    {
-//        if (Directory.Exists(_tempRoot))
-//            Directory.Delete(_tempRoot, true);
-//    }
+    [Theory]
+    [MemberData(nameof(InvalidFileData))]
+    public async Task UploadAsync_ShouldThrow_WhenFileIsInvalid(byte[]? content, string? fileName, Type exceptionType)
+    {
+        // Arrange
+        IFormFile file = CreateFormFile(content, fileName);
 
-//    [Fact]
-//    public async Task SaveAsync_ShouldSaveFileAndReturnUrl_WhenValidFileIsProvided()
-//    {
-//        // Arrange
-//        var content = Encoding.UTF8.GetBytes("Test content");
-//        var file = CreateFormFile(content, "test.txt");
+        // Act & Assert
+        await Assert.ThrowsAsync(
+            exceptionType,
+            () => _service.UploadAsync(file, _settings.ProductUploadsSection, CancellationToken.None));
+    }
 
-//        // Act
-//        var result = await _service.SaveAsync(file);
-//        var files = Directory.GetFiles(_tempRoot);
+    [Theory]
+    [InlineData(".png", ThumbnailFormat.Png)]
+    [InlineData(".jpg", ThumbnailFormat.Jpg)]
+    [InlineData(".jpeg", ThumbnailFormat.Jpeg)]
+    [InlineData(".webp", ThumbnailFormat.Webp)]
+    [InlineData(".gif", ThumbnailFormat.Gif)]
+    public async Task UpdateAsync_ShouldSaveThumbnailWithCorrectExtensionFormat_WhenFileIsImage(string extension, ThumbnailFormat expectedFormat)
+    {
+        // Arrange
+        byte[] data = [1, 2, 3];
+        IFormFile file = CreateFormFile(data, $"test{extension}");
 
-//        // Assert
-//        Assert.Equal("test.txt", result.OriginalFileName);
-//        Assert.StartsWith("/uploads/", result.Url);
-//        Assert.EndsWith(".txt", result.Url);
-//        Assert.Null(result.ThumbnailUrl);
+        string generated = Guid.NewGuid().ToString("N") + ".jpg";
+        string originalImagePath = $"uploads/images/{_settings.ProductUploadsSection}/originals/{generated}";
+        string thumbnailImagePath = $"uploads/images/{_settings.ProductUploadsSection}/thumbnails/{generated}";
+        string originalImageUrl = $"/{originalImagePath}";
+        string thumbnailImageUrl = $"/{thumbnailImagePath}";
 
-//        var savedPath = Path.Combine(_tempRoot, "uploads", "originals", Path.GetFileName(result.Url));
-//        Assert.True(File.Exists(savedPath));
-//        Assert.Equal(content, await File.ReadAllBytesAsync(savedPath));
-//    }
+        _pathResolverMock.Setup(x => x.BuildRelativePath(_settings.ProductUploadsSection, _settings.OriginalsSubfolder, It.IsAny<string>()))
+            .Returns(originalImagePath);
+        _pathResolverMock.Setup(x => x.BuildRelativePath(_settings.ProductUploadsSection, _settings.ThumbnailsSubfolder, It.IsAny<string>()))
+            .Returns(thumbnailImagePath);
 
-//    [Fact]
-//    public async Task SaveAsync_ShouldReturnThumbnailUrl_WhenImageFileProvided()
-//    {
-//        // Arrange
-//        var imageBytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/P3cYdQAAAABJRU5ErkJggg==");
-//        var file = CreateFormFile(imageBytes, "photo.jpg");
+        _storageMock.Setup(x => x.SaveAsync(It.IsAny<Stream>(), originalImagePath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        _storageMock.Setup(x => x.SaveAsync(It.IsAny<Stream>(), thumbnailImagePath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-//        // Act
-//        var result = await _service.SaveAsync(file);
+        _pathResolverMock.Setup(x => x.BuildPublicUrl(_settings.ProductUploadsSection, _settings.OriginalsSubfolder, It.IsAny<string>()))
+            .Returns(originalImageUrl);
+        _pathResolverMock.Setup(x => x.BuildPublicUrl(_settings.ProductUploadsSection, _settings.ThumbnailsSubfolder, It.IsAny<string>()))
+            .Returns(thumbnailImageUrl);
 
-//        // Assert
-//        Assert.Equal("photo.jpg", result.OriginalFileName);
-//        Assert.NotNull(result.ThumbnailUrl);
-//        Assert.Contains("/thumbs/", result.ThumbnailUrl);
-//    }
+        var thumbStream = new MemoryStream([9, 8, 7]);
+        _thumbnailerMock.Setup(x => x.GenerateThumbnailAsync(It.IsAny<Stream>(), expectedFormat, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(thumbStream);
 
-//    [Theory]
-//    [InlineData(null, 0, ".txt", "No file provided.")]
-//    [InlineData("file.txt", 0, ".txt", "No file provided.")]
-//    [InlineData("file.txt", 2000000, ".txt", "File size is too large")]
-//    [InlineData("file.exe", 100, ".exe", "Invalid file type")]
-//    [InlineData("", 100, "", "File name must be provided")]
-//    public async Task SaveAsync_ShouldThrow_WhenFileInvalid(string fileName, int length, string extension, string expectedError)
-//    {
-//        // Arrange
-//        IFormFile? file = fileName == null ? null : CreateFormFile(new byte[length], $"{fileName}{extension}");
+        // Act
+        var result = await _service.UploadAsync(file, _settings.ProductUploadsSection, CancellationToken.None);
 
-//        // Act & Assert
-//        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _service.SaveAsync(file!));
-//        Assert.Contains(expectedError, ex.Message, StringComparison.OrdinalIgnoreCase);
-//    }
+        // Assert
+        Assert.EndsWith(extension, result.FileName);
+        Assert.Equal($"test{extension}", result.OriginalFileName);
+        Assert.Equal(originalImageUrl, result.Url);
+        Assert.Equal(thumbnailImageUrl, result.ThumbnailUrl);
+        _pathResolverMock.VerifyAll();
+        _storageMock
+            .VerifyAll();
+        _thumbnailerMock.VerifyAll();
+    }
 
-//    [Theory]
-//    [InlineData("..")]
-//    [InlineData("images//test")]
-//    [InlineData(@"C:\hack")]
-//    [InlineData("a/../b")]
-//    public async Task SaveAsync_ShouldThrowArgumentException_WhenSubfolderInvalid(string subfolder)
-//    {
-//        var file = CreateFormFile(new byte[] { 1 }, "valid.txt");
+    [Fact]
+    public async Task UploadAsync_ShouldSaveOriginalOnly_WhenFileIsNotImage()
+    {
+        // Arrange
+        byte[] data = [1, 2, 3];
+        IFormFile file = CreateFormFile(data, "document.pdf");
+        string generated = Guid.NewGuid().ToString("N") + ".pdf";
+        string originalPath = $"uploads/documents/originals/{generated}";
+        string originalUrl = $"/{originalPath}";
 
-//        var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-//            _service.SaveAsync(file, subfolder));
+        _pathResolverMock.Setup(x => x.BuildRelativePath("documents", "originals", It.IsAny<string>()))
+            .Returns(originalPath);
 
-//        Assert.StartsWith("Invalid subfolder path", ex.Message);
-//    }
+        _storageMock.Setup(x => x.SaveAsync(It.IsAny<Stream>(), originalPath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-//    [Theory]
-//    [InlineData("TEST.TXT")]
-//    [InlineData("Test.TxT")]
-//    [InlineData("test.txt")]
-//    public async Task SaveAsync_ShouldAcceptFile_WhenExtensionMatchesIgnoringCase(string fileName)
-//    {
-//        // Arrange
-//        var content = new byte[] { 10, 20 };
-//        var file = CreateFormFile(content, fileName);
+        _pathResolverMock.Setup(x => x.BuildPublicUrl("documents", "originals", It.IsAny<string>()))
+            .Returns(originalUrl);
 
-//        // Act
-//        var result = await _service.SaveAsync(file);
+        // Act
+        var result = await _service.UploadAsync(file, "documents", CancellationToken.None);
 
-//        // Assert
-//        Assert.Equal(fileName, result.OriginalFileName);
-//        Assert.EndsWith(".txt", result.Url); // Always normalized
-//        var fullPath = Path.Combine(_tempRoot, "uploads", "originals", Path.GetFileName(result.Url));
-//        Assert.True(File.Exists(fullPath));
-//    }
+        // Assert
+        Assert.EndsWith(".pdf", result.FileName);
+        Assert.Equal("document.pdf", result.OriginalFileName);
+        Assert.Equal(originalUrl, result.Url);
+        Assert.Null(result.ThumbnailUrl);
+    }
 
-//    [Fact]
-//    public async Task SaveAsync_ShouldReturnEncodedUrl_WhenSubfolderHasSpaces()
-//    {
-//        var file = CreateFormFile(new byte[] { 1, 2 }, "my file.txt");
+    [Fact]
+    public async Task UploadAsync_ShouldSwallowThumbnailException_WhenThumbnailerFails()
+    {
+        // Arrange
+        byte[] data = [1, 2, 3];
+        IFormFile file = CreateFormFile(data, "image.png");
+        string generated = Guid.NewGuid().ToString("N") + ".png";
+        string originalPath = $"uploads/images/originals/{generated}";
+        string originalUrl = $"/{originalPath}";
 
-//        var result = await _service.SaveAsync(file, "space folder");
+        _pathResolverMock.Setup(x => x.BuildRelativePath("images", "originals", It.IsAny<string>()))
+            .Returns(originalPath);
 
-//        Assert.Contains("/space%20folder/", result.Url);
-//    }
+        _storageMock.Setup(x => x.SaveAsync(It.IsAny<Stream>(), originalPath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-//    private static FormFile CreateFormFile(byte[] content, string fileName)
-//    {
-//        var stream = new MemoryStream(content);
-//        return new FormFile(stream, 0, content.Length, "file", fileName);
-//    }
-//}
+        _pathResolverMock.Setup(x => x.BuildPublicUrl("images", "originals", It.IsAny<string>()))
+            .Returns(originalUrl);
+
+        _thumbnailerMock.Setup(x => x.GenerateThumbnailAsync(It.IsAny<Stream>(), ThumbnailFormat.Png, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Thumbnail generation failed"));
+
+        // Act
+        var result = await _service.UploadAsync(file, "images", CancellationToken.None);
+
+        // Assert
+        Assert.EndsWith(".png", result.FileName);
+        Assert.Equal("image.png", result.OriginalFileName);
+        Assert.Equal(originalUrl, result.Url);
+        Assert.Null(result.ThumbnailUrl);
+    }
+
+    [Theory]
+    [InlineData(null, typeof(ArgumentNullException))]
+    [InlineData("", typeof(ArgumentException))]
+    [InlineData("  ", typeof(ArgumentException))]
+    public async Task DeleteAsync_ShouldThrowArgumentException_WhenFileNameIsInvalid(string fileName, Type exception)
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync(
+            exception,
+            () => _service.DeleteAsync(fileName, "images", CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldCallStorageDeleteTwice_WhenFileIsImage()
+    {
+        // Arrange
+        string fileName = "test.png";
+        string subfolder = "images";
+        string relativePath = $"uploads/{subfolder}/originals/{fileName}";
+        string thumbnailPath = $"uploads/{subfolder}/thumbnails/{fileName}";
+
+        _pathResolverMock.Setup(x => x.BuildRelativePath(subfolder, "originals", fileName))
+            .Returns(relativePath);
+        _storageMock.Setup(x => x.DeleteAsync(relativePath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _pathResolverMock.Setup(x => x.BuildRelativePath(subfolder, "thumbnails", fileName))
+            .Returns(thumbnailPath);
+        _storageMock.Setup(x => x.DeleteAsync(thumbnailPath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _service.DeleteAsync(fileName, subfolder, CancellationToken.None);
+
+        // Assert
+        _storageMock.Verify(x => x.DeleteAsync(relativePath, It.IsAny<CancellationToken>()), Times.Once);
+        _storageMock.Verify(x => x.DeleteAsync(thumbnailPath, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldCallStorageDeleteOnce_WhenFileIsNotImage()
+    {
+        // Arrange
+        string fileName = "document.pdf";
+        string subfolder = "documents";
+        string relativePath = $"uploads/{subfolder}/originals/{fileName}";
+
+        _pathResolverMock.Setup(x => x.BuildRelativePath(subfolder, "originals", fileName))
+            .Returns(relativePath);
+        _storageMock.Setup(x => x.DeleteAsync(relativePath, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _service.DeleteAsync(fileName, subfolder, CancellationToken.None);
+
+        // Assert
+        _storageMock.Verify(x => x.DeleteAsync(relativePath, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldThrowFileNotFoundException_WhenFileDoesNotExist()
+    {
+        // Arrange
+        string fileName = "nonexistent.png";
+        string subfolder = "images";
+        string relativePath = $"uploads/{subfolder}/originals/{fileName}";
+
+        _pathResolverMock.Setup(x => x.BuildRelativePath(subfolder, "originals", fileName))
+            .Returns(relativePath);
+        _storageMock.Setup(x => x.DeleteAsync(relativePath, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new FileNotFoundException("File not found"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<FileNotFoundException>(
+            () => _service.DeleteAsync(fileName, subfolder, CancellationToken.None));
+    }
+
+    private static FormFile CreateFormFile(byte[]? data, string? fileName)
+    {
+        if (data is null)
+        {
+            return null!;
+        }
+
+        var stream = new MemoryStream(data);
+        return new FormFile(stream, 0, stream.Length, "file", fileName!);
+    }
+}

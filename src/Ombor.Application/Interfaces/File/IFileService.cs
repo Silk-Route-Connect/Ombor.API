@@ -6,7 +6,7 @@ namespace Ombor.Application.Interfaces.File;
 /// <summary>
 /// Orchestrates validation, storage, and thumbnailing of uploaded files.
 /// </summary>
-public interface IFileUploadService
+public interface IFileService
 {
     Task<FileUploadResult> UploadAsync(IFormFile file, string? subfolder = null, CancellationToken cancellationToken = default);
 
