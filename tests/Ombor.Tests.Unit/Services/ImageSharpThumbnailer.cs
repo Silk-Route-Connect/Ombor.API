@@ -96,7 +96,9 @@ public sealed class ImageSharpThumbnailerTests
             ThumbnailWidth = thumbWidth,
             ThumbnailHeight = thumbHeight,
             OriginalsSubfolder = "orig",
-            ThumbnailsSubfolder = "thumb"
+            ThumbnailsSubfolder = "thumb",
+            ProductUploadsSection = "products",
+            PublicUrlPrefix = "images",
         };
 
         var options = Options.Create(settings);
