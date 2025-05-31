@@ -11,4 +11,8 @@ public interface IFileUploadService
     Task<FileUploadResult> UploadAsync(IFormFile file, string? subfolder = null, CancellationToken cancellationToken = default);
 
     Task<FileUploadResult[]> UploadAsync(IEnumerable<IFormFile> files, string? subfolder = null, CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(string fileName, string? subfolder = null, CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(IEnumerable<string> fileNames, string? subfolder = null, CancellationToken cancellationToken = default);
 }

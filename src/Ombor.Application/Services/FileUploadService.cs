@@ -53,7 +53,32 @@ internal sealed class FileUploadService(
         string? subfolder = null,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(files);
+
         var tasks = files.Select(f => UploadAsync(f, subfolder, cancellationToken));
+
+        return Task.WhenAll(tasks);
+    }
+
+    public async Task DeleteAsync(
+        string fileName,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+
+        await DeleteOriginalAsync(fileName, subfolder, cancellationToken);
+        await TryDeleteThumbnailAsync(fileName, subfolder, cancellationToken);
+    }
+
+    public Task DeleteAsync(
+        IEnumerable<string> fileNames,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(fileNames);
+
+        var tasks = fileNames.Select(fileName => DeleteAsync(fileName, subfolder, cancellationToken));
 
         return Task.WhenAll(tasks);
     }
@@ -137,5 +162,31 @@ internal sealed class FileUploadService(
 
             return null;
         }
+    }
+
+    private Task DeleteOriginalAsync(
+        string fileName,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
+    {
+        var originalPath = pathResolver.BuildRelativePath(subfolder, _settings.OriginalsSubfolder, fileName);
+
+        return storage.DeleteAsync(originalPath, cancellationToken);
+    }
+
+    private Task TryDeleteThumbnailAsync(
+        string fileName,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
+    {
+        var extension = Path.GetExtension(fileName);
+        if (!_settings.AllowedImageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask; // No thumbnail to delete
+        }
+
+        var thumbnailPath = pathResolver.BuildRelativePath(subfolder, _settings.ThumbnailsSubfolder, fileName);
+
+        return storage.DeleteAsync(thumbnailPath, cancellationToken);
     }
 }
