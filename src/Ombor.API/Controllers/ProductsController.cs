@@ -75,7 +75,7 @@ public sealed class ProductsController(IProductService productService) : Control
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UpdateProductResponse>> PutAsync(
         [FromRoute] int id,
-        [FromBody] UpdateProductRequest request)
+        [FromForm] UpdateProductRequest request)
     {
         if (id != request.Id)
         {
