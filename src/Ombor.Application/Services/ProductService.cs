@@ -64,6 +64,9 @@ internal sealed class ProductService(
 
         var entity = await GetOrThrowAsync(request.Id);
         entity.ApplyUpdate(request);
+
+        await UpdateImagesAsync(entity, request.Attachments, request.ImagesToDelete);
+
         await context.SaveChangesAsync();
         entity.Category = await context.Categories.FirstAsync(x => x.Id == request.CategoryId);
 
@@ -76,6 +79,9 @@ internal sealed class ProductService(
 
         var entity = await GetOrThrowAsync(request.Id);
         context.Products.Remove(entity);
+        var imagesToDelete = entity.Images.Select(x => x.FileName).ToArray();
+
+        await fileService.DeleteAsync(imagesToDelete, fileSettings.ProductUploadsSection);
         await context.SaveChangesAsync();
     }
 
@@ -122,6 +128,23 @@ internal sealed class ProductService(
         return query;
     }
 
+    private async Task UpdateImagesAsync(
+        Product entity,
+        IEnumerable<IFormFile>? attachments,
+        IEnumerable<int>? imageIdsToDelete)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        if (attachments?.Any() != true && imageIdsToDelete?.Any() != true)
+        {
+            return;
+        }
+
+        var imagesToDelete = await DeleteImages(imageIdsToDelete ?? []);
+        var newImages = await CreateImages(attachments ?? []);
+        entity.Images = MergeImages(entity.Images, newImages, imagesToDelete);
+    }
+
     private async Task<ProductImage[]> CreateImages(IEnumerable<IFormFile> attachments)
     {
         if (attachments?.Any() != true)
@@ -134,12 +157,49 @@ internal sealed class ProductService(
             .Select(file => new ProductImage
             {
                 FileName = file.FileName,
-                OriginalUrl = file.Url,
                 ImageName = file.OriginalFileName,
+                OriginalUrl = file.Url,
                 ThumbnailUrl = file.ThumbnailUrl,
                 Product = null!
             });
 
         return [.. images];
+    }
+
+    private async Task<ProductImage[]> DeleteImages(IEnumerable<int> imageIdsToDelete)
+    {
+        if (imageIdsToDelete?.Any() != true)
+        {
+            return [];
+        }
+
+        var images = await context.ProductImages
+            .Where(x => imageIdsToDelete.Contains(x.Id))
+            .ToArrayAsync();
+        var fileNames = images.Select(x => x.FileName).ToArray();
+
+        if (fileNames.Length == 0)
+        {
+            return [];
+        }
+
+        await fileService.DeleteAsync(fileNames, fileSettings.ProductUploadsSection);
+
+        return images;
+    }
+
+    private static List<ProductImage> MergeImages(
+        IEnumerable<ProductImage> existingImages,
+        IEnumerable<ProductImage> newImages,
+        IEnumerable<ProductImage> imageIdsToDelete)
+    {
+        var images = existingImages.ToList();
+
+        foreach (var image in imageIdsToDelete)
+        {
+            images.RemoveAll(x => x.Id == image.Id);
+        }
+
+        return [.. images, .. newImages];
     }
 }
