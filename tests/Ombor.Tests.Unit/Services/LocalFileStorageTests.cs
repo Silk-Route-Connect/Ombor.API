@@ -41,6 +41,17 @@ public sealed class LocalFileStorageTests : IDisposable
         { "inva|id/file.txt", typeof(ArgumentException) }
     };
 
+    [Fact]
+    public void Ctor_ShouldThrowInvalidOperationException_WhenWebRootPathIsNull()
+    {
+        // Arrange: environment mock returns null for WebRootPath
+        var envMock = new Mock<IWebHostEnvironment>();
+        envMock.Setup(e => e.WebRootPath).Returns(value: null!);
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => _ = new LocalFileStorage(envMock.Object));
+    }
+
     [Theory]
     [MemberData(nameof(ValidPathData))]
     public async Task UploadAsync_SavesContentAndReturnsRelativePath_WhenStoragePathIsValid(
