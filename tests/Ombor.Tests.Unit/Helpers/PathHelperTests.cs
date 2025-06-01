@@ -144,8 +144,7 @@ public sealed class PathHelpersTests
     public void PathHelpers_BuildSegments_ShouldThrowArgumentException_WhenAnyInputInvalid(string[] inputs)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() =>
-            PathHelpers.BuildSegments(inputs));
+        Assert.Throws<ArgumentException>(() => PathHelpers.BuildSegments(inputs));
     }
 
     [Theory]
