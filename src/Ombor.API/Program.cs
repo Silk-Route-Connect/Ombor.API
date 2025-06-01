@@ -5,8 +5,6 @@ using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseWebRoot("wwwroot");
-
 builder.Services
     .AddApi(builder.Configuration)
     .AddApplication(builder.Configuration)
