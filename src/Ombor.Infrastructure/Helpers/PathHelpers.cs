@@ -5,13 +5,17 @@ namespace Ombor.Infrastructure.Helpers;
 
 internal static class PathHelpers
 {
-    private static readonly char[] _invalidPathAndFileNameChars = [.. Path.GetInvalidPathChars(), .. Path.GetInvalidFileNameChars()];
+    private static readonly char[] InvalidFileNameChars = new[]
+{
+    '<', '>', ':', '"', '/', '\\', '|', '?', '*'
+    // add more if needed
+};
 
     public static void ValidateSegments(this IEnumerable<string> segments, [CallerArgumentExpression(nameof(segments))] string? paramName = null)
     {
         foreach (var segment in segments)
         {
-            if (segment == ".." || segment.ContainsAny(_invalidPathAndFileNameChars))
+            if (segment == ".." || segment.ContainsAny(InvalidFileNameChars))
             {
                 throw new ArgumentException($"Invalid path segment: {segment}", paramName);
             }
