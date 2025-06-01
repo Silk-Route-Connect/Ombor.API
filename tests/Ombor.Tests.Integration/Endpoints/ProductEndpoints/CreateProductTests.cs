@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
-using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Helpers;
@@ -45,6 +44,7 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
 
         // Assert
         Assert.NotNull(response);
-        Assert.Contains(nameof(Product.Name), response.Errors.Keys);
+        Assert.Contains(nameof(UpdateProductRequest.Name), response.Errors.Keys);
+        Assert.Contains(nameof(UpdateProductRequest.SKU), response.Errors.Keys);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
@@ -9,11 +11,23 @@ namespace Ombor.Tests.Integration.Helpers;
 public class TestingWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly DatabaseFixture _databaseFixture;
+    private FileSettings? _fileSettingsCache;
 
-    private ResponseValidator _responseValidator;
+    private ResponseValidator? _responseValidator;
     public ResponseValidator ResponseValidator
     {
-        get => _responseValidator ??= new ResponseValidator(_databaseFixture.Context);
+        get
+        {
+            // Lazily resolve FileSettings once, then reuse
+            if (_fileSettingsCache is null)
+            {
+                var sp = Services;
+                var options = sp.GetRequiredService<IOptions<FileSettings>>();
+                _fileSettingsCache = options.Value;
+            }
+
+            return _responseValidator ??= new ResponseValidator(_databaseFixture.Context, _fileSettingsCache, TempWebRoot);
+        }
     }
 
     public IApplicationDbContext Context => _databaseFixture.Context;
@@ -21,19 +35,12 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
 
     public TestingWebApplicationFactory(DatabaseFixture databaseFixture)
     {
+        _databaseFixture = databaseFixture;
+
         TempWebRoot = Path.Combine(Path.GetTempPath(), "test_wwwroot");
         Directory.CreateDirectory(TempWebRoot);
 
-        _databaseFixture = databaseFixture;
-
-        _responseValidator = new ResponseValidator(_databaseFixture.Context);
-    }
-
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
         Environment.SetEnvironmentVariable("ASPNETCORE_WEBROOT", TempWebRoot);
-
-        return base.CreateHost(builder);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

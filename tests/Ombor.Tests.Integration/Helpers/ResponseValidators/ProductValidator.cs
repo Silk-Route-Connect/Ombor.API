@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
@@ -6,7 +7,8 @@ using Ombor.Tests.Common.Helpers;
 
 namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 
-public class ProductValidator(IApplicationDbContext context)
+public class ProductValidator(IApplicationDbContext context, FileSettings fileSettings, string webRootPath)
+    : ValidatorBase(context, fileSettings, webRootPath)
 {
     public async Task ValidateGetAsync(GetProductsRequest request, ProductDto[] response)
     {
@@ -56,6 +58,9 @@ public class ProductValidator(IApplicationDbContext context)
         ProductAssertionHelper.AssertEquivalent(request, actual);
         ProductAssertionHelper.AssertEquivalent(request, response);
         ProductAssertionHelper.AssertEquivalent(actual, response);
+
+        var files = actual?.Images?.Select(x => x.FileName) ?? [];
+        Assert.All(files, ValidateFileExists);
     }
 
     public async Task ValidatePutAsync(UpdateProductRequest request, UpdateProductResponse response)
@@ -127,5 +132,17 @@ public class ProductValidator(IApplicationDbContext context)
                 x.Type.ToString(),
                 x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
             .ToArray();
+    }
+
+    private void ValidateFileExists(string fileName)
+    {
+        var originalPath = Path.Combine(webRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder, fileName);
+        Assert.True(File.Exists(originalPath), $"File '{fileName}' does not exist in the expected location: {originalPath}");
+
+        if (fileSettings.AllowedImageExtensions.Contains(Path.GetExtension(fileName)))
+        {
+            var thumbnailPath = Path.Combine(webRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder, fileName);
+            Assert.True(File.Exists(thumbnailPath), $"File '{fileName}' does not exist in the expected location: {thumbnailPath}");
+        }
     }
 }
