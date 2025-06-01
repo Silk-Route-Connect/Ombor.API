@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Extensions;
 using Ombor.Tests.Integration.Helpers;
@@ -19,11 +20,12 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         // Arrange
         var productId = await CreateProductAsync();
         var request = ProductRequestFactory.GenerateValidUpdateRequest(productId, DefaultCategoryId);
+        var multipartForm = request.ToMultipartFormData();
         var url = GetUrl(productId);
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<UpdateProductResponse>(url, request);
+        var response = await _client.PutAsync<UpdateProductResponse>(url, multipartForm);
 
         // Assert
         await _responseValidator.Product.ValidatePutAsync(request, response);
@@ -34,10 +36,11 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     {
         // Arrange
         var request = ProductRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId);
+        var multipartForm = request.ToMultipartFormData();
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
+        var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, multipartForm, HttpStatusCode.NotFound);
 
         // Assert
         response.ShouldBeNotFound<Product>(NonExistentEntityId);
@@ -49,11 +52,12 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         // Arrange
         var productId = await CreateProductAsync();
         var request = ProductRequestFactory.GenerateInvalidUpdateRequest(productId);
+        var multipartForm = request.ToMultipartFormData();
         var url = GetUrl(productId);
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<ValidationProblemDetails>(url, request, HttpStatusCode.BadRequest);
+        var response = await _client.PutAsync<ValidationProblemDetails>(url, multipartForm, HttpStatusCode.BadRequest);
 
         // Assert
         Assert.NotNull(response);

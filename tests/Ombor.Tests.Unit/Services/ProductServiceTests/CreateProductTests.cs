@@ -41,7 +41,7 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockContext.Setup(mock => mock.Products.Add(It.Is<Product>(product => product.IsEquivalent(request))))
             .Callback<Product>(capturedProduct =>
             {
-                capturedProduct.Category = _builder.CategoryBuilder.BuildAndPopulate();
+                capturedProduct.Category = _defaultCategory;
                 SetupProducts([.. _defaultProducts, capturedProduct]);
                 addedProduct = capturedProduct;
             });
@@ -75,12 +75,12 @@ public sealed class CreateProductTests : ProductTestsBase
     }
 
     [Fact]
-    public async Task CreateAsync_ShouldCallFileUploadService_WhenRequestHasAttachments()
+    public async Task CreateAsync_ShouldUploadFiles_WhenRequestHasAttachments()
     {
         // Arrange
         var request = ProductRequestFactory.GenerateValidCreateRequestWithAttachments();
-        var fileUploadResults = request.Attachments
-            .Select(x => new FileUploadResult(x.FileName, x.ContentType, "https://example.com/" + x.FileName))
+        var fileUploadResults = request.Attachments!
+            .Select(x => new FileUploadResult(x.FileName, x.FileName, $"originals/{x.FileName}", $"thumbnails/{x.FileName}"))
             .ToArray();
 
         Product? addedProduct = null;
@@ -88,7 +88,7 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockContext.Setup(mock => mock.Products.Add(It.Is<Product>(product => product.IsEquivalent(request))))
             .Callback<Product>(capturedProduct =>
             {
-                capturedProduct.Category = _builder.CategoryBuilder.BuildAndPopulate();
+                capturedProduct.Category = _defaultCategory;
                 SetupProducts([.. _defaultProducts, capturedProduct]);
                 addedProduct = capturedProduct;
             });
@@ -100,10 +100,15 @@ public sealed class CreateProductTests : ProductTestsBase
                 if (addedProduct is not null)
                 {
                     addedProduct.Id = 99;
+                    addedProduct.Images = [.. addedProduct.Images.Select((x, idx) =>
+                    {
+                        x.Id = idx + 1;
+                        return x;
+                    })];
                 }
             });
 
-        _mockFileService.Setup(mock => mock.UploadAsync(request.Attachments, "products", default))
+        _mockFileService.Setup(mock => mock.UploadAsync(request.Attachments, "products", It.IsAny<CancellationToken>()))
             .ReturnsAsync(fileUploadResults);
 
         // Act
@@ -117,7 +122,7 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockFileService.Verify(mock => mock.UploadAsync(request.Attachments, "products", CancellationToken.None), Times.Once());
+        _mockFileService.Verify(mock => mock.UploadAsync(request.Attachments, "products", CancellationToken.None), Times.Once);
 
         VerifyNoOtherCalls();
     }

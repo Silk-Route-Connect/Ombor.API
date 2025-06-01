@@ -266,7 +266,9 @@ public class ProductMappingsTests
             QuantityInStock: 3,
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
-            Type: ContractType.All);
+            Type: ContractType.All,
+            Attachments: [],
+            ImagesToDelete: []);
 
         // Act
         product.ApplyUpdate(updateRequest);
