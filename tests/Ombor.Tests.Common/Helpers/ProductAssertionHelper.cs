@@ -117,6 +117,8 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+
+        AssertAttachments(expected.Images, actual.Images);
     }
 
     /// <summary>
@@ -220,7 +222,7 @@ public static class ProductAssertionHelper
 
         foreach (var attachment in expected)
         {
-            var image = actual.FirstOrDefault(x => x.Name == attachment.FileName);
+            var image = actual.FirstOrDefault(x => x.ImageName == attachment.FileName);
 
             Assert.NotNull(image);
             Assert.NotNull(image.OriginalUrl);
@@ -239,7 +241,7 @@ public static class ProductAssertionHelper
             var actualImage = actual.FirstOrDefault(x => x.Id == expectedImage.Id);
 
             Assert.NotNull(actualImage);
-            Assert.Equal(expectedImage.Name, actualImage.Name);
+            Assert.Equal(expectedImage.ImageName, actualImage.Name);
             Assert.Equal(expectedImage.OriginalUrl, actualImage.OriginalUrl);
             Assert.Equal(expectedImage.ThumbnailUrl, actualImage.ThumbnailUrl);
         }
