@@ -116,8 +116,10 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     public IProductBuilder WithImages(IEnumerable<ProductImage>? images = null)
     {
+        var productIdForImages = _id ?? _faker.Random.Number();
+
         _images = images is null
-            ? ProductGenerator.GenerateImages(DefaultImagesCount)
+            ? GetProductImages(productIdForImages, DefaultImagesCount)
             : [.. images];
 
         return this;
@@ -166,19 +168,14 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     public Product BuildAndPopulate()
     {
+        var id = _id ?? _faker.Random.Number();
         var category = _category ?? GetRandomCategory();
         var categoryId = _categoryId ?? category.Id;
-        var images = _images ??
-            ProductGenerator.GenerateImages(DefaultImagesCount)
-            .Select((el, idx) =>
-            {
-                el.Id = idx;
-                return el;
-            });
+        var images = _images ?? GetProductImages(id, DefaultImagesCount);
 
         return new()
         {
-            Id = _id ?? _faker.Random.Number(),
+            Id = id,
             Name = _name ?? _faker.Commerce.ProductName(),
             SKU = _sku ?? _faker.Random.Guid().ToString(),
             Description = _description ?? _faker.Lorem.Sentence(1),
@@ -212,4 +209,17 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     private int GetRandomLowStockThresholdAmount() =>
         _faker.Random.Number(BuilderConstants.MinLowThresholdAmount, BuilderConstants.MaxLowThresholdAmount);
+
+    private List<ProductImage> GetProductImages(int productId, int count) => Enumerable.Range(1, count + 1)
+        .Select(i => new ProductImage
+        {
+            Id = i,
+            FileName = _faker.System.FilePath(),
+            ImageName = _faker.System.CommonFileName(),
+            OriginalUrl = _faker.Image.PicsumUrl(),
+            ThumbnailUrl = _faker.Image.PicsumUrl(),
+            ProductId = productId,
+            Product = null!
+        })
+        .ToList();
 }

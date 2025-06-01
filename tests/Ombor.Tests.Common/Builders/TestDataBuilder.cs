@@ -10,4 +10,6 @@ public sealed class TestDataBuilder : ITestDataBuilder
     public ICategoryBuilder CategoryBuilder => new CategoryBuilder(_faker);
 
     public IProductBuilder ProductBuilder => new ProductBuilder(_faker);
+
+    public IProductImageBuilder ProductImageBuilder => new ProductImageBuilder(_faker);
 }
