@@ -5,17 +5,15 @@ namespace Ombor.Infrastructure.Helpers;
 
 internal static class PathHelpers
 {
-    private static readonly char[] InvalidFileNameChars = new[]
-{
-    '<', '>', ':', '"', '/', '\\', '|', '?', '*'
-    // add more if needed
-};
+    private static readonly char[] _invalidPathAndFileNameChars = [.. Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).Distinct()];
 
-    public static void ValidateSegments(this IEnumerable<string> segments, [CallerArgumentExpression(nameof(segments))] string? paramName = null)
+    internal static void ValidateSegments(IEnumerable<string> segments, [CallerArgumentExpression(nameof(segments))] string? paramName = null)
     {
+        ArgumentNullException.ThrowIfNull(segments);
+
         foreach (var segment in segments)
         {
-            if (segment == ".." || segment.ContainsAny(InvalidFileNameChars))
+            if (segment == ".." || segment.ContainsAny(_invalidPathAndFileNameChars))
             {
                 throw new ArgumentException($"Invalid path segment: {segment}", paramName);
             }
@@ -24,10 +22,14 @@ internal static class PathHelpers
 
     internal static string[] ExtractSegments(string path, [CallerArgumentExpression(nameof(path))] string? paramName = null)
     {
+        ArgumentNullException.ThrowIfNull(path);
         ArgumentException.ThrowIfNullOrWhiteSpace(path, paramName);
 
         var segments = path
-            .Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries);
+            .Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray();
 
         ValidateSegments(segments, paramName);
 
