@@ -138,6 +138,14 @@ internal sealed class ProductService(
     {
         ArgumentNullException.ThrowIfNull(entity);
 
+        var hasAttachments = attachments?.Any() ?? false;
+        var hasImagesToDelete = imageIdsToDelete?.Any() ?? false;
+
+        if (!hasAttachments && !hasImagesToDelete)
+        {
+            return;
+        }
+
         var imagesToDelete = await DeleteImages(imageIdsToDelete);
         var newImages = await CreateImages(attachments);
         entity.Images = MergeImages(entity.Images, newImages, imagesToDelete);
