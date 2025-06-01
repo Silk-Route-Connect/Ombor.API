@@ -64,7 +64,6 @@ internal sealed class ProductService(
 
         var entity = await GetOrThrowAsync(request.Id);
         entity.ApplyUpdate(request);
-
         await UpdateImagesAsync(entity, request.Attachments, request.ImagesToDelete);
 
         await context.SaveChangesAsync();
@@ -81,7 +80,11 @@ internal sealed class ProductService(
         context.Products.Remove(entity);
         var imagesToDelete = entity.Images.Select(x => x.FileName).ToArray();
 
-        await fileService.DeleteAsync(imagesToDelete, fileSettings.ProductUploadsSection);
+        if (imagesToDelete.Length > 0)
+        {
+            await fileService.DeleteAsync(imagesToDelete, fileSettings.ProductUploadsSection);
+        }
+
         await context.SaveChangesAsync();
     }
 
@@ -135,17 +138,12 @@ internal sealed class ProductService(
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        if (attachments?.Any() != true && imageIdsToDelete?.Any() != true)
-        {
-            return;
-        }
-
-        var imagesToDelete = await DeleteImages(imageIdsToDelete ?? []);
-        var newImages = await CreateImages(attachments ?? []);
+        var imagesToDelete = await DeleteImages(imageIdsToDelete);
+        var newImages = await CreateImages(attachments);
         entity.Images = MergeImages(entity.Images, newImages, imagesToDelete);
     }
 
-    private async Task<ProductImage[]> CreateImages(IEnumerable<IFormFile> attachments)
+    private async Task<ProductImage[]> CreateImages(IEnumerable<IFormFile>? attachments)
     {
         if (attachments?.Any() != true)
         {
@@ -166,7 +164,7 @@ internal sealed class ProductService(
         return [.. images];
     }
 
-    private async Task<ProductImage[]> DeleteImages(IEnumerable<int> imageIdsToDelete)
+    private async Task<ProductImage[]> DeleteImages(IEnumerable<int>? imageIdsToDelete)
     {
         if (imageIdsToDelete?.Any() != true)
         {
