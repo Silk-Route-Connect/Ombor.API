@@ -17,6 +17,7 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
     protected const int NonExistentEntityId = 99999;
     protected const string NotFoundTitle = "Not Found";
 
+    protected readonly TestingWebApplicationFactory _factory = factory;
     protected readonly ITestOutputHelper _outputHelper = outputHelper;
     protected readonly IApplicationDbContext _context = factory.Context;
     protected readonly ResponseValidator _responseValidator = factory.ResponseValidator;

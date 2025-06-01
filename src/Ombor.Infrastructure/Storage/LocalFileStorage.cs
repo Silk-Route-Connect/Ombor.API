@@ -42,10 +42,7 @@ internal sealed class LocalFileStorage(IWebHostEnvironment env) : IFileStorage
         var segments = PathHelpers.ExtractSegments(storagePath);
         var physical = Path.Combine(_webRootPath, Path.Combine(segments));
 
-        if (File.Exists(physical))
-        {
-            File.Delete(physical);
-        }
+        File.Delete(physical);
 
         return Task.CompletedTask;
     }
