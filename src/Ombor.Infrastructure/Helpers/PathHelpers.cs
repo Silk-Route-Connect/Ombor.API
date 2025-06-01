@@ -15,7 +15,6 @@ internal static class PathHelpers
 
         foreach (var segment in segments)
         {
-            Console.WriteLine($"Invalid path chars: {string.Join(", ", _invalidPathAndFileNameChars)}");
             if (segment == ".." || segment.ContainsAny(_invalidPathAndFileNameChars))
             {
                 throw new ArgumentException($"Invalid path segment: {segment}", paramName);
