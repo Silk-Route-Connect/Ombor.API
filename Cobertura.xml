@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9526226734348562" branch-rate="0.9516129032258065" lines-covered="563" lines-valid="591" branches-covered="118" branches-valid="124" complexity="257" version="0" timestamp="1748802736">
+<coverage line-rate="0.9525423728813559" branch-rate="0.9516129032258065" lines-covered="562" lines-valid="590" branches-covered="118" branches-valid="124" complexity="257" version="0" timestamp="1748804872">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -911,9 +911,9 @@
             </method>
             <method name="DeleteAsync" signature="(System.Collections.Generic.IEnumerable`1&lt;System.String&gt;,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="79" hits="2" branch="false" />
-                <line number="81" hits="2" branch="false" />
-                <line number="83" hits="2" branch="false" />
+                <line number="79" hits="4" branch="false" />
+                <line number="81" hits="4" branch="false" />
+                <line number="83" hits="4" branch="false" />
               </lines>
             </method>
             <method name="ValidateOrThrow" signature="(Microsoft.AspNetCore.Http.IFormFile)" line-rate="1" branch-rate="1" complexity="10">
@@ -932,17 +932,17 @@
             </method>
             <method name="DeleteOriginalAsync" signature="(System.String,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="172" hits="10" branch="false" />
-                <line number="174" hits="10" branch="false" />
+                <line number="172" hits="14" branch="false" />
+                <line number="174" hits="14" branch="false" />
               </lines>
             </method>
             <method name="TryDeleteThumbnailAsync" signature="(System.String,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="182" hits="8" branch="false" />
-                <line number="183" hits="8" branch="true" condition-coverage="100% (4/4)" />
+                <line number="182" hits="12" branch="false" />
+                <line number="183" hits="12" branch="true" condition-coverage="100% (4/4)" />
                 <line number="185" hits="2" branch="false" />
-                <line number="188" hits="6" branch="false" />
-                <line number="190" hits="6" branch="false" />
+                <line number="188" hits="10" branch="false" />
+                <line number="190" hits="10" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Ombor.Application.Interfaces.File.IFileStorage,Ombor.Application.Interfaces.File.IImageThumbnailer,Ombor.Application.Interfaces.File.IFilePathProvider,Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;,Microsoft.Extensions.Logging.ILogger`1&lt;Ombor.Application.Services.FileService&gt;)" line-rate="1" branch-rate="1" complexity="1">
@@ -959,9 +959,9 @@
             </method>
             <method name="DeleteAsync" signature="(System.Collections.Generic.IEnumerable`1&lt;System.String&gt;,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="79" hits="2" branch="false" />
-                <line number="81" hits="2" branch="false" />
-                <line number="83" hits="2" branch="false" />
+                <line number="79" hits="4" branch="false" />
+                <line number="81" hits="4" branch="false" />
+                <line number="83" hits="4" branch="false" />
               </lines>
             </method>
             <method name="ValidateOrThrow" signature="(Microsoft.AspNetCore.Http.IFormFile)" line-rate="1" branch-rate="1" complexity="10">
@@ -980,17 +980,17 @@
             </method>
             <method name="DeleteOriginalAsync" signature="(System.String,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="172" hits="10" branch="false" />
-                <line number="174" hits="10" branch="false" />
+                <line number="172" hits="14" branch="false" />
+                <line number="174" hits="14" branch="false" />
               </lines>
             </method>
             <method name="TryDeleteThumbnailAsync" signature="(System.String,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="182" hits="8" branch="false" />
-                <line number="183" hits="8" branch="true" condition-coverage="100% (4/4)" />
+                <line number="182" hits="12" branch="false" />
+                <line number="183" hits="12" branch="true" condition-coverage="100% (4/4)" />
                 <line number="185" hits="2" branch="false" />
-                <line number="188" hits="6" branch="false" />
-                <line number="190" hits="6" branch="false" />
+                <line number="188" hits="10" branch="false" />
+                <line number="190" hits="10" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Ombor.Application.Interfaces.File.IFileStorage,Ombor.Application.Interfaces.File.IImageThumbnailer,Ombor.Application.Interfaces.File.IFilePathProvider,Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;,Microsoft.Extensions.Logging.ILogger`1&lt;Ombor.Application.Services.FileService&gt;)" line-rate="1" branch-rate="1" complexity="1">
@@ -1004,9 +1004,9 @@
             <line number="56" hits="4" branch="false" />
             <line number="58" hits="4" branch="false" />
             <line number="60" hits="4" branch="false" />
-            <line number="79" hits="2" branch="false" />
-            <line number="81" hits="2" branch="false" />
-            <line number="83" hits="2" branch="false" />
+            <line number="79" hits="4" branch="false" />
+            <line number="81" hits="4" branch="false" />
+            <line number="83" hits="4" branch="false" />
             <line number="88" hits="36" branch="true" condition-coverage="100% (8/8)" />
             <line number="90" hits="4" branch="false" />
             <line number="93" hits="32" branch="true" condition-coverage="100% (4/4)" />
@@ -1017,13 +1017,13 @@
             <line number="104" hits="24" branch="true" condition-coverage="100% (4/4)" />
             <line number="106" hits="2" branch="false" />
             <line number="108" hits="22" branch="false" />
-            <line number="172" hits="10" branch="false" />
-            <line number="174" hits="10" branch="false" />
-            <line number="182" hits="8" branch="false" />
-            <line number="183" hits="8" branch="true" condition-coverage="100% (4/4)" />
+            <line number="172" hits="14" branch="false" />
+            <line number="174" hits="14" branch="false" />
+            <line number="182" hits="12" branch="false" />
+            <line number="183" hits="12" branch="true" condition-coverage="100% (4/4)" />
             <line number="185" hits="2" branch="false" />
-            <line number="188" hits="6" branch="false" />
-            <line number="190" hits="6" branch="false" />
+            <line number="188" hits="10" branch="false" />
+            <line number="190" hits="10" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Services.ProductService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/ProductService.cs" line-rate="1" branch-rate="1" complexity="26">
@@ -2028,58 +2028,57 @@
           <methods>
             <method name="ContainsAny" signature="(System.String,System.Char[])" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="6" hits="432" branch="false" />
+                <line number="6" hits="488" branch="false" />
               </lines>
             </method>
             <method name="ContainsAny" signature="(System.String,System.Char[])" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="6" hits="432" branch="false" />
+                <line number="6" hits="488" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="6" hits="432" branch="false" />
+            <line number="6" hits="488" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Helpers.PathHelpers" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Helpers/PathHelpers.cs" line-rate="1" branch-rate="1" complexity="26">
           <methods>
             <method name="ValidateSegments" signature="(System.Collections.Generic.IEnumerable`1&lt;System.String&gt;,System.String)" line-rate="1" branch-rate="1" complexity="6">
               <lines>
-                <line number="14" hits="188" branch="false" />
-                <line number="16" hits="1246" branch="true" condition-coverage="100% (4/4)" />
-                <line number="18" hits="458" branch="false" />
-                <line number="19" hits="458" branch="true" condition-coverage="100% (8/8)" />
-                <line number="21" hits="42" branch="false" />
-                <line number="24" hits="144" branch="false" />
+                <line number="14" hits="204" branch="false" />
+                <line number="16" hits="1390" branch="true" condition-coverage="100% (4/4)" />
+                <line number="18" hits="514" branch="true" condition-coverage="100% (8/8)" />
+                <line number="20" hits="42" branch="false" />
+                <line number="23" hits="160" branch="false" />
               </lines>
             </method>
             <method name="ExtractSegments" signature="(System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="28" hits="102" branch="false" />
-                <line number="29" hits="96" branch="false" />
-                <line number="31" hits="84" branch="false" />
-                <line number="32" hits="84" branch="false" />
-                <line number="33" hits="84" branch="false" />
-                <line number="34" hits="84" branch="false" />
-                <line number="35" hits="84" branch="false" />
-                <line number="37" hits="84" branch="false" />
-                <line number="39" hits="68" branch="false" />
+                <line number="27" hits="110" branch="false" />
+                <line number="28" hits="104" branch="false" />
+                <line number="30" hits="92" branch="false" />
+                <line number="31" hits="92" branch="false" />
+                <line number="32" hits="92" branch="false" />
+                <line number="33" hits="92" branch="false" />
+                <line number="34" hits="92" branch="false" />
+                <line number="36" hits="92" branch="false" />
+                <line number="38" hits="76" branch="false" />
               </lines>
             </method>
             <method name="BuildSegments" signature="(System.String[])" line-rate="1" branch-rate="1" complexity="4">
               <lines>
-                <line number="44" hits="94" branch="false" />
-                <line number="46" hits="92" branch="false" />
-                <line number="48" hits="732" branch="true" condition-coverage="100% (4/4)" />
-                <line number="50" hits="274" branch="true" condition-coverage="100% (4/4)" />
-                <line number="52" hits="254" branch="false" />
-                <line number="56" hits="92" branch="false" />
-                <line number="58" hits="72" branch="false" />
+                <line number="43" hits="102" branch="false" />
+                <line number="45" hits="100" branch="false" />
+                <line number="47" hits="796" branch="true" condition-coverage="100% (4/4)" />
+                <line number="49" hits="298" branch="true" condition-coverage="100% (4/4)" />
+                <line number="51" hits="278" branch="false" />
+                <line number="55" hits="100" branch="false" />
+                <line number="57" hits="80" branch="false" />
               </lines>
             </method>
             <method name="BuildRelativePath" signature="(System.String[])" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="62" hits="6" branch="false" />
+                <line number="61" hits="6" branch="false" />
               </lines>
             </method>
             <method name=".cctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -2091,41 +2090,40 @@
             </method>
             <method name="ValidateSegments" signature="(System.Collections.Generic.IEnumerable`1&lt;System.String&gt;,System.String)" line-rate="1" branch-rate="1" complexity="6">
               <lines>
-                <line number="14" hits="188" branch="false" />
-                <line number="16" hits="1246" branch="true" condition-coverage="100% (4/4)" />
-                <line number="18" hits="458" branch="false" />
-                <line number="19" hits="458" branch="true" condition-coverage="100% (8/8)" />
-                <line number="21" hits="42" branch="false" />
-                <line number="24" hits="144" branch="false" />
+                <line number="14" hits="204" branch="false" />
+                <line number="16" hits="1390" branch="true" condition-coverage="100% (4/4)" />
+                <line number="18" hits="514" branch="true" condition-coverage="100% (8/8)" />
+                <line number="20" hits="42" branch="false" />
+                <line number="23" hits="160" branch="false" />
               </lines>
             </method>
             <method name="ExtractSegments" signature="(System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="28" hits="102" branch="false" />
-                <line number="29" hits="96" branch="false" />
-                <line number="31" hits="84" branch="false" />
-                <line number="32" hits="84" branch="false" />
-                <line number="33" hits="84" branch="false" />
-                <line number="34" hits="84" branch="false" />
-                <line number="35" hits="84" branch="false" />
-                <line number="37" hits="84" branch="false" />
-                <line number="39" hits="68" branch="false" />
+                <line number="27" hits="110" branch="false" />
+                <line number="28" hits="104" branch="false" />
+                <line number="30" hits="92" branch="false" />
+                <line number="31" hits="92" branch="false" />
+                <line number="32" hits="92" branch="false" />
+                <line number="33" hits="92" branch="false" />
+                <line number="34" hits="92" branch="false" />
+                <line number="36" hits="92" branch="false" />
+                <line number="38" hits="76" branch="false" />
               </lines>
             </method>
             <method name="BuildSegments" signature="(System.String[])" line-rate="1" branch-rate="1" complexity="4">
               <lines>
-                <line number="44" hits="94" branch="false" />
-                <line number="46" hits="92" branch="false" />
-                <line number="48" hits="732" branch="true" condition-coverage="100% (4/4)" />
-                <line number="50" hits="274" branch="true" condition-coverage="100% (4/4)" />
-                <line number="52" hits="254" branch="false" />
-                <line number="56" hits="92" branch="false" />
-                <line number="58" hits="72" branch="false" />
+                <line number="43" hits="102" branch="false" />
+                <line number="45" hits="100" branch="false" />
+                <line number="47" hits="796" branch="true" condition-coverage="100% (4/4)" />
+                <line number="49" hits="298" branch="true" condition-coverage="100% (4/4)" />
+                <line number="51" hits="278" branch="false" />
+                <line number="55" hits="100" branch="false" />
+                <line number="57" hits="80" branch="false" />
               </lines>
             </method>
             <method name="BuildRelativePath" signature="(System.String[])" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="62" hits="6" branch="false" />
+                <line number="61" hits="6" branch="false" />
               </lines>
             </method>
             <method name=".cctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -2140,29 +2138,28 @@
             <line number="8" hits="4" branch="false" />
             <line number="9" hits="4" branch="false" />
             <line number="10" hits="4" branch="false" />
-            <line number="14" hits="188" branch="false" />
-            <line number="16" hits="1246" branch="true" condition-coverage="100% (4/4)" />
-            <line number="18" hits="458" branch="false" />
-            <line number="19" hits="458" branch="true" condition-coverage="100% (8/8)" />
-            <line number="21" hits="42" branch="false" />
-            <line number="24" hits="144" branch="false" />
-            <line number="28" hits="102" branch="false" />
-            <line number="29" hits="96" branch="false" />
-            <line number="31" hits="84" branch="false" />
-            <line number="32" hits="84" branch="false" />
-            <line number="33" hits="84" branch="false" />
-            <line number="34" hits="84" branch="false" />
-            <line number="35" hits="84" branch="false" />
-            <line number="37" hits="84" branch="false" />
-            <line number="39" hits="68" branch="false" />
-            <line number="44" hits="94" branch="false" />
-            <line number="46" hits="92" branch="false" />
-            <line number="48" hits="732" branch="true" condition-coverage="100% (4/4)" />
-            <line number="50" hits="274" branch="true" condition-coverage="100% (4/4)" />
-            <line number="52" hits="254" branch="false" />
-            <line number="56" hits="92" branch="false" />
-            <line number="58" hits="72" branch="false" />
-            <line number="62" hits="6" branch="false" />
+            <line number="14" hits="204" branch="false" />
+            <line number="16" hits="1390" branch="true" condition-coverage="100% (4/4)" />
+            <line number="18" hits="514" branch="true" condition-coverage="100% (8/8)" />
+            <line number="20" hits="42" branch="false" />
+            <line number="23" hits="160" branch="false" />
+            <line number="27" hits="110" branch="false" />
+            <line number="28" hits="104" branch="false" />
+            <line number="30" hits="92" branch="false" />
+            <line number="31" hits="92" branch="false" />
+            <line number="32" hits="92" branch="false" />
+            <line number="33" hits="92" branch="false" />
+            <line number="34" hits="92" branch="false" />
+            <line number="36" hits="92" branch="false" />
+            <line number="38" hits="76" branch="false" />
+            <line number="43" hits="102" branch="false" />
+            <line number="45" hits="100" branch="false" />
+            <line number="47" hits="796" branch="true" condition-coverage="100% (4/4)" />
+            <line number="49" hits="298" branch="true" condition-coverage="100% (4/4)" />
+            <line number="51" hits="278" branch="false" />
+            <line number="55" hits="100" branch="false" />
+            <line number="57" hits="80" branch="false" />
+            <line number="61" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Persistence.ApplicationDbContext" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/ApplicationDbContext.cs" line-rate="1" branch-rate="1" complexity="4">
@@ -2574,10 +2571,10 @@
           <methods>
             <method name="BuildRelativePath" signature="(System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="14" hits="42" branch="false" />
-                <line number="15" hits="42" branch="false" />
-                <line number="16" hits="42" branch="false" />
-                <line number="18" hits="34" branch="false" />
+                <line number="14" hits="50" branch="false" />
+                <line number="15" hits="50" branch="false" />
+                <line number="16" hits="50" branch="false" />
+                <line number="18" hits="42" branch="false" />
               </lines>
             </method>
             <method name="BuildPublicUrl" signature="(System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
@@ -2595,10 +2592,10 @@
             </method>
             <method name="BuildRelativePath" signature="(System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="14" hits="42" branch="false" />
-                <line number="15" hits="42" branch="false" />
-                <line number="16" hits="42" branch="false" />
-                <line number="18" hits="34" branch="false" />
+                <line number="14" hits="50" branch="false" />
+                <line number="15" hits="50" branch="false" />
+                <line number="16" hits="50" branch="false" />
+                <line number="18" hits="42" branch="false" />
               </lines>
             </method>
             <method name="BuildPublicUrl" signature="(System.String,System.String,System.String)" line-rate="1" branch-rate="1" complexity="1">
@@ -2617,10 +2614,10 @@
           </methods>
           <lines>
             <line number="10" hits="58" branch="false" />
-            <line number="14" hits="42" branch="false" />
-            <line number="15" hits="42" branch="false" />
-            <line number="16" hits="42" branch="false" />
-            <line number="18" hits="34" branch="false" />
+            <line number="14" hits="50" branch="false" />
+            <line number="15" hits="50" branch="false" />
+            <line number="16" hits="50" branch="false" />
+            <line number="18" hits="42" branch="false" />
             <line number="23" hits="34" branch="false" />
             <line number="24" hits="34" branch="false" />
             <line number="25" hits="34" branch="false" />
@@ -2631,11 +2628,11 @@
           <methods>
             <method name="DeleteAsync" signature="(System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="42" hits="44" branch="false" />
-                <line number="43" hits="32" branch="false" />
-                <line number="45" hits="32" branch="true" condition-coverage="100% (4/4)" />
-                <line number="47" hits="20" branch="false" />
-                <line number="50" hits="32" branch="false" />
+                <line number="42" hits="52" branch="false" />
+                <line number="43" hits="40" branch="false" />
+                <line number="45" hits="40" branch="true" condition-coverage="100% (4/4)" />
+                <line number="47" hits="28" branch="false" />
+                <line number="50" hits="40" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Microsoft.AspNetCore.Hosting.IWebHostEnvironment)" line-rate="1" branch-rate="1" complexity="2">
@@ -2646,11 +2643,11 @@
             </method>
             <method name="DeleteAsync" signature="(System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="42" hits="44" branch="false" />
-                <line number="43" hits="32" branch="false" />
-                <line number="45" hits="32" branch="true" condition-coverage="100% (4/4)" />
-                <line number="47" hits="20" branch="false" />
-                <line number="50" hits="32" branch="false" />
+                <line number="42" hits="52" branch="false" />
+                <line number="43" hits="40" branch="false" />
+                <line number="45" hits="40" branch="true" condition-coverage="100% (4/4)" />
+                <line number="47" hits="28" branch="false" />
+                <line number="50" hits="40" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Microsoft.AspNetCore.Hosting.IWebHostEnvironment)" line-rate="1" branch-rate="1" complexity="2">
@@ -2663,11 +2660,11 @@
           <lines>
             <line number="9" hits="88" branch="true" condition-coverage="100% (4/4)" />
             <line number="10" hits="88" branch="false" />
-            <line number="42" hits="44" branch="false" />
-            <line number="43" hits="32" branch="false" />
-            <line number="45" hits="32" branch="true" condition-coverage="100% (4/4)" />
-            <line number="47" hits="20" branch="false" />
-            <line number="50" hits="32" branch="false" />
+            <line number="42" hits="52" branch="false" />
+            <line number="43" hits="40" branch="false" />
+            <line number="45" hits="40" branch="true" condition-coverage="100% (4/4)" />
+            <line number="47" hits="28" branch="false" />
+            <line number="50" hits="40" branch="false" />
           </lines>
         </class>
       </classes>
