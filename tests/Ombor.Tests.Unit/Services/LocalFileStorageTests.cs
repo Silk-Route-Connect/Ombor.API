@@ -54,7 +54,7 @@ public sealed class LocalFileStorageTests : IDisposable
 
     [Theory]
     [MemberData(nameof(ValidPathData))]
-    public async Task UploadAsync_SavesContentAndReturnsRelativePath_WhenStoragePathIsValid(
+    public async Task SaveAsyncSavesContentAndReturnsRelativePath_WhenStoragePathIsValid(
         string storagePath,
         string[] expectedSegments)
     {
@@ -78,7 +78,7 @@ public sealed class LocalFileStorageTests : IDisposable
 
     [Theory]
     [MemberData(nameof(InvalidPathData))]
-    public async Task UploadAsync_ShouldThrowArgumentException_WhenStoragePathIsInvalid(
+    public async Task SaveAsyncShouldThrowArgumentException_WhenStoragePathIsInvalid(
         string storagePath,
         Type exceptionType)
     {
@@ -98,7 +98,7 @@ public sealed class LocalFileStorageTests : IDisposable
     }
 
     [Fact]
-    public async Task UploadAsync_ShouldThrowArgumentNullException_WhenStreamIsNull()
+    public async Task SaveAsyncShouldThrowArgumentNullException_WhenStreamIsNull()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
