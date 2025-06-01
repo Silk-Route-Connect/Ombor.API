@@ -14,14 +14,15 @@ public class DeleteProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task DeleteAsync_ShouldReturnNoContent_WhenProductExists()
     {
         // Arrange
-        var productId = await CreateProductAsync(DefaultCategoryId);
+        var images = new string[] { "product-3.jpg", "product-4.jpg" };
+        var productId = await CreateProductAsync(DefaultCategoryId, images);
         var url = GetUrl(productId);
 
         // Act
         await _client.DeleteAsync(url);
 
         // Assert
-        await _responseValidator.Product.ValidateDeleteAsync(productId);
+        await _responseValidator.Product.ValidateDeleteAsync(productId, images);
     }
 
     [Fact]

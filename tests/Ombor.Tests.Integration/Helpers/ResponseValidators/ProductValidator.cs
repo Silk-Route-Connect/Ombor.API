@@ -75,13 +75,22 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         ProductAssertionHelper.AssertEquivalent(actual, response);
     }
 
-    public async Task ValidateDeleteAsync(int productId)
+    public async Task ValidateDeleteAsync(int productId, params string[] fileNames)
     {
         var product = await context.Products
-            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == productId);
+        var images = await context.ProductImages
+            .Where(x => x.ProductId == productId)
+            .ToListAsync();
 
         Assert.Null(product);
+        Assert.Empty(images);
+
+        foreach (var fileName in fileNames)
+        {
+            var matches = Directory.EnumerateFiles(webRootPath, fileName, SearchOption.AllDirectories);
+            Assert.Empty(matches);
+        }
     }
 
     private async Task<ProductDto[]> GetProductsAsync(GetProductsRequest request)
