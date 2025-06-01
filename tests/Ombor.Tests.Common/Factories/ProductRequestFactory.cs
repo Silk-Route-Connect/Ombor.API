@@ -67,7 +67,16 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.Supply);
+            Type: ProductType.Supply,
+            Attachments: [],
+            ImagesToDelete: []);
+
+    public static UpdateProductRequest GenerateValidUpdateRequestWithAttachments(int? productId, int? categoryId = null, int[]? imagesToDelete = null)
+    {
+        var request = GenerateValidUpdateRequest(productId, categoryId);
+
+        return request with { Attachments = GenerateAttachments(), ImagesToDelete = imagesToDelete ?? [1, 2] };
+    }
 
     public static UpdateProductRequest GenerateInvalidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -83,7 +92,9 @@ public static class ProductRequestFactory
             QuantityInStock: 10,
             LowStockThreshold: 5,
             Measurement: UnitOfMeasurement.Kilogram,
-            Type: ProductType.Sale);
+            Type: ProductType.Sale,
+            Attachments: [],
+            ImagesToDelete: []);
 
     private static FormFile[] GenerateAttachments()
         =>

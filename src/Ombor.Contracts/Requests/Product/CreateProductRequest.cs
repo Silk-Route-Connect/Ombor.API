@@ -32,4 +32,4 @@ public sealed record CreateProductRequest(
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
     ProductType Type,
-    IFormFile[] Attachments);
+    IFormFile[]? Attachments);
