@@ -63,7 +63,7 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Type.ToString(), response.Type);
         Assert.Equal(request.CategoryId, response.CategoryId);
         Assert.Equal(request.QuantityInStock <= request.LowStockThreshold, response.IsLowStock);
-        Assert.Equal(request.Attachments.Length, response.Images.Length);
+        Assert.Equal(request.Attachments?.Length, response.Images.Length);
 
         AssertAttachments(request.Attachments, response.Images);
     }
@@ -198,7 +198,7 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Category.Name, actual.CategoryName);
     }
 
-    private static void AssertAttachments(IEnumerable<IFormFile> attachments, IEnumerable<ProductImageDto> images)
+    private static void AssertAttachments(IEnumerable<IFormFile>? attachments, IEnumerable<ProductImageDto>? images)
     {
         Assert.NotNull(attachments);
         Assert.NotNull(images);
@@ -214,7 +214,7 @@ public static class ProductAssertionHelper
         }
     }
 
-    private static void AssertAttachments(IEnumerable<IFormFile> expected, IEnumerable<ProductImage> actual)
+    private static void AssertAttachments(IEnumerable<IFormFile>? expected, IEnumerable<ProductImage>? actual)
     {
         Assert.NotNull(actual);
         Assert.NotNull(expected);

@@ -108,7 +108,7 @@ public sealed class CreateProductTests : ProductTestsBase
                 }
             });
 
-        _mockFileService.Setup(mock => mock.UploadAsync(request.Attachments, "products", It.IsAny<CancellationToken>()))
+        _mockFileService.Setup(mock => mock.UploadAsync(request.Attachments!, "products", It.IsAny<CancellationToken>()))
             .ReturnsAsync(fileUploadResults);
 
         // Act
@@ -122,7 +122,7 @@ public sealed class CreateProductTests : ProductTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products.Add(It.IsAny<Product>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockFileService.Verify(mock => mock.UploadAsync(request.Attachments, "products", CancellationToken.None), Times.Once);
+        _mockFileService.Verify(mock => mock.UploadAsync(request.Attachments!, "products", CancellationToken.None), Times.Once);
 
         VerifyNoOtherCalls();
     }

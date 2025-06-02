@@ -32,7 +32,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     /// </summary>
     /// <param name="request">Request containing the category ID.</param>
     /// <returns>The matching <see cref="CategoryDto"/>.</returns>
-    [HttpGet("{id:int:min(1)}")]
+    [HttpGet("{Id:int:min(1)}")]
     [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDto>> GetCategoryByIdAsync(
@@ -95,7 +95,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     /// Deletes a category by its ID.
     /// </summary>
     /// <param name="request">The delete request containing the category ID.</param>
-    [HttpDelete("{id:int:min(1)}")]
+    [HttpDelete("{Id:int:min(1)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(

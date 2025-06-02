@@ -42,7 +42,7 @@ public interface IApplicationDbContext
     int SaveChanges();
 
     /// <summary>
-    /// Gets the <see cref="DatabaseFacade"/> instance that provides access to database-related operations for the 
+    /// Gets the <see cref="DatabaseFacade"/> instance that provides access to database-related operations for the.
     /// </summary>
     DatabaseFacade Database { get; }
 }
