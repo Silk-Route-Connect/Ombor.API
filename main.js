@@ -223,7 +223,7 @@ var assemblies = [
     "classes": [
       { "name": "Ombor.API.Controllers.CategoriesController", "rp": "Ombor.API_CategoriesController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 108, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.ProductsController", "rp": "Ombor.API_ProductsController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 109, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.API.Extensions.DependencyInjection", "rp": "Ombor.API_DependencyInjection.html", "cl": 45, "ucl": 1, "cal": 46, "tl": 77, "cb": 4, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.API.Extensions.DependencyInjection", "rp": "Ombor.API_DependencyInjection.html", "cl": 40, "ucl": 1, "cal": 41, "tl": 73, "cb": 4, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Extensions.StartupExtensions", "rp": "Ombor.API_StartupExtensions.html", "cl": 8, "ucl": 0, "cal": 8, "tl": 37, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
   {

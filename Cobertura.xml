@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9525423728813559" branch-rate="0.9516129032258065" lines-covered="562" lines-valid="590" branches-covered="118" branches-valid="124" complexity="257" version="0" timestamp="1748804872">
+<coverage line-rate="0.9521367521367521" branch-rate="0.9516129032258065" lines-covered="557" lines-valid="585" branches-covered="118" branches-valid="124" complexity="257" version="0" timestamp="1748845797">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
   <packages>
-    <package name="Ombor.API" line-rate="0.9821428571428571" branch-rate="0.5" complexity="20">
+    <package name="Ombor.API" line-rate="0.9803921568627451" branch-rate="0.5" complexity="20">
       <classes>
         <class name="Ombor.API.Controllers.CategoriesController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/CategoriesController.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
@@ -41,7 +41,7 @@
             <line number="13" hits="46" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.API.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/DependencyInjection.cs" line-rate="0.9782608695652174" branch-rate="0.5" complexity="14">
+        <class name="Ombor.API.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/DependencyInjection.cs" line-rate="0.975609756097561" branch-rate="0.5" complexity="14">
           <methods>
             <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
@@ -68,7 +68,6 @@
               <lines>
                 <line number="35" hits="20" branch="false" />
                 <line number="36" hits="20" branch="false" />
-                <line number="37" hits="20" branch="false" />
                 <line number="38" hits="20" branch="false" />
                 <line number="39" hits="20" branch="false" />
                 <line number="40" hits="20" branch="false" />
@@ -81,28 +80,24 @@
                 <line number="47" hits="20" branch="false" />
                 <line number="48" hits="20" branch="false" />
                 <line number="49" hits="20" branch="false" />
-                <line number="50" hits="20" branch="false" />
-                <line number="51" hits="20" branch="false" />
-                <line number="52" hits="20" branch="false" />
-                <line number="53" hits="20" branch="false" />
               </lines>
             </method>
             <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
               <lines>
-                <line number="57" hits="20" branch="false" />
-                <line number="59" hits="20" branch="true" condition-coverage="50% (4/8)" />
-                <line number="61" hits="0" branch="false" />
+                <line number="53" hits="20" branch="false" />
+                <line number="55" hits="20" branch="true" condition-coverage="50% (4/8)" />
+                <line number="57" hits="0" branch="false" />
+                <line number="60" hits="20" branch="false" />
+                <line number="61" hits="20" branch="false" />
+                <line number="62" hits="20" branch="false" />
+                <line number="63" hits="20" branch="false" />
                 <line number="64" hits="20" branch="false" />
                 <line number="65" hits="20" branch="false" />
                 <line number="66" hits="20" branch="false" />
                 <line number="67" hits="20" branch="false" />
                 <line number="68" hits="20" branch="false" />
                 <line number="69" hits="20" branch="false" />
-                <line number="70" hits="20" branch="false" />
                 <line number="71" hits="20" branch="false" />
-                <line number="72" hits="20" branch="false" />
-                <line number="73" hits="20" branch="false" />
-                <line number="75" hits="20" branch="false" />
               </lines>
             </method>
             <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
@@ -130,7 +125,6 @@
               <lines>
                 <line number="35" hits="20" branch="false" />
                 <line number="36" hits="20" branch="false" />
-                <line number="37" hits="20" branch="false" />
                 <line number="38" hits="20" branch="false" />
                 <line number="39" hits="20" branch="false" />
                 <line number="40" hits="20" branch="false" />
@@ -143,28 +137,24 @@
                 <line number="47" hits="20" branch="false" />
                 <line number="48" hits="20" branch="false" />
                 <line number="49" hits="20" branch="false" />
-                <line number="50" hits="20" branch="false" />
-                <line number="51" hits="20" branch="false" />
-                <line number="52" hits="20" branch="false" />
-                <line number="53" hits="20" branch="false" />
               </lines>
             </method>
             <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
               <lines>
-                <line number="57" hits="20" branch="false" />
-                <line number="59" hits="20" branch="true" condition-coverage="50% (4/8)" />
-                <line number="61" hits="0" branch="false" />
+                <line number="53" hits="20" branch="false" />
+                <line number="55" hits="20" branch="true" condition-coverage="50% (4/8)" />
+                <line number="57" hits="0" branch="false" />
+                <line number="60" hits="20" branch="false" />
+                <line number="61" hits="20" branch="false" />
+                <line number="62" hits="20" branch="false" />
+                <line number="63" hits="20" branch="false" />
                 <line number="64" hits="20" branch="false" />
                 <line number="65" hits="20" branch="false" />
                 <line number="66" hits="20" branch="false" />
                 <line number="67" hits="20" branch="false" />
                 <line number="68" hits="20" branch="false" />
                 <line number="69" hits="20" branch="false" />
-                <line number="70" hits="20" branch="false" />
                 <line number="71" hits="20" branch="false" />
-                <line number="72" hits="20" branch="false" />
-                <line number="73" hits="20" branch="false" />
-                <line number="75" hits="20" branch="false" />
               </lines>
             </method>
           </methods>
@@ -184,7 +174,6 @@
             <line number="31" hits="20" branch="false" />
             <line number="35" hits="20" branch="false" />
             <line number="36" hits="20" branch="false" />
-            <line number="37" hits="20" branch="false" />
             <line number="38" hits="20" branch="false" />
             <line number="39" hits="20" branch="false" />
             <line number="40" hits="20" branch="false" />
@@ -197,24 +186,20 @@
             <line number="47" hits="20" branch="false" />
             <line number="48" hits="20" branch="false" />
             <line number="49" hits="20" branch="false" />
-            <line number="50" hits="20" branch="false" />
-            <line number="51" hits="20" branch="false" />
-            <line number="52" hits="20" branch="false" />
             <line number="53" hits="20" branch="false" />
-            <line number="57" hits="20" branch="false" />
-            <line number="59" hits="20" branch="true" condition-coverage="50% (4/8)" />
-            <line number="61" hits="0" branch="false" />
+            <line number="55" hits="20" branch="true" condition-coverage="50% (4/8)" />
+            <line number="57" hits="0" branch="false" />
+            <line number="60" hits="20" branch="false" />
+            <line number="61" hits="20" branch="false" />
+            <line number="62" hits="20" branch="false" />
+            <line number="63" hits="20" branch="false" />
             <line number="64" hits="20" branch="false" />
             <line number="65" hits="20" branch="false" />
             <line number="66" hits="20" branch="false" />
             <line number="67" hits="20" branch="false" />
             <line number="68" hits="20" branch="false" />
             <line number="69" hits="20" branch="false" />
-            <line number="70" hits="20" branch="false" />
             <line number="71" hits="20" branch="false" />
-            <line number="72" hits="20" branch="false" />
-            <line number="73" hits="20" branch="false" />
-            <line number="75" hits="20" branch="false" />
           </lines>
         </class>
         <class name="Ombor.API.Extensions.StartupExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/StartupExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
