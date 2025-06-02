@@ -11,8 +11,6 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddTestDataGenerator(builder.Configuration);
 
-builder.Environment.WebRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
-
 var app = builder.Build();
 
 if (!app.Environment.IsProduction())
