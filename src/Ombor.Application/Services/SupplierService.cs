@@ -16,12 +16,15 @@ internal sealed class SupplierService(IApplicationDbContext context, IRequestVal
 
         var query = context.Suppliers.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        var searchTerm = request.SearchTerm;
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(x => x.Name.Contains(request.SearchTerm) ||
-             (x.Address != null && x.Address.Contains(request.SearchTerm)) ||
-             (x.Email != null && x.Email.Contains(request.SearchTerm)) ||
-             (x.CompanyName != null && x.CompanyName.Contains(request.SearchTerm)));
+            query = query.Where(
+                x => x.Name.Contains(searchTerm) ||
+                (x.Address != null && x.Address.Contains(searchTerm)) ||
+                (x.Email != null && x.Email.Contains(searchTerm)) ||
+                (x.CompanyName != null && x.CompanyName.Contains(searchTerm)));
         }
 
         return query

@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IRequestValidator, RequestValidator>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ISupplierService, SupplierService>();
 
         return services;
     }
