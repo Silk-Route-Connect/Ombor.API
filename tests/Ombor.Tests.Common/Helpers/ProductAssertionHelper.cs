@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Requests.Product;
+﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
 using Xunit;
@@ -34,6 +35,8 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+
+        AssertAttachments(expected.Images, actual.Images);
     }
 
     /// <summary>
@@ -60,6 +63,9 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Type.ToString(), response.Type);
         Assert.Equal(request.CategoryId, response.CategoryId);
         Assert.Equal(request.QuantityInStock <= request.LowStockThreshold, response.IsLowStock);
+        Assert.Equal(request.Attachments?.Length, response.Images.Length);
+
+        AssertAttachments(request.Attachments, response.Images);
     }
 
     /// <summary>
@@ -84,6 +90,8 @@ public static class ProductAssertionHelper
         Assert.Equal((int)expected.Measurement, (int)actual.Measurement);
         Assert.Equal((int)expected.Type, (int)actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
+
+        AssertAttachments(expected.Attachments, actual.Images);
     }
 
     /// <summary>
@@ -109,6 +117,8 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+
+        AssertAttachments(expected.Images, actual.Images);
     }
 
     /// <summary>
@@ -186,5 +196,54 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+    }
+
+    private static void AssertAttachments(IEnumerable<IFormFile>? attachments, IEnumerable<ProductImageDto>? images)
+    {
+        Assert.NotNull(attachments);
+        Assert.NotNull(images);
+        Assert.Equal(attachments.Count(), images.Count());
+
+        foreach (var attachment in attachments)
+        {
+            var image = images.FirstOrDefault(x => x.Name == attachment.FileName);
+
+            Assert.NotNull(image);
+            Assert.NotNull(image.OriginalUrl);
+            Assert.NotNull(image.ThumbnailUrl);
+        }
+    }
+
+    private static void AssertAttachments(IEnumerable<IFormFile>? expected, IEnumerable<ProductImage>? actual)
+    {
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+        Assert.Equal(actual.Count(), expected.Count());
+
+        foreach (var attachment in expected)
+        {
+            var image = actual.FirstOrDefault(x => x.ImageName == attachment.FileName);
+
+            Assert.NotNull(image);
+            Assert.NotNull(image.OriginalUrl);
+            Assert.NotNull(image.ThumbnailUrl);
+        }
+    }
+
+    private static void AssertAttachments(IEnumerable<ProductImage> expected, IEnumerable<ProductImageDto> actual)
+    {
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+        Assert.Equal(actual.Count(), expected.Count());
+
+        foreach (var expectedImage in expected)
+        {
+            var actualImage = actual.FirstOrDefault(x => x.Id == expectedImage.Id);
+
+            Assert.NotNull(actualImage);
+            Assert.Equal(expectedImage.ImageName, actualImage.Name);
+            Assert.Equal(expectedImage.OriginalUrl, actualImage.OriginalUrl);
+            Assert.Equal(expectedImage.ThumbnailUrl, actualImage.ThumbnailUrl);
+        }
     }
 }

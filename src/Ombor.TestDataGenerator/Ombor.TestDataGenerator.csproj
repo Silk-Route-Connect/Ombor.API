@@ -14,4 +14,13 @@
     <ProjectReference Include="..\Ombor.Application\Ombor.Application.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<!-- Embed every file under Resources\Images\ into the DLL -->
+		<EmbeddedResource Include="Resources\Images\**\*.*">
+			<!-- Optional: control the logical name, but MSBuild will auto-generate one like 
+         Ombor.TestDataGenerator.Resources.Images.product-1.jpg -->
+			<!--<LogicalName>%(Filename)%(Extension)</LogicalName>-->
+		</EmbeddedResource>
+	</ItemGroup>
+
 </Project>

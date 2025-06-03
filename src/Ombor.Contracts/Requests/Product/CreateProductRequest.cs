@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Enums;
+﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -17,6 +18,7 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="LowStockThreshold">The low‑stock threshold (must be ≥ 0).</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
+/// <param name="Attachments">The attachments of the product. (e.g. “image”, “file”).</param>
 public sealed record CreateProductRequest(
     int CategoryId,
     string Name,
@@ -29,4 +31,5 @@ public sealed record CreateProductRequest(
     int QuantityInStock,
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
-    ProductType Type);
+    ProductType Type,
+    IFormFile[]? Attachments);

@@ -20,6 +20,11 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; set; }
 
     /// <summary>
+    /// Gets or sets the product images set.
+    /// </summary>
+    DbSet<ProductImage> ProductImages { get; set; }
+
+    /// <summary>
     /// Gets or sets the Suppliers set.
     /// </summary>
     DbSet<Supplier> Suppliers { get; set; }
@@ -42,7 +47,7 @@ public interface IApplicationDbContext
     int SaveChanges();
 
     /// <summary>
-    /// Gets the <see cref="DatabaseFacade"/> instance that provides access to database-related operations for the 
+    /// Gets the <see cref="DatabaseFacade"/> instance that provides access to database-related operations for the.
     /// </summary>
     DatabaseFacade Database { get; }
 }

@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Enums;
+﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -31,4 +32,6 @@ public sealed record UpdateProductRequest(
     int QuantityInStock,
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
-    ProductType Type);
+    ProductType Type,
+    IFormFile[]? Attachments,
+    int[]? ImagesToDelete);

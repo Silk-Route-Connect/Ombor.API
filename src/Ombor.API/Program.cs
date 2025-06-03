@@ -29,6 +29,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseStaticFiles();
+
 await app.UseDatabaseSeederAsync();
 
 await app.RunAsync();

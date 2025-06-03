@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Extensions;
 using Ombor.Tests.Integration.Helpers;
@@ -17,13 +18,18 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange
-        var productId = await CreateProductAsync();
-        var request = ProductRequestFactory.GenerateValidUpdateRequest(productId, DefaultCategoryId);
-        var url = GetUrl(productId);
+        var product = await CreateProductAsync();
+        var imagesToDelete = product.Images
+            .Take(2)
+            .Select(x => x.Id)
+            .ToArray();
+        var request = ProductRequestFactory.GenerateValidUpdateRequestWithAttachments(product.Id, DefaultCategoryId, imagesToDelete);
+        var multipartForm = request.ToMultipartFormData();
+        var url = GetUrl(product.Id);
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<UpdateProductResponse>(url, request);
+        var response = await _client.PutAsync<UpdateProductResponse>(url, multipartForm);
 
         // Assert
         await _responseValidator.Product.ValidatePutAsync(request, response);
@@ -34,10 +40,11 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     {
         // Arrange
         var request = ProductRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId);
+        var multipartForm = request.ToMultipartFormData();
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
+        var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, multipartForm, HttpStatusCode.NotFound);
 
         // Assert
         response.ShouldBeNotFound<Product>(NonExistentEntityId);
@@ -47,20 +54,21 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task PutAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var productId = await CreateProductAsync();
-        var request = ProductRequestFactory.GenerateInvalidUpdateRequest(productId);
-        var url = GetUrl(productId);
+        var product = await CreateProductAsync();
+        var request = ProductRequestFactory.GenerateInvalidUpdateRequest(product.Id);
+        var multipartForm = request.ToMultipartFormData();
+        var url = GetUrl(product.Id);
 
         // Act
         _outputHelper.WriteLine($"Sending put request with body: {JsonConvert.SerializeObject(request)}");
-        var response = await _client.PutAsync<ValidationProblemDetails>(url, request, HttpStatusCode.BadRequest);
+        var response = await _client.PutAsync<ValidationProblemDetails>(url, multipartForm, HttpStatusCode.BadRequest);
 
         // Assert
         Assert.NotNull(response);
         Assert.Contains(nameof(Product.Name), response.Errors.Keys);
     }
 
-    private Task<int> CreateProductAsync()
+    private Task<Product> CreateProductAsync()
     {
         var category = _builder.CategoryBuilder
             .WithName("Category for updating product")
@@ -73,6 +81,6 @@ public class UpdateProductTests(TestingWebApplicationFactory factory, ITestOutpu
             .WithCategory(category)
             .Build();
 
-        return CreateProductAsync(product);
+        return CreateProductAsync(product, "product-1.jpg", "product-2.jpg");
     }
 }

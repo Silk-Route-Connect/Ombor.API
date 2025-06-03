@@ -2,7 +2,9 @@
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Application.Services;
 
 namespace Ombor.Application.Extensions;
@@ -23,11 +25,24 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(CurrentAssembly);
+        services.AddConfigurations(configuration);
 
         services.AddScoped<IRequestValidator, RequestValidator>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<ISupplierService, SupplierService>();
+
+        services.AddTransient<IFileService, FileService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddConfigurations(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<FileSettings>()
+            .Bind(configuration.GetSection(FileSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }

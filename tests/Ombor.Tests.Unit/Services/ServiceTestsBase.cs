@@ -29,21 +29,34 @@ public abstract class ServiceTestsBase : UnitTestsBase
         _mockContext.VerifyNoOtherCalls();
     }
 
-    protected Mock<DbSet<Product>> SetupProducts(IEnumerable<Product> products)
-    {
-        var mockSet = products.AsQueryable().BuildMockDbSet();
-        _mockContext.Setup(mock => mock.Products).Returns(mockSet.Object);
-
-        return mockSet;
-    }
-
     protected Mock<DbSet<Category>> SetupCategories(IEnumerable<Category> categories)
     {
         var shuffledCategories = categories.ToArray();
         Random.Shared.Shuffle(shuffledCategories);
 
-        var mockDbSet = shuffledCategories.AsQueryable().BuildMockDbSet();
+        var mockDbSet = shuffledCategories.AsQueryable()
+            .BuildMockDbSet();
         _mockContext.Setup(mock => mock.Categories)
+            .Returns(mockDbSet.Object);
+
+        return mockDbSet;
+    }
+
+    protected Mock<DbSet<Product>> SetupProducts(IEnumerable<Product> products)
+    {
+        var mockSet = products.AsQueryable()
+            .BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Products)
+            .Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<ProductImage>> SetupProductImages(IEnumerable<ProductImage> productImages)
+    {
+        var mockDbSet = productImages.AsQueryable()
+            .BuildMockDbSet();
+        _mockContext.Setup(mock => mock.ProductImages)
             .Returns(mockDbSet.Object);
 
         return mockDbSet;

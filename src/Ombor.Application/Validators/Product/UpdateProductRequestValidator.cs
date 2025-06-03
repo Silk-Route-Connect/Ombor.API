@@ -30,8 +30,8 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .WithMessage("Product SKU is required.")
             .MaximumLength(ValidationConstants.CodeLength)
             .WithMessage($"Product SKU must not exceed {ValidationConstants.CodeLength} characters.")
-            .MustAsync(async (sku, cancellation) =>
-                !await context.Products.AnyAsync(p => p.SKU == sku, cancellation))
+            .MustAsync(async (request, sku, cancellation) =>
+                !await context.Products.AnyAsync(p => p.SKU == sku && p.Id != request.Id, cancellation))
             .WithMessage("A product with the same SKU already exists.");
 
         RuleFor(x => x.Description)

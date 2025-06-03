@@ -1,20 +1,31 @@
 ﻿using Bogus;
+using Microsoft.AspNetCore.Hosting;
+using Ombor.Application.Configurations;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.TestDataGenerator.Configurations;
+using Ombor.TestDataGenerator.Generators;
 using Ombor.TestDataGenerator.Interfaces;
 
 namespace Ombor.TestDataGenerator.Seeders;
 
-internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDatabaseSeeder
+internal sealed class TestingDatabaseSeeder(
+    DataSeedSettings seedSettings,
+    FileSettings fileSettings,
+    IWebHostEnvironment env,
+    IImageThumbnailer thumbnailer) : IDatabaseSeeder
 {
-    private readonly Faker _faker = new(settings.Locale);
+    private readonly Random _random = new();
+    private readonly Faker _faker = new(seedSettings.Locale);
 
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
         await CreateCategoriesAsync(context);
         await CreateProductsAsync(context);
+        await CreateProductImagesAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -24,7 +35,7 @@ internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDataba
             return;
         }
 
-        var categories = Enumerable.Range(1, settings.NumberOfCategories)
+        var categories = Enumerable.Range(1, seedSettings.NumberOfCategories)
             .Select(i => new Category
             {
                 Name = $"Test Category {i}",
@@ -44,7 +55,7 @@ internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDataba
 
         var categoryIds = context.Categories.Select(i => i.Id);
 
-        var products = Enumerable.Range(1, settings.NumberOfProducts)
+        var products = Enumerable.Range(1, seedSettings.NumberOfProducts)
             .Select(i => new Product
             {
                 Name = $"Test Product {i}",
@@ -63,5 +74,95 @@ internal sealed class TestingDatabaseSeeder(DataSeedSettings settings) : IDataba
 
         context.Products.AddRange(products);
         await context.SaveChangesAsync();
+    }
+
+    private async Task CreateProductImagesAsync(IApplicationDbContext context)
+    {
+        if (context.ProductImages.Any())
+        {
+            return;
+        }
+
+        // Ensure seed images are in wwwroot and get the map of GUID → original name
+        var nameMap = await EnsureImagesCopiedAsync();
+
+        var fileNames = nameMap.Keys.ToArray();
+        if (fileNames.Length == 0)
+        {
+            throw new InvalidOperationException("No seed images were loaded.");
+        }
+
+        var productIds = context.Products.Select(p => p.Id).ToArray();
+        var images = new List<ProductImage>();
+
+        foreach (var productId in productIds)
+        {
+            int imagesCount = _random.Next(1, seedSettings.NumberOfMaxImagesPerProduct + 1);
+
+            foreach (var fileName in fileNames.Take(imagesCount))
+            {
+                images.Add(new ProductImage
+                {
+                    ProductId = productId,
+                    FileName = fileName,
+                    ImageName = nameMap[fileName],
+                    OriginalUrl = $"{fileSettings.PublicUrlPrefix}/{fileSettings.ProductUploadsSection}/{fileSettings.OriginalsSubfolder}/{fileName}",
+                    ThumbnailUrl = $"{fileSettings.PublicUrlPrefix}/{fileSettings.ProductUploadsSection}/{fileSettings.ThumbnailsSubfolder}/{fileName}",
+                    Product = null! // EF Core will set this automatically
+                });
+            }
+        }
+
+        context.ProductImages.AddRange(images);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
+    {
+        var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
+        var thumbsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder);
+
+        Directory.CreateDirectory(originalsDir);
+        Directory.CreateDirectory(thumbsDir);
+
+        if (Directory.EnumerateFiles(originalsDir).Any())
+        {
+            return [];
+        }
+
+        return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
+    }
+
+    private async Task<Dictionary<string, string>> ExtractAndSaveSeedImagesAsync(string originalsDir, string thumbsDir)
+    {
+        const string imagesNamespace = "Ombor.TestDataGenerator.Resources.Images.";
+
+        var currentAssembly = typeof(ProductGenerator).Assembly;
+        var nameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var resourceNames = currentAssembly.GetManifestResourceNames()
+                     .Where(n => n.StartsWith(imagesNamespace, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var resourceName in resourceNames)
+        {
+            var originalFileName = resourceName[imagesNamespace.Length..];
+            var extension = Path.GetExtension(originalFileName);
+            var storageFileName = $"{Guid.NewGuid():N}{extension}";
+
+            nameMap[storageFileName] = originalFileName;
+
+            // copy original
+            await using var originalImageStream = currentAssembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException(resourceName);
+            await using var originalImageFileStream = File.Create(Path.Combine(originalsDir, storageFileName));
+            await originalImageStream.CopyToAsync(originalImageFileStream);
+
+            // generate & save thumbnail
+            originalImageStream.Position = 0;
+            var format = ImageHelper.GetThumbnailFormat(extension);
+            await using var thumbnailStream = await thumbnailer.GenerateThumbnailAsync(originalImageStream, format);
+            await using var thumbnailImageFileStream = File.Create(Path.Combine(thumbsDir, storageFileName));
+            await thumbnailStream.CopyToAsync(thumbnailImageFileStream);
+        }
+
+        return nameMap;
     }
 }

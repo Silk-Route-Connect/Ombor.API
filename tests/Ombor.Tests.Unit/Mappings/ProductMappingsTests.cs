@@ -209,7 +209,8 @@ public class ProductMappingsTests
             QuantityInStock: 8,
             LowStockThreshold: 3,
             Measurement: ContractMeasurement.Piece,
-            Type: ContractType.Sale);
+            Type: ContractType.Sale,
+            Attachments: []);
 
         // Act
         var entity = request.ToEntity();
@@ -265,7 +266,9 @@ public class ProductMappingsTests
             QuantityInStock: 3,
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
-            Type: ContractType.All);
+            Type: ContractType.All,
+            Attachments: [],
+            ImagesToDelete: []);
 
         // Act
         product.ApplyUpdate(updateRequest);

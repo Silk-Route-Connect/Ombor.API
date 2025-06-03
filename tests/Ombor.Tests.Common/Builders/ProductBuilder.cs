@@ -12,6 +12,8 @@ namespace Ombor.Tests.Common.Builders;
 /// </summary>
 internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProductBuilder
 {
+    private const int DefaultImagesCount = 5;
+
     private int? _id;
     private string? _name;
     private string? _sku;
@@ -24,6 +26,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
     private ProductType? _type;
+    private List<ProductImage>? _images;
     private int? _categoryId;
     private Category? _category;
 
@@ -111,6 +114,17 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return this;
     }
 
+    public IProductBuilder WithImages(IEnumerable<ProductImage>? images = null)
+    {
+        var productIdForImages = _id ?? _faker.Random.Number();
+
+        _images = images is null
+            ? GetProductImages(productIdForImages, DefaultImagesCount)
+            : [.. images];
+
+        return this;
+    }
+
     public IProductBuilder WithCategory(Category? category = null)
     {
         category ??= GetRandomCategory();
@@ -146,19 +160,22 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
             Type = _type ?? ProductType.All,
+            Images = _images ?? [],
             CategoryId = categoryId,
-            Category = category
+            Category = category,
         };
     }
 
     public Product BuildAndPopulate()
     {
+        var id = _id ?? _faker.Random.Number();
         var category = _category ?? GetRandomCategory();
         var categoryId = _categoryId ?? category.Id;
+        var images = _images ?? GetProductImages(id, DefaultImagesCount);
 
         return new()
         {
-            Id = _id ?? _faker.Random.Number(),
+            Id = id,
             Name = _name ?? _faker.Commerce.ProductName(),
             SKU = _sku ?? _faker.Random.Guid().ToString(),
             Description = _description ?? _faker.Lorem.Sentence(1),
@@ -170,6 +187,7 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
             Type = _type ?? _faker.Random.Enum<ProductType>(),
+            Images = [.. images],
             CategoryId = categoryId,
             Category = category
         };
@@ -191,4 +209,17 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     private int GetRandomLowStockThresholdAmount() =>
         _faker.Random.Number(BuilderConstants.MinLowThresholdAmount, BuilderConstants.MaxLowThresholdAmount);
+
+    private List<ProductImage> GetProductImages(int productId, int count) => Enumerable.Range(1, count + 1)
+        .Select(i => new ProductImage
+        {
+            Id = i,
+            FileName = _faker.System.FilePath(),
+            ImageName = _faker.System.CommonFileName(),
+            OriginalUrl = _faker.Image.PicsumUrl(),
+            ThumbnailUrl = _faker.Image.PicsumUrl(),
+            ProductId = productId,
+            Product = null!
+        })
+        .ToList();
 }

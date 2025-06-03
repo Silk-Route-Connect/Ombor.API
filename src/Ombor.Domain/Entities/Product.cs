@@ -44,6 +44,9 @@ public class Product : EntityBase
     /// <summary>Gets or sets the foreign key to the Category entity.</summary>
     public int CategoryId { get; set; }
 
-    /// <summary>Gets or sets the <see cref="Category"/> this product belongs to.</summary>
+    /// <summary>Gets or sets the <see cref="Entities.Category"/> this product belongs to.</summary>
     public required virtual Category Category { get; set; }
+
+    /// <summary>Gets or sets collection of <see cref="ProductImage"/>. </summary>
+    public virtual List<ProductImage> Images { get; set; } = [];
 }

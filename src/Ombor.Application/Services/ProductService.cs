@@ -1,5 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
@@ -8,34 +13,24 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class ProductService(IApplicationDbContext context, IRequestValidator validator) : IProductService
+internal sealed class ProductService(
+    IApplicationDbContext context,
+    IRequestValidator validator,
+    IFileService fileService,
+    IOptions<FileSettings> fileSettings) : IProductService
 {
-    public Task<ProductDto[]> GetAsync(GetProductsRequest request)
+    private readonly FileSettings fileSettings = fileSettings.Value;
+
+    public async Task<ProductDto[]> GetAsync(GetProductsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var query = GetQuery(request);
-
-        return query
-            .AsNoTracking()
+        var products = await query
             .OrderBy(x => x.Name)
-            .Select(x => new ProductDto(
-                x.Id,
-                x.CategoryId,
-                x.Category.Name,
-                x.Name,
-                x.SKU,
-                x.Description,
-                x.Barcode,
-                x.SalePrice,
-                x.SupplyPrice,
-                x.RetailPrice,
-                x.QuantityInStock,
-                x.LowStockThreshold,
-                x.QuantityInStock <= x.LowStockThreshold,
-                x.Measurement.ToString(),
-                x.Type.ToString()))
             .ToArrayAsync();
+
+        return [.. products.Select(x => x.ToDto())];
     }
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
@@ -52,6 +47,9 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
         await validator.ValidateAndThrowAsync(request, default);
 
         var entity = request.ToEntity();
+        var images = await CreateImages(request.Attachments);
+        entity.Images.AddRange(images);
+
         context.Products.Add(entity);
         await context.SaveChangesAsync();
 
@@ -66,6 +64,8 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
         var entity = await GetOrThrowAsync(request.Id);
         entity.ApplyUpdate(request);
+        await UpdateImagesAsync(entity, request.Attachments, request.ImagesToDelete);
+
         await context.SaveChangesAsync();
         entity.Category = await context.Categories.FirstAsync(x => x.Id == request.CategoryId);
 
@@ -78,6 +78,13 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
 
         var entity = await GetOrThrowAsync(request.Id);
         context.Products.Remove(entity);
+        var imagesToDelete = entity.Images.Select(x => x.FileName).ToArray();
+
+        if (imagesToDelete.Length > 0)
+        {
+            await fileService.DeleteAsync(imagesToDelete, fileSettings.ProductUploadsSection);
+        }
+
         await context.SaveChangesAsync();
     }
 
@@ -89,7 +96,7 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Products.AsQueryable();
+        var query = context.Products.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -115,6 +122,90 @@ internal sealed class ProductService(IApplicationDbContext context, IRequestVali
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
+        if (request.Type.HasValue)
+        {
+            var type = request.Type.Value.ToDomain();
+            query = query.Where(x => x.Type == type);
+        }
+
         return query;
+    }
+
+    private async Task UpdateImagesAsync(
+        Product entity,
+        IEnumerable<IFormFile>? attachments,
+        IEnumerable<int>? imageIdsToDelete)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var hasAttachments = attachments?.Any() ?? false;
+        var hasImagesToDelete = imageIdsToDelete?.Any() ?? false;
+
+        if (!hasAttachments && !hasImagesToDelete)
+        {
+            return;
+        }
+
+        var imagesToDelete = await DeleteImages(imageIdsToDelete);
+        var newImages = await CreateImages(attachments);
+        entity.Images = MergeImages(entity.Images, newImages, imagesToDelete);
+    }
+
+    private async Task<ProductImage[]> CreateImages(IEnumerable<IFormFile>? attachments)
+    {
+        if (attachments?.Any() != true)
+        {
+            return [];
+        }
+
+        var fileUrls = await fileService.UploadAsync(attachments, fileSettings.ProductUploadsSection);
+        var images = fileUrls
+            .Select(file => new ProductImage
+            {
+                FileName = file.FileName,
+                ImageName = file.OriginalFileName,
+                OriginalUrl = file.Url,
+                ThumbnailUrl = file.ThumbnailUrl,
+                Product = null!
+            });
+
+        return [.. images];
+    }
+
+    private async Task<ProductImage[]> DeleteImages(IEnumerable<int>? imageIdsToDelete)
+    {
+        if (imageIdsToDelete?.Any() != true)
+        {
+            return [];
+        }
+
+        var images = await context.ProductImages
+            .Where(x => imageIdsToDelete.Contains(x.Id))
+            .ToArrayAsync();
+        var fileNames = images.Select(x => x.FileName).ToArray();
+
+        if (fileNames.Length == 0)
+        {
+            return [];
+        }
+
+        await fileService.DeleteAsync(fileNames, fileSettings.ProductUploadsSection);
+
+        return images;
+    }
+
+    private static List<ProductImage> MergeImages(
+        IEnumerable<ProductImage> existingImages,
+        IEnumerable<ProductImage> newImages,
+        IEnumerable<ProductImage> imageIdsToDelete)
+    {
+        var images = existingImages.ToList();
+
+        foreach (var image in imageIdsToDelete)
+        {
+            images.RemoveAll(x => x.Id == image.Id);
+        }
+
+        return [.. images, .. newImages];
     }
 }

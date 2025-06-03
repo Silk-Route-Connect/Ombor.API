@@ -7,7 +7,7 @@
 					<Format>opencover,cobertura</Format>
 
 					<!-- never instrument generated or obsolete code -->
-					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
 
 					<!-- drop any files under given folders, add a new folder to include separated with comma -->
 					<ExcludeByFile>**/Migrations/*.cs,**/Ombor.TestDataGenerator/**/*.cs</ExcludeByFile>

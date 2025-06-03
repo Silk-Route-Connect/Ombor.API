@@ -25,23 +25,20 @@ internal static class DependencyInjection
     {
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
+        services.AddExceptionHandler<InvalidFileExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
     }
 
     private static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
     {
+        var openApiConfigurations = new OpenApiInfo();
+        configuration.GetSection("Swagger").Bind(openApiConfigurations);
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Inventory Management System",
-                Version = "v1",
-                Description = "Manage categories, products, orders, etc.",
-                Contact = new OpenApiContact { Name = "Support Engineer", Email = "support@silkrouteconnect.com" },
-                License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
-            });
+            c.SwaggerDoc("v1", openApiConfigurations);
 
             c.OperationFilter<ValidationErrorsOperationFilter>();
 

@@ -1,5 +1,7 @@
-﻿using Ombor.Contracts.Requests.Product;
+﻿using FluentValidation;
+using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Interfaces;
 

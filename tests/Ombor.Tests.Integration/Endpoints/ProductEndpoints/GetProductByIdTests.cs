@@ -22,14 +22,14 @@ public class GetProductByIdTests(TestingWebApplicationFactory factory, ITestOutp
             .WithName("Product To Fetch")
             .WithCategory(category)
             .Build();
-        var productId = await CreateProductAsync(product);
-        var url = GetUrl(productId);
+        var createdProduct = await CreateProductAsync(product);
+        var url = GetUrl(createdProduct.Id);
 
         // Act
         var response = await _client.GetAsync<ProductDto>(url);
 
         // Assert
-        await _responseValidator.Product.ValidateGetByIdAsync(productId, response);
+        await _responseValidator.Product.ValidateGetByIdAsync(createdProduct.Id, response);
     }
 
     [Fact]
