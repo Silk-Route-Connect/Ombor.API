@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9521367521367521" branch-rate="0.9516129032258065" lines-covered="557" lines-valid="585" branches-covered="118" branches-valid="124" complexity="257" version="0" timestamp="1748847447">
+<coverage line-rate="0.9537671232876712" branch-rate="0.967741935483871" lines-covered="557" lines-valid="584" branches-covered="120" branches-valid="124" complexity="257" version="0" timestamp="1748959400">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -242,7 +242,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.9970501474926253" branch-rate="0.9772727272727273" complexity="139">
+    <package name="Ombor.Application" line-rate="1" branch-rate="1" complexity="139">
       <classes>
         <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
@@ -339,48 +339,45 @@
             <line number="14" hits="46" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Helpers.ImageHelpers" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Helpers/ImageHelpers.cs" line-rate="0.9" branch-rate="0.9" complexity="20">
+        <class name="Ombor.Application.Helpers.ImageHelper" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Helpers/ImageHelper.cs" line-rate="1" branch-rate="1" complexity="20">
           <methods>
-            <method name="GetFormat" signature="(System.String)" line-rate="0.9" branch-rate="0.9" complexity="10">
+            <method name="GetThumbnailFormat" signature="(System.String)" line-rate="1" branch-rate="1" complexity="10">
               <lines>
-                <line number="9" hits="80" branch="false" />
-                <line number="11" hits="80" branch="true" condition-coverage="90% (18/20)" />
-                <line number="12" hits="80" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="70" branch="false" />
-                <line number="15" hits="2" branch="false" />
-                <line number="16" hits="2" branch="false" />
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="0" branch="false" />
-                <line number="19" hits="80" branch="false" />
+                <line number="9" hits="104" branch="false" />
+                <line number="11" hits="96" branch="true" condition-coverage="100% (20/20)" />
+                <line number="12" hits="96" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="14" hits="76" branch="false" />
+                <line number="15" hits="4" branch="false" />
+                <line number="16" hits="4" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="96" branch="false" />
               </lines>
             </method>
-            <method name="GetFormat" signature="(System.String)" line-rate="0.9" branch-rate="0.9" complexity="10">
+            <method name="GetThumbnailFormat" signature="(System.String)" line-rate="1" branch-rate="1" complexity="10">
               <lines>
-                <line number="9" hits="80" branch="false" />
-                <line number="11" hits="80" branch="true" condition-coverage="90% (18/20)" />
-                <line number="12" hits="80" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="70" branch="false" />
-                <line number="15" hits="2" branch="false" />
-                <line number="16" hits="2" branch="false" />
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="0" branch="false" />
-                <line number="19" hits="80" branch="false" />
+                <line number="9" hits="104" branch="false" />
+                <line number="11" hits="96" branch="true" condition-coverage="100% (20/20)" />
+                <line number="12" hits="96" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="14" hits="76" branch="false" />
+                <line number="15" hits="4" branch="false" />
+                <line number="16" hits="4" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="96" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="9" hits="80" branch="false" />
-            <line number="11" hits="80" branch="true" condition-coverage="90% (18/20)" />
-            <line number="12" hits="80" branch="false" />
-            <line number="13" hits="4" branch="false" />
-            <line number="14" hits="70" branch="false" />
-            <line number="15" hits="2" branch="false" />
-            <line number="16" hits="2" branch="false" />
-            <line number="17" hits="2" branch="false" />
-            <line number="18" hits="0" branch="false" />
-            <line number="19" hits="80" branch="false" />
+            <line number="9" hits="104" branch="false" />
+            <line number="11" hits="96" branch="true" condition-coverage="100% (20/20)" />
+            <line number="12" hits="96" branch="false" />
+            <line number="13" hits="6" branch="false" />
+            <line number="14" hits="76" branch="false" />
+            <line number="15" hits="4" branch="false" />
+            <line number="16" hits="4" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="96" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.CategoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/CategoryMappings.cs" line-rate="1" branch-rate="1" complexity="10">
@@ -2539,17 +2536,17 @@
           <methods>
             <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="54" branch="false" />
+                <line number="12" hits="52" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="54" branch="false" />
+                <line number="12" hits="52" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="12" hits="54" branch="false" />
+            <line number="12" hits="52" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Services.LocalFilePathProvider" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Services/LocalFilePathProvider.cs" line-rate="1" branch-rate="1" complexity="6">
