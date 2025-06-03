@@ -9,4 +9,7 @@ public sealed class ResponseValidator(IApplicationDbContext context)
 
     private ProductValidator? _product;
     public ProductValidator Product => _product ??= new(context);
+
+    private SupplierValidator? _supplier;
+    public SupplierValidator Supplier => _supplier ??= new(context);
 }
