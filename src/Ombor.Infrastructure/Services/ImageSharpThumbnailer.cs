@@ -38,7 +38,6 @@ internal sealed class ImageSharpThumbnailer(IOptions<FileSettings> settings) : I
                 await image.SaveAsPngAsync(output, cancellation);
                 break;
             case ThumbnailFormat.Jpg:
-            case ThumbnailFormat.Jpeg:
                 await image.SaveAsJpegAsync(output, cancellation);
                 break;
             case ThumbnailFormat.Webp:

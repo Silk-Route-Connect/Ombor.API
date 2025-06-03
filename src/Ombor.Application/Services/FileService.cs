@@ -140,7 +140,7 @@ internal sealed class FileService(
 
         try
         {
-            var thumbnailFormat = ImageHelpers.GetFormat(extension);
+            var thumbnailFormat = ImageHelper.GetThumbnailFormat(extension);
             await using var thumbSourceStream = file.OpenReadStream();
             await using var thumbStream = await thumbnailer.GenerateThumbnailAsync(thumbSourceStream, thumbnailFormat, cancellationToken);
             var thumbnailStoragePath = pathResolver.BuildRelativePath(subfolder, _settings.ThumbnailsSubfolder, fileName);

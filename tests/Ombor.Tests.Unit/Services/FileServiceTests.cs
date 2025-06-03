@@ -74,7 +74,7 @@ public sealed class FileServiceTests
     [Theory]
     [InlineData(".png", ThumbnailFormat.Png)]
     [InlineData(".jpg", ThumbnailFormat.Jpg)]
-    [InlineData(".jpeg", ThumbnailFormat.Jpeg)]
+    [InlineData(".jpeg", ThumbnailFormat.Jpg)]
     [InlineData(".webp", ThumbnailFormat.Webp)]
     [InlineData(".gif", ThumbnailFormat.Gif)]
     public async Task UpdateAsync_ShouldSaveThumbnailWithCorrectExtensionFormat_WhenFileIsImage(string extension, ThumbnailFormat expectedFormat)

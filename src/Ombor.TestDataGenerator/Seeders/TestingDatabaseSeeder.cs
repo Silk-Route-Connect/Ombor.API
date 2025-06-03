@@ -157,7 +157,7 @@ internal sealed class TestingDatabaseSeeder(
 
             // generate & save thumbnail
             originalImageStream.Position = 0;
-            var format = ImageHelpers.GetFormat(extension);
+            var format = ImageHelper.GetThumbnailFormat(extension);
             await using var thumbnailStream = await thumbnailer.GenerateThumbnailAsync(originalImageStream, format);
             await using var thumbnailImageFileStream = File.Create(Path.Combine(thumbsDir, storageFileName));
             await thumbnailStream.CopyToAsync(thumbnailImageFileStream);

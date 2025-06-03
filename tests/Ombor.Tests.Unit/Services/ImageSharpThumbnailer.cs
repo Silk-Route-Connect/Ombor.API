@@ -14,11 +14,11 @@ namespace Ombor.Tests.Unit.Services;
 
 public sealed class ImageSharpThumbnailerTests
 {
+    private const int DefaultThumbnailSize = 50;
     public static TheoryData<int, int, ThumbnailFormat, IImageFormat> ThumbnailData => new()
     {
         { 200, 100, ThumbnailFormat.Png, PngFormat.Instance },
         { 200, 200, ThumbnailFormat.Jpg, JpegFormat.Instance },
-        { 200, 300, ThumbnailFormat.Jpeg, JpegFormat.Instance },
         { 300, 200, ThumbnailFormat.Webp, WebpFormat.Instance },
         { 400, 100, ThumbnailFormat.Gif, GifFormat.Instance }
     };
@@ -32,8 +32,7 @@ public sealed class ImageSharpThumbnailerTests
         IImageFormat expectedFormat)
     {
         // Arrange
-        var thumbnailSize = 50;
-        var service = CreateService(thumbnailSize, thumbnailSize);
+        var service = CreateService(DefaultThumbnailSize, DefaultThumbnailSize);
         await using var sourceStream = CreateTestImageStream(originalWidth, originalHeight);
 
         // Act
@@ -52,15 +51,15 @@ public sealed class ImageSharpThumbnailerTests
 
         thumbStream.Position = 0;
         using var resultImage = await Image.LoadAsync(thumbStream);
-        Assert.InRange(resultImage.Width, 1, thumbnailSize);
-        Assert.InRange(resultImage.Height, 1, thumbnailSize);
+        Assert.InRange(resultImage.Width, 1, DefaultThumbnailSize);
+        Assert.InRange(resultImage.Height, 1, DefaultThumbnailSize);
     }
 
     [Fact]
     public async Task GenerateThumbnailAsync_ShouldThrowArgumentOutOfRangeException_WhenFormatUnsupported()
     {
         // Arrange
-        var service = CreateService(50, 50);
+        var service = CreateService(DefaultThumbnailSize);
         await using var sourceStream = CreateTestImageStream(100, 100);
         const ThumbnailFormat unsupportedFormat = (ThumbnailFormat)(-1);
 
@@ -84,6 +83,9 @@ public sealed class ImageSharpThumbnailerTests
 
         return ms;
     }
+
+    private static ImageSharpThumbnailer CreateService(int width)
+        => CreateService(width, width);
 
     private static ImageSharpThumbnailer CreateService(int thumbWidth, int thumbHeight)
     {
