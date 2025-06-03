@@ -105,13 +105,13 @@ internal sealed class DevelopmentDatabaseSeeder(
         var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
         var thumbsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder);
 
+        Directory.CreateDirectory(originalsDir);
+        Directory.CreateDirectory(thumbsDir);
+
         if (Directory.EnumerateFiles(originalsDir).Any())
         {
             return [];
         }
-
-        Directory.CreateDirectory(originalsDir);
-        Directory.CreateDirectory(thumbsDir);
 
         return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
     }
@@ -139,8 +139,9 @@ internal sealed class DevelopmentDatabaseSeeder(
             await originalImageStream.CopyToAsync(originalImageFileStream);
 
             // generate & save thumbnail
+            originalImageStream.Position = 0;
             var format = ImageHelper.GetThumbnailFormat(extension);
-            await using var thumbnailStream = await thumbnailer.GenerateThumbnailAsync(File.OpenRead(Path.Combine(originalsDir, storageFileName)), format);
+            await using var thumbnailStream = await thumbnailer.GenerateThumbnailAsync(originalImageFileStream, format);
             await using var thumbnailImageFileStream = File.Create(Path.Combine(thumbsDir, storageFileName));
             await thumbnailStream.CopyToAsync(thumbnailImageFileStream);
         }
