@@ -9,9 +9,8 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
     public CategoryValidator Category => _category ??= new(context);
 
     private ProductValidator? _product;
-    public ProductValidator Product => _product ??= new(context);
+    public ProductValidator Product => _product ??= new(context, fileSettings, webRootPath);
 
     private SupplierValidator? _supplier;
     public SupplierValidator Supplier => _supplier ??= new(context);
-    public ProductValidator Product => _product ??= new(context, fileSettings, webRootPath);
 }
