@@ -13,7 +13,7 @@ public sealed class UpdateSupplierTests : SupplierTestsBase
     public async Task UpdateAsync_ShouldThrowValidationException_WhenValidatorFails()
     {
         // Arrange 
-        var request = SupplierRequestFactory.GenerateInalidUpdateRequest(SupplierId);
+        var request = SupplierRequestFactory.GenerateInvalidUpdateRequest(SupplierId);
 
         _mockValidator.Setup(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new ValidationException("Validation errors"));

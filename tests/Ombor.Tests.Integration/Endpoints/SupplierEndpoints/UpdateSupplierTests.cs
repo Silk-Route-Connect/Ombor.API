@@ -66,7 +66,7 @@ public class UpdateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
         Assert.Contains(nameof(Supplier.Name), response.Errors.Keys);
     }
 
-    private static UpdateSupplierRequest CreateInvalidRequest(int id) =>
+    private static UpdateSupplierRequest CreateValidRequest(int id) =>
         new(
             id,
             "Updated supplier name",
@@ -74,10 +74,11 @@ public class UpdateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
             "Updated email",
             "Updated company name",
             true,
+            1500.00m,
             ["+998912322323"]
             );
 
-    private static UpdateSupplierRequest CreateValidRequest(int id) =>
+    private static UpdateSupplierRequest CreateInvalidRequest(int id) =>
         new(
             id,
             string.Empty,
@@ -85,6 +86,7 @@ public class UpdateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
             string.Empty,
             string.Empty,
             true,
+            0m,
             ["+asdsgasd"]
             );
 }

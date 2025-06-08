@@ -17,7 +17,7 @@ public static class RequestExtensions
         !request.MaxPrice.HasValue;
 
     public static bool IsEmpty(this GetSuppliersRequest request) =>
-    string.IsNullOrWhiteSpace(request.SearchTerm);
+        string.IsNullOrWhiteSpace(request.SearchTerm);
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
         !string.IsNullOrWhiteSpace(request.SearchTerm) &&

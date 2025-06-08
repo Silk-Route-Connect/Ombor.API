@@ -1,6 +1,4 @@
-
 using System.ComponentModel.DataAnnotations;
-using AutoFixture.AutoMoq;
 using Moq;
 using Ombor.Contracts.Requests.Supplier;
 using Ombor.Domain.Entities;

@@ -6,7 +6,7 @@ using Ombor.Contracts.Responses.Supplier;
 namespace Ombor.API.Controllers;
 
 /// <summary>
-/// Endpoints to manage suppliers and invenrtory.
+/// Endpoints to manage suppliers.
 /// </summary>
 [ApiController]
 [Route("api/suppliers")]
@@ -28,7 +28,7 @@ public sealed class SuppliersController(ISupplierService supplierService) : Cont
     }
 
     /// <summary>
-    /// Retrieves a specific supplier bt its unique ID.
+    /// Retrieves a specific supplier by its unique ID.
     /// </summary>
     /// <param name="request">Request containing the supplier ID.</param>
     /// <returns>The matching <see cref="SupplierDto"/>.</returns>
@@ -45,7 +45,7 @@ public sealed class SuppliersController(ISupplierService supplierService) : Cont
     /// <summary>
     /// Creates a new supplier.
     /// </summary>
-    /// <param name="request">Payload desctibing the supplier to create.</param>
+    /// <param name="request">Payload describing the supplier to create.</param>
     /// <returns>The created supplier details.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(CreateSupplierResponse), StatusCodes.Status201Created)]

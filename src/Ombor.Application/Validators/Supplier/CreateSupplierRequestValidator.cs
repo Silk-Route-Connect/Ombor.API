@@ -28,11 +28,8 @@ public sealed class CreateSupplierRequestValidator : AbstractValidator<CreateSup
 
         RuleForEach(x => x.PhoneNumbers)
             .Must(IsValidPhoneNumber)
-            .WithMessage("Telefon raqami noto'g'ri formatda");
+            .WithMessage("The phone number is in the wrong format.");
     }
 
-    private bool IsValidPhoneNumber(string phoneNumber)
-    {
-        return Regex.IsMatch(phoneNumber, @"^\+998(9[0-9]|8[8])\d{7}$");
-    }
+    private bool IsValidPhoneNumber(string phoneNumber) => Regex.IsMatch(phoneNumber, @"^\+998(9[0-9]|8[8])\d{7}$");
 }

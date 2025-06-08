@@ -1,4 +1,3 @@
-
 using Ombor.Domain.Entities;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -14,7 +13,7 @@ public abstract class SupplierTestsBase(TestingWebApplicationFactory factory, IT
         => Routes.Supplier;
 
     protected override string GetUrl(int id)
-    => $"{Routes.Supplier}/{id}";
+        => $"{Routes.Supplier}/{id}";
 
     protected async Task<int> CreateSupplierAsync()
     {

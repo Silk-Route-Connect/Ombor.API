@@ -16,8 +16,8 @@ public class GetSupplierByIdTests(TestingWebApplicationFactory factory, ITestOut
     {
         // Arrange 
         var supplier = _builder.SupplierBuilder
-        .WithName("Supplier To Be Fetched")
-        .Build();
+            .WithName("Supplier To Be Fetched")
+            .Build();
 
         var supplierId = await CreateSupplierAsync(supplier);
         var url = GetUrl(supplierId);

@@ -36,22 +36,24 @@ public class GetSuppliersTests(TestingWebApplicationFactory factory, ITestOutput
             // Matching search term by name
             new()
             {
-                Name=searchTerm,
-                Address="Address",
-                Email="Supplier's email",
-                CompanyName="Supplier's company name",
-                IsActive=true,
-                PhoneNumbers=["+998914778888"]
+                Name = searchTerm,
+                Address = "Address",
+                Email = "Supplier's email",
+                CompanyName = "Supplier's company name",
+                IsActive = true,
+                Balance = 1000.00m,
+                PhoneNumbers = ["+998914778888"]
             },
             // Matching search term by address
             new()
             {
-                Name="Supplier's Name",
-                Address=searchTerm,
-                Email="Supplier's email",
-                CompanyName="Supplier's company name",
-                IsActive=true,
-                PhoneNumbers=["+998914778888"]
+                Name = "Supplier's Name",
+                Address = searchTerm,
+                Email = "Supplier's email",
+                CompanyName = "Supplier's company name",
+                IsActive = true,
+                Balance = 1000.00m,
+                PhoneNumbers = ["+998914778888"]
             }
         };
 

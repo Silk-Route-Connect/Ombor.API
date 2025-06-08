@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Supplier;
 using Ombor.Domain.Entities;
@@ -18,7 +19,7 @@ public class CreateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
         var request = SupplierRequestFactory.GenerateValidCreateRequest();
 
         // Act
-        var response = await _client.PostAsync<CreateSupplierResponse>(Routes.Supplier, request, System.Net.HttpStatusCode.Created);
+        var response = await _client.PostAsync<CreateSupplierResponse>(Routes.Supplier, request, HttpStatusCode.Created);
 
         // Assert
         await _responseValidator.Supplier.ValidatePostAsync(request, response);

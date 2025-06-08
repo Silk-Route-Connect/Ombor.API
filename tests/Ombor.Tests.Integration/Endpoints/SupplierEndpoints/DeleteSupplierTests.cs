@@ -15,8 +15,8 @@ public class DeleteSupplierTests(TestingWebApplicationFactory factory, ITestOutp
     {
         // Arrange 
         var supplierToDelete = _builder.SupplierBuilder
-        .WithName("Supplier To Delete")
-        .Build();
+            .WithName("Supplier To Delete")
+            .Build();
 
         var supplierId = await CreateSupplierAsync(supplierToDelete);
         var url = GetUrl(supplierId);
