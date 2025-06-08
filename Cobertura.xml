@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.963265306122449" branch-rate="0.9696969696969697" lines-covered="708" lines-valid="735" branches-covered="128" branches-valid="132" complexity="289" version="0" timestamp="1749389228">
+<coverage line-rate="0.9632152588555858" branch-rate="0.9705882352941176" lines-covered="707" lines-valid="734" branches-covered="132" branches-valid="136" complexity="289" version="0" timestamp="1749412807">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -1931,84 +1931,73 @@
         </class>
         <class name="Ombor.Application.Validators.Supplier.CreateSupplierRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Supplier/CreateSupplierRequestValidator.cs" line-rate="1" branch-rate="1" complexity="4">
           <methods>
-            <method name="IsValidPhoneNumber" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="34" hits="8" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="9" hits="4" branch="false" />
+                <line number="8" hits="4" branch="false" />
+                <line number="10" hits="4" branch="false" />
                 <line number="11" hits="4" branch="false" />
                 <line number="12" hits="4" branch="false" />
                 <line number="13" hits="4" branch="false" />
                 <line number="14" hits="4" branch="false" />
-                <line number="15" hits="4" branch="false" />
+                <line number="16" hits="4" branch="false" />
                 <line number="17" hits="4" branch="false" />
                 <line number="18" hits="4" branch="false" />
-                <line number="19" hits="4" branch="false" />
+                <line number="20" hits="4" branch="false" />
                 <line number="21" hits="4" branch="false" />
                 <line number="22" hits="4" branch="false" />
-                <line number="23" hits="4" branch="false" />
+                <line number="24" hits="4" branch="false" />
                 <line number="25" hits="4" branch="false" />
                 <line number="26" hits="4" branch="false" />
-                <line number="27" hits="4" branch="false" />
+                <line number="28" hits="4" branch="true" condition-coverage="100% (4/4)" />
                 <line number="29" hits="4" branch="false" />
                 <line number="30" hits="4" branch="false" />
                 <line number="31" hits="4" branch="false" />
-                <line number="32" hits="4" branch="false" />
               </lines>
             </method>
-            <method name="IsValidPhoneNumber" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="34" hits="8" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="9" hits="4" branch="false" />
+                <line number="8" hits="4" branch="false" />
+                <line number="10" hits="4" branch="false" />
                 <line number="11" hits="4" branch="false" />
                 <line number="12" hits="4" branch="false" />
                 <line number="13" hits="4" branch="false" />
                 <line number="14" hits="4" branch="false" />
-                <line number="15" hits="4" branch="false" />
+                <line number="16" hits="4" branch="false" />
                 <line number="17" hits="4" branch="false" />
                 <line number="18" hits="4" branch="false" />
-                <line number="19" hits="4" branch="false" />
+                <line number="20" hits="4" branch="false" />
                 <line number="21" hits="4" branch="false" />
                 <line number="22" hits="4" branch="false" />
-                <line number="23" hits="4" branch="false" />
+                <line number="24" hits="4" branch="false" />
                 <line number="25" hits="4" branch="false" />
                 <line number="26" hits="4" branch="false" />
-                <line number="27" hits="4" branch="false" />
+                <line number="28" hits="4" branch="true" condition-coverage="100% (4/4)" />
                 <line number="29" hits="4" branch="false" />
                 <line number="30" hits="4" branch="false" />
                 <line number="31" hits="4" branch="false" />
-                <line number="32" hits="4" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="9" hits="4" branch="false" />
+            <line number="8" hits="4" branch="false" />
+            <line number="10" hits="4" branch="false" />
             <line number="11" hits="4" branch="false" />
             <line number="12" hits="4" branch="false" />
             <line number="13" hits="4" branch="false" />
             <line number="14" hits="4" branch="false" />
-            <line number="15" hits="4" branch="false" />
+            <line number="16" hits="4" branch="false" />
             <line number="17" hits="4" branch="false" />
             <line number="18" hits="4" branch="false" />
-            <line number="19" hits="4" branch="false" />
+            <line number="20" hits="4" branch="false" />
             <line number="21" hits="4" branch="false" />
             <line number="22" hits="4" branch="false" />
-            <line number="23" hits="4" branch="false" />
+            <line number="24" hits="4" branch="false" />
             <line number="25" hits="4" branch="false" />
             <line number="26" hits="4" branch="false" />
-            <line number="27" hits="4" branch="false" />
+            <line number="28" hits="4" branch="true" condition-coverage="100% (4/4)" />
             <line number="29" hits="4" branch="false" />
             <line number="30" hits="4" branch="false" />
             <line number="31" hits="4" branch="false" />
-            <line number="32" hits="4" branch="false" />
-            <line number="34" hits="8" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Supplier.DeleteSupplierRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Supplier/DeleteSupplierRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -2153,17 +2142,17 @@
           <methods>
             <method name="IsValidPhoneNumber" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="6" hits="6" branch="false" />
+                <line number="6" hits="14" branch="false" />
               </lines>
             </method>
             <method name="IsValidPhoneNumber" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="6" hits="6" branch="false" />
+                <line number="6" hits="14" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="6" hits="6" branch="false" />
+            <line number="6" hits="14" branch="false" />
           </lines>
         </class>
       </classes>
