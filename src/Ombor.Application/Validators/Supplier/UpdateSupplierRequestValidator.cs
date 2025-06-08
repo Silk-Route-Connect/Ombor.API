@@ -1,8 +1,4 @@
-using System;
-using System.Text.RegularExpressions;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Contracts.Requests.Supplier;
 
 namespace Ombor.Application.Validators.Supplier;
@@ -34,13 +30,7 @@ public sealed class UpdateSupplierRequestValidator : AbstractValidator<UpdateSup
             .WithMessage($"Company name must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleForEach(x => x.PhoneNumbers)
-            .Must(IsValidPhoneNumber)
-            .WithMessage("Telefon raqami noto'g'ri formatda");
-
-    }
-
-    private bool IsValidPhoneNumber(string phoneNumber)
-    {
-        return Regex.IsMatch(phoneNumber, @"^\+998(9[0-9]|8[8])\d{7}$");
+            .Must(ValidationHelpers.IsValidPhoneNumber)
+            .WithMessage("The phone number is in the wrong format.");
     }
 }
