@@ -16,6 +16,7 @@ public class SupplierMappingsTests
             Email: "qwerty@gmail.com",
             CompanyName: "qwertgvc",
             IsActive: true,
+            Balance: 1000.00m,
             PhoneNumbers: ["+998945558888"]
         );
 
@@ -29,6 +30,7 @@ public class SupplierMappingsTests
         Assert.Equal(request.Email, entity.Email);
         Assert.Equal(request.CompanyName, entity.CompanyName);
         Assert.Equal(request.IsActive, entity.IsActive);
+        Assert.Equal(request.Balance, entity.Balance);
         Assert.Equal(request.PhoneNumbers, entity.PhoneNumbers);
     }
 
@@ -57,6 +59,7 @@ public class SupplierMappingsTests
         Assert.Equal(supplier.Email, response.Email);
         Assert.Equal(supplier.CompanyName, response.CompanyName);
         Assert.Equal(supplier.IsActive, response.IsActive);
+        Assert.Equal(supplier.Balance, response.Balance);
         Assert.Equal(supplier.PhoneNumbers, response.PhoneNumbers);
     }
 
@@ -85,6 +88,7 @@ public class SupplierMappingsTests
         Assert.Equal(supplier.Email, response.Email);
         Assert.Equal(supplier.CompanyName, response.CompanyName);
         Assert.Equal(supplier.IsActive, response.IsActive);
+        Assert.Equal(supplier.Balance, response.Balance);
         Assert.Equal(supplier.PhoneNumbers, response.PhoneNumbers);
     }
 
@@ -113,6 +117,7 @@ public class SupplierMappingsTests
         Assert.Equal(supplier.Email, response.Email);
         Assert.Equal(supplier.CompanyName, response.CompanyName);
         Assert.Equal(supplier.IsActive, response.IsActive);
+        Assert.Equal(supplier.Balance, response.Balance);
         Assert.Equal(supplier.PhoneNumbers, response.PhoneNumbers);
     }
 
@@ -138,6 +143,7 @@ public class SupplierMappingsTests
             Email: "Updated email",
             CompanyName: "Updated company name",
             IsActive: false,
+            Balance: 0.00m,
             PhoneNumbers: ["+998885552200"]);
 
         // Act
@@ -150,6 +156,7 @@ public class SupplierMappingsTests
         Assert.Equal(request.Email, supplier.Email);
         Assert.Equal(request.CompanyName, supplier.CompanyName);
         Assert.Equal(request.IsActive, supplier.IsActive);
+        Assert.Equal(request.Balance, supplier.Balance);
         Assert.Equal(request.PhoneNumbers, supplier.PhoneNumbers);
     }
 }

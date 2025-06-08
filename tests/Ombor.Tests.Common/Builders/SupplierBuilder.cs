@@ -1,4 +1,3 @@
-using System;
 using Bogus;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Interfaces;
@@ -52,21 +51,14 @@ internal sealed class SupplierBuilder(Faker faker) : BuilderBase(faker), ISuppli
 
     public ISupplierBuilder WithIsActive(bool? isActive = false)
     {
-        _isActive = _faker.Random.Bool();
+        _isActive = isActive ?? _faker.Random.Bool();
 
         return this;
     }
 
     public ISupplierBuilder WithPhoneNumbers(List<string>? phoneNumbers = null)
     {
-        if (phoneNumbers is null)
-        {
-            _phoneNumbers = GeneratePhoneNumbers();
-        }
-        else
-        {
-            _phoneNumbers = phoneNumbers;
-        }
+        _phoneNumbers = phoneNumbers ?? GeneratePhoneNumbers();
 
         return this;
     }
@@ -77,11 +69,11 @@ internal sealed class SupplierBuilder(Faker faker) : BuilderBase(faker), ISuppli
         {
             Id = _id ?? default,
             Name = _name ?? string.Empty,
-            Address = _address ?? string.Empty,
-            Email = _email ?? string.Empty,
-            CompanyName = _companyName ?? string.Empty,
-            IsActive = _isActive ?? _faker.Random.Bool(),
-            PhoneNumbers = _phoneNumbers ?? GeneratePhoneNumbers()
+            Address = _address,
+            Email = _email,
+            CompanyName = _companyName,
+            IsActive = _isActive ?? false,
+            PhoneNumbers = _phoneNumbers ?? []
         };
     }
 
@@ -106,7 +98,7 @@ internal sealed class SupplierBuilder(Faker faker) : BuilderBase(faker), ISuppli
 
         for (int i = 0; i < countOfNumbers; i++)
         {
-            phoneNumbers.Add(_faker.Person.Phone);
+            phoneNumbers.Add(_faker.Phone.PhoneNumber("+998-##-###-##-##"));
         }
 
         return phoneNumbers;

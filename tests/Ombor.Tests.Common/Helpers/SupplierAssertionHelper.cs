@@ -1,4 +1,3 @@
-
 using Ombor.Contracts.Requests.Supplier;
 using Ombor.Contracts.Responses.Supplier;
 using Ombor.Domain.Entities;
@@ -27,6 +26,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -45,6 +45,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -63,6 +64,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -82,6 +84,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -101,6 +104,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -120,6 +124,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 
@@ -139,6 +144,7 @@ public static class SupplierAssertionHelper
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
         Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
 }
