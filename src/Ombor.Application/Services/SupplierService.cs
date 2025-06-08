@@ -31,9 +31,14 @@ internal sealed class SupplierService(IApplicationDbContext context, IRequestVal
             .AsNoTracking()
             .OrderBy(x => x.Name)
             .Select(x => new SupplierDto(
-                x.Id, x.Name, x.Address,
-                x.Email, x.CompanyName,
-                x.IsActive, x.PhoneNumbers))
+                x.Id,
+                x.Name,
+                x.Address,
+                x.Email,
+                x.CompanyName,
+                x.IsActive,
+                x.Balance,
+                x.PhoneNumbers))
             .ToArrayAsync();
     }
 
