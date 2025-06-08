@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using FluentValidation;
 using Ombor.Contracts.Requests.Supplier;
 
@@ -27,9 +26,7 @@ public sealed class CreateSupplierRequestValidator : AbstractValidator<CreateSup
             .WithMessage($"Company name must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleForEach(x => x.PhoneNumbers)
-            .Must(IsValidPhoneNumber)
+            .Must(ValidationHelpers.IsValidPhoneNumber)
             .WithMessage("The phone number is in the wrong format.");
     }
-
-    private bool IsValidPhoneNumber(string phoneNumber) => Regex.IsMatch(phoneNumber, @"^\+998(9[0-9]|8[8])\d{7}$");
 }
