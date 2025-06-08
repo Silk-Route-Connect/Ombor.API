@@ -22,6 +22,9 @@ public class Supplier : EntityBase
     /// <summary>Gets or sets the supplier's status.</summary>
     public bool IsActive { get; set; }
 
+    /// <summary>Gets or sets the supplier's balance.</summary>
+    public decimal Balance { get; set; }
+
     /// <summary>Gets or sets the supplier's phone numbers.</summary>
     public List<string> PhoneNumbers { get; set; } = [];
 }

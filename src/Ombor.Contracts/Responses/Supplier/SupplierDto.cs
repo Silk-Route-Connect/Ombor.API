@@ -9,6 +9,7 @@ namespace Ombor.Contracts.Responses.Supplier;
 /// <param name="Email">The supplier Email if any</param>
 /// <param name="CompanyName">The supplier company name if any</param>
 /// <param name="IsActive">Status of supplier</param>
+/// <param name="Balance">Balance of supplier</param>
 /// <param name="PhoneNumbers">Phone numbers of supplier</param>
 public sealed record SupplierDto(
     int Id,
@@ -17,5 +18,6 @@ public sealed record SupplierDto(
     string? Email,
     string? CompanyName,
     bool IsActive,
+    decimal Balance,
     List<string> PhoneNumbers
 );

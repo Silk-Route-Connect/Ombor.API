@@ -9,6 +9,7 @@ namespace Ombor.Contracts.Requests.Supplier;
 /// <param name="Email">An optional new Email</param>
 /// <param name="CompanyName">An optional new company name</param>
 /// <param name="IsActive">The new status of supplier</param>
+/// <param name="Balance">The new balance of supplier</param>
 /// <param name="PhoneNumbers">New phone numbers of supplier</param>
 public sealed record UpdateSupplierRequest(
     int Id,
@@ -17,4 +18,5 @@ public sealed record UpdateSupplierRequest(
     string? Email,
     string? CompanyName,
     bool IsActive,
+    decimal Balance,
     List<string> PhoneNumbers);

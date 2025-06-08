@@ -20,7 +20,7 @@ internal sealed class SupplierConfiguration : IEntityTypeConfiguration<Supplier>
 
         builder
             .Property(s => s.Address)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength);
+            .HasMaxLength(ConfigurationConstants.MaxStringLength);
 
         builder
             .Property(s => s.Email)
@@ -33,6 +33,10 @@ internal sealed class SupplierConfiguration : IEntityTypeConfiguration<Supplier>
         builder
             .Property(s => s.IsActive)
             .IsRequired();
+
+        builder
+            .Property(s => s.Balance)
+            .HasColumnType("decimal(18,2)");
 
         builder
             .Property(s => s.PhoneNumbers)
