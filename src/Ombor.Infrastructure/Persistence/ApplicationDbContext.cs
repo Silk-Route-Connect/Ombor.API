@@ -12,7 +12,7 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<ProductImage> ProductImages { get; set; }
     public virtual DbSet<Supplier> Suppliers { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
-    public virtual DbSet<Supplier> TemplateItems { get; set; }
+    public virtual DbSet<TemplateItem> TemplateItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

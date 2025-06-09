@@ -30,6 +30,16 @@ public interface IApplicationDbContext
     DbSet<Supplier> Suppliers { get; set; }
 
     /// <summary>
+    /// Gets or sets the Templates set.
+    /// </summary>
+    DbSet<Template> Templates { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Template Items set.
+    /// </summary>
+    DbSet<TemplateItem> TemplateItems { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>
