@@ -4,7 +4,7 @@ using Ombor.Contracts.Responses.Supplier;
 namespace Ombor.Application.Interfaces;
 
 /// <summary>
-/// Defunes CRUD operations for supplier management.
+/// Defines CRUD operations for supplier management.
 /// </summary>
 public interface ISupplierService
 {
