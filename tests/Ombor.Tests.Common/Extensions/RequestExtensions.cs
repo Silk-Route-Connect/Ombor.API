@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Contracts.Requests.Supplier;
 
 namespace Ombor.Tests.Common.Extensions;
 
@@ -14,6 +15,9 @@ public static class RequestExtensions
         !request.CategoryId.HasValue &&
         !request.MinPrice.HasValue &&
         !request.MaxPrice.HasValue;
+
+    public static bool IsEmpty(this GetSuppliersRequest request) =>
+        string.IsNullOrWhiteSpace(request.SearchTerm);
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
         !string.IsNullOrWhiteSpace(request.SearchTerm) &&
