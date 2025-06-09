@@ -24,7 +24,7 @@ public sealed class GetSuppliersTests : SupplierTestsBase
     public async Task GetAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
     {
         // Arrange
-        GetSuppliersRequest request = null;
+        GetSuppliersRequest request = null!;
 
         // Act & Assert 
         await Assert.ThrowsAsync<ArgumentNullException>(
