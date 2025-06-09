@@ -19,6 +19,10 @@ internal sealed class TemplateConfiguration : IEntityTypeConfiguration<Template>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder
+            .Navigation(t => t.Items)
+            .AutoInclude();
+
         #region Properties
 
         builder
