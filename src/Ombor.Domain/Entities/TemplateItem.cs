@@ -31,4 +31,14 @@ public class TemplateItem : AuditableEntity
     /// Gets or sets Product of the <see cref="TemplateItem"/>.
     /// </summary>
     public required virtual Product Product { get; set; }
+
+    /// <summary>
+    /// Gets or sets Template ID of the <see cref="TemplateItem"/>.
+    /// </summary>
+    public int TemplateId { get; set; }
+
+    /// <summary>
+    /// Gets or sets Template of the <see cref="TemplateItem"/>.
+    /// </summary>
+    public required virtual Template Template { get; set; }
 }
