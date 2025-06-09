@@ -1,7 +1,7 @@
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
@@ -36,14 +36,6 @@ internal sealed class SupplierConfiguration : IEntityTypeConfiguration<Supplier>
 
         builder
             .Property(s => s.Balance)
-            .HasColumnType("decimal(18,2)");
-
-        builder
-            .Property(s => s.PhoneNumbers)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
-            )
-            .HasColumnType("nvarchar(max)");
+            .HasCurrencyPrecision();
     }
 }
