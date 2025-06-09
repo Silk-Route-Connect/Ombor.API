@@ -1,9 +1,7 @@
-﻿using Ombor.Contracts.Enums;
-
-namespace Ombor.Contracts.Responses.Template;
+﻿namespace Ombor.Contracts.Responses.Template;
 
 public sealed record CreateTemplateResponse(
     int Id,
     string Name,
-    TemplateType Type,
+    string Type,
     TemplateItemDto[] Items);
