@@ -18,4 +18,7 @@ public sealed class DataSeedSettings
 
     [Range(0, double.MaxValue, ErrorMessage = "Invalid number of images per product.")]
     public int NumberOfMaxImagesPerProduct { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Invalid number of templates.")]
+    public int NumberOfTemplates { get; set; }
 }
