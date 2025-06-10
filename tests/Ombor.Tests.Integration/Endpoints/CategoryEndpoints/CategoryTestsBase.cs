@@ -4,8 +4,9 @@ using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Endpoints.CategoryEndpoints;
 
-public abstract class CategoryTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
-    : EndpointTestsBase(factory, outputHelper)
+public abstract class CategoryTestsBase(
+    TestingWebApplicationFactory factory,
+    ITestOutputHelper outputHelper) : EndpointTestsBase(factory, outputHelper)
 {
     protected readonly string _searchTerm = "Electornics";
 
