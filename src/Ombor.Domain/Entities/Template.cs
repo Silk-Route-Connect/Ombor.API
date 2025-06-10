@@ -21,10 +21,5 @@ public class Template : AuditableEntity
     /// <summary>
     /// Gets or sets items of the <see cref="Template"/>
     /// </summary>
-    public virtual ICollection<TemplateItem> Items { get; set; }
-
-    public Template()
-    {
-        Items = new HashSet<TemplateItem>();
-    }
+    public virtual List<TemplateItem> Items { get; set; } = [];
 }

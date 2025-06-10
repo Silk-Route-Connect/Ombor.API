@@ -27,6 +27,14 @@ internal sealed class TemplateItemConfiguration : IEntityTypeConfiguration<Templ
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder
+            .Navigation(ti => ti.Template)
+            .AutoInclude();
+
+        builder
+            .Navigation(ti => ti.Product)
+            .AutoInclude();
+
         #region Properties
 
         builder
