@@ -2,6 +2,7 @@
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Supplier;
+using Ombor.Contracts.Requests.Template;
 
 namespace Ombor.Tests.Common.Extensions;
 
@@ -18,6 +19,10 @@ public static class RequestExtensions
 
     public static bool IsEmpty(this GetSuppliersRequest request) =>
         string.IsNullOrWhiteSpace(request.SearchTerm);
+
+    public static bool IsEmpty(this GetTemplatesRequest request) =>
+        string.IsNullOrWhiteSpace(request.SearchTerm) &&
+        request.Type.HasValue;
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
         !string.IsNullOrWhiteSpace(request.SearchTerm) &&
