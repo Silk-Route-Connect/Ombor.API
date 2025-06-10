@@ -40,7 +40,9 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
         context.Templates.Add(entity);
         await context.SaveChangesAsync();
 
-        return entity.ToCreateResponse();
+        var createdTemplate = await GetOrThrowAsync(entity.Id);
+
+        return createdTemplate.ToCreateResponse();
     }
 
     public async Task<UpdateTemplateResponse> UpdateAsync(UpdateTemplateRequest request)

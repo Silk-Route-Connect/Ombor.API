@@ -50,7 +50,7 @@ internal static class TemplateMappings
     {
         var items = request.Items
             .Select(ToEntity)
-            .ToArray();
+            .ToList();
 
         template.Name = request.Name;
         template.Type = request.Type.ToDomain();
@@ -61,7 +61,7 @@ internal static class TemplateMappings
     {
         var items = request.Items
             .Select(ToEntity)
-            .ToArray();
+            .ToList();
 
         return new Template
         {
@@ -75,6 +75,7 @@ internal static class TemplateMappings
         => new()
         {
             ProductId = item.ProductId,
+            Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
             Product = null!, // Will be set by EF!
@@ -86,6 +87,7 @@ internal static class TemplateMappings
         {
             Id = item.Id,
             ProductId = item.ProductId,
+            Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
             Product = null!, // Will be set by EF!
@@ -110,6 +112,7 @@ internal static class TemplateMappings
             ProductName: item.Product.Name,
             TemplateId: item.TemplateId,
             TemplateName: item.Template.Name,
+            Quantity: item.Quantity,
             UnitPrice: item.UnitPrice,
             Discount: item.DiscountAmount);
     }

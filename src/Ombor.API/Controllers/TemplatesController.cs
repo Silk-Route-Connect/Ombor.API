@@ -35,8 +35,8 @@ public class TemplatesController(ITemplateService templateService) : ControllerB
 
         return CreatedAtAction(
             nameof(GetTemplateByIdAsync),
-            response,
-            response.Id);
+            new { id = response.Id },
+            response);
     }
 
     [HttpPut("{id}")]
