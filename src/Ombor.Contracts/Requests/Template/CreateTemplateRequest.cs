@@ -9,5 +9,6 @@ public sealed record CreateTemplateRequest(
 
 public sealed record CreateTemplateItem(
     int ProductId,
+    int Quantity,
     decimal UnitPrice,
     decimal Discount);

@@ -6,5 +6,6 @@ public sealed record TemplateItemDto(
     string ProductName,
     int TemplateId,
     string TemplateName,
+    int Quantity,
     decimal UnitPrice,
     decimal Discount);

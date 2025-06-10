@@ -11,5 +11,6 @@ public sealed record UpdateTemplateRequest(
 public sealed record UpdateTemplateItem(
     int Id,
     int ProductId,
+    int Quantity,
     decimal UnitPrice,
     decimal Discount);
