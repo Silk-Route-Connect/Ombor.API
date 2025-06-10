@@ -44,6 +44,16 @@ public class TemplatesController(ITemplateService templateService) : ControllerB
         [FromRoute] int id,
         [FromBody] UpdateTemplateRequest request)
     {
+        if (id != request.Id)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "ID mismatch",
+                Detail = $"Route ID ({id}) does not match body ID ({request.Id}).",
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
         var response = await templateService.UpdateAsync(request);
 
         return Ok(response);
