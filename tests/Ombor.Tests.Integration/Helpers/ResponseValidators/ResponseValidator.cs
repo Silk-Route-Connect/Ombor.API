@@ -13,4 +13,7 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
 
     private SupplierValidator? _supplier;
     public SupplierValidator Supplier => _supplier ??= new(context);
+
+    private TemplateValidator? _template;
+    public TemplateValidator Template => _template ??= new(context);
 }
