@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 
@@ -10,10 +11,13 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Category> Categories { get; set; }
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductImage> ProductImages { get; set; }
+    [NotMapped]
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Ignore<Supplier>();
+        modelBuilder.Entity<Supplier>().Metadata.SetIsTableExcludedFromMigrations(true);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         base.OnModelCreating(modelBuilder);
