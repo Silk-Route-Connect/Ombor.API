@@ -1,6 +1,7 @@
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -9,7 +10,7 @@ namespace Ombor.Tests.Integration.Endpoints.PartnerEndpoints;
 public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
         : PartnerTestsBase(factory, outputHelper)
 {
-    private const string _matchingSerachTerm = "Test partner";
+    private const string _matchingSerachTerm = "Test Partner";
 
     [Fact]
     public async Task GetAsync_ShouldReturnFilteredpartners_WhenSearchIsProvided()
@@ -39,7 +40,7 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Address = "Address",
                 Email = "partner's email",
                 CompanyName = "partner's company name",
-                IsActive = true,
+                Type = PartnerType.Customer,
                 Balance = 1000.00m,
                 PhoneNumbers = ["+998914778888"]
             },
@@ -50,7 +51,7 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Address = searchTerm,
                 Email = "partner's email",
                 CompanyName = "partner's company name",
-                IsActive = true,
+                Type = PartnerType.Supplier,
                 Balance = 1000.00m,
                 PhoneNumbers = ["+998914778888"]
             }

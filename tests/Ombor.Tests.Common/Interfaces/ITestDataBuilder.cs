@@ -4,6 +4,6 @@ public interface ITestDataBuilder
 {
     ICategoryBuilder CategoryBuilder { get; }
     IProductBuilder ProductBuilder { get; }
-    IPartnerBuilder partnerBuilder { get; }
+    IPartnerBuilder PartnerBuilder { get; }
     IProductImageBuilder ProductImageBuilder { get; }
 }

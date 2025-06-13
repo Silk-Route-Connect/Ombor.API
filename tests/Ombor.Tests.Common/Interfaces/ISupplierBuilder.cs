@@ -1,4 +1,5 @@
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 
 namespace Ombor.Tests.Common.Interfaces;
 
@@ -39,7 +40,7 @@ public interface IPartnerBuilder
     /// If <paramref name="address"/> is <c>null</c>, a random address will be assigned.
     /// </summary>
     /// <param name="address">The partner address, or <c>null</c> to generate a random one.</param>
-    /// <returns>The same builder instance.</returns> 
+    /// <returns>The same builder instance.</returns>
     IPartnerBuilder WithAddress(string? address = null);
 
     /// <summary>
@@ -59,19 +60,20 @@ public interface IPartnerBuilder
     IPartnerBuilder WithCompanyName(string? companyName = null);
 
     /// <summary>
-    /// Specifies the <see cref="Partner.IsActive"/>.
-    /// A random status will be assigned. To generate a random one.
-    /// </summary>
-    /// <returns>The same builder instance.</returns>
-    IPartnerBuilder WithIsActive(bool? isActive = false);
-
-    /// <summary>
     /// Specifies the <see cref="Partner.PhoneNumbers"/>.
     /// If <paramref name="phoneNumbers"/> is <c>null</c>, a random phone numbers will be assigned.
     /// </summary>
     /// <param name="phoneNumbers">The partner phone numbers, or <c>null</c> to generate a random one.</param>
     /// <returns>The same builder instance.</returns>
     IPartnerBuilder WithPhoneNumbers(List<string>? phoneNumbers = null);
+
+    /// <summary>
+    /// Specifies the <see cref="Partner.Type"/>.
+    /// If <paramref name="type"/> is <c>null</c>, a random type will be assigned.
+    /// </summary>
+    /// <param name="type">The type of the partner.</param>
+    /// <returns>The same builder instance</returns>
+    IPartnerBuilder WithType(PartnerType? type = null);
 
     /// <summary>
     /// Builds a <see cref="Partner"/> using only explicitly set values.
@@ -82,8 +84,8 @@ public interface IPartnerBuilder
     ///   <item><term><c>Address</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>Email</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>CompanyName</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
-    ///   <item><term><c>IsActive</c></term><description> <c>false</c> if not set.</description></item>
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.All"/> if not set.</description></item>
     /// </list>
     /// </summary>
     /// <returns>A new <see cref="Partner"/> populated with only explicitly set and required fields.</returns>
@@ -98,8 +100,8 @@ public interface IPartnerBuilder
     ///   <item><term><c>Address</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>Email</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>CompanyName</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
-    ///   <item><term><c>IsActive</c></term><description> <c>false</c> if not set.</description></item>
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.All"/> if not set.</description></item>
     /// </list>
     /// </summary>
     /// <returns>A fully populated <see cref="Partner"/>.</returns>

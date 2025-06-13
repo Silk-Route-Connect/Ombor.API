@@ -13,7 +13,7 @@ public class DeletePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task DeleteAsync_ShouldReturnNoContent_WhenpartnerExists()
     {
         // Arrange 
-        var partnerToDelete = _builder.partnerBuilder
+        var partnerToDelete = _builder.PartnerBuilder
             .WithName("partner To Delete")
             .Build();
 

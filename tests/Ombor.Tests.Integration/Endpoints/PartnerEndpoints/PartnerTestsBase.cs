@@ -1,4 +1,5 @@
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -23,7 +24,7 @@ public abstract class PartnerTestsBase(TestingWebApplicationFactory factory, ITe
             Address = "Tashkent",
             Email = "johnjohn123@gmail.com",
             CompanyName = "Company Name LLC",
-            IsActive = true,
+            Type = PartnerType.Supplier,
             PhoneNumbers = ["+998974561100"]
         };
 

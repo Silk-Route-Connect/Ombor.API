@@ -1,5 +1,6 @@
 using Bogus;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Common.Interfaces;
 
 namespace Ombor.Tests.Common.Builders;
@@ -11,8 +12,8 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
     private string? _address;
     private string? _email;
     private string? _companyName;
-    private bool? _isActive;
     private List<string>? _phoneNumbers;
+    private PartnerType? _type;
 
     public IPartnerBuilder WithId(int? id = null)
     {
@@ -49,9 +50,9 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         return this;
     }
 
-    public IPartnerBuilder WithIsActive(bool? isActive = false)
+    public IPartnerBuilder WithType(PartnerType? type = null)
     {
-        _isActive = isActive ?? _faker.Random.Bool();
+        _type = type ?? PartnerType.All;
 
         return this;
     }
@@ -63,33 +64,27 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         return this;
     }
 
-    public Partner Build()
+    public Partner Build() => new()
     {
-        return new()
-        {
-            Id = _id ?? default,
-            Name = _name ?? string.Empty,
-            Address = _address,
-            Email = _email,
-            CompanyName = _companyName,
-            IsActive = _isActive ?? false,
-            PhoneNumbers = _phoneNumbers ?? []
-        };
-    }
+        Id = _id ?? default,
+        Name = _name ?? string.Empty,
+        Address = _address,
+        Email = _email,
+        CompanyName = _companyName,
+        Type = _type ?? PartnerType.All,
+        PhoneNumbers = _phoneNumbers ?? []
+    };
 
-    public Partner BuildAndPopulate()
+    public Partner BuildAndPopulate() => new()
     {
-        return new()
-        {
-            Id = _id ?? _faker.Random.Number(),
-            Name = _name ?? _faker.Person.FullName,
-            Address = _address ?? _faker.Address.FullAddress(),
-            Email = _email ?? _faker.Person.Email,
-            CompanyName = _companyName ?? _faker.Company.CompanyName(),
-            IsActive = _isActive ?? _faker.Random.Bool(),
-            PhoneNumbers = _phoneNumbers ?? GeneratePhoneNumbers()
-        };
-    }
+        Id = _id ?? _faker.Random.Number(),
+        Name = _name ?? _faker.Person.FullName,
+        Address = _address ?? _faker.Address.FullAddress(),
+        Email = _email ?? _faker.Person.Email,
+        CompanyName = _companyName ?? _faker.Company.CompanyName(),
+        Type = _type ?? _faker.Random.Enum<PartnerType>(),
+        PhoneNumbers = _phoneNumbers ?? GeneratePhoneNumbers()
+    };
 
     private List<string> GeneratePhoneNumbers()
     {

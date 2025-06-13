@@ -1,4 +1,5 @@
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Domain.Entities;
 
@@ -15,8 +16,8 @@ public class PartnerMappingsTests
             Address: "New York",
             Email: "qwerty@gmail.com",
             CompanyName: "qwertgvc",
-            IsActive: true,
             Balance: 1000.00m,
+            Type: PartnerType.Customer,
             PhoneNumbers: ["+998945558888"]
         );
 
@@ -29,7 +30,7 @@ public class PartnerMappingsTests
         Assert.Equal(request.Address, entity.Address);
         Assert.Equal(request.Email, entity.Email);
         Assert.Equal(request.CompanyName, entity.CompanyName);
-        Assert.Equal(request.IsActive, entity.IsActive);
+        Assert.Equal(request.Type.ToString(), entity.Type.ToString());
         Assert.Equal(request.Balance, entity.Balance);
         Assert.Equal(request.PhoneNumbers, entity.PhoneNumbers);
     }
@@ -45,7 +46,7 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
-            IsActive = true,
+            Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
 
@@ -58,7 +59,7 @@ public class PartnerMappingsTests
         Assert.Equal(partner.Address, response.Address);
         Assert.Equal(partner.Email, response.Email);
         Assert.Equal(partner.CompanyName, response.CompanyName);
-        Assert.Equal(partner.IsActive, response.IsActive);
+        Assert.Equal(partner.Type.ToString(), response.Type);
         Assert.Equal(partner.Balance, response.Balance);
         Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
     }
@@ -74,7 +75,7 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
-            IsActive = true,
+            Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
 
@@ -87,7 +88,7 @@ public class PartnerMappingsTests
         Assert.Equal(partner.Address, response.Address);
         Assert.Equal(partner.Email, response.Email);
         Assert.Equal(partner.CompanyName, response.CompanyName);
-        Assert.Equal(partner.IsActive, response.IsActive);
+        Assert.Equal(partner.Type.ToString(), response.Type);
         Assert.Equal(partner.Balance, response.Balance);
         Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
     }
@@ -103,7 +104,7 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
-            IsActive = true,
+            Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
 
@@ -116,7 +117,7 @@ public class PartnerMappingsTests
         Assert.Equal(partner.Address, response.Address);
         Assert.Equal(partner.Email, response.Email);
         Assert.Equal(partner.CompanyName, response.CompanyName);
-        Assert.Equal(partner.IsActive, response.IsActive);
+        Assert.Equal(partner.Type.ToString(), response.Type);
         Assert.Equal(partner.Balance, response.Balance);
         Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
     }
@@ -132,7 +133,7 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
-            IsActive = true,
+            Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
 
@@ -142,8 +143,8 @@ public class PartnerMappingsTests
             Address: "Updated address",
             Email: "Updated email",
             CompanyName: "Updated company name",
-            IsActive: false,
             Balance: 0.00m,
+            Type: PartnerType.Supplier,
             PhoneNumbers: ["+998885552200"]);
 
         // Act
@@ -155,7 +156,7 @@ public class PartnerMappingsTests
         Assert.Equal(request.Address, partner.Address);
         Assert.Equal(request.Email, partner.Email);
         Assert.Equal(request.CompanyName, partner.CompanyName);
-        Assert.Equal(request.IsActive, partner.IsActive);
+        Assert.Equal(request.Type.ToString(), partner.Type.ToString());
         Assert.Equal(request.Balance, partner.Balance);
         Assert.Equal(request.PhoneNumbers, partner.PhoneNumbers);
     }

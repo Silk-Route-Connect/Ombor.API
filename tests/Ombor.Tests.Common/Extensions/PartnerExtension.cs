@@ -10,6 +10,6 @@ public static class PartnerExtension
         partner.Address == request.Address &&
         partner.Email == request.Email &&
         partner.CompanyName == request.CompanyName &&
-        partner.IsActive == request.IsActive &&
+        partner.Type.ToString() == request.Type.ToString() &&
         partner.PhoneNumbers == request.PhoneNumbers;
 }

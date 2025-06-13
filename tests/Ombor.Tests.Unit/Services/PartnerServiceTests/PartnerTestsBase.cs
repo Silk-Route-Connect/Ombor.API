@@ -23,7 +23,7 @@ public class PartnerTestsBase : ServiceTestsBase
         .ToArray();
 
     protected Partner CreatePartner(int? id = null)
-        => _builder.partnerBuilder
+        => _builder.PartnerBuilder
         .WithId(id ?? partnerId)
         .BuildAndPopulate();
 }

@@ -87,24 +87,25 @@ public sealed class GetPartnersTests : PartnerTestsBase
             return [];
         }
 
-        var matchingName = _builder.partnerBuilder
-        .WithId(113)
-        .WithName(request.SearchTerm)
-        .WithAddress("qwerew")
-        .WithEmail("aasdasd@gmail.com")
-        .WithCompanyName("1qwerty")
-        .WithIsActive(true)
-        .WithPhoneNumbers(["+998914445566"])
-        .BuildAndPopulate();
-        var matchingEmail = _builder.partnerBuilder
-        .WithId(123)
-        .WithName("partner Name")
-        .WithAddress("partner Address1")
-        .WithEmail(request.SearchTerm)
-        .WithCompanyName("qwerty2")
-        .WithIsActive(true)
-        .WithPhoneNumbers(["+998912142566"])
-        .BuildAndPopulate();
+        var matchingName = _builder.PartnerBuilder
+            .WithId(113)
+            .WithName(request.SearchTerm)
+            .WithAddress("qwerew")
+            .WithEmail("aasdasd@gmail.com")
+            .WithCompanyName("1qwerty")
+            .WithType(Domain.Enums.PartnerType.Customer)
+            .WithPhoneNumbers(["+998914445566"])
+            .BuildAndPopulate();
+
+        var matchingEmail = _builder.PartnerBuilder
+            .WithId(123)
+            .WithName("partner Name")
+            .WithAddress("partner Address1")
+            .WithEmail(request.SearchTerm)
+            .WithCompanyName("qwerty2")
+            .WithType(Domain.Enums.PartnerType.Supplier)
+            .WithPhoneNumbers(["+998912142566"])
+            .BuildAndPopulate();
 
         return [matchingName, matchingEmail];
     }

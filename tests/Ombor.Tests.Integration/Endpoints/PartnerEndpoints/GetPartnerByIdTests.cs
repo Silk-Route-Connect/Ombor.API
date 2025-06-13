@@ -14,7 +14,7 @@ public class GetPartnerByIdTests(TestingWebApplicationFactory factory, ITestOutp
     public async Task GetByIdAsync_ShouldReturnOk_WhenpartnerExists()
     {
         // Arrange 
-        var partner = _builder.partnerBuilder
+        var partner = _builder.PartnerBuilder
             .WithName("partner To Be Fetched")
             .Build();
 

@@ -33,10 +33,10 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             .Select(x => new PartnerDto(
                 x.Id,
                 x.Name,
+                x.Type.ToString(),
                 x.Address,
                 x.Email,
                 x.CompanyName,
-                x.IsActive,
                 x.Balance,
                 x.PhoneNumbers))
             .ToArrayAsync();

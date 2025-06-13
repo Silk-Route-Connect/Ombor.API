@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Entities;
@@ -16,14 +17,14 @@ public class UpdatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task PutAsync_ShouldReturnOk_WhenRequestIsValid()
     {
         // Arrange 
-        var partner = _builder.partnerBuilder
-        .WithName("partner to update")
-        .WithAddress("partner's address to update")
-        .WithEmail("partner's email to update")
-        .WithCompanyName("partner's company name")
-        .WithIsActive(true)
-        .WithPhoneNumbers(["+998914564561"])
-        .Build();
+        var partner = _builder.PartnerBuilder
+            .WithName("partner to update")
+            .WithAddress("partner's address to update")
+            .WithEmail("partner's email to update")
+            .WithCompanyName("partner's company name")
+            .WithType(Domain.Enums.PartnerType.Customer)
+            .WithPhoneNumbers(["+998914564561"])
+            .Build();
 
         var partnerId = await CreatePartnerAsync(partner);
         var request = CreateValidRequest(partnerId);
@@ -66,26 +67,22 @@ public class UpdatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     }
 
     private static UpdatePartnerRequest CreateValidRequest(int id) =>
-        new(
-            id,
-            "Updated partner name",
-            "Updated address",
-            "Updated email",
-            "Updated company name",
-            true,
-            1500.00m,
-            ["+998912322323"]
-            );
+        new(Id: id,
+            Name: "Updated partner name",
+            Address: "Updated address",
+            Email: "Updated email",
+            CompanyName: "Updated company name",
+            Balance: 1500.00m,
+            Type: PartnerType.Supplier,
+            PhoneNumbers: ["+998912322323"]);
 
     private static UpdatePartnerRequest CreateInvalidRequest(int id) =>
-        new(
-            id,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            true,
-            0m,
-            ["+asdsgasd"]
-            );
+        new(Id: id,
+            Name: string.Empty,
+            Address: string.Empty,
+            Email: string.Empty,
+            CompanyName: string.Empty,
+            Balance: 0m,
+            Type: PartnerType.Supplier,
+            PhoneNumbers: ["+asdsgasd"]);
 }

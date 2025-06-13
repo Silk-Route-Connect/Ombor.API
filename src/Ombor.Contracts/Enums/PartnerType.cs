@@ -1,4 +1,4 @@
-﻿namespace Ombor.Domain.Enums;
+﻿namespace Ombor.Contracts.Enums;
 
 /// <summary>
 /// Enumeration of supported partner types

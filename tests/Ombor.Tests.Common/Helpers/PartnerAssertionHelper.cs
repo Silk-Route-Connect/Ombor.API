@@ -25,7 +25,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -44,7 +44,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -63,7 +63,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type.ToString());
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -83,7 +83,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -103,7 +103,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -123,7 +123,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type.ToString());
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }
@@ -143,7 +143,7 @@ public static class PartnerAssertionHelper
         Assert.Equal(expected.Address, actual.Address);
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.CompanyName, actual.CompanyName);
-        Assert.Equal(expected.IsActive, actual.IsActive);
+        Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Balance, actual.Balance);
         Assert.Equal(expected.PhoneNumbers, actual.PhoneNumbers);
     }

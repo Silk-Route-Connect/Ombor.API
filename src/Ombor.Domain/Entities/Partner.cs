@@ -20,9 +20,6 @@ public class Partner : EntityBase
     /// <summary>Gets or sets the name of the company associated with the partner.</summary>
     public string? CompanyName { get; set; }
 
-    /// <summary>Gets or sets the partner's status.</summary>
-    public bool IsActive { get; set; }
-
     /// <summary>Gets or sets the partner's balance.</summary>
     public decimal Balance { get; set; }
 

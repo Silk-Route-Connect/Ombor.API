@@ -64,5 +64,4 @@ public sealed class DeletePartnerTests : PartnerTestsBase
 
         VerifyNoOtherCalls();
     }
-
 }
