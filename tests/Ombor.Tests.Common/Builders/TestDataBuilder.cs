@@ -13,5 +13,5 @@ public sealed class TestDataBuilder : ITestDataBuilder
 
     public IProductImageBuilder ProductImageBuilder => new ProductImageBuilder(_faker);
 
-    public ISupplierBuilder SupplierBuilder => new SupplierBuilder(_faker);
+    public IPartnerBuilder partnerBuilder => new PartnerBuilder(_faker);
 }

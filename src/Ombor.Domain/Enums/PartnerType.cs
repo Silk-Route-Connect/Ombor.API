@@ -9,7 +9,7 @@ public enum PartnerType
     Customer = 1,
 
     /// <summary>Partner is only for Supplies.</summary>
-    Supplier = 2,
+    partner = 2,
 
     /// <summary>Partner is for both Sales and Supplies.</summary>
     All = 100

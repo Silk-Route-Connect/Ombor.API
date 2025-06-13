@@ -3,29 +3,29 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Ombor.API.Controllers;
 using Ombor.Application.Interfaces;
-using Ombor.Contracts.Requests.Supplier;
-using Ombor.Contracts.Responses.Supplier;
+using Ombor.Contracts.Requests.Partner;
+using Ombor.Contracts.Responses.Partner;
 using Ombor.Tests.Unit.Extensions;
 
 namespace Ombor.Tests.Unit.Controllers;
 
-public sealed class SuppliersControllerTests : ControllerTestsBase
+public sealed class partnersControllerTests : ControllerTestsBase
 {
-    private readonly Mock<ISupplierService> _mockService;
-    private readonly SuppliersController _controller;
+    private readonly Mock<IPartnerService> _mockService;
+    private readonly PartnersController _controller;
 
-    public SuppliersControllerTests()
+    public partnersControllerTests()
     {
-        _mockService = new Mock<ISupplierService>(MockBehavior.Strict);
-        _controller = new SuppliersController(_mockService.Object);
+        _mockService = new Mock<IPartnerService>(MockBehavior.Strict);
+        _controller = new PartnersController(_mockService.Object);
     }
 
     [Fact]
-    public async Task GetAsync_ShouldReturnOkResult_WhenSuppliersExist()
+    public async Task GetAsync_ShouldReturnOkResult_WhenpartnersExist()
     {
         // Arrange
-        var request = _fixture.Create<GetSuppliersRequest>();
-        var expected = _fixture.CreateArray<SupplierDto>();
+        var request = _fixture.Create<GetpartnersRequest>();
+        var expected = _fixture.CreateArray<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -42,11 +42,11 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     }
 
     [Fact]
-    public async Task GetAsync_ShouldReturnOkResult_WhithEmptyArray_WhenNoSuppliers()
+    public async Task GetAsync_ShouldReturnOkResult_WhithEmptyArray_WhenNopartners()
     {
         // Arrange
-        var request = _fixture.Create<GetSuppliersRequest>();
-        var expected = Array.Empty<SupplierDto>();
+        var request = _fixture.Create<GetpartnersRequest>();
+        var expected = Array.Empty<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -63,10 +63,10 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     }
 
     [Fact]
-    public async Task GetAsync_ShouldThrowException_WhenSupplierThrows()
+    public async Task GetAsync_ShouldThrowException_WhenpartnerThrows()
     {
         // Arrange 
-        var request = _fixture.Create<GetSuppliersRequest>();
+        var request = _fixture.Create<GetpartnersRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.GetAsync(request))
@@ -79,17 +79,17 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     }
 
     [Fact]
-    public async Task GetSupplierByIdAsync_ShouldReturnOkResult_WhenSupplierExist()
+    public async Task GetpartnerByIdAsync_ShouldReturnOkResult_WhenpartnerExist()
     {
         // Arrange
-        var request = _fixture.Create<GetSupplierByIdRequest>();
-        var expected = _fixture.Create<SupplierDto>();
+        var request = _fixture.Create<GetPartnerByIdRequest>();
+        var expected = _fixture.Create<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ReturnsAsync(expected);
 
         // Act
-        var response = await _controller.GetSupplierByIdAsync(request);
+        var response = await _controller.GetpartnerByIdAsync(request);
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
@@ -100,27 +100,27 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     }
 
     [Fact]
-    public async Task GetSupplierByIdAsync_ShouldThrowException_WhenServiceThrows()
+    public async Task GetpartnerByIdAsync_ShouldThrowException_WhenServiceThrows()
     {
         // Arrange
-        var request = _fixture.Create<GetSupplierByIdRequest>();
+        var request = _fixture.Create<GetPartnerByIdRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.GetByIdAsync(request))
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _controller.GetSupplierByIdAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.GetpartnerByIdAsync(request));
 
         _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
 
     [Fact]
-    public async Task PostAsync_ShouldReturnCreatedAtAction_WhenServiceReturnsCreatedSupplier()
+    public async Task PostAsync_ShouldReturnCreatedAtAction_WhenServiceReturnsCreatedpartner()
     {
         // Arrange
-        var request = _fixture.Create<CreateSupplierRequest>();
-        var expected = _fixture.Create<CreateSupplierResponse>();
+        var request = _fixture.Create<CreatePartnerRequest>();
+        var expected = _fixture.Create<CreatePartnerResponse>();
 
         _mockService.Setup(mock => mock.CreateAsync(request))
             .ReturnsAsync(expected);
@@ -142,7 +142,7 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     public async Task PostAsync_ShouldThrowException_WhenServiceThrows()
     {
         // Arrange
-        var request = _fixture.Create<CreateSupplierRequest>();
+        var request = _fixture.Create<CreatePartnerRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.CreateAsync(request))
@@ -159,7 +159,7 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     {
         // Arrange
         var id = _fixture.Create<int>() + 1;
-        var request = _fixture.Build<UpdateSupplierRequest>()
+        var request = _fixture.Build<UpdatePartnerRequest>()
             .With(r => r.Id, id - 1)
             .Create();
 
@@ -176,11 +176,11 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     }
 
     [Fact]
-    public async Task PutAsync_ShouldReturnOkResult_WhenServiceReturnsUpdatedSupplier()
+    public async Task PutAsync_ShouldReturnOkResult_WhenServiceReturnsUpdatedpartner()
     {
         // Arrange 
-        var expected = _fixture.Create<UpdateSupplierResponse>();
-        var request = _fixture.Build<UpdateSupplierRequest>()
+        var expected = _fixture.Create<UpdatePartnerResponse>();
+        var request = _fixture.Build<UpdatePartnerRequest>()
             .With(r => r.Id, expected.Id)
             .Create();
 
@@ -202,7 +202,7 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     public async Task PutAsync_ShouldThrowException_WhenServiceThrows()
     {
         // Arrange
-        var request = _fixture.Create<UpdateSupplierRequest>();
+        var request = _fixture.Create<UpdatePartnerRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.UpdateAsync(request))
@@ -218,7 +218,7 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     public async Task DeleteAsync_ShouldReturnNoContent_WhenRequestIsValid()
     {
         // Arrange
-        var request = _fixture.Create<DeleteSupplierRequest>();
+        var request = _fixture.Create<DeletePartnerRequest>();
 
         _mockService.Setup(mock => mock.DeleteAsync(request))
             .Returns(Task.CompletedTask);
@@ -236,7 +236,7 @@ public sealed class SuppliersControllerTests : ControllerTestsBase
     public async Task DeleteAsync_ShouldThrowException_WhenServiceThrows()
     {
         // Arrange 
-        var request = _fixture.Create<DeleteSupplierRequest>();
+        var request = _fixture.Create<DeletePartnerRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.DeleteAsync(request))
