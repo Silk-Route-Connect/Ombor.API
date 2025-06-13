@@ -26,6 +26,7 @@ internal sealed class TestingDatabaseSeeder(
         await CreateCategoriesAsync(context);
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
+        await CreatePartners(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -114,6 +115,29 @@ internal sealed class TestingDatabaseSeeder(
         }
 
         context.ProductImages.AddRange(images);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreatePartners(IApplicationDbContext context)
+    {
+        if (context.Partners.Any())
+        {
+            return;
+        }
+
+        var partners = Enumerable.Range(1, seedSettings.NumberOfPartners)
+            .Select(i => new Partner
+            {
+                Name = $"Test Partner {i}",
+                Address = "Test Partner address",
+                CompanyName = "Random Company",
+                Balance = 5_000,
+                Type = PartnerType.All,
+                Email = $"partner{i}@test.com",
+                PhoneNumbers = ["+99890-100-00-00"]
+            });
+
+        context.Partners.AddRange(partners);
         await context.SaveChangesAsync();
     }
 
