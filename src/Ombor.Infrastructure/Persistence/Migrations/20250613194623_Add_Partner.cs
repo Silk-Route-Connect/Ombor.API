@@ -20,7 +20,6 @@ public partial class Add_Partner : Migration
                 Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                 Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                 CompanyName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                IsActive = table.Column<bool>(type: "bit", nullable: false),
                 Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                 Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                 PhoneNumbers = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -29,6 +28,12 @@ public partial class Add_Partner : Migration
             {
                 table.PrimaryKey("PK_Partner", x => x.Id);
             });
+
+        migrationBuilder.CreateIndex(
+            name: "IX_Partner_Name",
+            table: "Partner",
+            column: "Name",
+            unique: true);
     }
 
     /// <inheritdoc />
