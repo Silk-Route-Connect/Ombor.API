@@ -34,7 +34,7 @@ public sealed class UpdateSupplierTests : SupplierTestsBase
         var request = SupplierRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId);
 
         // Act & Assert
-        await Assert.ThrowsAsync<EntityNotFoundException<Supplier>>(
+        await Assert.ThrowsAsync<EntityNotFoundException<Partner>>(
             () => _service.UpdateAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);

@@ -11,11 +11,11 @@ namespace Ombor.Tests.Common.Helpers;
 public static class SupplierAssertionHelper
 {
     /// <summary>
-    /// Asserts that a <see cref="Supplier"/> entity and <see cref="SupplierDto"/> have equivalent values for all mapped properties.
+    /// Asserts that a <see cref="Partner"/> entity and <see cref="SupplierDto"/> have equivalent values for all mapped properties.
     /// </summary>
-    /// <param name="expected">The source <see cref="Supplier"/> entity.</param>
+    /// <param name="expected">The source <see cref="Partner"/> entity.</param>
     /// <param name="actual">The <see cref="SupplierDto"/> to verify.</param>
-    public static void AssertEquivalent(Supplier? expected, SupplierDto? actual)
+    public static void AssertEquivalent(Partner? expected, SupplierDto? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);
@@ -50,11 +50,11 @@ public static class SupplierAssertionHelper
     }
 
     /// <summary>
-    /// Asserts that a <see cref="CreateSupplierRequest"/> has been correctly mapped to a <see cref="Supplier"/> entity.
+    /// Asserts that a <see cref="CreateSupplierRequest"/> has been correctly mapped to a <see cref="Partner"/> entity.
     /// </summary>
     /// <param name="expected">The original create request.</param>
     /// <param name="actual">The entity created by the service.</param>
-    public static void AssertEquivalent(CreateSupplierRequest? expected, Supplier? actual)
+    public static void AssertEquivalent(CreateSupplierRequest? expected, Partner? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);
@@ -69,11 +69,11 @@ public static class SupplierAssertionHelper
     }
 
     /// <summary>
-    /// Asserts that a <see cref="Supplier"/> entity mathces the values returned in a <see cref="CreateSupplierResponse"/>, including the assigned Id.
+    /// Asserts that a <see cref="Partner"/> entity mathces the values returned in a <see cref="CreateSupplierResponse"/>, including the assigned Id.
     /// </summary>
-    /// <param name="expected">The saved <see cref="Supplier"/> entity.</param>
+    /// <param name="expected">The saved <see cref="Partner"/> entity.</param>
     /// <param name="actual">The response DTO from CreateAsync.</param>
-    public static void AssertEquivalent(Supplier? expected, CreateSupplierResponse? actual)
+    public static void AssertEquivalent(Partner? expected, CreateSupplierResponse? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);
@@ -113,7 +113,7 @@ public static class SupplierAssertionHelper
     /// </summary>
     /// <param name="expected">The update request.</param>
     /// <param name="actual">The entity after ApplyUpdate.</param>
-    public static void AssertEquivalent(UpdateSupplierRequest? expected, Supplier? actual)
+    public static void AssertEquivalent(UpdateSupplierRequest? expected, Partner? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);
@@ -129,11 +129,11 @@ public static class SupplierAssertionHelper
     }
 
     /// <summary>
-    /// Asserts that a <see cref="Supplier"/> entity matches the values returned in an <see cref="UpdateSupplierResponse"/> including the assigned Id.
+    /// Asserts that a <see cref="Partner"/> entity matches the values returned in an <see cref="UpdateSupplierResponse"/> including the assigned Id.
     /// </summary>
-    /// <param name="expected">The updated <see cref="Supplier"/> entity.</param>
+    /// <param name="expected">The updated <see cref="Partner"/> entity.</param>
     /// <param name="actual">The response DTO from UpdateAsync.</param>
-    public static void AssertEquivalent(Supplier? expected, UpdateSupplierResponse? actual)
+    public static void AssertEquivalent(Partner? expected, UpdateSupplierResponse? actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);

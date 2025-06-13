@@ -57,7 +57,7 @@ public sealed class GetSuppliersTests : SupplierTestsBase
     {
         // Arrange 
         var matchingSuppliers = CreateMatchingSuppliers(request);
-        Supplier[] allSuppliers = [.. _defaultSuppliers, .. matchingSuppliers];
+        Partner[] allSuppliers = [.. _defaultSuppliers, .. matchingSuppliers];
         var expectedSuppliers = request.IsEmpty()
             ? allSuppliers : matchingSuppliers;
 
@@ -80,7 +80,7 @@ public sealed class GetSuppliersTests : SupplierTestsBase
         VerifyNoOtherCalls();
     }
 
-    private Supplier[] CreateMatchingSuppliers(GetSuppliersRequest request)
+    private Partner[] CreateMatchingSuppliers(GetSuppliersRequest request)
     {
         if (request.IsEmpty())
         {

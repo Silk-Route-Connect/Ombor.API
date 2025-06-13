@@ -32,10 +32,10 @@ public sealed class CreateSupplierTests : SupplierTestsBase
     {
         // Arrange
         var request = SupplierRequestFactory.GenerateValidCreateRequest();
-        Supplier addedSupplier = null!;
+        Partner addedSupplier = null!;
 
-        _mockContext.Setup(mock => mock.Suppliers.Add(It.Is<Supplier>(supplier => supplier.IsEquivalent(request))))
-            .Callback<Supplier>(captured => addedSupplier = captured);
+        _mockContext.Setup(mock => mock.Suppliers.Add(It.Is<Partner>(supplier => supplier.IsEquivalent(request))))
+            .Callback<Partner>(captured => addedSupplier = captured);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1)

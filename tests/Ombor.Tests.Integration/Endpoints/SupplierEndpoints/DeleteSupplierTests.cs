@@ -37,6 +37,6 @@ public class DeleteSupplierTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, System.Net.HttpStatusCode.NotFound);
 
         // Assert 
-        response.ShouldBeNotFound<Supplier>(NonExistentEntityId);
+        response.ShouldBeNotFound<Partner>(NonExistentEntityId);
     }
 }

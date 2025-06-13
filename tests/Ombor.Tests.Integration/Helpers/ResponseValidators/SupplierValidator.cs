@@ -59,7 +59,7 @@ public sealed class SupplierValidator(IApplicationDbContext context)
         Assert.Null(supplier);
     }
 
-    private async Task<Supplier[]> GetSuppliersAsync(GetSuppliersRequest request)
+    private async Task<Partner[]> GetSuppliersAsync(GetSuppliersRequest request)
     {
         var query = context.Suppliers.AsNoTracking();
 

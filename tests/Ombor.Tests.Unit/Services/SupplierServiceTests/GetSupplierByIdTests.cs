@@ -34,7 +34,7 @@ public sealed class GetSupplierByIdTests : SupplierTestsBase
         var request = new GetSupplierByIdRequest(NonExistentEntityId);
 
         // Act & Assert
-        await Assert.ThrowsAsync<EntityNotFoundException<Supplier>>(
+        await Assert.ThrowsAsync<EntityNotFoundException<Partner>>(
             () => _service.GetByIdAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);

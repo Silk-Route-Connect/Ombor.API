@@ -38,6 +38,6 @@ public class GetSupplierByIdTests(TestingWebApplicationFactory factory, ITestOut
         var response = await _client.GetAsync<ProblemDetails>(NotFoundUrl, System.Net.HttpStatusCode.NotFound);
 
         // Assert
-        response.ShouldBeNotFound<Supplier>(NonExistentEntityId);
+        response.ShouldBeNotFound<Partner>(NonExistentEntityId);
     }
 }

@@ -27,7 +27,7 @@ public interface IApplicationDbContext
     /// <summary>
     /// Gets or sets the Suppliers set.
     /// </summary>
-    DbSet<Supplier> Suppliers { get; set; }
+    DbSet<Partner> Suppliers { get; set; }
 
     /// <summary>
     /// Saves all changes made in this context to the database.

@@ -38,7 +38,7 @@ public class SupplierMappingsTests
     public void ToCreateResponse_ShouldMapAllFields()
     {
         // Arrange
-        var supplier = new Supplier
+        var supplier = new Partner
         {
             Id = 11,
             Name = "Test Supplier",
@@ -67,7 +67,7 @@ public class SupplierMappingsTests
     public void ToUpdateResponse_ShouldMapAllFields()
     {
         // Arrange
-        var supplier = new Supplier
+        var supplier = new Partner
         {
             Id = 12,
             Name = "Test Supplier",
@@ -96,7 +96,7 @@ public class SupplierMappingsTests
     public void ToDto_ShouldMapAllFields()
     {
         // Arrange
-        var supplier = new Supplier
+        var supplier = new Partner
         {
             Id = 13,
             Name = "Test Supplier",
@@ -125,7 +125,7 @@ public class SupplierMappingsTests
     public void ApplyUpdate_ShouldOverwriteAllFields()
     {
         // Arrange
-        var supplier = new Supplier
+        var supplier = new Partner
         {
             Id = 14,
             Name = "Test Supplier",

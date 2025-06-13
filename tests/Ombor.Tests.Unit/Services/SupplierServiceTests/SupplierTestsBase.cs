@@ -6,7 +6,7 @@ namespace Ombor.Tests.Unit.Services.SupplierServiceTests;
 public class SupplierTestsBase : ServiceTestsBase
 {
     protected readonly int SupplierId = 1_000;
-    protected readonly Supplier[] _defaultSuppliers;
+    protected readonly Partner[] _defaultSuppliers;
     private protected readonly SupplierService _service;
 
     protected SupplierTestsBase()
@@ -17,12 +17,12 @@ public class SupplierTestsBase : ServiceTestsBase
         _service = new SupplierService(_mockContext.Object, _mockValidator.Object);
     }
 
-    protected Supplier[] GenerateRandomSuppliers(int count = 5)
+    protected Partner[] GenerateRandomSuppliers(int count = 5)
     => Enumerable.Range(1, count)
     .Select(i => CreateSupplier(i))
     .ToArray();
 
-    protected Supplier CreateSupplier(int? id = null)
+    protected Partner CreateSupplier(int? id = null)
     => _builder.SupplierBuilder
     .WithId(id ?? SupplierId)
     .BuildAndPopulate();

@@ -84,7 +84,7 @@ internal sealed class SupplierService(IApplicationDbContext context, IRequestVal
         await context.SaveChangesAsync();
     }
 
-    private async Task<Supplier> GetOrThrowAsync(int id) =>
+    private async Task<Partner> GetOrThrowAsync(int id) =>
         await context.Suppliers.FirstOrDefaultAsync(x => x.Id == id)
-        ?? throw new EntityNotFoundException<Supplier>(id);
+        ?? throw new EntityNotFoundException<Partner>(id);
 }

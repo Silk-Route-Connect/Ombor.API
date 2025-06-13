@@ -36,6 +36,6 @@ public class CreateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
 
         ///Assert
         Assert.NotNull(response);
-        Assert.Contains(nameof(Supplier.Name), response.Errors.Keys);
+        Assert.Contains(nameof(Partner.Name), response.Errors.Keys);
     }
 }

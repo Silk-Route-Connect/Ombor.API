@@ -17,7 +17,7 @@ public abstract class SupplierTestsBase(TestingWebApplicationFactory factory, IT
 
     protected async Task<int> CreateSupplierAsync()
     {
-        var supplier = new Supplier
+        var supplier = new Partner
         {
             Name = "John",
             Address = "Tashkent",
@@ -33,7 +33,7 @@ public abstract class SupplierTestsBase(TestingWebApplicationFactory factory, IT
         return supplier.Id;
     }
 
-    protected async Task<int> CreateSupplierAsync(Supplier supplier)
+    protected async Task<int> CreateSupplierAsync(Partner supplier)
     {
         _context.Suppliers.Add(supplier);
         await _context.SaveChangesAsync();

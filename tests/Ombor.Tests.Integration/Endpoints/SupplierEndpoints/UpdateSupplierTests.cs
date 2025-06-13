@@ -47,7 +47,7 @@ public class UpdateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
 
         // Assert 
-        response.ShouldBeNotFound<Supplier>(NonExistentEntityId);
+        response.ShouldBeNotFound<Partner>(NonExistentEntityId);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class UpdateSupplierTests(TestingWebApplicationFactory factory, ITestOutp
 
         // Assert
         Assert.NotNull(response);
-        Assert.Contains(nameof(Supplier.Name), response.Errors.Keys);
+        Assert.Contains(nameof(Partner.Name), response.Errors.Keys);
     }
 
     private static UpdateSupplierRequest CreateValidRequest(int id) =>

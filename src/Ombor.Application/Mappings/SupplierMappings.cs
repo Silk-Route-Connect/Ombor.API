@@ -6,7 +6,7 @@ namespace Ombor.Application.Mappings;
 
 internal static class SupplierMappings
 {
-    public static SupplierDto ToDto(this Supplier supplier) =>
+    public static SupplierDto ToDto(this Partner supplier) =>
         new(
             supplier.Id,
             supplier.Name,
@@ -17,7 +17,7 @@ internal static class SupplierMappings
             supplier.Balance,
             supplier.PhoneNumbers);
 
-    public static Supplier ToEntity(this CreateSupplierRequest request) =>
+    public static Partner ToEntity(this CreateSupplierRequest request) =>
         new()
         {
             Name = request.Name,
@@ -29,7 +29,7 @@ internal static class SupplierMappings
             PhoneNumbers = request.PhoneNumbers
         };
 
-    public static CreateSupplierResponse ToCreateResponse(this Supplier supplier) =>
+    public static CreateSupplierResponse ToCreateResponse(this Partner supplier) =>
         new(
             supplier.Id,
             supplier.Name,
@@ -40,7 +40,7 @@ internal static class SupplierMappings
             supplier.Balance,
             supplier.PhoneNumbers);
 
-    public static UpdateSupplierResponse ToUpdateResponse(this Supplier supplier) =>
+    public static UpdateSupplierResponse ToUpdateResponse(this Partner supplier) =>
         new(
             supplier.Id,
             supplier.Name,
@@ -51,7 +51,7 @@ internal static class SupplierMappings
             supplier.Balance,
             supplier.PhoneNumbers);
 
-    public static void ApplyUpdate(this Supplier supplier, UpdateSupplierRequest request)
+    public static void ApplyUpdate(this Partner supplier, UpdateSupplierRequest request)
     {
         supplier.Name = request.Name;
         supplier.Address = request.Address;

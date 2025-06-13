@@ -21,7 +21,7 @@ public sealed class DeleteSupplierTests : SupplierTestsBase
         await Assert.ThrowsAsync<ValidationException>(() => _service.DeleteAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(mock => mock.Suppliers.Remove(It.IsAny<Supplier>()), Times.Never);
+        _mockContext.Verify(mock => mock.Suppliers.Remove(It.IsAny<Partner>()), Times.Never);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 
         VerifyNoOtherCalls();
@@ -34,7 +34,7 @@ public sealed class DeleteSupplierTests : SupplierTestsBase
         var request = new DeleteSupplierRequest(NonExistentEntityId);
 
         // Act & Assert
-        await Assert.ThrowsAsync<EntityNotFoundException<Supplier>>(
+        await Assert.ThrowsAsync<EntityNotFoundException<Partner>>(
             () => _service.DeleteAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);

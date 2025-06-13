@@ -3,7 +3,7 @@ using Ombor.Domain.Entities;
 namespace Ombor.Tests.Common.Interfaces;
 
 /// <summary>
-/// Fluent builder for creating <see cref="Supplier"/> instances,
+/// Fluent builder for creating <see cref="Partner"/> instances,
 /// allowing overrides for any field and two build modes:
 /// <list type="bullet">
 ///   <item>
@@ -19,7 +19,7 @@ namespace Ombor.Tests.Common.Interfaces;
 public interface ISupplierBuilder
 {
     /// <summary>
-    /// Specifies the <see cref="Supplier.Id"/>.
+    /// Specifies the <see cref="Partner.Id"/>.
     /// If <paramref name="id"/> is <c>null</c>, a random integer will be assigned.
     /// </summary>
     /// <param name="id">The supplier ID, or <c>null</c> to generate a random one.</param>
@@ -27,7 +27,7 @@ public interface ISupplierBuilder
     ISupplierBuilder WithId(int? id = null);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.Name"/>.
+    /// Specifies the <see cref="Partner.Name"/>.
     /// If <paramref name="name"/> is <c>null</c>, a random name will be assigned.
     /// </summary>
     /// <param name="name">The supplier name, or <c>null</c> to generate a random one.</param>
@@ -35,7 +35,7 @@ public interface ISupplierBuilder
     ISupplierBuilder WithName(string? name = null);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.Address"/>.
+    /// Specifies the <see cref="Partner.Address"/>.
     /// If <paramref name="address"/> is <c>null</c>, a random address will be assigned.
     /// </summary>
     /// <param name="address">The supplier address, or <c>null</c> to generate a random one.</param>
@@ -43,7 +43,7 @@ public interface ISupplierBuilder
     ISupplierBuilder WithAddress(string? address = null);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.Email"/>.
+    /// Specifies the <see cref="Partner.Email"/>.
     /// If <paramref name="email"/> is <c>null</c>, a random email will be assigned.
     /// </summary>
     /// <param name="email">The supplier email, or <c>null</c> to generate a random one.</param>
@@ -51,7 +51,7 @@ public interface ISupplierBuilder
     ISupplierBuilder WithEmail(string? email = null);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.CompanyName"/>.
+    /// Specifies the <see cref="Partner.CompanyName"/>.
     /// If <paramref name="companyName"/> is <c>null</c>, a random company name will be assigned.
     /// </summary>
     /// <param name="companyName">The supplier company name, or <c>null</c> to generate a random one.</param>
@@ -59,14 +59,14 @@ public interface ISupplierBuilder
     ISupplierBuilder WithCompanyName(string? companyName = null);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.IsActive"/>.
+    /// Specifies the <see cref="Partner.IsActive"/>.
     /// A random status will be assigned. To generate a random one.
     /// </summary>
     /// <returns>The same builder instance.</returns>
     ISupplierBuilder WithIsActive(bool? isActive = false);
 
     /// <summary>
-    /// Specifies the <see cref="Supplier.PhoneNumbers"/>.
+    /// Specifies the <see cref="Partner.PhoneNumbers"/>.
     /// If <paramref name="phoneNumbers"/> is <c>null</c>, a random phone numbers will be assigned.
     /// </summary>
     /// <param name="phoneNumbers">The supplier phone numbers, or <c>null</c> to generate a random one.</param>
@@ -74,7 +74,7 @@ public interface ISupplierBuilder
     ISupplierBuilder WithPhoneNumbers(List<string>? phoneNumbers = null);
 
     /// <summary>
-    /// Builds a <see cref="Supplier"/> using only explicitly set values.
+    /// Builds a <see cref="Partner"/> using only explicitly set values.
     /// Unset properties default to:
     /// <list type="bullet">
     ///   <item><term><c>Id</c></term><description> <c>0</c> if not set.</description></item>
@@ -86,11 +86,11 @@ public interface ISupplierBuilder
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
     /// </list>
     /// </summary>
-    /// <returns>A new <see cref="Supplier"/> populated with only explicitly set and required fields.</returns>
-    Supplier Build();
+    /// <returns>A new <see cref="Partner"/> populated with only explicitly set and required fields.</returns>
+    Partner Build();
 
     /// <summary>
-    /// Builds a <see cref="Supplier"/> using only explicitly set values.
+    /// Builds a <see cref="Partner"/> using only explicitly set values.
     /// Unset properties default to:
     /// <list type="bullet">
     ///   <item><term><c>Id</c></term><description> <c>0</c> if not set.</description></item>
@@ -102,6 +102,6 @@ public interface ISupplierBuilder
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
     /// </list>
     /// </summary>
-    /// <returns>A fully populated <see cref="Supplier"/>.</returns>
-    Supplier BuildAndPopulate();
+    /// <returns>A fully populated <see cref="Partner"/>.</returns>
+    Partner BuildAndPopulate();
 }

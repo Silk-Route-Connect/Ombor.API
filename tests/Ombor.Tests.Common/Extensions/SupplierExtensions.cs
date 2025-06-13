@@ -5,7 +5,7 @@ namespace Ombor.Tests.Common.Extensions;
 
 public static class SupplierExtensions
 {
-    public static bool IsEquivalent(this Supplier supplier, CreateSupplierRequest request) =>
+    public static bool IsEquivalent(this Partner supplier, CreateSupplierRequest request) =>
         supplier.Name == request.Name &&
         supplier.Address == request.Address &&
         supplier.Email == request.Email &&

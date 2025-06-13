@@ -31,7 +31,7 @@ public class GetSuppliersTests(TestingWebApplicationFactory factory, ITestOutput
     {
         var searchTerm = request.SearchTerm ?? _matchingSerachTerm;
 
-        var suppliers = new List<Supplier>
+        var suppliers = new List<Partner>
         {
             // Matching search term by name
             new()

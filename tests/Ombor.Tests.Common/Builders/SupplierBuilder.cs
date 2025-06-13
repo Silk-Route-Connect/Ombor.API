@@ -63,7 +63,7 @@ internal sealed class SupplierBuilder(Faker faker) : BuilderBase(faker), ISuppli
         return this;
     }
 
-    public Supplier Build()
+    public Partner Build()
     {
         return new()
         {
@@ -77,7 +77,7 @@ internal sealed class SupplierBuilder(Faker faker) : BuilderBase(faker), ISuppli
         };
     }
 
-    public Supplier BuildAndPopulate()
+    public Partner BuildAndPopulate()
     {
         return new()
         {
