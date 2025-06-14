@@ -25,9 +25,9 @@ public interface IApplicationDbContext
     DbSet<ProductImage> ProductImages { get; set; }
 
     /// <summary>
-    /// Gets or sets the Suppliers set.
+    /// Gets or sets the partners set.
     /// </summary>
-    DbSet<Supplier> Suppliers { get; set; }
+    DbSet<Partner> Partners { get; set; }
 
     /// <summary>
     /// Gets or sets the Templates set.

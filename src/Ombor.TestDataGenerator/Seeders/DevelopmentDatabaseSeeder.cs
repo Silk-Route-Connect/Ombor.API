@@ -24,6 +24,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddProductsAsync(context);
         await AddProductImagesAsync(context);
         await AddTemplatesAsync(context);
+        await AddPartnersAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -116,6 +117,21 @@ internal sealed class DevelopmentDatabaseSeeder(
             .ToArray();
 
         context.Templates.AddRange(templates);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddPartnersAsync(IApplicationDbContext context)
+    {
+        if (context.Partners.Any())
+        {
+            return;
+        }
+
+        var partners = PartnerGenerator.Generate(seedSettings.NumberOfPartners, seedSettings.Locale)
+            .DistinctBy(x => x.Name)
+            .ToArray();
+
+        context.Partners.AddRange(partners);
         await context.SaveChangesAsync();
     }
 
