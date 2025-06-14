@@ -2,6 +2,7 @@
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Contracts.Requests.Template;
 
 namespace Ombor.Tests.Common.Extensions;
 
