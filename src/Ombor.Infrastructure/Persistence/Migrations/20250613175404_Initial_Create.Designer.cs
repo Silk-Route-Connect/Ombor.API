@@ -25,160 +25,160 @@ partial class Initial_Create
         SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
         modelBuilder.Entity("Ombor.Domain.Entities.Category", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-            b.Property<string>("Description")
-                .HasMaxLength(500)
-                .HasColumnType("nvarchar(500)");
+                b.Property<string>("Description")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
 
-            b.Property<string>("Name")
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType("nvarchar(255)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
 
-            b.HasKey("Id");
+                b.HasKey("Id");
 
-            b.ToTable("Category", (string)null);
-        });
-
-        modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
-
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-            b.Property<string>("Barcode")
-                .HasMaxLength(500)
-                .HasColumnType("nvarchar(500)");
-
-            b.Property<int>("CategoryId")
-                .HasColumnType("int");
-
-            b.Property<string>("Description")
-                .HasMaxLength(500)
-                .HasColumnType("nvarchar(500)");
-
-            b.Property<int>("LowStockThreshold")
-                .HasColumnType("int");
-
-            b.Property<string>("Measurement")
-                .IsRequired()
-                .HasColumnType("nvarchar(max)");
-
-            b.Property<string>("Name")
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType("nvarchar(255)");
-
-            b.Property<int>("QuantityInStock")
-                .HasColumnType("int");
-
-            b.Property<decimal>("RetailPrice")
-                .HasPrecision(18, 2)
-                .HasColumnType("decimal(18,2)");
-
-            b.Property<string>("SKU")
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType("nvarchar(255)");
-
-            b.Property<decimal>("SalePrice")
-                .HasPrecision(18, 2)
-                .HasColumnType("decimal(18,2)");
-
-            b.Property<decimal>("SupplyPrice")
-                .HasPrecision(18, 2)
-                .HasColumnType("decimal(18,2)");
-
-            b.Property<string>("Type")
-                .IsRequired()
-                .HasColumnType("nvarchar(max)");
-
-            b.HasKey("Id");
-
-            b.HasIndex("CategoryId");
-
-            b.HasIndex("SKU")
-                .IsUnique();
-
-            b.ToTable("Product", (string)null);
-        });
-
-        modelBuilder.Entity("Ombor.Domain.Entities.ProductImage", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int");
-
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-            b.Property<string>("FileName")
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType("nvarchar(255)");
-
-            b.Property<string>("ImageName")
-                .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType("nvarchar(255)");
-
-            b.Property<string>("OriginalUrl")
-                .IsRequired()
-                .HasMaxLength(500)
-                .HasColumnType("nvarchar(500)");
-
-            b.Property<int>("ProductId")
-                .HasColumnType("int");
-
-            b.Property<string>("ThumbnailUrl")
-                .HasMaxLength(500)
-                .HasColumnType("nvarchar(500)");
-
-            b.HasKey("Id");
-
-            b.HasIndex("ProductId");
-
-            b.ToTable("ProductImage", (string)null);
-        });
+                b.ToTable("Category", (string)null);
+            });
 
         modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
-        {
-            b.HasOne("Ombor.Domain.Entities.Category", "Category")
-                .WithMany("Products")
-                .HasForeignKey("CategoryId")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-            b.Navigation("Category");
-        });
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                b.Property<string>("Barcode")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
+
+                b.Property<int>("CategoryId")
+                    .HasColumnType("int");
+
+                b.Property<string>("Description")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
+
+                b.Property<int>("LowStockThreshold")
+                    .HasColumnType("int");
+
+                b.Property<string>("Measurement")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
+
+                b.Property<int>("QuantityInStock")
+                    .HasColumnType("int");
+
+                b.Property<decimal>("RetailPrice")
+                    .HasPrecision(18, 2)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property<string>("SKU")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
+
+                b.Property<decimal>("SalePrice")
+                    .HasPrecision(18, 2)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property<decimal>("SupplyPrice")
+                    .HasPrecision(18, 2)
+                    .HasColumnType("decimal(18,2)");
+
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasColumnType("nvarchar(max)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("CategoryId");
+
+                b.HasIndex("SKU")
+                    .IsUnique();
+
+                b.ToTable("Product", (string)null);
+            });
 
         modelBuilder.Entity("Ombor.Domain.Entities.ProductImage", b =>
-        {
-            b.HasOne("Ombor.Domain.Entities.Product", "Product")
-                .WithMany("Images")
-                .HasForeignKey("ProductId")
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired();
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-            b.Navigation("Product");
-        });
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                b.Property<string>("FileName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
+
+                b.Property<string>("ImageName")
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
+
+                b.Property<string>("OriginalUrl")
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
+
+                b.Property<int>("ProductId")
+                    .HasColumnType("int");
+
+                b.Property<string>("ThumbnailUrl")
+                    .HasMaxLength(500)
+                    .HasColumnType("nvarchar(500)");
+
+                b.HasKey("Id");
+
+                b.HasIndex("ProductId");
+
+                b.ToTable("ProductImage", (string)null);
+            });
+
+        modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
+            {
+                b.HasOne("Ombor.Domain.Entities.Category", "Category")
+                    .WithMany("Products")
+                    .HasForeignKey("CategoryId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Category");
+            });
+
+        modelBuilder.Entity("Ombor.Domain.Entities.ProductImage", b =>
+            {
+                b.HasOne("Ombor.Domain.Entities.Product", "Product")
+                    .WithMany("Images")
+                    .HasForeignKey("ProductId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Product");
+            });
 
         modelBuilder.Entity("Ombor.Domain.Entities.Category", b =>
-        {
-            b.Navigation("Products");
-        });
+            {
+                b.Navigation("Products");
+            });
 
         modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
-        {
-            b.Navigation("Images");
-        });
+            {
+                b.Navigation("Images");
+            });
 #pragma warning restore 612, 618
     }
 }
