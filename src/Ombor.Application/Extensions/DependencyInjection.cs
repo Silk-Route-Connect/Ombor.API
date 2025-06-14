@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPartnerService, PartnerService>();
+        services.AddScoped<ITemplateService, TemplateService>();
 
         services.AddTransient<IFileService, FileService>();
 

@@ -13,4 +13,7 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
 
     private PartnerValidator? _partner;
     public PartnerValidator Partner => _partner ??= new(context);
+
+    private TemplateValidator? _template;
+    public TemplateValidator Template => _template ??= new(context);
 }

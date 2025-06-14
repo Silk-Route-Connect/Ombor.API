@@ -11,6 +11,8 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductImage> ProductImages { get; set; }
     public virtual DbSet<Partner> Partners { get; set; }
+    public virtual DbSet<Template> Templates { get; set; }
+    public virtual DbSet<TemplateItem> TemplateItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

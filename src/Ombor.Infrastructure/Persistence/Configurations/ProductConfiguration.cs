@@ -28,6 +28,13 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder
+            .HasMany(p => p.TemplateItems)
+            .WithOne(ti => ti.Product)
+            .HasForeignKey(ti => ti.ProductId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
             .Navigation(x => x.Category)
             .AutoInclude();
 
