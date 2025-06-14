@@ -12,8 +12,9 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
     private string? _address;
     private string? _email;
     private string? _companyName;
-    private List<string>? _phoneNumbers;
+    private decimal? _balance;
     private PartnerType? _type;
+    private List<string>? _phoneNumbers;
 
     public IPartnerBuilder WithId(int? id = null)
     {
@@ -50,9 +51,16 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         return this;
     }
 
+    public IPartnerBuilder WithBalance(decimal? balance = null)
+    {
+        _balance = balance ?? _faker.Random.Decimal(10_000, 1_000_000);
+
+        return this;
+    }
+
     public IPartnerBuilder WithType(PartnerType? type = null)
     {
-        _type = type ?? PartnerType.All;
+        _type = type ?? _faker.Random.Enum<PartnerType>();
 
         return this;
     }
@@ -71,6 +79,7 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         Address = _address,
         Email = _email,
         CompanyName = _companyName,
+        Balance = _balance ?? 0,
         Type = _type ?? PartnerType.All,
         PhoneNumbers = _phoneNumbers ?? []
     };
@@ -82,6 +91,7 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         Address = _address ?? _faker.Address.FullAddress(),
         Email = _email ?? _faker.Person.Email,
         CompanyName = _companyName ?? _faker.Company.CompanyName(),
+        Balance = _balance ?? _faker.Random.Decimal(10_000, 1_000_000),
         Type = _type ?? _faker.Random.Enum<PartnerType>(),
         PhoneNumbers = _phoneNumbers ?? GeneratePhoneNumbers()
     };

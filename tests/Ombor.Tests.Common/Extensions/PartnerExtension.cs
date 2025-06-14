@@ -10,6 +10,7 @@ public static class PartnerExtension
         partner.Address == request.Address &&
         partner.Email == request.Email &&
         partner.CompanyName == request.CompanyName &&
+        partner.Balance == request.Balance &&
         partner.Type.ToString() == request.Type.ToString() &&
-        partner.PhoneNumbers == request.PhoneNumbers;
+        partner.PhoneNumbers.TrueForAll(request.PhoneNumbers.Contains);
 }
