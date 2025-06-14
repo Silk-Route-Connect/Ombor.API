@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Entities;
@@ -11,13 +12,12 @@ public class GetPartnerByIdTests(TestingWebApplicationFactory factory, ITestOutp
         : PartnerTestsBase(factory, outputHelper)
 {
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnOk_WhenpartnerExists()
+    public async Task GetByIdAsync_ShouldReturnOk_WhenPartnerExists()
     {
         // Arrange 
         var partner = _builder.PartnerBuilder
-            .WithName("partner To Be Fetched")
+            .WithName("Partner To Be Fetch By ID")
             .Build();
-
         var partnerId = await CreatePartnerAsync(partner);
         var url = GetUrl(partnerId);
 
@@ -25,16 +25,16 @@ public class GetPartnerByIdTests(TestingWebApplicationFactory factory, ITestOutp
         var response = await _client.GetAsync<PartnerDto>(url);
 
         // Assert
-        await _responseValidator.partner.ValidateGetByIdAsync(partnerId, response);
+        await _responseValidator.Partner.ValidateGetByIdAsync(partnerId, response);
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnNotFound_WhenpartnerDoesNotExist()
+    public async Task GetByIdAsync_ShouldReturnNotFound_WhenPartnerDoesNotExist()
     {
         // Arrange
 
         // Act
-        var response = await _client.GetAsync<ProblemDetails>(NotFoundUrl, System.Net.HttpStatusCode.NotFound);
+        var response = await _client.GetAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert
         response.ShouldBeNotFound<Partner>(NonExistentEntityId);

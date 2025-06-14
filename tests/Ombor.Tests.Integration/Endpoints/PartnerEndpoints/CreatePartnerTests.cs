@@ -18,23 +18,24 @@ public class CreatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
         var request = PartnerRequestFactory.GenerateValidCreateRequest();
 
         // Act
-        var response = await _client.PostAsync<CreatePartnerResponse>(Routes.partner, request, HttpStatusCode.Created);
+        var response = await _client.PostAsync<CreatePartnerResponse>(Routes.Partner, request);
 
         // Assert
-        await _responseValidator.partner.ValidatePostAsync(request, response);
+        await _responseValidator.Partner.ValidatePostAsync(request, response);
     }
 
     [Fact]
     public async Task PostAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
-        ///Arrange
+        // Arrange
         var request = PartnerRequestFactory.GenerateInvalidCreateRequest();
 
-        ///Act
-        var response = await _client.PostAsync<ValidationProblemDetails>(Routes.partner, request, System.Net.HttpStatusCode.BadRequest);
+        // Act
+        var response = await _client.PostAsync<ValidationProblemDetails>(Routes.Partner, request, HttpStatusCode.BadRequest);
 
-        ///Assert
+        // Assert
         Assert.NotNull(response);
         Assert.Contains(nameof(Partner.Name), response.Errors.Keys);
+        Assert.Contains(nameof(Partner.Email), response.Errors.Keys);
     }
 }

@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Integration.Extensions;
@@ -10,13 +11,12 @@ public class DeletePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     : PartnerTestsBase(factory, outputHelper)
 {
     [Fact]
-    public async Task DeleteAsync_ShouldReturnNoContent_WhenpartnerExists()
+    public async Task DeleteAsync_ShouldReturnNoContent_WhenPartnerExists()
     {
         // Arrange 
         var partnerToDelete = _builder.PartnerBuilder
-            .WithName("partner To Delete")
+            .WithName("Partner To Delete")
             .Build();
-
         var partnerId = await CreatePartnerAsync(partnerToDelete);
         var url = GetUrl(partnerId);
 
@@ -24,16 +24,16 @@ public class DeletePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
         await _client.DeleteAsync(url);
 
         // Assert
-        await _responseValidator.partner.ValidateDeleteAsync(partnerId);
+        await _responseValidator.Partner.ValidateDeleteAsync(partnerId);
     }
 
     [Fact]
-    public async Task DeleteAsync_ShouldReturnNotFound_WhenpartnerDoesNotExist()
+    public async Task DeleteAsync_ShouldReturnNotFound_WhenPartnerDoesNotExist()
     {
         // Arrange
 
         // Act
-        var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, System.Net.HttpStatusCode.NotFound);
+        var response = await _client.DeleteAsync<ProblemDetails>(NotFoundUrl, HttpStatusCode.NotFound);
 
         // Assert 
         response.ShouldBeNotFound<Partner>(NonExistentEntityId);

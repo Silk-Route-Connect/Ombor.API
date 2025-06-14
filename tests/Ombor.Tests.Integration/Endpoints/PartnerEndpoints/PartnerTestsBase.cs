@@ -11,18 +11,18 @@ public abstract class PartnerTestsBase(TestingWebApplicationFactory factory, ITe
     protected readonly string _searchTerm = "John";
 
     protected override string GetUrl()
-        => Routes.partner;
+        => Routes.Partner;
 
     protected override string GetUrl(int id)
-        => $"{Routes.partner}/{id}";
+        => $"{Routes.Partner}/{id}";
 
     protected async Task<int> CreatePartnerAsync()
     {
         var partner = new Partner
         {
-            Name = "John",
+            Name = "John Doe",
             Address = "Tashkent",
-            Email = "johnjohn123@gmail.com",
+            Email = "john123@gmail.com",
             CompanyName = "Company Name LLC",
             Type = PartnerType.Supplier,
             PhoneNumbers = ["+998974561100"]

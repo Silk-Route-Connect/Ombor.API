@@ -5,43 +5,41 @@ namespace Ombor.Tests.Common.Factories;
 
 public static class PartnerRequestFactory
 {
-    private const int DefaultPartnerId = 123;
-
     public static CreatePartnerRequest GenerateValidCreateRequest()
-        => new(Name: "Test partner Name",
-            Address: "Test partner's address",
-            Email: "partner's email",
-            CompanyName: "partner's company name",
-            Balance: 1000.00m,
+        => new(Name: "Test Partner Name",
+            Address: "Test Partner's address",
+            Email: "test@gmail.com",
+            CompanyName: "Partner OOO Limited",
+            Balance: 10_000,
             Type: PartnerType.Supplier,
-            PhoneNumbers: ["+998913456789", "+998994441122"]);
+            PhoneNumbers: ["+998-90-123-45-67", "+998911101212"]);
 
     public static CreatePartnerRequest GenerateInvalidCreateRequest()
-        => new(Name: "",
-            Address: "",
-            Email: "partner's email",
+        => new(Name: "", // Invalid name
+            Address: "Some address",
+            Email: "partner's email", // Invalid email
             CompanyName: "partner's company name",
             Balance: 1000.00m,
             Type: PartnerType.Customer,
-            PhoneNumbers: ["asdasd", "++654++321"]);
+            PhoneNumbers: ["asdasd", "++654++321"]); // Invalid phone numbers
 
-    public static UpdatePartnerRequest GenerateValidUpdateRequest(int? partnerId)
-        => new(Id: partnerId ?? DefaultPartnerId,
+    public static UpdatePartnerRequest GenerateValidUpdateRequest(int partnerId)
+        => new(Id: partnerId,
             Name: "Updated partner Name",
-            Address: "Updated partner's address",
-            Email: "Updated partner's email",
-            CompanyName: "Updated partner's company name",
+            Address: "Updated Address",
+            Email: "updated-email@gmail.com",
+            CompanyName: "Updated Company name",
             Balance: 2000.00m,
             Type: PartnerType.Customer,
-            PhoneNumbers: ["+998913456789", "+998931233211"]);
+            PhoneNumbers: ["+998-90-123-45-67", "+998911101212"]);
 
-    public static UpdatePartnerRequest GenerateInvalidUpdateRequest(int? partnerId)
-        => new(Id: partnerId ?? DefaultPartnerId,
-            Name: "",
+    public static UpdatePartnerRequest GenerateInvalidUpdateRequest(int partnerId)
+        => new(Id: partnerId,
+            Name: "", // Invalid name
             Address: "Test Partner Address",
-            Email: "Updated partner's email",
-            CompanyName: "Updated partner's company name",
+            Email: "updated-mail.com", // Invalid request
+            CompanyName: "Updated Company name",
             Balance: 2000.00m,
             Type: PartnerType.Supplier,
-            PhoneNumbers: ["++//**--", "qwerty123"]);
+            PhoneNumbers: ["++//**--", "qwerty123"]); // Invalid phone numbers
 }

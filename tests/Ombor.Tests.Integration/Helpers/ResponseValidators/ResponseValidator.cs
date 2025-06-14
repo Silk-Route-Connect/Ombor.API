@@ -12,5 +12,5 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
     public ProductValidator Product => _product ??= new(context, fileSettings, webRootPath);
 
     private PartnerValidator? _partner;
-    public PartnerValidator partner => _partner ??= new(context);
+    public PartnerValidator Partner => _partner ??= new(context);
 }

@@ -10,10 +10,10 @@ namespace Ombor.Tests.Integration.Endpoints.PartnerEndpoints;
 public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
         : PartnerTestsBase(factory, outputHelper)
 {
-    private const string _matchingSerachTerm = "Test Partner";
+    private const string _matchingSerachTerm = "Partner Search";
 
     [Fact]
-    public async Task GetAsync_ShouldReturnFilteredpartners_WhenSearchIsProvided()
+    public async Task GetAsync_ShouldReturnFilteredPartners_WhenSearchIsProvided()
     {
         // Arrange
         var request = new GetpartnersRequest(_searchTerm);
@@ -24,7 +24,7 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
         var response = await _client.GetAsync<PartnerDto[]>(url);
 
         // Assert
-        await _responseValidator.partner.ValidateGetAsync(request, response);
+        await _responseValidator.Partner.ValidateGetAsync(request, response);
     }
 
     private async Task Createpartners(GetpartnersRequest request)
@@ -38,8 +38,8 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
             {
                 Name = searchTerm,
                 Address = "Address",
-                Email = "partner's email",
-                CompanyName = "partner's company name",
+                Email = "search-test@gmail.com",
+                CompanyName = "Partner's company name",
                 Type = PartnerType.Customer,
                 Balance = 1000.00m,
                 PhoneNumbers = ["+998914778888"]
@@ -47,14 +47,24 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
             // Matching search term by address
             new()
             {
-                Name = "partner's Name",
+                Name = "Test Partner For Search",
                 Address = searchTerm,
-                Email = "partner's email",
-                CompanyName = "partner's company name",
+                Email = "search-test1@gmail.com",
+                CompanyName = "Partner's company name",
                 Type = PartnerType.Supplier,
                 Balance = 1000.00m,
                 PhoneNumbers = ["+998914778888"]
-            }
+            },
+            // Matching company
+            new()
+            {
+                Name = "Test Partner for search matching Company",
+                Address = "Tashkent",
+                CompanyName = searchTerm,
+                Type = PartnerType.All,
+                Balance = 10_000,
+                PhoneNumbers = ["+99890-100-00-00"]
+            },
         };
 
         _context.Partners.AddRange(partners);

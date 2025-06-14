@@ -1,9 +1,8 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Ombor.Contracts.Enums;
-using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -18,30 +17,29 @@ public class UpdatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     {
         // Arrange 
         var partner = _builder.PartnerBuilder
-            .WithName("partner to update")
+            .WithName("Partner to update")
             .WithAddress("partner's address to update")
             .WithEmail("partner's email to update")
             .WithCompanyName("partner's company name")
             .WithType(Domain.Enums.PartnerType.Customer)
             .WithPhoneNumbers(["+998914564561"])
             .Build();
-
         var partnerId = await CreatePartnerAsync(partner);
-        var request = CreateValidRequest(partnerId);
+        var request = PartnerRequestFactory.GenerateValidUpdateRequest(partnerId);
         var url = GetUrl(partnerId);
 
         // Act
         var response = await _client.PutAsync<UpdatePartnerResponse>(url, request);
 
         // Assert
-        await _responseValidator.partner.ValidatePutAsync(request, response);
+        await _responseValidator.Partner.ValidatePutAsync(request, response);
     }
 
     [Fact]
-    public async Task PutAsync_ShouldReturnNotFound_WhenpartnerDoesNotExist()
+    public async Task PutAsync_ShouldReturnNotFound_WhenPartnerDoesNotExist()
     {
         // Arrange
-        var request = CreateValidRequest(NonExistentEntityId);
+        var request = PartnerRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId);
 
         // Act 
         var response = await _client.PutAsync<ProblemDetails>(NotFoundUrl, request, HttpStatusCode.NotFound);
@@ -55,7 +53,7 @@ public class UpdatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var request = CreateInvalidRequest(partnerId);
+        var request = PartnerRequestFactory.GenerateInvalidUpdateRequest(partnerId);
         var url = GetUrl(partnerId);
 
         // Act
@@ -64,25 +62,6 @@ public class UpdatePartnerTests(TestingWebApplicationFactory factory, ITestOutpu
         // Assert
         Assert.NotNull(response);
         Assert.Contains(nameof(Partner.Name), response.Errors.Keys);
+        Assert.Contains(nameof(Partner.Email), response.Errors.Keys);
     }
-
-    private static UpdatePartnerRequest CreateValidRequest(int id) =>
-        new(Id: id,
-            Name: "Updated partner name",
-            Address: "Updated address",
-            Email: "Updated email",
-            CompanyName: "Updated company name",
-            Balance: 1500.00m,
-            Type: PartnerType.Supplier,
-            PhoneNumbers: ["+998912322323"]);
-
-    private static UpdatePartnerRequest CreateInvalidRequest(int id) =>
-        new(Id: id,
-            Name: string.Empty,
-            Address: string.Empty,
-            Email: string.Empty,
-            CompanyName: string.Empty,
-            Balance: 0m,
-            Type: PartnerType.Supplier,
-            PhoneNumbers: ["+asdsgasd"]);
 }

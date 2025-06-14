@@ -19,7 +19,9 @@ public sealed class CreatePartnerRequestValidator : AbstractValidator<CreatePart
 
         RuleFor(x => x.Email)
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.")
+            .EmailAddress()
+            .WithMessage("Invalid email address.");
 
         RuleFor(x => x.CompanyName)
             .MaximumLength(ValidationConstants.DefaultStringLength)
@@ -27,6 +29,6 @@ public sealed class CreatePartnerRequestValidator : AbstractValidator<CreatePart
 
         RuleForEach(x => x.PhoneNumbers)
             .Must(ValidationHelpers.IsValidPhoneNumber)
-            .WithMessage("The phone number is in the wrong format.");
+            .WithMessage("One or more phone numbers are in invalid format.");
     }
 }

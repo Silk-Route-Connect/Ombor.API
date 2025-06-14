@@ -23,7 +23,9 @@ public sealed class UpdatePartnerRequestValidator : AbstractValidator<UpdatePart
 
         RuleFor(x => x.Email)
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.")
+            .EmailAddress()
+            .WithMessage("Invalid email address.");
 
         RuleFor(x => x.CompanyName)
             .MaximumLength(ValidationConstants.DefaultStringLength)
