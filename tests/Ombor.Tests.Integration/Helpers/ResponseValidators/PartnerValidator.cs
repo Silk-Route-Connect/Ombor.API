@@ -9,7 +9,7 @@ namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 
 public sealed class PartnerValidator(IApplicationDbContext context)
 {
-    public async Task ValidateGetAsync(GetpartnersRequest request, PartnerDto[] response)
+    public async Task ValidateGetAsync(GetPartnersRequest request, PartnerDto[] response)
     {
         var exceptedpartners = await GetAsync(request);
 
@@ -59,7 +59,7 @@ public sealed class PartnerValidator(IApplicationDbContext context)
         Assert.Null(partner);
     }
 
-    private async Task<Partner[]> GetAsync(GetpartnersRequest request)
+    private async Task<Partner[]> GetAsync(GetPartnersRequest request)
     {
         var query = context.Partners.AsNoTracking();
 

@@ -6,4 +6,4 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="SearchTerm">
 ///  Optional case-insensitive term to filter by Name, Address, Email, CompanyName
 /// </param>
-public sealed record GetpartnersRequest(string? SearchTerm);
+public sealed record GetPartnersRequest(string? SearchTerm);

@@ -9,12 +9,12 @@ using Ombor.Tests.Unit.Extensions;
 
 namespace Ombor.Tests.Unit.Controllers;
 
-public sealed class partnersControllerTests : ControllerTestsBase
+public sealed class PartnersControllerTests : ControllerTestsBase
 {
     private readonly Mock<IPartnerService> _mockService;
     private readonly PartnersController _controller;
 
-    public partnersControllerTests()
+    public PartnersControllerTests()
     {
         _mockService = new Mock<IPartnerService>(MockBehavior.Strict);
         _controller = new PartnersController(_mockService.Object);
@@ -24,7 +24,7 @@ public sealed class partnersControllerTests : ControllerTestsBase
     public async Task GetAsync_ShouldReturnOkResult_WhenpartnersExist()
     {
         // Arrange
-        var request = _fixture.Create<GetpartnersRequest>();
+        var request = _fixture.Create<GetPartnersRequest>();
         var expected = _fixture.CreateArray<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
@@ -45,7 +45,7 @@ public sealed class partnersControllerTests : ControllerTestsBase
     public async Task GetAsync_ShouldReturnOkResult_WhithEmptyArray_WhenNopartners()
     {
         // Arrange
-        var request = _fixture.Create<GetpartnersRequest>();
+        var request = _fixture.Create<GetPartnersRequest>();
         var expected = Array.Empty<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
@@ -66,7 +66,7 @@ public sealed class partnersControllerTests : ControllerTestsBase
     public async Task GetAsync_ShouldThrowException_WhenpartnerThrows()
     {
         // Arrange 
-        var request = _fixture.Create<GetpartnersRequest>();
+        var request = _fixture.Create<GetPartnersRequest>();
         var expected = _fixture.CreateException();
 
         _mockService.Setup(mock => mock.GetAsync(request))

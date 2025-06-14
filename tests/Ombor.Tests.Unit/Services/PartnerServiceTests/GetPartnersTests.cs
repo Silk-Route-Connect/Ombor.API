@@ -11,20 +11,20 @@ public sealed class GetPartnersTests : PartnerTestsBase
 {
     private const string MatchingSearchTerm = "Test Match";
 
-    public static TheoryData<GetpartnersRequest> GetRequests => new()
+    public static TheoryData<GetPartnersRequest> GetRequests => new()
     {
-        {new GetpartnersRequest(null)},
-        {new GetpartnersRequest(string.Empty)},
-        {new GetpartnersRequest(" ")},
-        {new GetpartnersRequest("     ")},
-        {new GetpartnersRequest(MatchingSearchTerm)},
+        {new GetPartnersRequest(null)},
+        {new GetPartnersRequest(string.Empty)},
+        {new GetPartnersRequest(" ")},
+        {new GetPartnersRequest("     ")},
+        {new GetPartnersRequest(MatchingSearchTerm)},
     };
 
     [Fact]
     public async Task GetAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
     {
         // Arrange
-        GetpartnersRequest request = null!;
+        GetPartnersRequest request = null!;
 
         // Act & Assert 
         await Assert.ThrowsAsync<ArgumentNullException>(
@@ -38,7 +38,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNopartners()
     {
         // Arrange
-        var request = new GetpartnersRequest(string.Empty);
+        var request = new GetPartnersRequest(string.Empty);
         Setuppartners([]);
 
         // Act
@@ -53,7 +53,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
     }
 
     [Theory, MemberData(nameof(GetRequests))]
-    public async Task GetAsync_ShouldReturnMatchingpartners(GetpartnersRequest request)
+    public async Task GetAsync_ShouldReturnMatchingpartners(GetPartnersRequest request)
     {
         // Arrange 
         var matchingpartners = CreateMatchingpartners(request);
@@ -80,7 +80,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
         VerifyNoOtherCalls();
     }
 
-    private Partner[] CreateMatchingpartners(GetpartnersRequest request)
+    private Partner[] CreateMatchingpartners(GetPartnersRequest request)
     {
         if (request.IsEmpty())
         {

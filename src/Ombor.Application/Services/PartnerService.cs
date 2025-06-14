@@ -10,7 +10,7 @@ namespace Ombor.Application.Services;
 
 internal sealed class PartnerService(IApplicationDbContext context, IRequestValidator validator) : IPartnerService
 {
-    public Task<PartnerDto[]> GetAsync(GetpartnersRequest request)
+    public Task<PartnerDto[]> GetAsync(GetPartnersRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 

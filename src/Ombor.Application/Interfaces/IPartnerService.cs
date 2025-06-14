@@ -14,10 +14,10 @@ public interface IPartnerService
     /// Retrieves all partners, optionally filtered by a search term.
     /// </summary>
     /// <param name="request">
-    /// The filtering options. <see cref="GetpartnersRequest.SearchTerm"/> may be null or whitespace.
+    /// The filtering options. <see cref="GetPartnersRequest.SearchTerm"/> may be null or whitespace.
     /// </param>
     /// <returns>An array of <see cref="PartnerDto"/>Matching the filter.</returns>
-    Task<PartnerDto[]> GetAsync(GetpartnersRequest request);
+    Task<PartnerDto[]> GetAsync(GetPartnersRequest request);
 
     /// <summary>
     /// Retrieves a single partner by its identifier.

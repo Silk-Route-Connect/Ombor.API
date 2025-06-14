@@ -20,7 +20,7 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
     [HttpGet]
     [ProducesResponseType(typeof(PartnerDto[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<PartnerDto[]>> GetAsync(
-        [FromQuery] GetpartnersRequest request)
+        [FromQuery] GetPartnersRequest request)
     {
         var response = await partnerService.GetAsync(request);
 
