@@ -1,64 +1,62 @@
-using Ombor.Contracts.Requests.Supplier;
-using Ombor.Contracts.Responses.Supplier;
+using Ombor.Contracts.Requests.Partner;
+using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 
 namespace Ombor.Application.Mappings;
 
-internal static class SupplierMappings
+internal static class PartnerMappings
 {
-    public static SupplierDto ToDto(this Supplier supplier) =>
-        new(
-            supplier.Id,
-            supplier.Name,
-            supplier.Address,
-            supplier.Email,
-            supplier.CompanyName,
-            supplier.IsActive,
-            supplier.Balance,
-            supplier.PhoneNumbers);
+    public static PartnerDto ToDto(this Partner partner) =>
+        new(Id: partner.Id,
+            Name: partner.Name,
+            Type: partner.Type.ToString(),
+            Address: partner.Address,
+            Email: partner.Email,
+            CompanyName: partner.CompanyName,
+            Balance: partner.Balance,
+            PhoneNumbers: partner.PhoneNumbers);
 
-    public static Supplier ToEntity(this CreateSupplierRequest request) =>
+    public static Partner ToEntity(this CreatePartnerRequest request) =>
         new()
         {
             Name = request.Name,
             Address = request.Address,
             Email = request.Email,
             CompanyName = request.CompanyName,
-            IsActive = request.IsActive,
+            Type = Enum.Parse<PartnerType>(request.Type.ToString()),
             Balance = request.Balance,
             PhoneNumbers = request.PhoneNumbers
         };
 
-    public static CreateSupplierResponse ToCreateResponse(this Supplier supplier) =>
-        new(
-            supplier.Id,
-            supplier.Name,
-            supplier.Address,
-            supplier.Email,
-            supplier.CompanyName,
-            supplier.IsActive,
-            supplier.Balance,
-            supplier.PhoneNumbers);
+    public static CreatePartnerResponse ToCreateResponse(this Partner partner) =>
+        new(Id: partner.Id,
+            Name: partner.Name,
+            partner.Type.ToString(),
+            Address: partner.Address,
+            Email: partner.Email,
+            CompanyName: partner.CompanyName,
+            Balance: partner.Balance,
+            PhoneNumbers: partner.PhoneNumbers);
 
-    public static UpdateSupplierResponse ToUpdateResponse(this Supplier supplier) =>
-        new(
-            supplier.Id,
-            supplier.Name,
-            supplier.Address,
-            supplier.Email,
-            supplier.CompanyName,
-            supplier.IsActive,
-            supplier.Balance,
-            supplier.PhoneNumbers);
+    public static UpdatePartnerResponse ToUpdateResponse(this Partner partner) =>
+        new(Id: partner.Id,
+            Name: partner.Name,
+            Type: partner.Type.ToString(),
+            Address: partner.Address,
+            Email: partner.Email,
+            CompanyName: partner.CompanyName,
+            Balance: partner.Balance,
+            PhoneNumbers: partner.PhoneNumbers);
 
-    public static void ApplyUpdate(this Supplier supplier, UpdateSupplierRequest request)
+    public static void ApplyUpdate(this Partner partner, UpdatePartnerRequest request)
     {
-        supplier.Name = request.Name;
-        supplier.Address = request.Address;
-        supplier.Email = request.Email;
-        supplier.CompanyName = request.CompanyName;
-        supplier.IsActive = request.IsActive;
-        supplier.Balance = request.Balance;
-        supplier.PhoneNumbers = request.PhoneNumbers;
+        partner.Name = request.Name;
+        partner.Address = request.Address;
+        partner.Email = request.Email;
+        partner.CompanyName = request.CompanyName;
+        partner.Balance = request.Balance;
+        partner.PhoneNumbers = request.PhoneNumbers;
+        partner.Type = Enum.Parse<PartnerType>(request.Type.ToString());
     }
 }

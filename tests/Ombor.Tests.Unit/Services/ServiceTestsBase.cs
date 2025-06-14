@@ -62,10 +62,10 @@ public abstract class ServiceTestsBase : UnitTestsBase
         return mockDbSet;
     }
 
-    protected Mock<DbSet<Supplier>> SetupSuppliers(IEnumerable<Supplier> suppliers)
+    protected Mock<DbSet<Partner>> Setuppartners(IEnumerable<Partner> partners)
     {
-        var mockSet = suppliers.AsQueryable().BuildMockDbSet();
-        _mockContext.Setup(mock => mock.Suppliers).Returns(mockSet.Object);
+        var mockSet = partners.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Partners).Returns(mockSet.Object);
 
         return mockSet;
     }

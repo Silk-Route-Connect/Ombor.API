@@ -10,12 +10,15 @@ public sealed class DataSeedSettings
     [AllowedValues(["en", "ru"], ErrorMessage = "Only 'en' and 'ru' locales are allowed")]
     public required string Locale { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Invalid number of categories.")]
+    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of categories.")]
     public int NumberOfCategories { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Invalid number of products.")]
+    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of products.")]
     public int NumberOfProducts { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Invalid number of images per product.")]
+    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of images per product.")]
     public int NumberOfMaxImagesPerProduct { get; set; }
+
+    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of partners.")]
+    public int NumberOfPartners { get; set; }
 }
