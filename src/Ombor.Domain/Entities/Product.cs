@@ -49,4 +49,7 @@ public class Product : EntityBase
 
     /// <summary>Gets or sets collection of <see cref="ProductImage"/>. </summary>
     public virtual List<ProductImage> Images { get; set; } = [];
+
+    /// <summary>Gets or sets collection of <see cref="TemplateItem"/>. </summary>
+    public virtual List<TemplateItem> TemplateItems { get; set; } = [];
 }
