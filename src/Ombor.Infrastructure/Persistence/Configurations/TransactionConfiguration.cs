@@ -23,8 +23,8 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder
             .HasOne(t => t.RefundedTransaction)
             .WithMany(rt => rt.Refunds)
-            .HasForeignKey(rt => rt.RefundedTransactionId)
-            .OnDelete(DeleteBehavior.SetNull)
+            .HasForeignKey(t => t.RefundedTransactionId)
+            .OnDelete(DeleteBehavior.NoAction)
             .IsRequired(false);
 
         builder

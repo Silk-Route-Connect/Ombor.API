@@ -39,8 +39,7 @@ public partial class Add_Transaction : Migration
                     name: "FK_TransactionRecord_TransactionRecord_RefundedTransactionId",
                     column: x => x.RefundedTransactionId,
                     principalTable: "TransactionRecord",
-                    principalColumn: "Id",
-                    onDelete: ReferentialAction.SetNull);
+                    principalColumn: "Id");
             });
 
         migrationBuilder.CreateTable(

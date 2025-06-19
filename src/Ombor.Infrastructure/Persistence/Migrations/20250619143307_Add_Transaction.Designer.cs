@@ -12,7 +12,7 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250619141553_Add_Transaction")]
+    [Migration("20250619143307_Add_Transaction")]
     partial class Add_Transaction
     {
         /// <inheritdoc />
@@ -442,7 +442,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.HasOne("Ombor.Domain.Entities.TransactionRecord", "RefundedTransaction")
                         .WithMany("Refunds")
                         .HasForeignKey("RefundedTransactionId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Partner");
 
