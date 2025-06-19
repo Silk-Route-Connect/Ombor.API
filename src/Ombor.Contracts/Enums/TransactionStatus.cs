@@ -1,13 +1,11 @@
 ﻿namespace Ombor.Contracts.Enums;
 
-/// <summary>
-/// Enumeration of transaction statuses.
-/// </summary>
+/// <summary>Lifecycle status of a commercial transaction.</summary>
 public enum TransactionStatus
 {
-    /// <summary> Transaction is unpaid or partially paid.</summary>
+    /// <summary>Transaction is posted but not fully paid.</summary>
     Open = 1,
 
-    /// <summary> Transaction is fully paid.</summary>
-    Closed = 2,
+    /// <summary>Fully settled – no outstanding balance.</summary>
+    Closed = 2
 }

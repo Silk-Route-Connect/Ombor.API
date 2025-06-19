@@ -2,6 +2,9 @@
 
 namespace Ombor.Contracts.Responses.Payment;
 
+/// <summary>
+/// Full payment information including nested attachments and allocation slices.
+/// </summary>
 public sealed record PaymentDto(
     int Id,
     int? PartnerId,

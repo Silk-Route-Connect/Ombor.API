@@ -2,6 +2,9 @@
 
 namespace Ombor.Contracts.Responses.Transaction;
 
+/// <summary>
+/// Refund transaction linked to the original transaction.
+/// </summary>
 public sealed record TransactionRefundDto(
     int Id,
     int RefundedTransactionId,

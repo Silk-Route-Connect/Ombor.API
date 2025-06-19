@@ -2,6 +2,9 @@
 
 namespace Ombor.Contracts.Responses.Transaction;
 
+/// <summary>
+/// Full transaction record including lines, payments and refunds.
+/// </summary>
 public sealed record TransactionDto(
     int Id,
     int PartnerId,

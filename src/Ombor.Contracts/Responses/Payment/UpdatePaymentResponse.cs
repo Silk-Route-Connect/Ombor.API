@@ -2,6 +2,7 @@
 
 namespace Ombor.Contracts.Responses.Payment;
 
+/// <summary>Response returned after updating a payment.</summary>
 public sealed record UpdatePaymentResponse(
     int Id,
     int? PartnerId,
@@ -13,7 +14,6 @@ public sealed record UpdatePaymentResponse(
     DateTimeOffset DateUtc,
     PaymentType Type,
     PaymentMethod Method,
-    PaymentDirection Direction,
     PaymentCurrency Currency,
     PaymentAttachmentDto[] Attachments,
     PaymentAllocationDto[] Allocations);

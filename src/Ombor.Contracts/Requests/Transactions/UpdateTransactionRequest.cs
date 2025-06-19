@@ -3,6 +3,10 @@ using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Requests.Transactions;
 
+/// <summary>
+/// Multipart/form-data request that updates a transaction.
+/// The transaction identifier is taken from the route.
+/// </summary>
 public sealed record UpdateTransactionRequest(
     int PartnerId,
     decimal TotalPaid,
@@ -16,6 +20,7 @@ public sealed record UpdateTransactionRequest(
     int[]? AttachmentsToDelete,
     UpdateTransactionLine[] Lines);
 
+/// <summary>Line item supplied when a transaction is updated.</summary>
 public sealed record UpdateTransactionLine(
     int Id,
     int ProductId,

@@ -2,6 +2,7 @@
 
 namespace Ombor.Contracts.Responses.Transaction;
 
+/// <summary>Response returned after successfully creating a transaction.</summary>
 public sealed record CreateTransactionResponse(
     int Id,
     int PartnerId,
