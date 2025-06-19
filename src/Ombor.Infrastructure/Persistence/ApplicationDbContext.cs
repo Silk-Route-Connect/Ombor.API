@@ -13,6 +13,8 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Partner> Partners { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
     public virtual DbSet<TemplateItem> TemplateItems { get; set; }
+    public virtual DbSet<TransactionRecord> Transactions { get; set; }
+    public virtual DbSet<TransactionLine> TransactionLines { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

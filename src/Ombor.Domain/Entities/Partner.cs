@@ -28,4 +28,6 @@ public class Partner : EntityBase
 
     /// <summary>Gets or sets the partner's phone numbers.</summary>
     public List<string> PhoneNumbers { get; set; } = [];
+
+    public virtual ICollection<TransactionRecord> Transactions { get; set; } = [];
 }

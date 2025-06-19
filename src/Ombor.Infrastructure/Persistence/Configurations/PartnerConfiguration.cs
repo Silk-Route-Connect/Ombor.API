@@ -18,6 +18,13 @@ internal sealed class PartnerConfiguration : IEntityTypeConfiguration<Partner>
             .IsUnique();
 
         builder
+            .HasMany(p => p.Transactions)
+            .WithOne(t => t.Partner)
+            .HasForeignKey(t => t.PartnerId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
             .Property(p => p.Name)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();
