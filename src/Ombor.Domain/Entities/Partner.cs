@@ -30,4 +30,6 @@ public class Partner : EntityBase
     public List<string> PhoneNumbers { get; set; } = [];
 
     public virtual ICollection<TransactionRecord> Transactions { get; set; } = [];
+
+    public virtual ICollection<Payment> Payments { get; set; } = [];
 }
