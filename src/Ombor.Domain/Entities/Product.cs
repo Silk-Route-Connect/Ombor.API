@@ -52,4 +52,9 @@ public class Product : EntityBase
 
     /// <summary>Gets or sets collection of <see cref="TemplateItem"/>. </summary>
     public virtual List<TemplateItem> TemplateItems { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets collection of <see cref="TransactionLine"/>.
+    /// </summary>
+    public virtual ICollection<TransactionLine> TransactionLines { get; set; } = [];
 }
