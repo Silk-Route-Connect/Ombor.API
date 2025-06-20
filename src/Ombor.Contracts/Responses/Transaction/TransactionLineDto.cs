@@ -7,6 +7,7 @@ public sealed record TransactionLineDto(
     int Id,
     int ProductId,
     string ProductName,
+    decimal Total,
     decimal UnitPrice,
     decimal Quantity,
     decimal Discount);

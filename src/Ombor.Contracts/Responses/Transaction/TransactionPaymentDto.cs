@@ -10,4 +10,4 @@ public sealed record TransactionPaymentDto(
     int PaymentId,
     DateTimeOffset Date,
     decimal Amount,
-    string Notes);
+    string? Notes);

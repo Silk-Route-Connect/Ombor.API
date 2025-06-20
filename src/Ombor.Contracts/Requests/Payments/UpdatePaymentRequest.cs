@@ -30,5 +30,6 @@ public sealed record UpdatePaymentRequest(
     PaymentType Type,
     PaymentCurrency Currency,
     PaymentMethod Method,
+    PaymentDirection Direction,
     IFormFile[]? AttachmentsToAdd,
     int[]? AttachmentsToDelete);
