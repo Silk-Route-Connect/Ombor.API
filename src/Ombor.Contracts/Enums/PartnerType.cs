@@ -1,7 +1,7 @@
 ﻿namespace Ombor.Contracts.Enums;
 
 /// <summary>
-/// Enumeration of supported partner types
+/// Supported partner types.
 /// </summary>
 public enum PartnerType
 {

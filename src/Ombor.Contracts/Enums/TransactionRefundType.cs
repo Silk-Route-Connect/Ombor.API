@@ -5,6 +5,13 @@
 /// </summary>
 public enum TransactionRefundType
 {
-    Sale,
-    Supply
+    /// <summary>
+    /// Refund is made against a Sale.
+    /// </summary>
+    Sale = 1,
+
+    /// <summary>
+    /// Refund is made against a Supply.
+    /// </summary>
+    Supply = 2,
 }

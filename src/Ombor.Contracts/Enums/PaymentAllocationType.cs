@@ -6,12 +6,12 @@
 public enum PaymentAllocationType
 {
     /// <summary>
-    /// Portion applied to an open <see cref="TransactionType.Sale"/>.
+    /// Portion applied to a <see cref="TransactionType.Sale"/>.
     /// </summary>
     Sale = 1,
 
     /// <summary>
-    /// Portion applied to an open <see cref="TransactionType.Supply"/>.
+    /// Portion applied to a <see cref="TransactionType.Supply"/>.
     /// </summary>
     Supply = 2,
 

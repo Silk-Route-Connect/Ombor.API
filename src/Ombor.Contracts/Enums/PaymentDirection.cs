@@ -8,6 +8,8 @@ public enum PaymentDirection
     /// </summary>
     Income = 1,
 
-    /// <summary>Money goes <c>out of</c> the company (payroll, supply, supply refund, etc.).</summary>
+    /// <summary>
+    /// Money goes <c>out of</c> the company (payroll, supply, supply refund, etc.).
+    /// </summary>
     Expense = 2
 }
