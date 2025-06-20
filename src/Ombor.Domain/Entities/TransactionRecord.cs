@@ -30,7 +30,7 @@ public class TransactionRecord : EntityBase
     public decimal TotalPaid { get; set; }
 
     /// <summary>
-    /// Document date-time in UTC.
+    /// Transaction date-time in UTC.
     /// Local time can be derived via user's time-zone settings if needed.
     /// </summary>
     public DateTimeOffset DateUtc { get; set; }
