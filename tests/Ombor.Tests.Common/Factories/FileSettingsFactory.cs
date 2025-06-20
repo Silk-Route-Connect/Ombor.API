@@ -16,6 +16,7 @@ public static class FileSettingsFactory
             OriginalsSubfolder = "originals",
             ThumbnailsSubfolder = "thumbnails",
             ProductUploadsSection = "products",
-            PublicUrlPrefix = "images"
+            PublicUrlPrefix = "images",
+            PaymentAttachmentsSection = "payments"
         };
 }

@@ -18,7 +18,8 @@ public sealed class LocalFilePathProviderTests
         ThumbnailHeight = 10,
         OriginalsSubfolder = "originals",
         ThumbnailsSubfolder = "thumbnails",
-        ProductUploadsSection = "products"
+        ProductUploadsSection = "products",
+        PaymentAttachmentsSection = "payments"
     };
 
     public LocalFilePathProviderTests()

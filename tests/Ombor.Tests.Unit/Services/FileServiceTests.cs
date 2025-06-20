@@ -35,7 +35,8 @@ public sealed class FileServiceTests
             OriginalsSubfolder = "originals",
             ThumbnailsSubfolder = "thumbnails",
             ProductUploadsSection = "products",
-            PublicUrlPrefix = "images"
+            PublicUrlPrefix = "images",
+            PaymentAttachmentsSection = "payments"
         };
         var options = Options.Create(_settings);
 
