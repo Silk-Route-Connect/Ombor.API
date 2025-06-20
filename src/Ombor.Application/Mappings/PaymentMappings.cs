@@ -14,14 +14,14 @@ internal interface IPaymentMappings
     UpdatePaymentResponse ToUpdateResponse(Payment payment);
 }
 
-internal sealed class PaymentMappings(IDateTimeProvider dateTimeProvider) : IPaymentMappings
+internal sealed class PaymentMappings(IDateTimeProvider dateTimeProvider, ICurrencyCalculator currencyCalculator) : IPaymentMappings
 {
     public Payment ToEntity(CreatePaymentRequest request) =>
         new()
         {
             Notes = request.Notes,
             Amount = request.Amount,
-            AmountLocal = request.Amount * request.ExchangeRate,
+            AmountLocal = currencyCalculator.CalculateLocalAmount(request.Amount, request.ExchangeRate),
             ExchangeRate = request.ExchangeRate,
             DateUtc = dateTimeProvider.UtcNow,
             Type = Enum.Parse<Domain.Enums.PaymentType>(request.Type.ToString()),
