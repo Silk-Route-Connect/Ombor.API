@@ -21,6 +21,7 @@ namespace Ombor.Contracts.Requests.Payments;
 /// </list>
 /// </summary>
 public sealed record UpdatePaymentRequest(
+    int Id,
     int PaymentId,
     int? PartnerId,
     string? Notes,
@@ -29,5 +30,6 @@ public sealed record UpdatePaymentRequest(
     PaymentType Type,
     PaymentCurrency Currency,
     PaymentMethod Method,
+    PaymentDirection Direction,
     IFormFile[]? AttachmentsToAdd,
     int[]? AttachmentsToDelete);

@@ -14,6 +14,7 @@ public sealed record UpdatePaymentResponse(
     DateTimeOffset DateUtc,
     PaymentType Type,
     PaymentMethod Method,
+    PaymentDirection Direction,
     PaymentCurrency Currency,
     PaymentAttachmentDto[] Attachments,
     PaymentAllocationDto[] Allocations);
