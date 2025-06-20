@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
         services.AddTransient<IFileStorage, LocalFileStorage>();
         services.AddTransient<IFilePathProvider, LocalFilePathProvider>();
+        services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
 
         return services;
     }

@@ -8,6 +8,7 @@ namespace Ombor.Contracts.Requests.Transactions;
 /// The transaction identifier is taken from the route.
 /// </summary>
 public sealed record UpdateTransactionRequest(
+    int Id,
     int PartnerId,
     decimal TotalPaid,
     string? Notes,

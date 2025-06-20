@@ -1,4 +1,4 @@
-﻿namespace Ombor.Domain.Entities;
+﻿namespace Ombor.Domain.Enums;
 
 /// <summary>
 /// Enumeration for supported payment currency.
