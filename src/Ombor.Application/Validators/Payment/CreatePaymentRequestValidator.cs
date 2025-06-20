@@ -29,5 +29,20 @@ public sealed class CreatePaymentRequestValidator : AbstractValidator<CreatePaym
             .Equal(1)
             .When(x => x.Currency == PaymentCurrency.USD)
             .WithMessage("Exchange rate must 1 when payment is made in local currency.");
+
+        RuleFor(x => x)
+            .Must(IsValidDirection)
+            .WithMessage("Inconsistent payment direction.");
     }
+
+    private static bool IsValidDirection(CreatePaymentRequest r) =>
+        (r.Type, r.Direction) switch
+        {
+            (PaymentType.Deposit, PaymentDirection.Income) => true,
+            (PaymentType.Withdrawal, PaymentDirection.Expense) => true,
+            (PaymentType.Transaction, _) => true, // could be either
+            (PaymentType.General, _) => true,
+            _ => false
+        };
+
 }
