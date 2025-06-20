@@ -14,7 +14,6 @@ public sealed record CreateRefundRequest(
     decimal ExchangeRate,
     PaymentCurrency Currency,
     PaymentMethod Method,
-    TransactionRefundType Type,
     IFormFile[]? Attachments,
     RefundTransactionLine[] Lines);
 

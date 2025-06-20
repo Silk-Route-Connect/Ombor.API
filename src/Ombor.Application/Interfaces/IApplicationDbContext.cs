@@ -40,6 +40,31 @@ public interface IApplicationDbContext
     DbSet<TemplateItem> TemplateItems { get; set; }
 
     /// <summary>
+    /// Gets or sets the Transactions set.
+    /// </summary>
+    DbSet<TransactionRecord> Transactions { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Transaction Line Items set.
+    /// </summary>
+    DbSet<TransactionLine> TransactionLines { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Payments set.
+    /// </summary>
+    DbSet<Payment> Payments { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Payment Allocations set.
+    /// </summary>
+    DbSet<PaymentAllocation> PaymentAllocations { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Payment Attachments set.
+    /// </summary>
+    DbSet<PaymentAttachment> PaymentAttachments { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>
