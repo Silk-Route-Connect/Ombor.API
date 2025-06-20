@@ -12,7 +12,7 @@ namespace Ombor.Application.Services;
 
 internal sealed class TransactionService(
     IApplicationDbContext context,
-    ITransactionMappings mapper,
+    ITransactionMapper mapper,
     IRequestValidator validator,
     ICurrencyCalculator currencyCalculator,
     IDateTimeProvider dateTimeProvider) : ITransactionService

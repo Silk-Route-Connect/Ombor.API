@@ -5,7 +5,7 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
 
-internal interface ITransactionMappings
+internal interface ITransactionMapper
 {
     TransactionRecord ToEntity(CreateTransactionRequest request);
     TransactionRecord ToEntity(UpdateTransactionRequest request);
@@ -14,7 +14,7 @@ internal interface ITransactionMappings
     UpdateTransactionResponse ToUpdateResponse(TransactionRecord transaction);
 }
 
-internal sealed class TransactionMappings(IDateTimeProvider dateTimeProvider) : ITransactionMappings
+internal sealed class TransactionMapper(IDateTimeProvider dateTimeProvider) : ITransactionMapper
 {
     public TransactionRecord ToEntity(CreateTransactionRequest request)
     {

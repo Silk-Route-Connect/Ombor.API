@@ -15,7 +15,7 @@ namespace Ombor.Application.Services;
 
 internal sealed class PaymentService(
     IApplicationDbContext context,
-    IPaymentMappings mapper,
+    IPaymentMapper mapper,
     IRequestValidator validator,
     IPaymentAllocationService paymentAllocationService,
     IFileService fileService,

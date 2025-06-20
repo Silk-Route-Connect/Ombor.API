@@ -5,7 +5,7 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
 
-internal interface IPaymentMappings
+internal interface IPaymentMapper
 {
     Payment ToEntity(CreatePaymentRequest request);
     Payment ToEntity(UpdatePaymentRequest request);
@@ -14,7 +14,7 @@ internal interface IPaymentMappings
     UpdatePaymentResponse ToUpdateResponse(Payment payment);
 }
 
-internal sealed class PaymentMappings(IDateTimeProvider dateTimeProvider, ICurrencyCalculator currencyCalculator) : IPaymentMappings
+internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrencyCalculator currencyCalculator) : IPaymentMapper
 {
     public Payment ToEntity(CreatePaymentRequest request) =>
         new()
