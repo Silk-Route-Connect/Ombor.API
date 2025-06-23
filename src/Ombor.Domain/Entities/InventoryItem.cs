@@ -30,5 +30,5 @@ public class InventoryItem : EntityBase
     /// <summary>
     /// Gets or sets inventory of the <see cref="Inventory"/>.
     /// </summary>
-    public required virtual Inventory Inventory { get; set; }
+    // public required virtual Inventory Inventory { get; set; }
 }
