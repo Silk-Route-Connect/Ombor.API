@@ -13,17 +13,22 @@ public class InventoryItem : EntityBase
     public int Quantity { get; set; }
 
     /// <summary>
-    /// Gets or sets location of the <see cref="InventoryItem"/>.
-    /// </summary>
-    public string? Location { get; set; }
-
-    /// <summary>
-    /// Gets or sets Product ID of the <see cref="InventoryItem"/>.
+    /// Gets or sets product ID of the <see cref="InventoryItem"/>.
     /// </summary>
     public int ProductId { get; set; }
 
     /// <summary>
-    /// Gets or sets Product of the <see cref="InventoryItem"/>.
+    /// Gets or sets product of the <see cref="InventoryItem"/>.
     /// </summary>
     public required virtual Product Product { get; set; }
+
+    /// <summary>
+    /// Gets or sets inventory ID of the <see cref="Inventory"/>.
+    /// </summary>
+    public int InventoryId { get; set; }
+
+    /// <summary>
+    /// Gets or sets inventory of the <see cref="Inventory"/>.
+    /// </summary>
+    public required virtual Inventory Inventory { get; set; }
 }
