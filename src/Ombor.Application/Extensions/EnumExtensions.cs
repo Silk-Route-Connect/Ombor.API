@@ -24,6 +24,26 @@ internal static class EnumExtensions
         throw new EnumParseException<Contracts.Enums.PaymentCurrency, Domain.Enums.PaymentCurrency>();
     }
 
+    public static Contracts.Enums.PaymentCurrency ParseToContracts(this Domain.Enums.PaymentCurrency value)
+    {
+        if (Enum.TryParse<Contracts.Enums.PaymentCurrency>(value.ToString(), ignoreCase: true, out var paymentType))
+        {
+            return paymentType;
+        }
+
+        throw new EnumParseException<Domain.Enums.PaymentCurrency, Contracts.Enums.PaymentType>();
+    }
+
+    public static Contracts.Enums.PaymentMethod ParseToContracts(this Domain.Enums.PaymentMethod value)
+    {
+        if (Enum.TryParse<Contracts.Enums.PaymentMethod>(value.ToString(), ignoreCase: true, out var paymentMethod))
+        {
+            return paymentMethod;
+        }
+
+        throw new EnumParseException<Domain.Enums.PaymentMethod, Contracts.Enums.PaymentMethod>();
+    }
+
     public static Domain.Enums.PaymentDirection GetPaymentDirection(this Contracts.Enums.TransactionType value)
     {
         if (value is Contracts.Enums.TransactionType.Sale or Contracts.Enums.TransactionType.SupplyRefund)
