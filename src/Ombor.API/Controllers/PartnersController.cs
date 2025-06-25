@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Partner;
+using Ombor.Contracts.Requests.Payments;
+using Ombor.Contracts.Requests.Transactions;
 using Ombor.Contracts.Responses.Partner;
+using Ombor.Contracts.Responses.Payment;
+using Ombor.Contracts.Responses.Transaction;
 
 namespace Ombor.API.Controllers;
 
@@ -10,7 +14,10 @@ namespace Ombor.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/partners")]
-public sealed class PartnersController(IPartnerService partnerService) : ControllerBase
+public sealed class PartnersController(
+    IPartnerService partnerService,
+    ITransactionService transactionService,
+    IPaymentService paymentService) : ControllerBase
 {
     /// <summary>
     /// Retrieves a list of partners, with optional filtering by search term.
@@ -35,9 +42,31 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
     [HttpGet("{id:int:min(1)}")]
     [ProducesResponseType(typeof(PartnerDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PartnerDto>> GetpartnerByIdAsync([FromRoute] GetPartnerByIdRequest request)
+    public async Task<ActionResult<PartnerDto>> GetPartnerByIdAsync([FromRoute] GetPartnerByIdRequest request)
     {
         var response = await partnerService.GetByIdAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id:int:min(1)}/transactions")]
+    public async Task<ActionResult<TransactionRefundDto[]>> GetTransactionAsync(
+        [FromRoute] int id,
+        [FromQuery] GetTransactionsRequest query)
+    {
+        var request = query with { PartnerId = id };
+        var response = await transactionService.GetAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id:int:min(1)}/payments")]
+    public async Task<ActionResult<PaymentDto[]>> GetPaymentsAsync(
+        [FromRoute] int id,
+        [FromQuery] GetPaymentsRequest query)
+    {
+        var request = query with { PartnerId = id };
+        var response = await paymentService.GetAsync(request);
 
         return Ok(response);
     }
@@ -56,7 +85,7 @@ public sealed class PartnersController(IPartnerService partnerService) : Control
         var response = await partnerService.CreateAsync(request);
 
         return CreatedAtAction(
-            nameof(GetpartnerByIdAsync),
+            nameof(GetPartnerByIdAsync),
             new { id = response.Id },
             response);
     }
