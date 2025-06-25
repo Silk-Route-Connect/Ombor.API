@@ -14,7 +14,9 @@ internal interface ITransactionMapper
     UpdateTransactionResponse ToUpdateResponse(TransactionRecord transaction);
 }
 
-internal sealed class TransactionMapper(IDateTimeProvider dateTimeProvider) : ITransactionMapper
+internal sealed class TransactionMapper(
+    IDateTimeProvider dateTimeProvider,
+    IPaymentMapper paymentMapper) : ITransactionMapper
 {
     public TransactionRecord ToEntity(CreateTransactionRequest request)
     {
@@ -60,16 +62,17 @@ internal sealed class TransactionMapper(IDateTimeProvider dateTimeProvider) : IT
 
     public TransactionDto ToDto(TransactionRecord transaction, IEnumerable<Payment> payments) =>
         new(Id: transaction.Id,
-            PartnerId: transaction.Id,
+            PartnerId: transaction.PartnerId,
             PartnerName: transaction.Partner.Name,
             Notes: transaction.Notes,
             TransactionNumber: transaction.TransactionNumber,
             TotalDue: transaction.TotalDue,
             TotalPaid: transaction.TotalPaid,
+            Date: transaction.DateUtc,
             Type: Enum.Parse<Contracts.Enums.TransactionType>(transaction.Type.ToString()),
             Status: Enum.Parse<Contracts.Enums.TransactionStatus>(transaction.Status.ToString()),
             Lines: GetLines(transaction),
-            Payments: MapPayments(payments),
+            Payments: paymentMapper.ToTransactionPayments(payments),
             Refunds: []);
 
     public CreateTransactionResponse ToCreateResponse(TransactionRecord transaction) =>
@@ -148,15 +151,5 @@ internal sealed class TransactionMapper(IDateTimeProvider dateTimeProvider) : IT
             UnitPrice: x.UnitPrice,
             Quantity: x.Quantity,
             Discount: x.Discount))
-        .ToArray();
-
-    private static TransactionPaymentDto[] MapPayments(IEnumerable<Payment> payments) =>
-        payments.SelectMany(payment => payment.Allocations
-            .Select(x => new TransactionPaymentDto(
-                x.Id,
-                x.PaymentId,
-                Date: payment.DateUtc,
-                Amount: x.AppliedAmount,
-                Notes: payment.Notes)))
         .ToArray();
 }

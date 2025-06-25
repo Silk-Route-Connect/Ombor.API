@@ -1,6 +1,8 @@
-﻿using Ombor.Application.Interfaces;
+﻿using Ombor.Application.Extensions;
+using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Responses.Payment;
+using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
@@ -12,6 +14,7 @@ internal interface IPaymentMapper
     PaymentDto ToDto(Payment payment);
     CreatePaymentResponse ToCreateResponse(Payment payment);
     UpdatePaymentResponse ToUpdateResponse(Payment payment);
+    TransactionPaymentDto[] ToTransactionPayments(IEnumerable<Payment> payments);
 }
 
 internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrencyCalculator currencyCalculator) : IPaymentMapper
@@ -54,7 +57,7 @@ internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrenc
             Amount: payment.Amount,
             AmountLocal: payment.AmountLocal,
             ExchangeRate: payment.ExchangeRate,
-            DateUtc: payment.DateUtc,
+            Date: payment.DateUtc,
             Type: Enum.Parse<Contracts.Enums.PaymentType>(payment.Type.ToString()),
             Method: Enum.Parse<Contracts.Enums.PaymentMethod>(payment.Method.ToString()),
             Direction: Enum.Parse<Contracts.Enums.PaymentDirection>(payment.Direction.ToString()),
@@ -93,6 +96,18 @@ internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrenc
             Currency: Enum.Parse<Contracts.Enums.PaymentCurrency>(payment.Currency.ToString()),
             Attachments: GetAttachments(payment),
             Allocations: GetAllocations(payment));
+
+    public TransactionPaymentDto[] ToTransactionPayments(IEnumerable<Payment> payments) =>
+        payments.SelectMany(payment => payment.Allocations
+            .Select(x => new TransactionPaymentDto(
+                x.Id,
+                x.PaymentId,
+                Amount: x.AppliedAmount,
+                Date: payment.DateUtc,
+                Currency: payment.Currency.ParseToContracts(),
+                Method: payment.Method.ParseToContracts(),
+                Notes: payment.Notes)))
+        .ToArray();
 
     private static PaymentAttachmentDto[] GetAttachments(Payment payment) =>
         payment.Attachments
