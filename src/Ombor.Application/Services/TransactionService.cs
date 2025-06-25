@@ -68,6 +68,8 @@ internal sealed class TransactionService(
     {
         var query = context.Transactions
             .Include(x => x.Partner)
+            .Include(x => x.Lines)
+            .ThenInclude(x => x.Product)
             .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -98,6 +100,7 @@ internal sealed class TransactionService(
     private async Task<TransactionRecord> GetOrThrowAsync(int transactionId) =>
         await context.Transactions
         .Include(x => x.Partner)
+        .Include(x => x.Lines)
         .FirstOrDefaultAsync(x => x.Id == transactionId)
         ?? throw new EntityNotFoundException<TransactionRecord>(transactionId);
 

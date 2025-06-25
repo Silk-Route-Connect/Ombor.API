@@ -8,6 +8,7 @@ using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Responses.Payment;
+using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 
@@ -26,9 +27,23 @@ internal sealed class PaymentService(
     public async Task<PaymentDto[]> GetAsync(GetPaymentsRequest request)
     {
         var query = GetQuery(request);
-        var payments = await query.ToArrayAsync();
+        var payments = await query
+            .OrderByDescending(x => x.DateUtc)
+            .ToArrayAsync();
 
         return [.. payments.Select(mapper.ToDto)];
+    }
+
+    public async Task<TransactionPaymentDto[]> GetTransactionPaymentsAsync(GetTransactionPaymentsRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var query = GetQuery(request);
+        var payments = await query
+            .OrderByDescending(x => x.DateUtc)
+            .ToArrayAsync();
+
+        return mapper.ToTransactionPayments(payments);
     }
 
     public async Task<PaymentDto> GetByIdAsync(GetPaymentByIdRequest request)
@@ -109,6 +124,28 @@ internal sealed class PaymentService(
         {
             var paymentType = Enum.Parse<Domain.Enums.PaymentType>(request.Type.Value.ToString());
             query = query.Where(x => x.Type == paymentType);
+        }
+
+        return query;
+    }
+
+    private IQueryable<Payment> GetQuery(GetTransactionPaymentsRequest request)
+    {
+        var query = context.Payments
+            .Include(x => x.Allocations)
+            .Where(x => x.Allocations.Any(a => a.TransactionId == request.TransactionId))
+            .AsNoTracking();
+
+        if (request.FromDate.HasValue)
+        {
+            var fromDate = request.FromDate.Value.ToUtcDateTimeOffset();
+            query = query.Where(x => x.DateUtc >= fromDate);
+        }
+
+        if (request.ToDate.HasValue)
+        {
+            var toDate = request.ToDate.Value.ToUtcDateTimeOffset();
+            query = query.Where(x => x.DateUtc <= toDate);
         }
 
         return query;
