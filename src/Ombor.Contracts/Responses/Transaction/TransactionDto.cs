@@ -13,6 +13,7 @@ public sealed record TransactionDto(
     string? TransactionNumber,
     decimal TotalDue,
     decimal TotalPaid,
+    DateTimeOffset Date,
     TransactionType Type,
     TransactionStatus Status,
     TransactionLineDto[] Lines,

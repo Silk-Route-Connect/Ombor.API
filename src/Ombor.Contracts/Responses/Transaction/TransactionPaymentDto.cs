@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Transaction;
+﻿using Ombor.Contracts.Enums;
+
+namespace Ombor.Contracts.Responses.Transaction;
 
 /// <summary>
 /// Payment that settled part of the transaction balance.
@@ -6,8 +8,10 @@
 /// are available from the payment endpoint.
 /// </summary>
 public sealed record TransactionPaymentDto(
-    int Id,
+    int TransactionId,
     int PaymentId,
-    DateTimeOffset Date,
     decimal Amount,
+    DateTimeOffset Date,
+    PaymentCurrency Currency,
+    PaymentMethod Method,
     string? Notes);
