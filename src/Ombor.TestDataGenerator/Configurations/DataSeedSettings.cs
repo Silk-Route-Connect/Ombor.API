@@ -27,4 +27,7 @@ public sealed class DataSeedSettings
 
     [Range(1, double.MaxValue, ErrorMessage = "Invalid number of items per template.")]
     public int NumberOfItemsPerTemplate { get; set; }
+
+    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of transactions per partner")]
+    public int NumberOfTransactionsPerPartner { get; set; }
 }
