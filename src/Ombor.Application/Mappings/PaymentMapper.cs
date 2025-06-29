@@ -10,6 +10,7 @@ namespace Ombor.Application.Mappings;
 internal interface IPaymentMapper
 {
     Payment ToEntity(CreatePaymentRequest request);
+    Payment ToEntity(CreateTransactionPaymentRequest request, TransactionRecord transaction);
     Payment ToEntity(UpdatePaymentRequest request);
     PaymentDto ToDto(Payment payment);
     CreatePaymentResponse ToCreateResponse(Payment payment);
@@ -32,6 +33,21 @@ internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrenc
             Direction = Enum.Parse<Domain.Enums.PaymentDirection>(request.Direction.ToString()),
             Currency = Enum.Parse<Domain.Enums.PaymentCurrency>(request.Currency.ToString()),
             PartnerId = request.PartnerId,
+        };
+
+    public Payment ToEntity(CreateTransactionPaymentRequest request, TransactionRecord transaction) =>
+        new()
+        {
+            Notes = request.Notes,
+            Amount = request.Amount,
+            AmountLocal = currencyCalculator.CalculateLocalAmount(request.Amount, request.ExchangeRate),
+            ExchangeRate = request.ExchangeRate,
+            DateUtc = dateTimeProvider.UtcNow,
+            Type = Domain.Enums.PaymentType.Transaction,
+            Method = Enum.Parse<Domain.Enums.PaymentMethod>(request.Method.ToString()),
+            Direction = transaction.Type.GetPaymentDirection(),
+            Currency = Enum.Parse<Domain.Enums.PaymentCurrency>(request.Currency.ToString()),
+            PartnerId = transaction.PartnerId,
         };
 
     public Payment ToEntity(UpdatePaymentRequest request) =>

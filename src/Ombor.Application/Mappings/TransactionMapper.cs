@@ -18,21 +18,34 @@ internal sealed class TransactionMapper(
     IDateTimeProvider dateTimeProvider,
     IPaymentMapper paymentMapper) : ITransactionMapper
 {
+    /// <summary>
+    /// Converts a <see cref="CreateTransactionRequest"/> into a <see cref="TransactionRecord"/> entity.
+    /// </summary>
+    /// <remarks>
+    /// This method maps the properties of the <paramref name="request"/> to a new <see cref="TransactionRecord"/> instance.
+    /// The <see cref="TransactionRecord.Partner"/> property is set to a non-null
+    /// placeholder value and will be populated by Entity Framework during persistence.
+    /// <see cref="TransactionRecord.TotalPaid"/> is not populated in mapping and will be set to default 0, 
+    /// the payment amount should be applied during payment creation.
+    /// </remarks>
+    /// <param name="request">The transaction request containing details such as transaction lines, partner information, and notes. Cannot be
+    /// <see langword="null"/>.</param>
+    /// <returns>A <see cref="TransactionRecord"/> entity initialized with the data from the provided <paramref name="request"/>.</returns>
     public TransactionRecord ToEntity(CreateTransactionRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var totalDue = CalculateTotal(request.Lines);
-        var status = totalDue > request.TotalPaid
-            ? Domain.Enums.TransactionStatus.Open
-            : Domain.Enums.TransactionStatus.Closed;
 
         return new()
         {
             Notes = request.Notes,
+            TransactionNumber = "",
             TotalDue = totalDue,
-            TotalPaid = request.TotalPaid,
+            TotalPaid = 0,
             DateUtc = dateTimeProvider.UtcNow,
             Type = Enum.Parse<Domain.Enums.TransactionType>(request.Type.ToString()),
-            Status = status,
+            Status = Domain.Enums.TransactionStatus.Open,
             PartnerId = request.PartnerId,
             Partner = null!, // will be set by EF
             Lines = GetLines(request.Lines)
