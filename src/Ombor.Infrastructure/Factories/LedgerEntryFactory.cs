@@ -51,6 +51,6 @@ internal static class LedgerEntryFactory
 
     private static decimal GetAmount(Payment payment) =>
         payment.Direction == PaymentDirection.Income
-        ? -payment.AmountLocal  // partner pays
-        : +payment.AmountLocal; // company pays
+        ? +payment.AmountLocal  // partner pays
+        : -payment.AmountLocal; // company pays
 }
