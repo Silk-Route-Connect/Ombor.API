@@ -3,7 +3,6 @@ using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
-using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
@@ -18,8 +17,7 @@ internal sealed class PaymentAllocationService(IApplicationDbContext context) : 
 
         var partnerId = payment.PartnerId.Value;
         var remaining = payment.AmountLocal;
-        var partner = await GetPartnerAsync(partnerId);
-        var openTransactions = await GetOpenTransactionAsync(partnerId);
+        var openTransactions = await GetOpenTransactionsAsync(partnerId);
 
         foreach (var transaction in openTransactions)
         {
@@ -33,17 +31,13 @@ internal sealed class PaymentAllocationService(IApplicationDbContext context) : 
 
         if (remaining > 0)
         {
-            AddAdvanceSlice(payment, remaining);
+            payment.AddAdvanceAllocation(remaining);
         }
 
-        partner.ApplyPayment(payment);
+        await context.SaveChangesAsync();
     }
 
-    private async Task<Partner> GetPartnerAsync(int partnerId) =>
-        await context.Partners.FirstOrDefaultAsync(x => x.Id == partnerId)
-        ?? throw new EntityNotFoundException<Partner>(partnerId);
-
-    private Task<List<TransactionRecord>> GetOpenTransactionAsync(int partnerId) =>
+    private Task<List<TransactionRecord>> GetOpenTransactionsAsync(int partnerId) =>
         context.Transactions
         .Where(x => x.PartnerId == partnerId)
         .Where(x => x.Status == TransactionStatus.Open)
@@ -51,40 +45,33 @@ internal sealed class PaymentAllocationService(IApplicationDbContext context) : 
         .AsTracking()
         .ToListAsync();
 
-    private static decimal PayOpenTransaction(TransactionRecord transaction, Payment payment, decimal paymentAmount)
+    private static decimal PayOpenTransaction(
+        TransactionRecord transaction,
+        Payment payment,
+        decimal paymentAmount)
     {
+        if (transaction.UnpaidAmount <= 0)
+        {
+            return 0;
+        }
+
         var debt = transaction.TotalDue - transaction.TotalPaid;
         var applied = Math.Min(paymentAmount, debt);
 
         transaction.TotalPaid += applied;
         transaction.Status = transaction.TotalPaid >= transaction.TotalDue
-            ? TransactionStatus.Open
-            : TransactionStatus.Closed;
-        transaction.Status = transaction.TotalPaid >= transaction.TotalDue
-            ? TransactionStatus.Open
-            : TransactionStatus.Closed;
-        transaction.Status = transaction.TotalPaid >= transaction.TotalDue
             ? TransactionStatus.Closed
             : TransactionStatus.Open;
+        transaction.AddPayment(applied);
 
         payment.Allocations.Add(new PaymentAllocation
         {
             AppliedAmount = applied,
-            Type = transaction.Type.ToAllocationType(),
+            Type = transaction.Type.GetPaymentAllocationType(),
             TransactionId = transaction.Id,
-            Payment = payment,
-        });
-
-        return applied;            // amount that was applied
-    }
-
-    private static void AddAdvanceSlice(Payment payment, decimal advance)
-    {
-        payment.Allocations.Add(new PaymentAllocation
-        {
-            AppliedAmount = advance,
-            Type = PaymentAllocationType.AdvancePayment,
             Payment = payment
         });
+
+        return applied;
     }
 }
