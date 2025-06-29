@@ -25,6 +25,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddProductImagesAsync(context);
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
+        await AddIventoriesAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -134,6 +135,30 @@ internal sealed class DevelopmentDatabaseSeeder(
         context.Templates.AddRange(templates);
         await context.SaveChangesAsync();
     }
+
+    private async Task AddIventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Select(x => x.Id)
+            .ToArray();
+        var inventories = InventoryGenerator
+            .Generate(
+                products,
+                seedSettings.NumberOfItemsPerInventory,
+                seedSettings.NumberOfItemsPerInventory,
+                seedSettings.Locale)
+            .DistinctBy(x => x.Name)
+            .ToArray();
+
+        context.Inventories.AddRange(inventories);
+        await context.SaveChangesAsync();
+    }
+
 
     private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     {
