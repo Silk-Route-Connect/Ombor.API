@@ -37,6 +37,9 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         #region Properties
 
         builder
+            .Ignore(t => t.UnpaidAmount);
+
+        builder
             .Property(t => t.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);
