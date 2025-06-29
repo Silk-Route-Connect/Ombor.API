@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Infrastructure.Persistence;
+using Ombor.Infrastructure.Persistence.Interceptors;
 using Ombor.Infrastructure.Services;
 using Ombor.Infrastructure.Storage;
 
@@ -13,8 +14,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<LedgerEntryInterceptor>();
+
+        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>((serviceProvider, options) =>
+            options
+            .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+            .AddInterceptors(serviceProvider.GetRequiredService<LedgerEntryInterceptor>()));
 
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
         services.AddTransient<IFileStorage, LocalFileStorage>();
