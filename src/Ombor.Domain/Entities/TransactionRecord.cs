@@ -30,6 +30,11 @@ public class TransactionRecord : EntityBase
     public decimal TotalPaid { get; set; }
 
     /// <summary>
+    /// Total amount to be paid.
+    /// </summary>
+    public decimal UnpaidAmount => TotalDue - TotalPaid;
+
+    /// <summary>
     /// Transaction date-time in UTC.
     /// Local time can be derived via user's time-zone settings if needed.
     /// </summary>

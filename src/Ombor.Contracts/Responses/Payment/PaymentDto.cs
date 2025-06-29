@@ -13,7 +13,7 @@ public sealed record PaymentDto(
     decimal Amount,
     decimal AmountLocal,
     decimal ExchangeRate,
-    DateTimeOffset DateUtc,
+    DateTimeOffset Date,
     PaymentType Type,
     PaymentMethod Method,
     PaymentDirection Direction,

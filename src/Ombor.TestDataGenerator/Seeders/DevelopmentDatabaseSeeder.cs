@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Bogus;
+using Microsoft.AspNetCore.Hosting;
 using Ombor.Application.Configurations;
 using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
@@ -16,15 +17,28 @@ internal sealed class DevelopmentDatabaseSeeder(
     IWebHostEnvironment env,
     IImageThumbnailer thumbnailer) : IDatabaseSeeder
 {
+    private static readonly Faker _faker = new();
     private static readonly Random _random = new();
 
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
-        await AddCategoriesAsync(context);
-        await AddProductsAsync(context);
-        await AddProductImagesAsync(context);
-        await AddPartnersAsync(context);
-        await AddTemplatesAsync(context);
+        try
+        {
+            await AddCategoriesAsync(context);
+            await AddProductsAsync(context);
+            await AddProductImagesAsync(context);
+            await AddPartnersAsync(context);
+            await AddTemplatesAsync(context);
+            await AddSalesAsync(context);
+            await AddSalesWithDebtsAsync(context);
+            await AddSuppliesAsync(context);
+            await AddSuppliesWithDebtsAsync(context);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -132,6 +146,123 @@ internal sealed class DevelopmentDatabaseSeeder(
             .ToArray();
 
         context.Templates.AddRange(templates);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSalesAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale))
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Where(x => x.Type != Domain.Enums.ProductType.Supply)
+            .ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
+            .ToArray();
+        var allSales = new List<TransactionRecord>();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(partner.Id, products, Domain.Enums.TransactionType.Sale, true, seedSettings.NumberOfTransactionsPerPartner);
+            allSales.AddRange(sales);
+        }
+
+        var payments = PaymentGenerator.Generate(allSales);
+
+        context.Payments.AddRange(payments);
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSalesWithDebtsAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale && x.Status == Domain.Enums.TransactionStatus.Open))
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Where(x => x.Type != Domain.Enums.ProductType.Supply)
+            .ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
+            .ToArray();
+        partners = [.. _faker.Random.ListItems(partners, 10)];
+        var allSales = new List<TransactionRecord>();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(partner.Id, products, Domain.Enums.TransactionType.Sale, false, seedSettings.NumberOfTransactionsPerPartner);
+            partner.Balance = sales.Sum(x => x.TotalPaid - x.TotalDue);
+            allSales.AddRange(sales);
+        }
+
+        var payments = PaymentGenerator.Generate(allSales);
+
+        context.Payments.AddRange(payments);
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSuppliesAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Supply))
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Where(x => x.Type != Domain.Enums.ProductType.Sale)
+            .ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Customer)
+            .Select(x => x.Id)
+            .ToArray();
+        var allSupplies = new List<TransactionRecord>();
+
+        foreach (var partner in partners)
+        {
+            var supplies = TransactionGenerator.Generate(partner, products, Domain.Enums.TransactionType.Supply, true, seedSettings.NumberOfTransactionsPerPartner);
+            allSupplies.AddRange(supplies);
+        }
+
+        var payments = PaymentGenerator.Generate(allSupplies);
+
+        context.Payments.AddRange(payments);
+        context.Transactions.AddRange(allSupplies);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSuppliesWithDebtsAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Supply && x.Status == Domain.Enums.TransactionStatus.Open))
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Where(x => x.Type != Domain.Enums.ProductType.Sale)
+            .ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Customer)
+            .ToArray();
+        partners = [.. _faker.Random.ListItems(partners, 15)];
+        var allSupplies = new List<TransactionRecord>();
+
+        foreach (var partner in partners)
+        {
+            var supplies = TransactionGenerator.Generate(partner.Id, products, Domain.Enums.TransactionType.Supply, false, seedSettings.NumberOfTransactionsPerPartner);
+            partner.Balance = supplies.Sum(x => x.TotalDue - x.TotalPaid);
+            allSupplies.AddRange(supplies);
+        }
+
+        var payments = PaymentGenerator.Generate(allSupplies);
+
+        context.Payments.AddRange(payments);
+        context.Transactions.AddRange(allSupplies);
         await context.SaveChangesAsync();
     }
 

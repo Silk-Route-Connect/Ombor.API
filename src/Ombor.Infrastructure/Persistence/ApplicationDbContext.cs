@@ -18,6 +18,7 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<PaymentAllocation> PaymentAllocations { get; set; }
     public virtual DbSet<PaymentAttachment> PaymentAttachments { get; set; }
+    public virtual DbSet<LedgerEntry> LedgerEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

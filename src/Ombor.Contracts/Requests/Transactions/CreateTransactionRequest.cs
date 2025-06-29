@@ -14,7 +14,7 @@ public sealed record CreateTransactionRequest(
     decimal TotalPaid,
     decimal ExchangeRate,
     PaymentCurrency Currency,
-    PaymentMethod Method,
+    PaymentMethod PaymentMethod,
     IFormFile[]? Attachments,
     CreateTransactionLine[] Lines);
 

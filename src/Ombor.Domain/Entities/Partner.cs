@@ -32,4 +32,6 @@ public class Partner : EntityBase
     public virtual ICollection<TransactionRecord> Transactions { get; set; } = [];
 
     public virtual ICollection<Payment> Payments { get; set; } = [];
+
+    public virtual ICollection<LedgerEntry> LedgerEntries { get; set; } = [];
 }

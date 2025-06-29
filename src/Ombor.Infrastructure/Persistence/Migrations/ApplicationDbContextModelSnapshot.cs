@@ -44,6 +44,48 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.LedgerEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AmountLocal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PartnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("SourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartnerId", "CreatedAtUtc");
+
+                    b.ToTable("LedgerEntry", (string)null);
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
                 {
                     b.Property<int>("Id")
@@ -495,6 +537,17 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.ToTable("TransactionRecord", (string)null);
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.LedgerEntry", b =>
+                {
+                    b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
+                        .WithMany("LedgerEntries")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Partner");
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>
                 {
                     b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
@@ -619,6 +672,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
                 {
+                    b.Navigation("LedgerEntries");
+
                     b.Navigation("Payments");
 
                     b.Navigation("Transactions");

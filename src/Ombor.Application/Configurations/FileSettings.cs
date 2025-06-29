@@ -57,4 +57,10 @@ public sealed class FileSettings
     /// </summary>
     [Required(ErrorMessage = "Subfolder for thumbnail images is required.")]
     public required string ThumbnailsSubfolder { get; init; }
+
+    /// <summary>
+    /// Physical path for payment attachments.
+    /// </summary>
+    [Required(ErrorMessage = "Subfolder for payment attachments is required.")]
+    public required string PaymentAttachmentsSection { get; set; }
 }

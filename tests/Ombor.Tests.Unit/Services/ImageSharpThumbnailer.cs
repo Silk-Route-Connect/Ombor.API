@@ -101,6 +101,7 @@ public sealed class ImageSharpThumbnailerTests
             ThumbnailsSubfolder = "thumb",
             ProductUploadsSection = "products",
             PublicUrlPrefix = "images",
+            PaymentAttachmentsSection = "payments"
         };
 
         var options = Options.Create(settings);

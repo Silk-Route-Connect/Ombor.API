@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
+using Ombor.Application.Mappings;
 using Ombor.Application.Services;
 
 namespace Ombor.Application.Extensions;
@@ -32,8 +33,15 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPartnerService, PartnerService>();
         services.AddScoped<ITemplateService, TemplateService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IPaymentAllocationService, PaymentAllocationService>();
+        services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<ITransactionPaymentService, TransactionPaymentService>();
 
         services.AddTransient<IFileService, FileService>();
+        services.AddTransient<ICurrencyCalculator, CurrencyCalculator>();
+        services.AddTransient<IPaymentMapper, PaymentMapper>();
+        services.AddTransient<ITransactionMapper, TransactionMapper>();
 
         return services;
     }
