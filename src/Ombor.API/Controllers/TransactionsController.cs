@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.Transaction;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Requests.Transactions;
+using Ombor.Contracts.Responses.Payment;
 using Ombor.Contracts.Responses.Transaction;
 
 namespace Ombor.API.Controllers;
@@ -10,7 +12,8 @@ namespace Ombor.API.Controllers;
 [ApiController]
 public class TransactionsController(
     ITransactionService transactionService,
-    IPaymentService paymentService) : ControllerBase
+    IPaymentService paymentService,
+    ITransactionPaymentService transactionPaymentService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<TransactionDto[]>> GetAsync(
@@ -39,6 +42,21 @@ public class TransactionsController(
         var response = await paymentService.GetTransactionPaymentsAsync(request);
 
         return Ok(response);
+    }
+
+    [HttpPost("{id:int:min(1)}/payments")]
+    public async Task<ActionResult<CreatePaymentResponse>> CreatePaymentAsync(
+        [FromRoute] int id,
+        [FromForm] CreateTransactionPaymentRequest request)
+    {
+        if (id != request.TransactionId)
+        {
+            return BadRequest($"Route id: {id} does not match with body id: {request.TransactionId}.");
+        }
+
+        await transactionPaymentService.CreatePaymentAsync(request);
+
+        return Created();
     }
 
     [HttpPost]
