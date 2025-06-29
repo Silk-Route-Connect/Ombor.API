@@ -54,6 +54,16 @@ internal static class EnumExtensions
         return Domain.Enums.PaymentDirection.Expense;
     }
 
+    public static Domain.Enums.PaymentDirection GetPaymentDirection(this Domain.Enums.TransactionType value)
+    {
+        if (value is Domain.Enums.TransactionType.Sale or Domain.Enums.TransactionType.SupplyRefund)
+        {
+            return Domain.Enums.PaymentDirection.Income;
+        }
+
+        return Domain.Enums.PaymentDirection.Expense;
+    }
+
     public static Domain.Enums.PaymentAllocationType GetPaymentAllocationType(this Contracts.Enums.TransactionType value)
         => value switch
         {
@@ -61,6 +71,16 @@ internal static class EnumExtensions
             Contracts.Enums.TransactionType.Supply => Domain.Enums.PaymentAllocationType.Supply,
             Contracts.Enums.TransactionType.SaleRefund => Domain.Enums.PaymentAllocationType.SaleRefund,
             Contracts.Enums.TransactionType.SupplyRefund => Domain.Enums.PaymentAllocationType.SupplyRefund,
+            _ => throw new EnumParseException<Contracts.Enums.TransactionType, Domain.Enums.PaymentAllocationType>(),
+        };
+
+    public static Domain.Enums.PaymentAllocationType GetPaymentAllocationType(this Domain.Enums.TransactionType value)
+        => value switch
+        {
+            Domain.Enums.TransactionType.Sale => Domain.Enums.PaymentAllocationType.Sale,
+            Domain.Enums.TransactionType.Supply => Domain.Enums.PaymentAllocationType.Supply,
+            Domain.Enums.TransactionType.SaleRefund => Domain.Enums.PaymentAllocationType.SaleRefund,
+            Domain.Enums.TransactionType.SupplyRefund => Domain.Enums.PaymentAllocationType.SupplyRefund,
             _ => throw new EnumParseException<Contracts.Enums.TransactionType, Domain.Enums.PaymentAllocationType>(),
         };
 }

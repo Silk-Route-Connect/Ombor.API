@@ -5,18 +5,22 @@ namespace Ombor.Application.Extensions;
 
 internal static class PartnerExtensions
 {
-    public static void ApplyPayment(this Partner partner, Payment payment)
+    public static bool HasAvailableBalance(this Partner partner, TransactionRecord transaction)
     {
-        ArgumentNullException.ThrowIfNull(payment);
+        ArgumentNullException.ThrowIfNull(partner);
+        ArgumentNullException.ThrowIfNull(transaction);
 
-        if (payment.Direction == PaymentDirection.Income)
+        if (transaction.Type is TransactionType.Supply && partner.Balance < 0)
         {
-            partner.Balance += payment.AmountLocal;
+            return true;
         }
-        else
+
+        if (transaction.Type is TransactionType.Sale && partner.Balance > 0)
         {
-            partner.Balance -= payment.AmountLocal;
+            return true;
         }
+
+        return false;
     }
 
     public static bool CanHandle(this PartnerType partnerType, Contracts.Enums.TransactionType transactionType) => transactionType switch
