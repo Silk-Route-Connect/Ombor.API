@@ -1,6 +1,6 @@
 Summary
-  Generated on: 06/29/2025 - 20:01:44
-  Coverage date: 06/29/2025 - 20:01:04 - 06/29/2025 - 20:01:43
+  Generated on: 06/29/2025 - 20:12:16
+  Coverage date: 06/29/2025 - 20:11:33 - 06/29/2025 - 20:12:15
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 64
@@ -16,7 +16,7 @@ Summary
   Method coverage: 87.2% (218 of 250)
   Covered methods: 218
   Total methods: 250
-  Tag: 170_15958855482
+  Tag: 171_15958946765
 
 Ombor.API                                                                      98.1%
   Ombor.API.Controllers.CategoriesController                                  100.0%
