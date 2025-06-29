@@ -42,6 +42,12 @@ internal sealed class PaymentService(
         var payments = await query
             .OrderByDescending(x => x.DateUtc)
             .ToArrayAsync();
+        foreach (var payment in payments)
+        {
+            payment.Allocations = payment.Allocations
+                .Where(x => x.TransactionId == request.TransactionId)
+                .ToArray();
+        }
 
         return mapper.ToTransactionPayments(payments);
     }
