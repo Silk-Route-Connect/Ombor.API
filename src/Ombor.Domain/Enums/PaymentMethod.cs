@@ -9,4 +9,6 @@ public enum PaymentMethod
     Card = 2,
 
     BankTransfer = 3,
+
+    AccountBalance = 4,
 }
