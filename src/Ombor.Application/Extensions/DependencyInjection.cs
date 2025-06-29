@@ -5,10 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
-using Ombor.Application.Interfaces.Transaction;
 using Ombor.Application.Mappings;
 using Ombor.Application.Services;
-using Ombor.Application.Services.Transaction;
 
 namespace Ombor.Application.Extensions;
 

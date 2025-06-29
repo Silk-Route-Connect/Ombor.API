@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
-using Ombor.Application.Interfaces.Transaction;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Requests.Transactions;

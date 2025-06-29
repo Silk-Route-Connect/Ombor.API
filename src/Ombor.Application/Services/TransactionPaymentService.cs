@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
-using Ombor.Application.Interfaces.Transaction;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 
-namespace Ombor.Application.Services.Transaction;
+namespace Ombor.Application.Services;
 
 internal sealed class TransactionPaymentService(
     IApplicationDbContext context,

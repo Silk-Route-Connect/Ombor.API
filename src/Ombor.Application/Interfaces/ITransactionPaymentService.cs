@@ -1,6 +1,6 @@
 ﻿using Ombor.Contracts.Requests.Payments;
 
-namespace Ombor.Application.Interfaces.Transaction;
+namespace Ombor.Application.Interfaces;
 
 public interface ITransactionPaymentService
 {

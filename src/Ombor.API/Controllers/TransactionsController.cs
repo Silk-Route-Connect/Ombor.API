@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
-using Ombor.Application.Interfaces.Transaction;
 using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Requests.Transactions;
 using Ombor.Contracts.Responses.Payment;
