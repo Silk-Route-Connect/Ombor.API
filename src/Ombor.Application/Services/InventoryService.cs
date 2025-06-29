@@ -45,7 +45,7 @@ internal sealed class InventoryService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        return mapping.ToDto(entity); ;
+        return mapping.ToDto(entity);
     }
 
     public async Task<CreateInventoryResponse> CreateAsync(CreateInventoryRequest request)
