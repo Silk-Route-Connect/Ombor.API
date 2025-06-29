@@ -1,86 +1,95 @@
 Summary
-  Generated on: 06/23/2025 - 14:07:20
-  Coverage date: 06/23/2025 - 14:06:38 - 06/23/2025 - 14:07:19
+  Generated on: 06/29/2025 - 20:01:44
+  Coverage date: 06/29/2025 - 20:01:04 - 06/29/2025 - 20:01:43
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 55
-  Files: 54
-  Line coverage: 96.7%
-  Covered lines: 877
-  Uncovered lines: 29
-  Coverable lines: 906
-  Total lines: 2758
-  Branch coverage: 93% (160 of 172)
-  Covered branches: 160
-  Total branches: 172
-  Method coverage: 86.6% (194 of 224)
-  Covered methods: 194
-  Total methods: 224
-  Tag: 169_15826488298
+  Classes: 64
+  Files: 63
+  Line coverage: 96.6%
+  Covered lines: 992
+  Uncovered lines: 34
+  Coverable lines: 1026
+  Total lines: 3159
+  Branch coverage: 93.1% (164 of 176)
+  Covered branches: 164
+  Total branches: 176
+  Method coverage: 87.2% (218 of 250)
+  Covered methods: 218
+  Total methods: 250
+  Tag: 170_15958855482
 
-Ombor.API                                                                     98.1%
-  Ombor.API.Controllers.CategoriesController                                 100.0%
-  Ombor.API.Controllers.PartnersController                                   100.0%
-  Ombor.API.Controllers.ProductsController                                   100.0%
-  Ombor.API.Controllers.TemplatesController                                  100.0%
-  Ombor.API.Extensions.DependencyInjection                                    97.5%
-  Ombor.API.Extensions.StartupExtensions                                     100.0%
+Ombor.API                                                                      98.1%
+  Ombor.API.Controllers.CategoriesController                                  100.0%
+  Ombor.API.Controllers.InventoriesController                                 100.0%
+  Ombor.API.Controllers.PartnersController                                    100.0%
+  Ombor.API.Controllers.ProductsController                                    100.0%
+  Ombor.API.Controllers.TemplatesController                                   100.0%
+  Ombor.API.Extensions.DependencyInjection                                     97.5%
+  Ombor.API.Extensions.StartupExtensions                                      100.0%
 
-Ombor.Application                                                             99.6%
-  Ombor.Application.Extensions.DependencyInjection                           100.0%
-  Ombor.Application.Extensions.FormFileExtensions                            100.0%
-  Ombor.Application.Helpers.ImageHelper                                      100.0%
-  Ombor.Application.Mappings.CategoryMappings                                100.0%
-  Ombor.Application.Mappings.PartnerMappings                                 100.0%
-  Ombor.Application.Mappings.ProductImageMappings                            100.0%
-  Ombor.Application.Mappings.ProductMappings                                 100.0%
-  Ombor.Application.Mappings.TemplateMappings                                 97.2%
-  Ombor.Application.Services.CategoryService                                 100.0%
-  Ombor.Application.Services.FileService                                     100.0%
-  Ombor.Application.Services.PartnerService                                  100.0%
-  Ombor.Application.Services.ProductService                                  100.0%
-  Ombor.Application.Services.TemplateService                                 100.0%
-  Ombor.Application.Validators.Category.CreateCategoryRequestValidator       100.0%
-  Ombor.Application.Validators.Category.DeleteCategoryRequestValidator       100.0%
-  Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator      100.0%
-  Ombor.Application.Validators.Category.UpdateCategoryRequestValidator       100.0%
-  Ombor.Application.Validators.Partner.CreatePartnerRequestValidator         100.0%
-  Ombor.Application.Validators.Partner.DeletePartnerRequestValidator         100.0%
-  Ombor.Application.Validators.Partner.GetPartnerByIdRequestValidator        100.0%
-  Ombor.Application.Validators.Partner.UpdatePartnerRequestValidator         100.0%
-  Ombor.Application.Validators.Product.CreateProductRequestValidator         100.0%
-  Ombor.Application.Validators.Product.DeleteProductRequestValidator         100.0%
-  Ombor.Application.Validators.Product.GetProductByIdRequestValidator        100.0%
-  Ombor.Application.Validators.Product.UpdateProductRequestValidator         100.0%
-  Ombor.Application.Validators.Template.CreateTemplateRequestValidator       100.0%
-  Ombor.Application.Validators.Template.DeleteTemplateRequestValidator       100.0%
-  Ombor.Application.Validators.Template.GetTemplateByIdRequestValidator      100.0%
-  Ombor.Application.Validators.Template.UpdateTemplateRequestValidator       100.0%
-  Ombor.Application.Validators.ValidationHelpers                             100.0%
+Ombor.Application                                                              98.9%
+  Ombor.Application.Extensions.DependencyInjection                            100.0%
+  Ombor.Application.Extensions.FormFileExtensions                             100.0%
+  Ombor.Application.Helpers.ImageHelper                                       100.0%
+  Ombor.Application.Mappings.CategoryMappings                                 100.0%
+  Ombor.Application.Mappings.InventoryMappings                                100.0%
+  Ombor.Application.Mappings.PartnerMappings                                  100.0%
+  Ombor.Application.Mappings.ProductImageMappings                             100.0%
+  Ombor.Application.Mappings.ProductMappings                                  100.0%
+  Ombor.Application.Mappings.TemplateMappings                                  97.2%
+  Ombor.Application.Services.CategoryService                                  100.0%
+  Ombor.Application.Services.FileService                                      100.0%
+  Ombor.Application.Services.InventoryService                                 100.0%
+  Ombor.Application.Services.PartnerService                                   100.0%
+  Ombor.Application.Services.ProductService                                   100.0%
+  Ombor.Application.Services.TemplateService                                  100.0%
+  Ombor.Application.Validators.Category.CreateCategoryRequestValidator        100.0%
+  Ombor.Application.Validators.Category.DeleteCategoryRequestValidator        100.0%
+  Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator       100.0%
+  Ombor.Application.Validators.Category.UpdateCategoryRequestValidator        100.0%
+  Ombor.Application.Validators.Inventory.CreateInventoryRequestValidator      100.0%
+  Ombor.Application.Validators.Inventory.DeleteInventoryRequestValidator        0.0%
+  Ombor.Application.Validators.Inventory.GetInventoryByIdRequestValidator     100.0%
+  Ombor.Application.Validators.Inventory.UpdateInventoryRequestValidator      100.0%
+  Ombor.Application.Validators.Partner.CreatePartnerRequestValidator          100.0%
+  Ombor.Application.Validators.Partner.DeletePartnerRequestValidator          100.0%
+  Ombor.Application.Validators.Partner.GetPartnerByIdRequestValidator         100.0%
+  Ombor.Application.Validators.Partner.UpdatePartnerRequestValidator          100.0%
+  Ombor.Application.Validators.Product.CreateProductRequestValidator          100.0%
+  Ombor.Application.Validators.Product.DeleteProductRequestValidator          100.0%
+  Ombor.Application.Validators.Product.GetProductByIdRequestValidator         100.0%
+  Ombor.Application.Validators.Product.UpdateProductRequestValidator          100.0%
+  Ombor.Application.Validators.Template.CreateTemplateRequestValidator        100.0%
+  Ombor.Application.Validators.Template.DeleteTemplateRequestValidator        100.0%
+  Ombor.Application.Validators.Template.GetTemplateByIdRequestValidator       100.0%
+  Ombor.Application.Validators.Template.UpdateTemplateRequestValidator        100.0%
+  Ombor.Application.Validators.ValidationHelpers                              100.0%
 
-Ombor.Contracts                                                                    
+Ombor.Contracts                                                                     
 
-Ombor.Domain                                                                  29.7%
-  Ombor.Domain.Exceptions.EntityNotFoundException                             33.3%
-  Ombor.Domain.Exceptions.EntityNotFoundException<T>                          20.0%
-  Ombor.Domain.Exceptions.FileTooLargeException                               25.0%
-  Ombor.Domain.Exceptions.InvalidFileException                                33.3%
-  Ombor.Domain.Exceptions.UnsupportedFileFormatException                      33.3%
+Ombor.Domain                                                                   29.7%
+  Ombor.Domain.Exceptions.EntityNotFoundException                              33.3%
+  Ombor.Domain.Exceptions.EntityNotFoundException<T>                           20.0%
+  Ombor.Domain.Exceptions.FileTooLargeException                                25.0%
+  Ombor.Domain.Exceptions.InvalidFileException                                 33.3%
+  Ombor.Domain.Exceptions.UnsupportedFileFormatException                       33.3%
 
-Ombor.Infrastructure                                                         100.0%
-  Ombor.Infrastructure.Extensions.DependencyInjection                        100.0%
-  Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                  100.0%
-  Ombor.Infrastructure.Extensions.StringExtensions                           100.0%
-  Ombor.Infrastructure.Helpers.PathHelpers                                   100.0%
-  Ombor.Infrastructure.Persistence.ApplicationDbContext                      100.0%
-  Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration      100.0%
-  Ombor.Infrastructure.Persistence.Configurations.PartnerConfiguration       100.0%
-  Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration       100.0%
-  Ombor.Infrastructure.Persistence.Configurations.ProductImageConfiguration  100.0%
-  Ombor.Infrastructure.Persistence.Configurations.TemplateConfiguration      100.0%
-  Ombor.Infrastructure.Persistence.Configurations.TemplateItemConfiguration  100.0%
-  Ombor.Infrastructure.Services.ImageSharpThumbnailer                        100.0%
-  Ombor.Infrastructure.Services.LocalFilePathProvider                        100.0%
-  Ombor.Infrastructure.Storage.LocalFileStorage                              100.0%
+Ombor.Infrastructure                                                          100.0%
+  Ombor.Infrastructure.Extensions.DependencyInjection                         100.0%
+  Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                   100.0%
+  Ombor.Infrastructure.Extensions.StringExtensions                            100.0%
+  Ombor.Infrastructure.Helpers.PathHelpers                                    100.0%
+  Ombor.Infrastructure.Persistence.ApplicationDbContext                       100.0%
+  Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration       100.0%
+  Ombor.Infrastructure.Persistence.Configurations.InventoryConfiguration      100.0%
+  Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfigurarion  100.0%
+  Ombor.Infrastructure.Persistence.Configurations.PartnerConfiguration        100.0%
+  Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration        100.0%
+  Ombor.Infrastructure.Persistence.Configurations.ProductImageConfiguration   100.0%
+  Ombor.Infrastructure.Persistence.Configurations.TemplateConfiguration       100.0%
+  Ombor.Infrastructure.Persistence.Configurations.TemplateItemConfiguration   100.0%
+  Ombor.Infrastructure.Services.ImageSharpThumbnailer                         100.0%
+  Ombor.Infrastructure.Services.LocalFilePathProvider                         100.0%
+  Ombor.Infrastructure.Storage.LocalFileStorage                               100.0%
 
-Ombor.TestDataGenerator                                                            
+Ombor.TestDataGenerator                                                             
