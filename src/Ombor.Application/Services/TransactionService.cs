@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.Transaction;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Requests.Payments;
 using Ombor.Contracts.Requests.Transactions;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
@@ -15,7 +15,8 @@ internal sealed class TransactionService(
     ITransactionMapper mapper,
     IRequestValidator validator,
     ICurrencyCalculator currencyCalculator,
-    IDateTimeProvider dateTimeProvider) : ITransactionService
+    IDateTimeProvider dateTimeProvider,
+    ITransactionPaymentService transactionPaymentService) : ITransactionService
 {
     public async Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
     {
@@ -42,16 +43,40 @@ internal sealed class TransactionService(
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var entity = mapper.ToEntity(request);
+        var transaction = mapper.ToEntity(request);
+        transaction.Partner = await GetOrThrowPartnerAsync(request.PartnerId);
+
         await using var dbTransaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            context.Transactions.Add(transaction);
+            await context.SaveChangesAsync();
 
-        var payment = CreatePayment(request, entity);
+            if (request.TotalPaid > 0)
+            {
+                var paymentRequest = new CreateTransactionPaymentRequest(
+                    TransactionId: transaction.Id,
+                    Notes: request.Notes,
+                    Amount: request.TotalPaid,
+                    ExchangeRate: request.ExchangeRate,
+                    Currency: request.Currency,
+                    Method: request.PaymentMethod,
+                    Attachments: request.Attachments);
 
-        context.Payments.Add(payment);
-        context.Transactions.Add(entity);
-        await context.SaveChangesAsync();
+                await transactionPaymentService.CreatePaymentAsync(paymentRequest);
+            }
 
-        return mapper.ToCreateResponse(entity);
+            await context.SaveChangesAsync();
+            await dbTransaction.CommitAsync();
+        }
+        catch
+        {
+            await dbTransaction.RollbackAsync();
+            throw;
+        }
+
+        var created = await GetOrThrowAsync(transaction.Id);
+        return mapper.ToCreateResponse(created);
     }
 
     public Task<UpdateTransactionResponse> UpdateAsync(UpdateTransactionRequest request)
@@ -101,34 +126,11 @@ internal sealed class TransactionService(
         await context.Transactions
         .Include(x => x.Partner)
         .Include(x => x.Lines)
+        .ThenInclude(x => x.Product)
         .FirstOrDefaultAsync(x => x.Id == transactionId)
         ?? throw new EntityNotFoundException<TransactionRecord>(transactionId);
 
-    private Payment CreatePayment(CreateTransactionRequest request, TransactionRecord transaction)
-    {
-        var payment = new Payment
-        {
-            Notes = request.Notes,
-            ExternalReference = null,
-            Amount = request.TotalPaid,
-            AmountLocal = currencyCalculator.CalculateLocalAmount(request.TotalPaid, request.ExchangeRate),
-            ExchangeRate = request.ExchangeRate,
-            DateUtc = dateTimeProvider.UtcNow,
-            Type = PaymentType.Transaction,
-            Method = request.Method.ParseToDomain(),
-            Currency = request.Currency.ParseToDomain(),
-            Direction = request.Type.GetPaymentDirection(),
-
-        };
-        var allocation = new PaymentAllocation
-        {
-            AppliedAmount = request.TotalPaid,
-            Type = request.Type.GetPaymentAllocationType(),
-            Transaction = transaction,
-            Payment = payment,
-        };
-        payment.Allocations.Add(allocation);
-
-        return payment;
-    }
+    private async Task<Partner> GetOrThrowPartnerAsync(int partnerId)
+        => await context.Partners.FirstOrDefaultAsync(x => x.Id == partnerId)
+        ?? throw new EntityNotFoundException<Partner>(partnerId);
 }
