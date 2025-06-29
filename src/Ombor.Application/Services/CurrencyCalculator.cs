@@ -6,7 +6,7 @@ internal sealed class CurrencyCalculator : ICurrencyCalculator
 {
     public decimal CalculateLocalAmount(decimal amount, decimal exchangeRate)
     {
-        if (amount <= 0)
+        if (amount < 0)
         {
             throw new ArgumentException($"Amount must be positive.", nameof(amount));
         }
