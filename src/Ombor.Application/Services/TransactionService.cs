@@ -13,8 +13,6 @@ internal sealed class TransactionService(
     IApplicationDbContext context,
     ITransactionMapper mapper,
     IRequestValidator validator,
-    ICurrencyCalculator currencyCalculator,
-    IDateTimeProvider dateTimeProvider,
     ITransactionPaymentService transactionPaymentService) : ITransactionService
 {
     public async Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
