@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
+using Ombor.Infrastructure.Persistence.Interceptors;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
 
 namespace Ombor.Tests.Integration.Helpers;
@@ -54,10 +55,11 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(context);
             }
 
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.LogTo(Console.WriteLine, LogLevel.Information)
+            services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(
+                (sp, options) => options.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
-                .UseSqlServer(_databaseFixture.DatabaseConnectionString));
+                .UseSqlServer(_databaseFixture.DatabaseConnectionString)
+                .AddInterceptors(sp.GetRequiredService<LedgerEntryInterceptor>()));
         });
 
         builder.UseEnvironment("Testing");
