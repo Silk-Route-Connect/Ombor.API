@@ -7,7 +7,7 @@ internal static class TransactionExtensions
 {
     public static void AddPayment(this TransactionRecord transaction, decimal amountLocal)
     {
-        if (transaction.TotalPaid + amountLocal > transaction.TotalDue)
+        if (amountLocal > transaction.UnpaidAmount)
         {
             throw new InvalidOperationException("Transactions overpayment is not allowed.");
         }
