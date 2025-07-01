@@ -23,10 +23,10 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
     public async Task CreateAsync_ShouldReturnCreated_WhenRequestIsValid(CreateProductRequest request)
     {
         // Arrange
-        var multiartForm = request.ToMultipartFormData();
+        var formData = request.ToMultipartFormData();
 
         // Act
-        var response = await _client.PostAsync<CreateProductResponse>(GetUrl(), multiartForm);
+        var response = await _client.PostAsync<CreateProductResponse>(GetUrl(), formData);
 
         // Assert
         await _responseValidator.Product.ValidatePostAsync(request, response);

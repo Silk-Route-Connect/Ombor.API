@@ -11,18 +11,19 @@ using Xunit.Abstractions;
 namespace Ombor.Tests.Integration.Endpoints;
 
 [Collection(nameof(DatabaseCollection))]
-public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
-    : IClassFixture<TestingWebApplicationFactory>
+public abstract class EndpointTestsBase(
+    TestingWebApplicationFactory factory,
+    ITestOutputHelper outputHelper) : IClassFixture<TestingWebApplicationFactory>
 {
     protected const int NonExistentEntityId = 99999;
     protected const string NotFoundTitle = "Not Found";
 
     protected readonly TestingWebApplicationFactory _factory = factory;
-    protected readonly ITestOutputHelper _outputHelper = outputHelper;
     protected readonly IApplicationDbContext _context = factory.Context;
     protected readonly ResponseValidator _responseValidator = factory.ResponseValidator;
-    protected readonly Faker _faker = new();
     protected readonly ApiClient _client = CreateApiClient(factory, outputHelper);
+    protected readonly ITestOutputHelper _outputHelper = outputHelper;
+    protected readonly Faker _faker = new();
     protected readonly ITestDataBuilder _builder = new TestDataBuilder();
 
     public static readonly IEnumerable<object[]> InvalidIds = [[-10], [-1], [0]];
@@ -70,5 +71,6 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         public const string Product = "products";
         public const string Partner = "partners";
         public const string Template = "templates";
+        public const string Transaction = "transactions";
     }
 }
