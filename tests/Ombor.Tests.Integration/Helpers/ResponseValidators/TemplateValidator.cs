@@ -13,7 +13,7 @@ public sealed class TemplateValidator(IApplicationDbContext context)
     {
         var expectedTemplates = await GetTemplatesAsync(request);
 
-        TemplateAssertionHelpers.AssertEquivalent(expectedTemplates, response);
+        TemplateAssertionHelper.AssertEquivalent(expectedTemplates, response);
     }
 
     public async Task ValidateGetByIdAsnc(int templateId, TemplateDto response)
@@ -23,7 +23,7 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         Assert.NotNull(expectedTemplate);
 
-        TemplateAssertionHelpers.AssertEquivalent(expectedTemplate, response);
+        TemplateAssertionHelper.AssertEquivalent(expectedTemplate, response);
     }
 
     public async Task ValidatePostAsync(CreateTemplateRequest request, CreateTemplateResponse response)
@@ -33,8 +33,8 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         Assert.NotNull(createdTemplate);
 
-        TemplateAssertionHelpers.AssertEquivalent(request, response);
-        TemplateAssertionHelpers.AssertEquivalent(request, createdTemplate);
+        TemplateAssertionHelper.AssertEquivalent(request, response);
+        TemplateAssertionHelper.AssertEquivalent(request, createdTemplate);
     }
 
     public async Task ValidatePutAsync(UpdateTemplateRequest request, UpdateTemplateResponse response)
@@ -44,8 +44,8 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         Assert.NotNull(updatedTemplate);
 
-        TemplateAssertionHelpers.AssertEquivalent(request, response);
-        TemplateAssertionHelpers.AssertEquivalent(request, updatedTemplate);
+        TemplateAssertionHelper.AssertEquivalent(request, response);
+        TemplateAssertionHelper.AssertEquivalent(request, updatedTemplate);
     }
 
     public async Task ValidateDeleteAsync(int templateId)

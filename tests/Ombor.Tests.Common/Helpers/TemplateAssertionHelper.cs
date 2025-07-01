@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Ombor.Tests.Common.Helpers;
 
-public static class TemplateAssertionHelpers
+public static class TemplateAssertionHelper
 {
     public static void AssertEquivalent(Template[] expected, TemplateDto[] actual)
     {
