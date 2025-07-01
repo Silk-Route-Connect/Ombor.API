@@ -78,6 +78,7 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         #region Indexes
 
         builder.HasIndex(t => t.DateUtc);
+
         builder.HasIndex(t => new { t.PartnerId, t.Type, t.Status });
 
         #endregion
