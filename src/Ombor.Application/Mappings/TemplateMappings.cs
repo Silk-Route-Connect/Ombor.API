@@ -74,6 +74,7 @@ internal static class TemplateMappings
             .ToList();
 
         template.Name = request.Name;
+        template.PartnerId = request.PartnerId;
         template.Type = request.Type.ToDomain();
         template.Items = items;
     }
