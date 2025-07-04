@@ -35,9 +35,9 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         Assert.NotNull(createdTemplate);
 
-        TemplateAssertionHelpers.AssertEquivalent(request, response);
-        TemplateAssertionHelpers.AssertEquivalent(request, createdTemplate);
-        TemplateAssertionHelpers.AssertEquivalent(response, createdTemplate);
+        TemplateAssertionHelper.AssertEquivalent(request, response);
+        TemplateAssertionHelper.AssertEquivalent(request, createdTemplate);
+        TemplateAssertionHelper.AssertEquivalent(response, createdTemplate);
     }
 
     public async Task ValidatePutAsync(UpdateTemplateRequest request, UpdateTemplateResponse response)
@@ -48,9 +48,9 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         Assert.NotNull(updatedTemplate);
 
-        TemplateAssertionHelpers.AssertEquivalent(request, response);
-        TemplateAssertionHelpers.AssertEquivalent(request, updatedTemplate);
-        TemplateAssertionHelpers.AssertEquivalent(response, updatedTemplate);
+        TemplateAssertionHelper.AssertEquivalent(request, response);
+        TemplateAssertionHelper.AssertEquivalent(request, updatedTemplate);
+        TemplateAssertionHelper.AssertEquivalent(response, updatedTemplate);
     }
 
     public async Task ValidateDeleteAsync(int templateId)
