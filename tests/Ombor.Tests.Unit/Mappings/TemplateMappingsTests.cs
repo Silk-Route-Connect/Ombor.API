@@ -292,6 +292,201 @@ public sealed class TemplateMappingsTests
     }
 
     [Fact]
+    public void ToDto_ShouldThrowInvalidOperationException_WhenTemplateItemProductIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 1, Name = "Partner A" };
+        var template = new Template
+        {
+            Id = 10,
+            PartnerId = 1,
+            Partner = partner,
+            Name = "Template-A",
+            Type = DomainType.Sale
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 100,
+            ProductId = 5,
+            Product = null!,          // ← NULL PRODUCT
+            TemplateId = 10,
+            Template = template,
+            Quantity = 1,
+            UnitPrice = 2m,
+            DiscountAmount = 0m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToDto());
+    }
+
+    [Fact]
+    public void ToDto_ShouldThrowInvalidOperationException_WhenTemplateItemTemplateIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 2, Name = "Partner B" };
+        var product = new Product { Id = 8, Name = "Widget", SKU = "Test SKU", Category = null! };
+        var template = new Template
+        {
+            Id = 11,
+            PartnerId = 2,
+            Partner = partner,
+            Name = "Template-B",
+            Type = DomainType.Supply
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 101,
+            ProductId = product.Id,
+            Product = product,
+            TemplateId = 11,
+            Template = null!,
+            Quantity = 3,
+            UnitPrice = 1.5m,
+            DiscountAmount = 0m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToDto());
+    }
+
+    [Fact]
+    public void ToCreateResponse_ShouldThrowInvalidOperationException_WhenTemplateItemProductIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 3, Name = "Partner C" };
+        var template = new Template
+        {
+            Id = 12,
+            PartnerId = 3,
+            Partner = partner,
+            Name = "Template-C",
+            Type = DomainType.Sale
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 102,
+            ProductId = 9,
+            Product = null!,
+            TemplateId = 12,
+            Template = template,
+            Quantity = 4,
+            UnitPrice = 2m,
+            DiscountAmount = .5m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToCreateResponse());
+    }
+
+    [Fact]
+    public void ToCreateResponse_ShouldThrowInvalidOperationException_WhenTemplateItemTemplateIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 4, Name = "Partner D" };
+        var product = new Product { Id = 10, Name = "Bolt", SKU = "Test SKU", Category = null! };
+        var template = new Template
+        {
+            Id = 13,
+            PartnerId = 4,
+            Partner = partner,
+            Name = "Template-D",
+            Type = DomainType.Supply
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 103,
+            ProductId = product.Id,
+            Product = product,
+            TemplateId = 13,
+            Template = null!,
+            Quantity = 2,
+            UnitPrice = 5m,
+            DiscountAmount = 0m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToCreateResponse());
+    }
+
+    [Fact]
+    public void ToUpdateResponse_ShouldThrowInvalidOperationException_WhenTemplateItemProductIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 5, Name = "Partner E" };
+        var template = new Template
+        {
+            Id = 14,
+            PartnerId = 5,
+            Partner = partner,
+            Name = "Template-E",
+            Type = DomainType.Sale
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 104,
+            ProductId = 11,
+            Product = null!,
+            TemplateId = 14,
+            Template = template,
+            Quantity = 7,
+            UnitPrice = 3m,
+            DiscountAmount = 0m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToUpdateResponse());
+    }
+
+    [Fact]
+    public void ToUpdateResponse_ShouldThrowInvalidOperationException_WhenTemplateItemTemplateIsNull()
+    {
+        // Arrange
+        var partner = new Partner { Id = 6, Name = "Partner F" };
+        var product = new Product { Id = 12, Name = "Cable", SKU = "Test SKU", Category = null! };
+        var template = new Template
+        {
+            Id = 15,
+            PartnerId = 6,
+            Partner = partner,
+            Name = "Template-F",
+            Type = DomainType.Supply
+        };
+
+        var item = new TemplateItem
+        {
+            Id = 105,
+            ProductId = product.Id,
+            Product = product,
+            TemplateId = 15,
+            Template = null!,
+            Quantity = 1,
+            UnitPrice = 10m,
+            DiscountAmount = 1m
+        };
+
+        template.Items = [item];
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => template.ToUpdateResponse());
+    }
+
+    [Fact]
     public void ContractTemplateTypeEnum_ShouldParseToDomain_ForAllValues()
     {
         foreach (var contractValue in Enum.GetValues(typeof(ContractType)).Cast<ContractType>())
