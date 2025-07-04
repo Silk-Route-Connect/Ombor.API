@@ -124,14 +124,28 @@ internal sealed class DevelopmentDatabaseSeeder(
             return;
         }
 
+        var allTemplates = new List<Template>();
+        var partners = context.Partners
+            .Select(x => x.Id)
+            .ToArray();
         var products = context.Products
             .Select(x => x.Id)
             .ToArray();
-        var templates = TemplateGenerator.Generate(products, seedSettings.NumberOfTemplates, seedSettings.NumberOfItemsPerTemplate, seedSettings.Locale)
-            .DistinctBy(x => x.Name)
-            .ToArray();
 
-        context.Templates.AddRange(templates);
+        foreach (var partnerId in partners)
+        {
+            var templates = TemplateGenerator.Generate(
+                partnerId,
+                products,
+                seedSettings.NumberOfTemplatesPerPartner,
+                seedSettings.NumberOfItemsPerTemplate,
+                seedSettings.Locale)
+                .DistinctBy(x => x.Name)
+                .ToArray();
+            allTemplates.AddRange(templates);
+        }
+
+        context.Templates.AddRange(allTemplates);
         await context.SaveChangesAsync();
     }
 

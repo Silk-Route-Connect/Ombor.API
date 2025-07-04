@@ -16,7 +16,8 @@ public sealed class CreateTemplateTests(
     public async Task PostAsync_ShouldReturnCreatedTemplate_WhenRequestIsValid()
     {
         // Arrange
-        var request = TemplateRequestFactory.GenerateValidCreateRequest();
+        var partner = await CreatePartnerAsync("Partner for valid Template Create");
+        var request = TemplateRequestFactory.GenerateValidCreateRequest(partnerId: partner.Id);
         var url = GetUrl();
 
         // Act
@@ -30,7 +31,7 @@ public sealed class CreateTemplateTests(
     public async Task PostAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var request = TemplateRequestFactory.GenerateInvalidCreateRequest();
+        var request = TemplateRequestFactory.GenerateInvalidCreateRequest(partnerId: NonExistentEntityId);
         var url = GetUrl();
 
         // Act

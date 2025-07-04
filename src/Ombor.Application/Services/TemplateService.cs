@@ -69,7 +69,9 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
 
     private IQueryable<Template> GetQuery(GetTemplatesRequest request)
     {
-        var query = context.Templates.AsNoTracking();
+        var query = context.Templates
+            .Include(x => x.Partner)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
@@ -86,6 +88,8 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
     }
 
     private async Task<Template> GetOrThrowAsync(int id)
-        => await context.Templates.FirstOrDefaultAsync(x => x.Id == id)
+        => await context.Templates
+        .Include(x => x.Partner)
+        .FirstOrDefaultAsync(x => x.Id == id)
         ?? throw new EntityNotFoundException<Template>(id);
 }
