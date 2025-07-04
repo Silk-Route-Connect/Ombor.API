@@ -9,12 +9,19 @@ internal static class TemplateMappings
 {
     public static TemplateDto ToDto(this Template template)
     {
+        if (template.Partner is null)
+        {
+            throw new InvalidOperationException("Cannot map Template to TemplateDto without Partner.");
+        }
+
         var items = template.Items
             .Select(ToDto)
             .ToArray();
 
         return new(
             Id: template.Id,
+            PartnerId: template.PartnerId,
+            PartnerName: template.Partner.Name,
             Name: template.Name,
             Type: template.Type.ToString(),
             Items: items);
@@ -22,12 +29,19 @@ internal static class TemplateMappings
 
     public static CreateTemplateResponse ToCreateResponse(this Template template)
     {
+        if (template.Partner is null)
+        {
+            throw new InvalidOperationException("Cannot map Template to CreateTemplateResponse without Partner.");
+        }
+
         var items = template.Items
             .Select(ToDto)
             .ToArray();
 
         return new(
             Id: template.Id,
+            PartnerId: template.PartnerId,
+            PartnerName: template.Partner.Name,
             Name: template.Name,
             Type: template.Type.ToString(),
             Items: items);
@@ -35,12 +49,19 @@ internal static class TemplateMappings
 
     public static UpdateTemplateResponse ToUpdateResponse(this Template template)
     {
+        if (template.Partner is null)
+        {
+            throw new InvalidOperationException("Cannot map Template to UpdateTemplateResponse without Partner.");
+        }
+
         var items = template.Items
             .Select(ToDto)
             .ToArray();
 
         return new(
             Id: template.Id,
+            PartnerId: template.PartnerId,
+            PartnerName: template.Partner.Name,
             Name: template.Name,
             Type: template.Type.ToString(),
             Items: items);
@@ -67,7 +88,9 @@ internal static class TemplateMappings
         {
             Name = request.Name,
             Type = Enum.Parse<TemplateType>(request.Type.ToString()),
-            Items = items
+            Items = items,
+            PartnerId = request.PartnerId,
+            Partner = null!, // Will be set by EF
         };
     }
 
@@ -78,8 +101,8 @@ internal static class TemplateMappings
             Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
-            Product = null!, // Will be set by EF!
-            Template = null! // Will be set by EF!
+            Product = null!, // Will be set by EF
+            Template = null! // Will be set by EF
         };
 
     private static TemplateItem ToEntity(this UpdateTemplateItem item)
@@ -90,8 +113,8 @@ internal static class TemplateMappings
             Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
-            Product = null!, // Will be set by EF!
-            Template = null! // Will be set by EF!
+            Product = null!, // Will be set by EF
+            Template = null! // Will be set by EF
         };
 
     private static TemplateItemDto ToDto(this TemplateItem item)
