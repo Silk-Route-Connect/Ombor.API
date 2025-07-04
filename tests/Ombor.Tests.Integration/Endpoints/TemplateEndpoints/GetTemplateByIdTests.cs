@@ -27,7 +27,8 @@ public class GetTemplateByIdTests(
     public async Task GetById_ShouldReturnTemplate_WhenTemplateExists()
     {
         // Arrange
-        var template = await CreateTemplateAsync();
+        var partner = await CreatePartnerAsync("Partner for fetching Template by ID");
+        var template = await CreateTemplateAsync(partner);
         var url = GetUrl(template.Id);
 
         // Act

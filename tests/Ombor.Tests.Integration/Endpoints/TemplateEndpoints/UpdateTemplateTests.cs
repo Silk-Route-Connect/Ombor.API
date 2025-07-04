@@ -17,8 +17,12 @@ public class UpdateTemplateTests(
     public async Task PutAsync_ShouldReturnUpdatedTemplate_WhenRequestIsValid()
     {
         // Arrange
-        var templateToUpdate = await CreateTemplateAsync();
-        var request = TemplateRequestFactory.GenerateValidUpdateRequest(templateToUpdate.Id, templateToUpdate.Items);
+        var partner = await CreatePartnerAsync("Partner for valid Template Update");
+        var templateToUpdate = await CreateTemplateAsync(partner);
+        var request = TemplateRequestFactory.GenerateValidUpdateRequest(
+            templateId: templateToUpdate.Id,
+            partnerId: partner.Id,
+            existingItems: templateToUpdate.Items);
         var url = GetUrl(templateToUpdate.Id);
 
         // Act
@@ -32,8 +36,12 @@ public class UpdateTemplateTests(
     public async Task PutAsync_ShouldReturnNotFound_WhenTemplateDoesNotExist()
     {
         // Arrange
+        var partner = await CreatePartnerAsync("Partner for not found Template Update");
         var url = NotFoundUrl;
-        var request = TemplateRequestFactory.GenerateValidUpdateRequest(NonExistentEntityId, []);
+        var request = TemplateRequestFactory.GenerateValidUpdateRequest(
+            templateId: NonExistentEntityId,
+            partnerId: partner.Id,
+            existingItems: []);
 
         // Act
         var response = await _client.PutAsync<ProblemDetails>(url, request, HttpStatusCode.NotFound);
@@ -46,8 +54,11 @@ public class UpdateTemplateTests(
     public async Task PutAsync_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         // Arrange
-        var templateToUpdate = await CreateTemplateAsync();
-        var request = TemplateRequestFactory.GenerateInvalidUpdateRequest(templateToUpdate.Id);
+        var partner = await CreatePartnerAsync("Partner for invalid template Update.");
+        var templateToUpdate = await CreateTemplateAsync(partner);
+        var request = TemplateRequestFactory.GenerateInvalidUpdateRequest(
+            templateId: templateToUpdate.Id,
+            partnerId: partner.Id);
         var url = GetUrl(templateToUpdate.Id);
 
         // Act
