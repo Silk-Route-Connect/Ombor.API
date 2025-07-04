@@ -28,4 +28,9 @@ public class Partner : EntityBase
 
     /// <summary>Gets or sets the partner's phone numbers.</summary>
     public List<string> PhoneNumbers { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the templates of the partner.
+    /// </summary>
+    public virtual ICollection<Template> Templates { get; set; } = [];
 }
