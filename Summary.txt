@@ -1,22 +1,22 @@
 Summary
-  Generated on: 07/04/2025 - 17:19:39
-  Coverage date: 07/04/2025 - 17:18:58 - 07/04/2025 - 17:19:38
+  Generated on: 07/04/2025 - 17:31:56
+  Coverage date: 07/04/2025 - 17:31:16 - 07/04/2025 - 17:31:55
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 55
   Files: 54
-  Line coverage: 96.8%
-  Covered lines: 900
-  Uncovered lines: 29
+  Line coverage: 97.0%
+  Covered lines: 902
+  Uncovered lines: 27
   Coverable lines: 929
   Total lines: 2793
-  Branch coverage: 94.5% (174 of 184)
-  Covered branches: 174
+  Branch coverage: 96.7% (178 of 184)
+  Covered branches: 178
   Total branches: 184
   Method coverage: 86.6% (194 of 224)
   Covered methods: 194
   Total methods: 224
-  Tag: 173_16078422181
+  Tag: 174_16078572806
 
 Ombor.API                                                                     98.1%
   Ombor.API.Controllers.CategoriesController                                 100.0%
@@ -26,7 +26,7 @@ Ombor.API                                                                     98
   Ombor.API.Extensions.DependencyInjection                                    97.5%
   Ombor.API.Extensions.StartupExtensions                                     100.0%
 
-Ombor.Application                                                             99.6%
+Ombor.Application                                                            100.0%
   Ombor.Application.Extensions.DependencyInjection                           100.0%
   Ombor.Application.Extensions.FormFileExtensions                            100.0%
   Ombor.Application.Helpers.ImageHelper                                      100.0%
@@ -34,7 +34,7 @@ Ombor.Application                                                             99
   Ombor.Application.Mappings.PartnerMappings                                 100.0%
   Ombor.Application.Mappings.ProductImageMappings                            100.0%
   Ombor.Application.Mappings.ProductMappings                                 100.0%
-  Ombor.Application.Mappings.TemplateMappings                                 97.7%
+  Ombor.Application.Mappings.TemplateMappings                                100.0%
   Ombor.Application.Services.CategoryService                                 100.0%
   Ombor.Application.Services.FileService                                     100.0%
   Ombor.Application.Services.PartnerService                                  100.0%
