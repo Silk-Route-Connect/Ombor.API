@@ -4,6 +4,7 @@ namespace Ombor.Contracts.Requests.Template;
 
 public sealed record UpdateTemplateRequest(
     int Id,
+    int PartnerId,
     string Name,
     TemplateType Type,
     UpdateTemplateItem[] Items);
