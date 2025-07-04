@@ -57,4 +57,7 @@ public class Product : EntityBase
     /// Gets or sets collection of <see cref="TransactionLine"/>.
     /// </summary>
     public virtual ICollection<TransactionLine> TransactionLines { get; set; } = [];
+
+    /// <summary>Gets or sets collection of <see cref="InventoryItem"/>. </summary>
+    // public virtual List<InventoryItem> InventoryItems { get; set; } = [];
 }

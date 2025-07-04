@@ -28,6 +28,8 @@ public static class TemplateAssertionHelper
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Type.ToString(), actual.Type);
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
+        Assert.Equal(expected.Partner.Name, actual.PartnerName);
         AssertEquivalent([.. expected.Items], actual.Items);
     }
 
@@ -36,18 +38,32 @@ public static class TemplateAssertionHelper
         Assert.NotNull(expected);
         Assert.NotNull(actual);
 
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.Items.Length, actual.Items.Length);
     }
 
-    public static void AssertEquivalent(CreateTemplateRequest expected, Template? actual)
+    public static void AssertEquivalent(CreateTemplateRequest expected, Template actual)
     {
         Assert.NotNull(expected);
         Assert.NotNull(actual);
 
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Type.ToString(), actual.Type.ToString());
+        Assert.Equal(expected.Items.Length, actual.Items.Count);
+    }
+
+    public static void AssertEquivalent(CreateTemplateResponse expected, Template actual)
+    {
+        Assert.NotNull(expected);
+        Assert.NotNull(actual);
+
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
+        Assert.Equal(expected.PartnerName, actual.Partner.Name);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Type, actual.Type.ToString());
         Assert.Equal(expected.Items.Length, actual.Items.Count);
     }
 
@@ -56,6 +72,7 @@ public static class TemplateAssertionHelper
         Assert.NotNull(expected);
         Assert.NotNull(actual);
 
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Type.ToString(), actual.Type);
         AssertEquivalent(expected.Items, actual.Items);
@@ -66,8 +83,21 @@ public static class TemplateAssertionHelper
         Assert.NotNull(expected);
         Assert.NotNull(actual);
 
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Type.ToString(), actual.Type.ToString());
+        AssertEquivalent(expected.Items, [.. actual.Items]);
+    }
+
+    public static void AssertEquivalent(UpdateTemplateResponse expected, Template? actual)
+    {
+        Assert.NotNull(expected);
+        Assert.NotNull(actual);
+
+        Assert.Equal(expected.PartnerId, actual.PartnerId);
+        Assert.Equal(expected.PartnerName, actual.Partner.Name);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Type, actual.Type.ToString());
         AssertEquivalent(expected.Items, [.. actual.Items]);
     }
 
@@ -103,6 +133,12 @@ public static class TemplateAssertionHelper
     }
 
     private static void AssertEquivalent(UpdateTemplateItem[] expected, TemplateItem[] actual)
+    {
+        Assert.Equal(expected.Length, actual.Length);
+        // TODO: Assert each item
+    }
+
+    private static void AssertEquivalent(TemplateItemDto[] expected, TemplateItem[] actual)
     {
         Assert.Equal(expected.Length, actual.Length);
         // TODO: Assert each item

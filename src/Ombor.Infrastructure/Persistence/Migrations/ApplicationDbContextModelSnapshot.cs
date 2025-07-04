@@ -386,6 +386,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<int>("PartnerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -397,6 +400,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PartnerId");
 
                     b.ToTable("Template", (string)null);
                 });
@@ -612,6 +617,17 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.Template", b =>
+                {
+                    b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
+                        .WithMany("Templates")
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Partner");
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.TemplateItem", b =>
                 {
                     b.HasOne("Ombor.Domain.Entities.Product", "Product")
@@ -680,6 +696,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Transactions");
+
+                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>

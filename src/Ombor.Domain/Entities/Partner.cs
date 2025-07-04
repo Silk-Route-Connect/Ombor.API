@@ -34,4 +34,9 @@ public class Partner : EntityBase
     public virtual ICollection<Payment> Payments { get; set; } = [];
 
     public virtual ICollection<LedgerEntry> LedgerEntries { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the templates of the partner.
+    /// </summary>
+    public virtual ICollection<Template> Templates { get; set; } = [];
 }
