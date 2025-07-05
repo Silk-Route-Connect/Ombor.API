@@ -23,7 +23,7 @@ public sealed class CreateTransactionLineValidator
         RuleFor(l => l.Discount)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Discount cannot be negative.")
-            .LessThanOrEqualTo(l => l.UnitPrice)
+            .LessThanOrEqualTo(l => l.UnitPrice * l.Quantity)
             .WithMessage("Discount cannot exceed UnitPrice.");
     }
 }
