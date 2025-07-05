@@ -29,7 +29,8 @@ public sealed class CreateTransactionRequestValidator : AbstractValidator<Create
                 }
 
                 return partner.Type.CanHandle(request.Type);
-            });
+            })
+            .WithMessage("Invalid partner for transaction type.");
 
         RuleFor(x => x.Notes)
             .MaximumLength(ValidationConstants.MaxStringLength)

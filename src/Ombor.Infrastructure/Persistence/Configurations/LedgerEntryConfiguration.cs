@@ -10,7 +10,10 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
     public void Configure(EntityTypeBuilder<LedgerEntry> builder)
     {
         builder.ToTable(nameof(LedgerEntry));
+
         builder.HasKey(l => l.Id);
+
+        #region Properties
 
         builder
             .HasOne(l => l.Partner)
@@ -42,6 +45,16 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);
 
+        #endregion
+
+        #region Indexes
+
         builder.HasIndex(l => new { l.PartnerId, l.CreatedAtUtc });
+
+        builder
+            .HasIndex(l => new { l.SourceId, l.Source })
+            .IsUnique();
+
+        #endregion
     }
 }

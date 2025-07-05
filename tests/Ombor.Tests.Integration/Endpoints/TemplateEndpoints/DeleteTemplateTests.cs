@@ -15,7 +15,8 @@ public class DeleteTemplateTests(
     public async Task DeleteAsync_ShouldDeleteTemplate_WhenTemplateExists()
     {
         // Arrange
-        var templateToDelete = await CreateTemplateAsync();
+        var partner = await CreatePartnerAsync("Partner for Template Delete");
+        var templateToDelete = await CreateTemplateAsync(partner);
         var url = GetUrl(templateToDelete.Id);
 
         // Act

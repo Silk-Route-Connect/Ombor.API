@@ -55,13 +55,7 @@ internal sealed class PaymentAllocationService(IApplicationDbContext context) : 
             return 0;
         }
 
-        var debt = transaction.TotalDue - transaction.TotalPaid;
-        var applied = Math.Min(paymentAmount, debt);
-
-        transaction.TotalPaid += applied;
-        transaction.Status = transaction.TotalPaid >= transaction.TotalDue
-            ? TransactionStatus.Closed
-            : TransactionStatus.Open;
+        var applied = Math.Min(paymentAmount, transaction.UnpaidAmount);
         transaction.AddPayment(applied);
 
         payment.Allocations.Add(new PaymentAllocation

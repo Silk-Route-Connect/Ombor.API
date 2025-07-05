@@ -30,7 +30,7 @@ dotnet test $SolutionPath `
 Write-Info "Generating HTML report…"
 reportgenerator `
   -reports:"$SolutionPath\Tests\**\TestResults\**\coverage.cobertura.xml" `
-  -targetdir:"$SolutionPath\coverage" `
+  -targetdir:"$SolutionPath\Tests\coverage" `
   -reporttypes:Html
 
 # 4. Open report (optional)

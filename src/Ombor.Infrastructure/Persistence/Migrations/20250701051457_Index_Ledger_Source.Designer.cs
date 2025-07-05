@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ombor.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250701051457_Index_Ledger_Source")]
+    partial class Index_Ledger_Source
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -386,9 +389,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("PartnerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -400,8 +400,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PartnerId");
 
                     b.ToTable("Template", (string)null);
                 });
@@ -617,17 +615,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Ombor.Domain.Entities.Template", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
-                        .WithMany("Templates")
-                        .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Partner");
-                });
-
             modelBuilder.Entity("Ombor.Domain.Entities.TemplateItem", b =>
                 {
                     b.HasOne("Ombor.Domain.Entities.Product", "Product")
@@ -696,8 +683,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Transactions");
-
-                    b.Navigation("Templates");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>

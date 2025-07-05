@@ -16,4 +16,7 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
 
     private TemplateValidator? _template;
     public TemplateValidator Template => _template ??= new(context);
+
+    private TransactionValidator? _transaction;
+    public TransactionValidator Transaction => _transaction ??= new(context, fileSettings, webRootPath);
 }

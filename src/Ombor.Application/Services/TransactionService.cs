@@ -47,11 +47,8 @@ internal sealed class TransactionService(
         try
         {
             context.Transactions.Add(transaction);
-            await context.SaveChangesAsync();
 
-            if (request.TotalPaid > 0)
-            {
-                var paymentRequest = new CreateTransactionPaymentRequest(
+            var paymentRequest = new CreateTransactionPaymentRequest(
                     TransactionId: transaction.Id,
                     Notes: request.Notes,
                     Amount: request.TotalPaid,
@@ -59,9 +56,7 @@ internal sealed class TransactionService(
                     Currency: request.Currency,
                     Method: request.PaymentMethod,
                     Attachments: request.Attachments);
-
-                await transactionPaymentService.CreatePaymentAsync(paymentRequest);
-            }
+            await transactionPaymentService.CreatePaymentAsync(paymentRequest, transaction);
 
             await context.SaveChangesAsync();
             await dbTransaction.CommitAsync();

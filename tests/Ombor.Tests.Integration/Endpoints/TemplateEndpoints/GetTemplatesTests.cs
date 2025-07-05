@@ -41,14 +41,15 @@ public sealed class GetTemplatesTests(
 
     private async Task CreateTemplatesAsync(GetTemplatesRequest request)
     {
-        var matchingTemplates = CreateMatchinTemplates(request);
-        var nonMatchingTemplates = CreateNonMatchingTemplates();
+        var partner = await CreatePartnerAsync($"Partner for fetching Templates. {Guid.NewGuid()}");
+        var matchingTemplates = CreateMatchinTemplates(request, partner);
+        var nonMatchingTemplates = CreateNonMatchingTemplates(partner);
         Template[] templates = [.. matchingTemplates, .. nonMatchingTemplates];
 
         await CreateAsync(templates);
     }
 
-    private static Template[] CreateMatchinTemplates(GetTemplatesRequest request)
+    private static Template[] CreateMatchinTemplates(GetTemplatesRequest request, Partner partner)
     {
         if (request.IsEmpty())
         {
@@ -62,6 +63,8 @@ public sealed class GetTemplatesTests(
             // Template matching type and part of the search
             templates.Add(new Template
             {
+                PartnerId = partner.Id,
+                Partner = partner,
                 Name = request.SearchTerm[..4],
                 Type = Enum.Parse<Domain.Enums.TemplateType>(request.Type.Value.ToString()),
             });
@@ -69,6 +72,8 @@ public sealed class GetTemplatesTests(
             // Template matching type and part of the search
             templates.Add(new Template
             {
+                PartnerId = partner.Id,
+                Partner = partner,
                 Name = request.SearchTerm[4..],
             });
         }
@@ -79,6 +84,8 @@ public sealed class GetTemplatesTests(
         {
             templates.Add(new Template
             {
+                PartnerId = partner.Id,
+                Partner = partner,
                 Name = request.SearchTerm[..4],
                 Type = Domain.Enums.TemplateType.Sale,
             });
@@ -90,6 +97,8 @@ public sealed class GetTemplatesTests(
         {
             templates.Add(new Template
             {
+                PartnerId = partner.Id,
+                Partner = partner,
                 Name = $"Template matching type: {request.Type}",
                 Type = Enum.Parse<Domain.Enums.TemplateType>(request.Type.Value.ToString()),
             });
@@ -98,10 +107,12 @@ public sealed class GetTemplatesTests(
         return [.. templates];
     }
 
-    private static Template[] CreateNonMatchingTemplates() =>
+    private static Template[] CreateNonMatchingTemplates(Partner partner) =>
         Enumerable.Range(0, 5)
         .Select(i => new Template
         {
+            PartnerId = partner.Id,
+            Partner = partner,
             Name = $"Template-{i.ToString()}",
             Type = Domain.Enums.TemplateType.Supply
         })

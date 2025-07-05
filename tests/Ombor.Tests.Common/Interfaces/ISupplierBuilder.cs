@@ -60,6 +60,14 @@ public interface IPartnerBuilder
     IPartnerBuilder WithCompanyName(string? companyName = null);
 
     /// <summary>
+    /// Specifies the <see cref="Partner.Balance"/>.
+    /// If <paramref name="balance"/> is <c>null</c>, a random amount will be assigned.
+    /// </summary>
+    /// <param name="balance">The balance amount, or <c>null</c> to generate a random one.</param>
+    /// <returns>The same builder instance.</returns>
+    IPartnerBuilder WithBalance(decimal? balance = null);
+
+    /// <summary>
     /// Specifies the <see cref="Partner.PhoneNumbers"/>.
     /// If <paramref name="phoneNumbers"/> is <c>null</c>, a random phone numbers will be assigned.
     /// </summary>

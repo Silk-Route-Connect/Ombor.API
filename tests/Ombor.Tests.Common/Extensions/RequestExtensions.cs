@@ -1,8 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Template;
+using Ombor.Contracts.Requests.Transactions;
 
 namespace Ombor.Tests.Common.Extensions;
 
@@ -99,8 +101,7 @@ public static class RequestExtensions
             foreach (var file in request.Attachments)
             {
                 // open a fresh stream for each
-                var stream = file.OpenReadStream();
-                var fileContent = new StreamContent(stream);
+                var fileContent = new StreamContent(file.OpenReadStream());
                 fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType!);
                 content.Add(fileContent, nameof(request.Attachments), file.FileName);
             }
@@ -116,4 +117,57 @@ public static class RequestExtensions
 
         return content;
     }
+
+    public static MultipartFormDataContent ToMultipartFormData(this CreateTransactionRequest request)
+    {
+        var content = new MultipartFormDataContent()
+        {
+            // 1) Non‐file fields
+            { new StringContent(request.PartnerId.ToString()), nameof(request.PartnerId) },
+            { new StringContent(request.Type.ToString()), nameof(request.Type) },
+            { new StringContent(request.TotalPaid.ToString()), nameof(request.TotalPaid) },
+            { new StringContent(request.ExchangeRate.ToString()), nameof(request.ExchangeRate) },
+            { new StringContent(request.Currency.ToString()), nameof(request.Currency) },
+            { new StringContent(request.PaymentMethod.ToString()), nameof(request.PaymentMethod) },
+        };
+
+        if (request.Notes is not null)
+            content.Add(new StringContent(request.Notes), nameof(request.Notes));
+
+        for (var i = 0; i < request.Lines.Length; i++)
+        {
+            var line = request.Lines[i];
+
+            content.Add(new StringContent(line.ProductId.ToString()),
+                        $"Lines[{i}].{nameof(line.ProductId)}");
+
+            content.Add(new StringContent(line.UnitPrice
+                                          .ToString(CultureInfo.InvariantCulture)),
+                        $"Lines[{i}].{nameof(line.UnitPrice)}");
+
+            content.Add(new StringContent(line.Quantity
+                                          .ToString(CultureInfo.InvariantCulture)),
+                        $"Lines[{i}].{nameof(line.Quantity)}");
+
+            content.Add(new StringContent(line.Discount
+                                          .ToString(CultureInfo.InvariantCulture)),
+                        $"Lines[{i}].{nameof(line.Discount)}");
+        }
+
+        if (request.Attachments is not null)
+        {
+            foreach (var file in request.Attachments)
+            {
+                // open a fresh stream for each
+                var fileContent = new StreamContent(file.OpenReadStream());
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType!);
+                content.Add(fileContent, nameof(request.Attachments), file.FileName);
+            }
+        }
+
+        return content;
+    }
+
+    public static decimal CalculateTotalDue(this CreateTransactionRequest request)
+        => request.Lines.Sum(x => (x.Quantity * x.UnitPrice) - x.Discount);
 }
