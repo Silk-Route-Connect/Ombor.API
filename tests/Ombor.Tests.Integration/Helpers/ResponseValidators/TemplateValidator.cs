@@ -19,6 +19,7 @@ public sealed class TemplateValidator(IApplicationDbContext context)
     public async Task ValidateGetByIdAsnc(int templateId, TemplateDto response)
     {
         var expectedTemplate = await context.Templates
+            .Include(x => x.Partner)
             .FirstOrDefaultAsync(x => x.Id == templateId);
 
         Assert.NotNull(expectedTemplate);
@@ -29,28 +30,33 @@ public sealed class TemplateValidator(IApplicationDbContext context)
     public async Task ValidatePostAsync(CreateTemplateRequest request, CreateTemplateResponse response)
     {
         var createdTemplate = await context.Templates
+            .Include(x => x.Partner)
             .FirstOrDefaultAsync(x => x.Id == response.Id);
 
         Assert.NotNull(createdTemplate);
 
         TemplateAssertionHelpers.AssertEquivalent(request, response);
         TemplateAssertionHelpers.AssertEquivalent(request, createdTemplate);
+        TemplateAssertionHelpers.AssertEquivalent(response, createdTemplate);
     }
 
     public async Task ValidatePutAsync(UpdateTemplateRequest request, UpdateTemplateResponse response)
     {
         var updatedTemplate = await context.Templates
+            .Include(x => x.Partner)
             .FirstOrDefaultAsync(x => x.Id == request.Id);
 
         Assert.NotNull(updatedTemplate);
 
         TemplateAssertionHelpers.AssertEquivalent(request, response);
         TemplateAssertionHelpers.AssertEquivalent(request, updatedTemplate);
+        TemplateAssertionHelpers.AssertEquivalent(response, updatedTemplate);
     }
 
     public async Task ValidateDeleteAsync(int templateId)
     {
         var deletedTemplate = await context.Templates
+            .Include(x => x.Partner)
             .FirstOrDefaultAsync(x => x.Id == templateId);
 
         Assert.Null(deletedTemplate);
@@ -58,7 +64,9 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
     private async Task<Template[]> GetTemplatesAsync(GetTemplatesRequest request)
     {
-        var query = context.Templates.AsNoTracking();
+        var query = context.Templates
+            .Include(x => x.Partner)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {

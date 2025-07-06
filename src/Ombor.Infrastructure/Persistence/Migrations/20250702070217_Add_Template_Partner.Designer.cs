@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ombor.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702070217_Add_Template_Partner")]
+    partial class Add_Template_Partner
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,73 +45,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.Inventory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventory", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.InventoryItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("InventoryItem", (string)null);
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
@@ -351,25 +287,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.ToTable("TemplateItem", (string)null);
                 });
 
-            modelBuilder.Entity("Ombor.Domain.Entities.InventoryItem", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Inventory", "Inventory")
-                        .WithMany("InventoryItems")
-                        .HasForeignKey("InventoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Ombor.Domain.Entities.Product", "Product")
-                        .WithMany("InventoryItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
                 {
                     b.HasOne("Ombor.Domain.Entities.Category", "Category")
@@ -427,10 +344,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Ombor.Domain.Entities.Inventory", b =>
-                {
-                    b.Navigation("InventoryItems");
-
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
                 {
                     b.Navigation("Templates");
@@ -439,8 +352,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
                 {
                     b.Navigation("Images");
-
-                    b.Navigation("InventoryItems");
 
                     b.Navigation("TemplateItems");
                 });
