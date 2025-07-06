@@ -1,5 +1,3 @@
-using Moq;
-using Ombor.Application.Mappings;
 using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 
@@ -10,17 +8,14 @@ public abstract class InventoryTestsBase : ServiceTestsBase
     protected readonly int InventoryId = 1_000;
     protected readonly Inventory[] _defaultInventories;
     private protected readonly InventoryService _service;
-    protected readonly Mock<IInventoryMapping> _mockMapping;
 
     protected InventoryTestsBase()
     {
         _defaultInventories = GenerateRandomInventories();
         SetupInventories(_defaultInventories);
 
-        _mockMapping = new Mock<IInventoryMapping>();
         _service = new InventoryService(
             _mockContext.Object,
-            _mockMapping.Object,
             _mockValidator.Object);
     }
 

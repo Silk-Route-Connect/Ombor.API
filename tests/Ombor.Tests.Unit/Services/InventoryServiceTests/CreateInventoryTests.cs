@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Moq;
-using Ombor.Contracts.Requests.Inventory;
-using Ombor.Contracts.Responses.Inventory;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Common.Factories;
@@ -36,27 +34,12 @@ public sealed class CreateInventoryTests : InventoryTestsBase
         var request = InventoryRequestFactory.GenerateValidCreateRequest();
         Inventory addedInventory = null!;
 
-        _mockMapping.Setup(mock => mock.ToEntity(It.IsAny<CreateInventoryRequest>()))
-            .Returns(new Inventory
-            {
-                Name = request.Name,
-                Location = request.Location,
-                IsActive = request.IsActive
-            });
-
         _mockContext.Setup(mock => mock.Inventories.Add(It.Is<Inventory>(inventory => inventory.IsEquivalent(request))))
             .Callback<Inventory>(captured => addedInventory = captured);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1)
             .Callback(() => addedInventory.Id = 99);
-
-        _mockMapping.Setup(mock => mock.ToCreateResponse(It.IsAny<Inventory>()))
-            .Returns(new CreateInventoryResponse(
-                99,
-                request.Name,
-                request.Location,
-                request.IsActive));
 
         // Act
         var response = await _service.CreateAsync(request);

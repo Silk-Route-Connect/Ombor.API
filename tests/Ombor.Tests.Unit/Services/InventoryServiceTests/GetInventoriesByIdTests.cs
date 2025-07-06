@@ -19,13 +19,6 @@ public sealed class GetInventoriesByIdTests : InventoryTestsBase
 
         SetupInventories([.. _defaultInventories, inventory]);
 
-        _mockMapping.Setup(mock => mock.ToDto(It.IsAny<Inventory>()))
-            .Returns(new InventoryDto(
-                inventory.Id,
-                inventory.Name,
-                inventory.Location,
-                inventory.IsActive));
-
         // Act
         var response = await _service.GetByIdAsync(request);
 

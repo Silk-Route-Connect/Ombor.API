@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using Moq;
-using Ombor.Contracts.Requests.Inventory;
-using Ombor.Contracts.Responses.Inventory;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 using Ombor.Tests.Common.Factories;
@@ -58,23 +55,6 @@ public sealed class UpdateInventoryTests : InventoryTestsBase
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        _mockMapping.Setup(mock => mock.ApplyUpdate(It.IsAny<Inventory>(), It.IsAny<UpdateInventoryRequest>()))
-            .Callback(
-                (Inventory inventory, UpdateInventoryRequest request)
-                =>
-                {
-                    inventory.Name = request.Name;
-                    inventory.Location = request.Location;
-                    inventory.IsActive = request.IsActive;
-                });
-
-        _mockMapping.Setup(mock => mock.ToUpdateResponse(It.IsAny<Inventory>()))
-            .Returns(new UpdateInventoryResponse(
-                request.Id,
-                request.Name,
-                request.Location,
-                request.IsActive));
-
         // Act
         var response = await _service.UpdateAsync(request);
 
@@ -84,8 +64,6 @@ public sealed class UpdateInventoryTests : InventoryTestsBase
         InventoryAssertionHelper.AssertEquivalent(inventory, response);
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
-        _mockMapping.Verify(mock => mock.ToUpdateResponse(It.IsAny<Inventory>()), Times.Once);
-        _mockMapping.Verify(mock => mock.ApplyUpdate(It.IsAny<Inventory>(), It.IsAny<UpdateInventoryRequest>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Inventories, Times.Once);
 
