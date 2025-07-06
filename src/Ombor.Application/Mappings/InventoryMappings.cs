@@ -4,24 +4,29 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
 
-public interface IInventoryMapping
+public static class InventoryMappings
 {
-    Inventory ToEntity(CreateInventoryRequest request);
-    InventoryDto ToDto(Inventory inventory);
-    CreateInventoryResponse ToCreateResponse(Inventory inventory);
-    UpdateInventoryResponse ToUpdateResponse(Inventory inventory);
-    void ApplyUpdate(Inventory inventory, UpdateInventoryRequest request);
-}
+    public static InventoryDto ToDto(this Inventory inventory)
+    {
+        var items = inventory.InventoryItems
+            .Select(ToDto)
+            .ToArray();
 
-public class InventoryMappings : IInventoryMapping
-{
-    public InventoryDto ToDto(Inventory inventory) =>
-        new(Id: inventory.Id,
+        return new(Id: inventory.Id,
             Name: inventory.Name,
             Location: inventory.Location,
-            IsActive: inventory.IsActive);
+            IsActive: inventory.IsActive,
+            InventoryItems: items);
+    }
 
-    public Inventory ToEntity(CreateInventoryRequest request) =>
+    public static InventoryItemDto ToDto(this InventoryItem inventoryItem) =>
+        new(
+            Id: inventoryItem.Id,
+            Quantity: inventoryItem.Quantity,
+            InventoryId: inventoryItem.InventoryId,
+            ProductId: inventoryItem.ProductId);
+
+    public static Inventory ToEntity(this CreateInventoryRequest request) =>
         new()
         {
             Name = request.Name,
@@ -29,19 +34,33 @@ public class InventoryMappings : IInventoryMapping
             IsActive = request.IsActive
         };
 
-    public CreateInventoryResponse ToCreateResponse(Inventory inventory) =>
-        new(Id: inventory.Id,
+    public static CreateInventoryResponse ToCreateResponse(this Inventory inventory)
+    {
+        var items = inventory.InventoryItems
+            .Select(ToDto)
+            .ToArray();
+
+        return new(Id: inventory.Id,
             Name: inventory.Name,
             Location: inventory.Location,
-            IsActive: inventory.IsActive);
+            IsActive: inventory.IsActive,
+            InventoryItems: items);
+    }
 
-    public UpdateInventoryResponse ToUpdateResponse(Inventory inventory) =>
-        new(Id: inventory.Id,
+    public static UpdateInventoryResponse ToUpdateResponse(this Inventory inventory)
+    {
+        var items = inventory.InventoryItems
+            .Select(ToDto)
+            .ToArray();
+
+        return new(Id: inventory.Id,
             Name: inventory.Name,
             Location: inventory.Location,
-            IsActive: inventory.IsActive);
+            IsActive: inventory.IsActive,
+            InventoryItems: items);
+    }
 
-    public void ApplyUpdate(Inventory inventory, UpdateInventoryRequest request)
+    public static void ApplyUpdate(this Inventory inventory, UpdateInventoryRequest request)
     {
         inventory.Name = request.Name;
         inventory.Location = request.Location;

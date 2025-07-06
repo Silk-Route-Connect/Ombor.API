@@ -7,4 +7,9 @@ namespace Ombor.Contracts.Responses.Inventory;
 /// <param name="Name">The updated name.</param>
 /// <param name="Location">The updated location, if any.</param>
 /// <param name="IsActive">The updated status.</param>
-public sealed record UpdateInventoryResponse(int Id, string Name, string? Location, bool IsActive);
+public sealed record UpdateInventoryResponse(
+    int Id,
+    string Name,
+    string? Location,
+    bool IsActive,
+    InventoryItemDto[] InventoryItems);

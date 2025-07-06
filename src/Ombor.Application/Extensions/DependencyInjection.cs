@@ -34,7 +34,6 @@ public static class DependencyInjection
         services.AddScoped<IPartnerService, PartnerService>();
         services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<IInventoryService, InventoryService>();
-        services.AddScoped<IInventoryMapping, InventoryMappings>();
 
         services.AddTransient<IFileService, FileService>();
 

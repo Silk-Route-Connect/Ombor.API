@@ -10,10 +10,9 @@ namespace Ombor.Application.Services;
 
 internal sealed class InventoryService(
     IApplicationDbContext context,
-    IInventoryMapping mapping,
     IRequestValidator validator) : IInventoryService
 {
-    public Task<InventoryDto[]> GetAsync(GetInventoriesRequest request)
+    public async Task<InventoryDto[]> GetAsync(GetInventoriesRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -28,15 +27,12 @@ internal sealed class InventoryService(
                 (x.Location != null && x.Location.Contains(searchTerm)));
         }
 
-        return query
+        var inventories = await query
             .AsNoTracking()
             .OrderBy(x => x.Name)
-            .Select(x => new InventoryDto(
-                x.Id,
-                x.Name,
-                x.Location,
-                x.IsActive))
             .ToArrayAsync();
+
+        return [.. inventories.Select(x => x.ToDto())];
     }
 
     public async Task<InventoryDto> GetByIdAsync(GetInventoryByIdRequest request)
@@ -45,18 +41,18 @@ internal sealed class InventoryService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        return mapping.ToDto(entity);
+        return entity.ToDto();
     }
 
     public async Task<CreateInventoryResponse> CreateAsync(CreateInventoryRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var entity = mapping.ToEntity(request);
+        var entity = request.ToEntity();
         context.Inventories.Add(entity);
         await context.SaveChangesAsync();
 
-        return mapping.ToCreateResponse(entity);
+        return entity.ToCreateResponse();
     }
 
     public async Task<UpdateInventoryResponse> UpdateAsync(UpdateInventoryRequest request)
@@ -64,11 +60,11 @@ internal sealed class InventoryService(
         await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
-        mapping.ApplyUpdate(entity, request);
+        entity.ApplyUpdate(request);
 
         await context.SaveChangesAsync();
 
-        return mapping.ToUpdateResponse(entity);
+        return entity.ToUpdateResponse();
     }
 
     public async Task DeleteAsync(DeleteInventoryRequest request)

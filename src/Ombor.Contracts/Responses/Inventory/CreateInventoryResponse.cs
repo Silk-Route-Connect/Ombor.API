@@ -7,4 +7,10 @@ namespace Ombor.Contracts.Responses.Inventory;
 /// <param name="Name">The inventory's name.</param>
 /// <param name="Location">The inventory's location, if any.</param>
 /// <param name="IsActive">The inventory's status.</param>
-public sealed record CreateInventoryResponse(int Id, string Name, string? Location, bool IsActive);
+/// <param name="InventoryItems">The inventory's items.</param>
+public sealed record CreateInventoryResponse(
+    int Id,
+    string Name,
+    string? Location,
+    bool IsActive,
+    InventoryItemDto[] InventoryItems);
