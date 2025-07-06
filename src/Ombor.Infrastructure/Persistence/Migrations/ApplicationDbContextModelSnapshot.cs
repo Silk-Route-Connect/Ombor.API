@@ -431,23 +431,24 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("InventoryItems");
 
-            modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
-                {
-                    b.Navigation("Templates");
-                });
+                    modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
+                               {
+                                   b.Navigation("Templates");
+                               });
 
-            modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
-                {
-                    b.Navigation("Images");
+                    modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
+                            {
+                                b.Navigation("Images");
 
-                    b.Navigation("InventoryItems");
+                                b.Navigation("InventoryItems");
 
-                    b.Navigation("TemplateItems");
-                });
+                                b.Navigation("TemplateItems");
+                            });
 
-            modelBuilder.Entity("Ombor.Domain.Entities.Template", b =>
-                {
-                    b.Navigation("Items");
+                    modelBuilder.Entity("Ombor.Domain.Entities.Template", b =>
+                        {
+                            b.Navigation("Items");
+                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -5,7 +5,7 @@
 namespace Ombor.Infrastructure.Persistence.Migrations;
 
 /// <inheritdoc />
-public partial class Add_Inventory_And_InventoryItem : Migration
+public partial class Add_Inventory : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)

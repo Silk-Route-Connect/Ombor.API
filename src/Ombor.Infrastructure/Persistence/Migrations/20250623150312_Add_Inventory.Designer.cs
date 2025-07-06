@@ -12,8 +12,8 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250623150312_Add_Inventory_And_InventoryItem")]
-    partial class Add_Inventory_And_InventoryItem
+    [Migration("20250623150312_Add_Inventory")]
+    partial class Add_Inventory
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
