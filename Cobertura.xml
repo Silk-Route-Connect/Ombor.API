@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9697256385998108" branch-rate="0.9489795918367347" lines-covered="1025" lines-valid="1057" branches-covered="186" branches-valid="196" complexity="389" version="0" timestamp="1751899745">
+<coverage line-rate="0.9697256385998108" branch-rate="0.9489795918367347" lines-covered="1025" lines-valid="1057" branches-covered="186" branches-valid="196" complexity="389" version="0" timestamp="1751899867">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
