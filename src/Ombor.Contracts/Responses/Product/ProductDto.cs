@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Responses.Inventory;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// DTO representing a product for client consumption.
@@ -34,4 +36,5 @@ public sealed record ProductDto(
     bool IsLowStock,
     string Measurement,
     string Type,
-    ProductImageDto[] Images);
+    ProductImageDto[] Images,
+    InventoryItemDto[] InventoryItems);
