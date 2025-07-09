@@ -20,6 +20,13 @@ internal sealed class TemplateConfiguration : IEntityTypeConfiguration<Template>
             .IsRequired();
 
         builder
+            .HasOne(t => t.Partner)
+            .WithMany(p => p.Templates)
+            .HasForeignKey(t => t.PartnerId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
             .Navigation(t => t.Items)
             .AutoInclude();
 

@@ -6,24 +6,28 @@ namespace Ombor.Tests.Common.Factories;
 
 public static class TemplateRequestFactory
 {
-    public static CreateTemplateRequest GenerateValidCreateRequest() =>
-        new(Name: "Test Template To Create",
+    public static CreateTemplateRequest GenerateValidCreateRequest(int partnerId) =>
+        new(PartnerId: partnerId,
+            Name: "Test Template To Create",
             Type: TemplateType.Supply,
             Items: GetValidCreateItems());
 
-    public static CreateTemplateRequest GenerateInvalidCreateRequest() =>
-        new(Name: "", // Invalid name
+    public static CreateTemplateRequest GenerateInvalidCreateRequest(int partnerId) =>
+        new(PartnerId: partnerId,
+            Name: "", // Invalid name
             Type: TemplateType.Supply,
             Items: GetInvalidCreateItems());
 
-    public static UpdateTemplateRequest GenerateValidUpdateRequest(int templateId, IEnumerable<TemplateItem> existingItems) =>
+    public static UpdateTemplateRequest GenerateValidUpdateRequest(int templateId, int partnerId, IEnumerable<TemplateItem> existingItems) =>
         new(Id: templateId,
+            PartnerId: partnerId,
             Name: "Test Template To Update",
             Type: TemplateType.Sale,
             Items: GetValidUpdateItems(existingItems));
 
-    public static UpdateTemplateRequest GenerateInvalidUpdateRequest(int templateId) =>
+    public static UpdateTemplateRequest GenerateInvalidUpdateRequest(int templateId, int partnerId) =>
         new(Id: templateId,
+            PartnerId: partnerId,
             Name: "",
             Type: TemplateType.Supply,
             Items: GetInvalidUpdateItems());

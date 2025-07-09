@@ -14,9 +14,19 @@ public class Template : AuditableEntity
     public required string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets type of the <see cref="Template"/>
+    /// Gets or sets type of the <see cref="Template"/>.
     /// </summary>
     public TemplateType Type { get; set; }
+
+    /// <summary>
+    /// Gets or sets te Partner ID of the <see cref="Template"/>.
+    /// </summary>
+    public int PartnerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets te Partner of the <see cref="Template"/>.
+    /// </summary>
+    public virtual required Partner Partner { get; set; }
 
     /// <summary>
     /// Gets or sets items of the <see cref="Template"/>

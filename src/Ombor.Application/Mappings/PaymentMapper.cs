@@ -68,6 +68,7 @@ internal sealed class PaymentMapper(IDateTimeProvider dateTimeProvider, ICurrenc
     public PaymentDto ToDto(Payment payment) =>
         new(Id: payment.Id,
             PartnerId: payment.PartnerId,
+            PartnerName: payment.Partner?.Name,
             Notes: payment.Notes,
             ExternalReference: payment.ExternalReference,
             Amount: payment.Amount,

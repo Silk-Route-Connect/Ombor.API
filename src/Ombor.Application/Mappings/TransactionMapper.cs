@@ -90,7 +90,7 @@ internal sealed class TransactionMapper(
 
     public CreateTransactionResponse ToCreateResponse(TransactionRecord transaction) =>
         new(Id: transaction.Id,
-            PartnerId: transaction.Id,
+            PartnerId: transaction.PartnerId,
             PartnerName: transaction.Partner.Name,
             Notes: transaction.Notes,
             TransactionNumber: transaction.TransactionNumber,

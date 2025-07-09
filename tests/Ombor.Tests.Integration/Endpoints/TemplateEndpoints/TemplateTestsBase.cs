@@ -17,13 +17,15 @@ public abstract class TemplateTestsBase(
     protected override string GetUrl(int id)
         => $"{Routes.Template}/{id}";
 
-    protected async Task<Template> CreateTemplateAsync()
+    protected async Task<Template> CreateTemplateAsync(Partner partner)
     {
         var template = new Template
         {
             Name = "Test Template",
             Type = TemplateType.Sale,
-            Items = GetItems()
+            PartnerId = partner.Id,
+            Partner = partner,
+            Items = GetItems(),
         };
 
         _context.Templates.Add(template);
@@ -46,6 +48,19 @@ public abstract class TemplateTestsBase(
         await _context.SaveChangesAsync();
 
         return [.. templates.Select(x => x.Id)];
+    }
+
+    protected async Task<Partner> CreatePartnerAsync(string name)
+    {
+        var partner = _builder.PartnerBuilder
+            .WithName(name)
+            .WithType(PartnerType.All)
+            .Build();
+
+        _context.Partners.Add(partner);
+        await _context.SaveChangesAsync();
+
+        return partner;
     }
 
     private static List<TemplateItem> GetItems() =>

@@ -14,7 +14,7 @@ internal static class LedgerEntryFactory
         Source = nameof(TransactionRecord),
         SourceId = transaction.Id,
         PartnerId = transaction.PartnerId,
-        Partner = transaction.Partner
+        Partner = null! // will be set by EF
     };
 
     public static LedgerEntry FromPayment(Payment payment)
@@ -29,7 +29,7 @@ internal static class LedgerEntryFactory
             CreatedAtUtc = payment.DateUtc,
             AmountLocal = GetAmount(payment),
             Notes = null,
-            Type = LedgerType.InvoiceCreated,
+            Type = GetType(payment),
             Source = nameof(Payment),
             SourceId = payment.Id,
             PartnerId = payment.PartnerId.Value,
@@ -53,4 +53,11 @@ internal static class LedgerEntryFactory
         payment.Direction == PaymentDirection.Income
         ? +payment.AmountLocal  // partner pays
         : -payment.AmountLocal; // company pays
+
+    private static LedgerType GetType(Payment payment) =>
+        payment switch
+        {
+            { Type: PaymentType.Transaction, Method: PaymentMethod.AccountBalance } => LedgerType.InvoicePaidUsingBalance,
+            _ => LedgerType.InvoicePaid,
+        };
 }

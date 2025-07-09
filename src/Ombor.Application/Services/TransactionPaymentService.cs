@@ -17,12 +17,39 @@ internal sealed class TransactionPaymentService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        if (request.Amount <= 0)
+        if (request.Amount < 0)
         {
             throw new InvalidOperationException("Transaction payment amount must be greater than 0.");
         }
 
         var transaction = await GetOrThrowTransactionAsync(request.TransactionId);
+
+        if (request.Amount == transaction.UnpaidAmount)
+        {
+            await HandleSinglePaymentAsync(request, transaction);
+            return;
+        }
+
+        if (request.Amount > transaction.UnpaidAmount)
+        {
+            await HandleOverPaymentAsync(request, transaction);
+            return;
+        }
+
+        if (request.Amount < transaction.UnpaidAmount)
+        {
+            await HandleUnderPaymentAsync(request, transaction);
+        }
+    }
+
+    public async Task CreatePaymentAsync(CreateTransactionPaymentRequest request, TransactionRecord transaction)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (request.Amount < 0)
+        {
+            throw new InvalidOperationException("Transaction payment amount must be greater than 0.");
+        }
 
         if (request.Amount == transaction.UnpaidAmount)
         {
@@ -83,11 +110,20 @@ internal sealed class TransactionPaymentService(
             throw new InvalidOperationException("Payment amount must be less than Transaction's unpaid amount.");
         }
 
-        var currentTransactionPayment = CreateExplicitPayment(request, transaction, request.Amount);
-        context.Payments.Add(currentTransactionPayment);
-        transaction.AddPayment(request.Amount);
+        // If payment amount is 0, then we should check open transactions that can be closed,
+        // or withdraw from the balance of a partner if he has any
 
-        await context.SaveChangesAsync();
+        // If payment amount is greater than 0, we should create a payment of this amount,
+        // afterwards try to close open transactions and/or withdraw from the balance of a partner
+        // if he has any money. Withdraw as much as needed to close the transaction
+
+        if (request.Amount > 0)
+        {
+            var currentTransactionPayment = CreateExplicitPayment(request, transaction, request.Amount);
+            context.Payments.Add(currentTransactionPayment);
+            transaction.AddPayment(request.Amount);
+            await context.SaveChangesAsync();
+        }
 
         var remainingAmount = transaction.UnpaidAmount;
         var openTransactions = await GetOpenTransactionsAsync(transaction.PartnerId, transaction.Type);
@@ -130,7 +166,6 @@ internal sealed class TransactionPaymentService(
             }
 
             context.Payments.Add(withdrawalPayment);
-            await context.SaveChangesAsync();
         }
 
         if (remainingAmount > 0 && transaction.Partner.HasAvailableBalance(transaction))
@@ -143,6 +178,15 @@ internal sealed class TransactionPaymentService(
                 Transaction = transaction,
                 Type = transaction.Type.GetPaymentAllocationType()
             });
+            withdrawalPayment.Amount = amountToPay;
+            withdrawalPayment.AmountLocal = amountToPay;
+            transaction.AddPayment(amountToPay);
+        }
+
+        if (withdrawalPayment.Allocations.Count > 0)
+        {
+            context.Payments.Add(withdrawalPayment);
+            await context.SaveChangesAsync();
         }
     }
 

@@ -114,6 +114,7 @@ internal sealed class PaymentService(
         var query = context.Payments
             .Include(x => x.Attachments)
             .Include(x => x.Allocations)
+            .Include(x => x.Partner)
             .AsNoTracking();
 
         if (request.PartnerId.HasValue)
