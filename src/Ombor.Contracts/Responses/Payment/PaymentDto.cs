@@ -8,6 +8,7 @@ namespace Ombor.Contracts.Responses.Payment;
 public sealed record PaymentDto(
     int Id,
     int? PartnerId,
+    string? PartnerName,
     string? Notes,
     string? ExternalReference,
     decimal Amount,
