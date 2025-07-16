@@ -25,6 +25,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddProductImagesAsync(context);
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
+        await AddEmployeesAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -146,6 +147,21 @@ internal sealed class DevelopmentDatabaseSeeder(
         }
 
         context.Templates.AddRange(allTemplates);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = EmployeeGenerator.Generate(seedSettings.NumberOfEmployees, seedSettings.Locale)
+            .DistinctBy(x => x.FullName)
+            .ToArray();
+
+        context.Employees.AddRange(employees);
         await context.SaveChangesAsync();
     }
 

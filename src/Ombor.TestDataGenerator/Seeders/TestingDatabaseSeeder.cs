@@ -27,6 +27,7 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await AppEmployeesAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -138,6 +139,25 @@ internal sealed class TestingDatabaseSeeder(
             });
 
         context.Partners.AddRange(partners);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AppEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = Enumerable.Range(1, seedSettings.NumberOfEmployees)
+            .Select(i => new Employee
+            {
+                FullName = $"test employee {i}",
+                Role = $"test role {i}",
+                IsActive = _faker.Random.Bool(),
+            });
+
+        context.Employees.AddRange(employees);
         await context.SaveChangesAsync();
     }
 
