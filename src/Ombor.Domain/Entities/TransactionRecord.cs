@@ -15,4 +15,5 @@ public class TransactionRecord : EntityBase
     public virtual required Partner Partner { get; set; }
 
     public virtual ICollection<TransactionLine> Lines { get; set; } = [];
+    public virtual ICollection<PaymentAllocation> PaymentAllocations { get; set; } = [];
 }
