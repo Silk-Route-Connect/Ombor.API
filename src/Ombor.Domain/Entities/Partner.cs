@@ -33,4 +33,9 @@ public class Partner : EntityBase
     /// Gets or sets the templates of the partner.
     /// </summary>
     public virtual ICollection<Template> Templates { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the transactions of the partner.
+    /// </summary>
+    public virtual ICollection<TransactionRecord> Transactions { get; set; } = [];
 }
