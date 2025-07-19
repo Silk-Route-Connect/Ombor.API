@@ -54,7 +54,7 @@ public abstract class TemplateTestsBase(
     {
         var partner = _builder.PartnerBuilder
             .WithName(name)
-            .WithType(PartnerType.All)
+            .WithType(PartnerType.Both)
             .Build();
 
         _context.Partners.Add(partner);

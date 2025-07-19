@@ -80,7 +80,7 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         Email = _email,
         CompanyName = _companyName,
         Balance = _balance ?? 0,
-        Type = _type ?? PartnerType.All,
+        Type = _type ?? PartnerType.Both,
         PhoneNumbers = _phoneNumbers ?? []
     };
 
