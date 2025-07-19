@@ -27,6 +27,8 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await CreateInventoriesAsync(context);
+        await CreateInventoryItemsAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -138,6 +140,49 @@ internal sealed class TestingDatabaseSeeder(
             });
 
         context.Partners.AddRange(partners);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreateInventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+        {
+            return;
+        }
+
+        var inventoryItems = context.InventoryItems.ToList();
+
+        var inventories = Enumerable.Range(1, seedSettings.NumberOfInventories)
+            .Select(i => new Inventory
+            {
+                Name = $"Test Inventory {i}",
+                Location = _faker.Address.StreetAddress(),
+                IsActive = _faker.Random.Bool(),
+            });
+
+        context.Inventories.AddRange(inventories);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreateInventoryItemsAsync(IApplicationDbContext context)
+    {
+        if (context.InventoryItems.Any())
+        {
+            return;
+        }
+
+        var products = context.Products.ToList();
+        var inventories = context.Inventories.ToList();
+
+        var inventoryItemsFaker = new Faker<InventoryItem>()
+        .RuleFor(i => i.Quantity, f => f.Random.Number(1, 100))
+        .RuleFor(i => i.Product, f => f.PickRandom(products))
+        .RuleFor(i => i.ProductId, (f, i) => i.Product.Id)
+        .RuleFor(i => i.Inventory, f => f.PickRandom(inventories))
+        .RuleFor(i => i.InventoryId, (f, i) => i.Inventory.Id);
+
+        var inventoryItems = inventoryItemsFaker.Generate(seedSettings.NumberOfItemsPerInventory);
+        context.InventoryItems.AddRange(inventoryItems);
         await context.SaveChangesAsync();
     }
 

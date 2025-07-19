@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
+using Ombor.Contracts.Requests.Inventory;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Template;
@@ -23,6 +24,9 @@ public static class RequestExtensions
     public static bool IsEmpty(this GetTemplatesRequest request) =>
         string.IsNullOrWhiteSpace(request.SearchTerm) &&
         request.Type.HasValue;
+
+    public static bool IsEmpty(this GetInventoriesRequest request) =>
+    string.IsNullOrWhiteSpace(request.SearchTerm);
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
         !string.IsNullOrWhiteSpace(request.SearchTerm) &&
