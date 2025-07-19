@@ -132,7 +132,7 @@ internal sealed class TestingDatabaseSeeder(
                 Address = "Test Partner address",
                 CompanyName = "Random Company",
                 Balance = 5_000,
-                Type = PartnerType.All,
+                Type = PartnerType.Both,
                 Email = $"partner{i}@test.com",
                 PhoneNumbers = ["+99890-100-00-00"]
             });
