@@ -23,6 +23,7 @@ internal sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHand
         var problem = new ValidationProblemDetails
         {
             Title = "One or more validation errors occurred.",
+            Detail = validationException.Message,
             Status = StatusCodes.Status400BadRequest,
             Type = "https://httpstatuses.com/400",
             Instance = httpContext.Request.Path,
