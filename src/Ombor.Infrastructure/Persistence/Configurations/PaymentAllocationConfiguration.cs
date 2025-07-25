@@ -31,5 +31,11 @@ internal sealed class PaymentAllocationConfiguration : IEntityTypeConfiguration<
             .Property(pa => pa.Amount)
             .HasCurrencyPrecision()
             .IsRequired();
+
+        builder
+            .Property(pa => pa.Type)
+            .HasConversion<string>()
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .IsRequired();
     }
 }

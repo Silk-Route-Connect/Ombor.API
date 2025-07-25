@@ -11,9 +11,10 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductImage> ProductImages { get; set; }
     public virtual DbSet<Partner> Partners { get; set; }
+    public virtual DbSet<PartnerBalance> PartnerBalances { get; set; }
     public virtual DbSet<Template> Templates { get; set; }
     public virtual DbSet<TemplateItem> TemplateItems { get; set; }
-    public virtual DbSet<TransactionRecord> Transactiosn { get; set; }
+    public virtual DbSet<TransactionRecord> Transactions { get; set; }
     public virtual DbSet<TransactionLine> TransactionLines { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<PaymentComponent> PaymentComponents { get; set; }

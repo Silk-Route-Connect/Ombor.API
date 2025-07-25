@@ -27,6 +27,8 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder.Ignore(t => t.UnpaidAmount);
+
         builder
             .Property(t => t.TotalDue)
             .HasCurrencyPrecision()
@@ -40,6 +42,10 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
         builder
             .Property(t => t.DateUtc)
             .IsRequired();
+
+        builder
+            .Property(t => t.DueDate)
+            .IsRequired(false);
 
         builder
             .Property(t => t.Status)
