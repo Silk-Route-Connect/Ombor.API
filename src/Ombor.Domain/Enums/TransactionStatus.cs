@@ -4,5 +4,6 @@ public enum TransactionStatus
 {
     Open = 1,
     Closed = 2,
-    PartiallyClosed = 3,
+    PartiallyPaid = 3,
+    Overdue = 4,
 }
