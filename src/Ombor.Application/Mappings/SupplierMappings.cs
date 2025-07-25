@@ -15,7 +15,8 @@ internal static class PartnerMappings
             Email: partner.Email,
             CompanyName: partner.CompanyName,
             Balance: partner.Balance,
-            PhoneNumbers: partner.PhoneNumbers);
+            PhoneNumbers: partner.PhoneNumbers,
+            null);
 
     public static Partner ToEntity(this CreatePartnerRequest request) =>
         new()
