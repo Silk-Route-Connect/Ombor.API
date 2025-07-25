@@ -29,6 +29,8 @@ public interface IApplicationDbContext
     /// </summary>
     DbSet<Partner> Partners { get; set; }
 
+    DbSet<PartnerBalance> PartnerBalances { get; set; }
+
     /// <summary>
     /// Gets or sets the Templates set.
     /// </summary>
@@ -38,6 +40,18 @@ public interface IApplicationDbContext
     /// Gets or sets the Template Items set.
     /// </summary>
     DbSet<TemplateItem> TemplateItems { get; set; }
+
+    DbSet<TransactionRecord> Transactions { get; set; }
+
+    DbSet<TransactionLine> TransactionLines { get; set; }
+
+    DbSet<Payment> Payments { get; set; }
+
+    DbSet<PaymentComponent> PaymentComponents { get; set; }
+
+    DbSet<PaymentAllocation> PaymentAllocations { get; set; }
+
+    DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
     /// <summary>
     /// Saves all changes made in this context to the database.
