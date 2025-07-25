@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ombor.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725070325_Add_Payment")]
+    partial class Add_Payment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,32 +90,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Partner", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PartnerBalance", b =>
-                {
-                    b.Property<decimal>("CompanyAdvance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("PartnerAdvance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("PartnerId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PayableDebt")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ReceivableDebt")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("View_PartnerBalance", (string)null);
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>

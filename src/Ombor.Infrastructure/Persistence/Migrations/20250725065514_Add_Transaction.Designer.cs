@@ -12,8 +12,8 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250719131154_Add_Payment")]
-    partial class Add_Payment
+    [Migration("20250725065514_Add_Transaction")]
+    partial class Add_Transaction
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,133 +90,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Partner", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("DateUtc")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Direction")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("PartnerId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PartnerId");
-
-                    b.ToTable("Payment", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentAllocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId");
-
-                    b.HasIndex("TransactionId");
-
-                    b.ToTable("PaymentAllocation", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentAttachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FileId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("PaymentAttachment", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentComponent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<decimal>("ExchangeRate")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("PaymentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("PaymentComponent", (string)null);
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
@@ -460,6 +333,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("DateUtc")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateOnly?>("DueDate")
+                        .HasColumnType("date");
+
                     b.Property<int>("PartnerId")
                         .HasColumnType("int");
 
@@ -488,57 +364,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("TransactionRecord", (string)null);
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
-                        .WithMany("Payments")
-                        .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Partner");
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentAllocation", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Payment", "Payment")
-                        .WithMany("Allocations")
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Ombor.Domain.Entities.TransactionRecord", "Transaction")
-                        .WithMany("PaymentAllocations")
-                        .HasForeignKey("TransactionId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Payment");
-
-                    b.Navigation("Transaction");
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentAttachment", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Payment", "Payment")
-                        .WithMany("Attachments")
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Payment");
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.PaymentComponent", b =>
-                {
-                    b.HasOne("Ombor.Domain.Entities.Payment", "Payment")
-                        .WithMany("Components")
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
@@ -630,20 +455,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
                 {
-                    b.Navigation("Payments");
-
                     b.Navigation("Templates");
 
                     b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>
-                {
-                    b.Navigation("Allocations");
-
-                    b.Navigation("Attachments");
-
-                    b.Navigation("Components");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Product", b =>
@@ -663,8 +477,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Ombor.Domain.Entities.TransactionRecord", b =>
                 {
                     b.Navigation("Lines");
-
-                    b.Navigation("PaymentAllocations");
                 });
 #pragma warning restore 612, 618
         }

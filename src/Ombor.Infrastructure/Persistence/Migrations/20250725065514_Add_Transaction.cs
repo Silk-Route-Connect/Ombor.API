@@ -19,6 +19,7 @@ public partial class Add_Transaction : Migration
                 TotalDue = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                 TotalPaid = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                 DateUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                DueDate = table.Column<DateOnly>(type: "date", nullable: true),
                 Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 PartnerId = table.Column<int>(type: "int", nullable: false)
