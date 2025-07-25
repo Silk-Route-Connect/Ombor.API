@@ -146,6 +146,16 @@ internal sealed class TestingDatabaseSeeder(
         var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
         var thumbsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder);
 
+        if (Directory.Exists(originalsDir))
+        {
+            Directory.Delete(originalsDir, true);
+        }
+
+        if (Directory.Exists(thumbsDir))
+        {
+            Directory.Delete(thumbsDir, true);
+        }
+
         Directory.CreateDirectory(originalsDir);
         Directory.CreateDirectory(thumbsDir);
 
