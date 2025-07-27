@@ -7,12 +7,14 @@ using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
 internal sealed class TransactionService(
     IApplicationDbContext context,
     ITransactionMapper mapper,
+    IPaymentService paymentService,
     IRequestValidator validator) : ITransactionService
 {
     public Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
@@ -30,8 +32,23 @@ internal sealed class TransactionService(
                 x.Status.ToString(),
                 x.TotalDue,
                 x.TotalPaid,
-                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.Quantity))))
+                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.Quantity, l.Total))))
             .ToArrayAsync();
+    }
+
+    public async Task<TransactionDto> GetByIdAsync(GetTransactionByIdRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var transaction = await context.Transactions
+            .Include(x => x.Partner)
+            .Include(x => x.Lines)
+            .ThenInclude(x => x.Product)
+            .IgnoreAutoIncludes()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new EntityNotFoundException<TransactionRecord>($"Transaction with ID {request.Id} not found.");
+
+        return mapper.ToDto(transaction);
     }
 
     public async Task<TransactionDto> CreateAsync(CreateTransactionRequest request)
@@ -45,31 +62,31 @@ internal sealed class TransactionService(
         await using var databaseTransaction = await context.Database.BeginTransactionAsync();
         try
         {
-            var totalDue = transactionEntity.TotalDue;
-            var payment = await BuildPayment(request, transactionEntity);
-
+            await UpdateProducts(request);
             context.Transactions.Add(transactionEntity);
+            await context.SaveChangesAsync();
+
+            var paymentRequest = request.ToPaymentRequest(transactionEntity.Id);
+            var payment = await paymentService.CreateAsync(paymentRequest);
 
             if (payment is not null)
             {
-                transactionEntity.TotalPaid = payment.Allocations
-                    .Where(a => a.Transaction == transactionEntity)
+                var totalPaid = payment.Allocations
+                    .Where(a => a.TransactionId == transactionEntity.Id)
                     .Sum(a => a.Amount);
 
-                transactionEntity.Status = transactionEntity.TotalPaid == totalDue
-                    ? TransactionStatus.Closed
-                    : transactionEntity.TotalPaid > 0
-                        ? TransactionStatus.PartiallyPaid
-                        : TransactionStatus.Open;
-
-                context.Payments.Add(payment);
+                transactionEntity.AddPayment(totalPaid);
             }
 
             await context.SaveChangesAsync();
             await databaseTransaction.CommitAsync();
 
             transactionEntity.Partner = partner;
-            transactionEntity.Lines = await context.TransactionLines.Include(x => x.Product).Where(x => x.TransactionId == transactionEntity.Id).ToArrayAsync();
+            transactionEntity.Lines = await context.TransactionLines
+                .Include(x => x.Product)
+                .Where(x => x.TransactionId == transactionEntity.Id)
+                .ToArrayAsync();
+
             return mapper.ToDto(transactionEntity);
         }
         catch
@@ -77,104 +94,6 @@ internal sealed class TransactionService(
             await databaseTransaction.RollbackAsync();
             throw;
         }
-    }
-
-    private async Task<Payment?> BuildPayment(CreateTransactionRequest request, TransactionRecord transaction)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var totalDue = transaction.TotalDue;
-        var totalPaid = request.Payments.Sum(p => p.Amount * p.ExchangeRate);
-        var debtPaymentAmount = request.DebtPayments?.Sum(d => d.Amount) ?? 0m;
-        var currentTransactionPayment = Math.Min(totalDue, totalPaid);
-        var overpaymentAmount = Math.Max(0, totalPaid - (currentTransactionPayment + debtPaymentAmount));
-
-        if (totalPaid <= 0)
-        {
-            return null;
-        }
-
-        var payment = new Payment
-        {
-            DateUtc = DateTime.UtcNow,
-            Direction = request.Type.GetPaymentDirection(),
-            Notes = request.Notes,
-            PartnerId = request.PartnerId,
-            Type = Domain.Enums.PaymentType.Transaction,
-        };
-
-        payment.Allocations.Add(new PaymentAllocation
-        {
-            Payment = payment,
-            Transaction = transaction,
-            Amount = currentTransactionPayment,
-            Type = transaction.Type.ToPaymentAllocationType()
-        });
-
-        if (debtPaymentAmount > 0 && request.DebtPayments is not null)
-        {
-            var transactionIds = request.DebtPayments
-                .Select(x => x.TransactionId)
-                .ToArray();
-            var openTransactionsToPay = await context.Transactions
-                .Where(x => transactionIds.Contains(x.Id))
-                .ToDictionaryAsync(x => x.Id);
-
-            foreach (var debtPayment in request.DebtPayments)
-            {
-                if (!openTransactionsToPay.TryGetValue(debtPayment.TransactionId, out var transactionToPay))
-                {
-                    throw new InvalidOperationException(""); // TODO: Change to domain error later.
-                }
-
-                if (transactionToPay.Status == Domain.Enums.TransactionStatus.Closed)
-                {
-                    throw new InvalidOperationException(""); // TODO: Change to domain error later.
-                }
-
-                if (debtPayment.Amount > transactionToPay.UnpaidAmount)
-                {
-                    throw new InvalidOperationException(); // TODO: Change to domain error later.
-                }
-
-                transactionToPay.TotalPaid += debtPayment.Amount;
-                transactionToPay.Status = transactionToPay.TotalDue == transactionToPay.TotalPaid
-                    ? Domain.Enums.TransactionStatus.Closed
-                    : Domain.Enums.TransactionStatus.PartiallyPaid;
-                payment.Allocations.Add(new PaymentAllocation
-                {
-                    Payment = payment,
-                    Transaction = transactionToPay,
-                    Amount = debtPayment.Amount,
-                    Type = transactionToPay.Type.ToPaymentAllocationType()
-                });
-            }
-        }
-
-        if (overpaymentAmount > 0)
-        {
-            payment.Allocations.Add(new PaymentAllocation
-            {
-                Payment = payment,
-                Transaction = null, // Advance payment
-                Amount = overpaymentAmount,
-                Type = PaymentAllocationType.AdvancePayment
-            });
-        }
-
-        foreach (var component in request.Payments)
-        {
-            payment.Components.Add(new PaymentComponent
-            {
-                Payment = payment,
-                Amount = component.Amount,
-                ExchangeRate = component.ExchangeRate,
-                Currency = component.Currency,
-                Method = component.Method.ToDomainPaymentMethod(),
-            });
-        }
-
-        return payment;
     }
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request)
@@ -238,6 +157,39 @@ internal sealed class TransactionService(
 
     private static decimal CalculateLineTotal(CreateTransactionLine l)
         => l.UnitPrice * l.Quantity * (1 - (l.Discount / 100m));
+
+    // TODO: Add logic for refunds
+    private async Task UpdateProducts(CreateTransactionRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var lineProducts = request.Lines
+            .ToDictionary(x => x.ProductId);
+        var productIds = lineProducts.Keys.ToArray();
+        var productsToUpdate = await context.Products
+            .Where(x => productIds.Contains(x.Id))
+            .ToArrayAsync();
+
+        if (request.Type == Contracts.Enums.TransactionType.Supply)
+        {
+            foreach (var productToUpdate in productsToUpdate)
+            {
+                var lineProduct = lineProducts[productToUpdate.Id];
+                productToUpdate.QuantityInStock += lineProduct.Quantity;
+            }
+        }
+
+        foreach (var productToUpdate in productsToUpdate)
+        {
+            var lineProduct = lineProducts[productToUpdate.Id];
+            if (productToUpdate.QuantityInStock <= lineProduct.Quantity)
+            {
+                throw new ValidationException($"Product stock is not enough for sale."); // TODO: replace with domain exception
+            }
+
+            productToUpdate.QuantityInStock -= lineProduct.Quantity;
+        }
+    }
 
     private IQueryable<TransactionRecord> GetQuery(GetTransactionsRequest request)
     {

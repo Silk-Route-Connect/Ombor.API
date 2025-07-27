@@ -48,7 +48,7 @@ internal sealed class TransactionMapper : ITransactionMapper
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
-                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.Quantity)));
+                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.Quantity, x.Total)));
     }
 
     private static decimal CalculateLineTotal(CreateTransactionLine l)
