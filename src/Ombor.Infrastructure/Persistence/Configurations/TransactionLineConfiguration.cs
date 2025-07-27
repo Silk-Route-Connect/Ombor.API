@@ -41,5 +41,7 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
             .Property(tl => tl.Quantity)
             .HasCurrencyPrecision()
             .IsRequired();
+
+        builder.Ignore(tl => tl.Total);
     }
 }
