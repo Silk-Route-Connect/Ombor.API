@@ -4,8 +4,10 @@ using Ombor.Contracts.Enums;
 namespace Ombor.Contracts.Requests.Payment;
 
 public sealed record CreateTransactionPaymentRequest(
+    int TransactionId,
     string? Notes,
-    IFormFile[]? Attachments,
+    bool ShouldReturnChange,
+    IFormFile[] Attachments,
     CreatePaymentRequest[] Payments,
     CreateDebtPaymentRequest[]? DebtPayments);
 
