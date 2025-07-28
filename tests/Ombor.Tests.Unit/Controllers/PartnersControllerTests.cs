@@ -17,7 +17,7 @@ public sealed class PartnersControllerTests : ControllerTestsBase
     public PartnersControllerTests()
     {
         _mockService = new Mock<IPartnerService>(MockBehavior.Strict);
-        _controller = new PartnersController(_mockService.Object);
+        _controller = new PartnersController(_mockService.Object, null);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class PartnersControllerTests : ControllerTestsBase
             .ReturnsAsync(expected);
 
         // Act
-        var response = await _controller.GetpartnerByIdAsync(request);
+        var response = await _controller.GetPartnerByIdAsync(request);
 
         // Assert
         var actual = Assert.IsType<OkObjectResult>(response.Result);
@@ -110,7 +110,7 @@ public sealed class PartnersControllerTests : ControllerTestsBase
             .ThrowsAsync(expected);
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _controller.GetpartnerByIdAsync(request));
+        await Assert.ThrowsAsync<Exception>(() => _controller.GetPartnerByIdAsync(request));
 
         _mockService.Verify(mock => mock.GetByIdAsync(request), Times.Once);
     }
