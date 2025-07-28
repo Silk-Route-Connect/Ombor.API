@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.973026973026973" branch-rate="0.967391304347826" lines-covered="974" lines-valid="1001" branches-covered="178" branches-valid="184" complexity="379" version="0" timestamp="1752685942">
+<coverage line-rate="0.922360248447205" branch-rate="0.7066666666666667" lines-covered="1188" lines-valid="1288" branches-covered="212" branches-valid="300" complexity="508" version="0" timestamp="1753719186">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
   <packages>
-    <package name="Ombor.API" line-rate="0.9814814814814815" branch-rate="0.5" complexity="26">
+    <package name="Ombor.API" line-rate="0.9666666666666667" branch-rate="0.5" complexity="28">
       <classes>
         <class name="Ombor.API.Controllers.CategoriesController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/CategoriesController.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
@@ -24,38 +24,44 @@
             <line number="13" hits="44" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.API.Controllers.EmployeesController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/EmployeesController.cs" line-rate="1" branch-rate="1" complexity="2">
-          <methods>
-            <method name=".ctor" signature="(Ombor.Application.Interfaces.IEmployeeService)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="10" hits="26" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="(Ombor.Application.Interfaces.IEmployeeService)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="10" hits="26" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="10" hits="26" branch="false" />
-          </lines>
-        </class>
         <class name="Ombor.API.Controllers.PartnersController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/PartnersController.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
-            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPartnerService)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPartnerService,Ombor.Application.Interfaces.IPaymentService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="13" hits="44" branch="false" />
+                <line number="15" hits="44" branch="false" />
+                <line number="16" hits="44" branch="false" />
+                <line number="17" hits="44" branch="false" />
               </lines>
             </method>
-            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPartnerService)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPartnerService,Ombor.Application.Interfaces.IPaymentService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="13" hits="44" branch="false" />
+                <line number="15" hits="44" branch="false" />
+                <line number="16" hits="44" branch="false" />
+                <line number="17" hits="44" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="13" hits="44" branch="false" />
+            <line number="15" hits="44" branch="false" />
+            <line number="16" hits="44" branch="false" />
+            <line number="17" hits="44" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.API.Controllers.PaymentsController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/PaymentsController.cs" line-rate="0" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPaymentService)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.IPaymentService)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="0" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.API.Controllers.ProductsController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/ProductsController.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -92,285 +98,506 @@
             <line number="10" hits="28" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.API.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/DependencyInjection.cs" line-rate="0.975609756097561" branch-rate="0.5" complexity="14">
+        <class name="Ombor.API.Controllers.TransactionsController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/TransactionsController.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
-            <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.ITransactionService,Ombor.Application.Interfaces.IPaymentService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="14" hits="50" branch="false" />
-                <line number="15" hits="50" branch="false" />
-                <line number="16" hits="50" branch="false" />
-                <line number="17" hits="50" branch="false" />
-                <line number="18" hits="50" branch="false" />
-                <line number="19" hits="50" branch="false" />
-                <line number="21" hits="50" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="13" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
               </lines>
             </method>
-            <method name="AddErrorHandlers" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection)" line-rate="1" branch-rate="1" complexity="1">
+            <method name=".ctor" signature="(Ombor.Application.Interfaces.ITransactionService,Ombor.Application.Interfaces.IPaymentService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="26" hits="50" branch="false" />
-                <line number="27" hits="50" branch="false" />
-                <line number="28" hits="50" branch="false" />
-                <line number="29" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddSwagger" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="35" hits="50" branch="false" />
-                <line number="36" hits="50" branch="false" />
-                <line number="38" hits="50" branch="false" />
-                <line number="39" hits="50" branch="false" />
-                <line number="40" hits="50" branch="false" />
-                <line number="41" hits="50" branch="false" />
-                <line number="42" hits="50" branch="false" />
-                <line number="43" hits="50" branch="false" />
-                <line number="44" hits="50" branch="false" />
-                <line number="45" hits="50" branch="false" />
-                <line number="46" hits="50" branch="false" />
-                <line number="47" hits="50" branch="false" />
-                <line number="48" hits="50" branch="false" />
-                <line number="49" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
-              <lines>
-                <line number="53" hits="50" branch="false" />
-                <line number="55" hits="50" branch="true" condition-coverage="50% (4/8)" />
-                <line number="57" hits="0" branch="false" />
-                <line number="60" hits="50" branch="false" />
-                <line number="61" hits="50" branch="false" />
-                <line number="62" hits="50" branch="false" />
-                <line number="63" hits="50" branch="false" />
-                <line number="64" hits="50" branch="false" />
-                <line number="65" hits="50" branch="false" />
-                <line number="66" hits="50" branch="false" />
-                <line number="67" hits="50" branch="false" />
-                <line number="68" hits="50" branch="false" />
-                <line number="69" hits="50" branch="false" />
-                <line number="71" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="14" hits="50" branch="false" />
-                <line number="15" hits="50" branch="false" />
-                <line number="16" hits="50" branch="false" />
-                <line number="17" hits="50" branch="false" />
-                <line number="18" hits="50" branch="false" />
-                <line number="19" hits="50" branch="false" />
-                <line number="21" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddErrorHandlers" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="26" hits="50" branch="false" />
-                <line number="27" hits="50" branch="false" />
-                <line number="28" hits="50" branch="false" />
-                <line number="29" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddSwagger" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="35" hits="50" branch="false" />
-                <line number="36" hits="50" branch="false" />
-                <line number="38" hits="50" branch="false" />
-                <line number="39" hits="50" branch="false" />
-                <line number="40" hits="50" branch="false" />
-                <line number="41" hits="50" branch="false" />
-                <line number="42" hits="50" branch="false" />
-                <line number="43" hits="50" branch="false" />
-                <line number="44" hits="50" branch="false" />
-                <line number="45" hits="50" branch="false" />
-                <line number="46" hits="50" branch="false" />
-                <line number="47" hits="50" branch="false" />
-                <line number="48" hits="50" branch="false" />
-                <line number="49" hits="50" branch="false" />
-              </lines>
-            </method>
-            <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
-              <lines>
-                <line number="53" hits="50" branch="false" />
-                <line number="55" hits="50" branch="true" condition-coverage="50% (4/8)" />
-                <line number="57" hits="0" branch="false" />
-                <line number="60" hits="50" branch="false" />
-                <line number="61" hits="50" branch="false" />
-                <line number="62" hits="50" branch="false" />
-                <line number="63" hits="50" branch="false" />
-                <line number="64" hits="50" branch="false" />
-                <line number="65" hits="50" branch="false" />
-                <line number="66" hits="50" branch="false" />
-                <line number="67" hits="50" branch="false" />
-                <line number="68" hits="50" branch="false" />
-                <line number="69" hits="50" branch="false" />
-                <line number="71" hits="50" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="13" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="14" hits="50" branch="false" />
-            <line number="15" hits="50" branch="false" />
-            <line number="16" hits="50" branch="false" />
-            <line number="17" hits="50" branch="false" />
-            <line number="18" hits="50" branch="false" />
-            <line number="19" hits="50" branch="false" />
-            <line number="21" hits="50" branch="false" />
-            <line number="26" hits="50" branch="false" />
-            <line number="27" hits="50" branch="false" />
-            <line number="28" hits="50" branch="false" />
-            <line number="29" hits="50" branch="false" />
-            <line number="30" hits="50" branch="false" />
-            <line number="31" hits="50" branch="false" />
-            <line number="35" hits="50" branch="false" />
-            <line number="36" hits="50" branch="false" />
-            <line number="38" hits="50" branch="false" />
-            <line number="39" hits="50" branch="false" />
-            <line number="40" hits="50" branch="false" />
-            <line number="41" hits="50" branch="false" />
-            <line number="42" hits="50" branch="false" />
-            <line number="43" hits="50" branch="false" />
-            <line number="44" hits="50" branch="false" />
-            <line number="45" hits="50" branch="false" />
-            <line number="46" hits="50" branch="false" />
-            <line number="47" hits="50" branch="false" />
-            <line number="48" hits="50" branch="false" />
-            <line number="49" hits="50" branch="false" />
-            <line number="53" hits="50" branch="false" />
-            <line number="55" hits="50" branch="true" condition-coverage="50% (4/8)" />
-            <line number="57" hits="0" branch="false" />
-            <line number="60" hits="50" branch="false" />
-            <line number="61" hits="50" branch="false" />
-            <line number="62" hits="50" branch="false" />
-            <line number="63" hits="50" branch="false" />
-            <line number="64" hits="50" branch="false" />
-            <line number="65" hits="50" branch="false" />
-            <line number="66" hits="50" branch="false" />
-            <line number="67" hits="50" branch="false" />
-            <line number="68" hits="50" branch="false" />
-            <line number="69" hits="50" branch="false" />
-            <line number="71" hits="50" branch="false" />
+            <line number="12" hits="40" branch="false" />
+            <line number="13" hits="40" branch="false" />
+            <line number="14" hits="40" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.API.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/DependencyInjection.cs" line-rate="0.9761904761904762" branch-rate="0.5" complexity="14">
+          <methods>
+            <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="42" branch="false" />
+                <line number="16" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
+                <line number="18" hits="42" branch="false" />
+                <line number="19" hits="42" branch="false" />
+                <line number="20" hits="42" branch="false" />
+                <line number="21" hits="42" branch="false" />
+                <line number="23" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddErrorHandlers" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="28" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="30" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddSwagger" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="37" hits="42" branch="false" />
+                <line number="38" hits="42" branch="false" />
+                <line number="40" hits="42" branch="false" />
+                <line number="41" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
+                <line number="43" hits="42" branch="false" />
+                <line number="44" hits="42" branch="false" />
+                <line number="45" hits="42" branch="false" />
+                <line number="46" hits="42" branch="false" />
+                <line number="47" hits="42" branch="false" />
+                <line number="48" hits="42" branch="false" />
+                <line number="49" hits="42" branch="false" />
+                <line number="50" hits="42" branch="false" />
+                <line number="51" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
+              <lines>
+                <line number="55" hits="42" branch="false" />
+                <line number="57" hits="42" branch="true" condition-coverage="50% (4/8)" />
+                <line number="59" hits="0" branch="false" />
+                <line number="62" hits="42" branch="false" />
+                <line number="63" hits="42" branch="false" />
+                <line number="64" hits="42" branch="false" />
+                <line number="65" hits="42" branch="false" />
+                <line number="66" hits="42" branch="false" />
+                <line number="67" hits="42" branch="false" />
+                <line number="68" hits="42" branch="false" />
+                <line number="69" hits="42" branch="false" />
+                <line number="70" hits="42" branch="false" />
+                <line number="71" hits="42" branch="false" />
+                <line number="73" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddApi" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="42" branch="false" />
+                <line number="16" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
+                <line number="18" hits="42" branch="false" />
+                <line number="19" hits="42" branch="false" />
+                <line number="20" hits="42" branch="false" />
+                <line number="21" hits="42" branch="false" />
+                <line number="23" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddErrorHandlers" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="28" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="30" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddSwagger" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="37" hits="42" branch="false" />
+                <line number="38" hits="42" branch="false" />
+                <line number="40" hits="42" branch="false" />
+                <line number="41" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
+                <line number="43" hits="42" branch="false" />
+                <line number="44" hits="42" branch="false" />
+                <line number="45" hits="42" branch="false" />
+                <line number="46" hits="42" branch="false" />
+                <line number="47" hits="42" branch="false" />
+                <line number="48" hits="42" branch="false" />
+                <line number="49" hits="42" branch="false" />
+                <line number="50" hits="42" branch="false" />
+                <line number="51" hits="42" branch="false" />
+              </lines>
+            </method>
+            <method name="AddCors" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="0.9285714285714286" branch-rate="0.5" complexity="4">
+              <lines>
+                <line number="55" hits="42" branch="false" />
+                <line number="57" hits="42" branch="true" condition-coverage="50% (4/8)" />
+                <line number="59" hits="0" branch="false" />
+                <line number="62" hits="42" branch="false" />
+                <line number="63" hits="42" branch="false" />
+                <line number="64" hits="42" branch="false" />
+                <line number="65" hits="42" branch="false" />
+                <line number="66" hits="42" branch="false" />
+                <line number="67" hits="42" branch="false" />
+                <line number="68" hits="42" branch="false" />
+                <line number="69" hits="42" branch="false" />
+                <line number="70" hits="42" branch="false" />
+                <line number="71" hits="42" branch="false" />
+                <line number="73" hits="42" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="15" hits="42" branch="false" />
+            <line number="16" hits="42" branch="false" />
+            <line number="17" hits="42" branch="false" />
+            <line number="18" hits="42" branch="false" />
+            <line number="19" hits="42" branch="false" />
+            <line number="20" hits="42" branch="false" />
+            <line number="21" hits="42" branch="false" />
+            <line number="23" hits="42" branch="false" />
+            <line number="28" hits="42" branch="false" />
+            <line number="29" hits="42" branch="false" />
+            <line number="30" hits="42" branch="false" />
+            <line number="31" hits="42" branch="false" />
+            <line number="32" hits="42" branch="false" />
+            <line number="33" hits="42" branch="false" />
+            <line number="37" hits="42" branch="false" />
+            <line number="38" hits="42" branch="false" />
+            <line number="40" hits="42" branch="false" />
+            <line number="41" hits="42" branch="false" />
+            <line number="42" hits="42" branch="false" />
+            <line number="43" hits="42" branch="false" />
+            <line number="44" hits="42" branch="false" />
+            <line number="45" hits="42" branch="false" />
+            <line number="46" hits="42" branch="false" />
+            <line number="47" hits="42" branch="false" />
+            <line number="48" hits="42" branch="false" />
+            <line number="49" hits="42" branch="false" />
+            <line number="50" hits="42" branch="false" />
+            <line number="51" hits="42" branch="false" />
+            <line number="55" hits="42" branch="false" />
+            <line number="57" hits="42" branch="true" condition-coverage="50% (4/8)" />
+            <line number="59" hits="0" branch="false" />
+            <line number="62" hits="42" branch="false" />
+            <line number="63" hits="42" branch="false" />
+            <line number="64" hits="42" branch="false" />
+            <line number="65" hits="42" branch="false" />
+            <line number="66" hits="42" branch="false" />
+            <line number="67" hits="42" branch="false" />
+            <line number="68" hits="42" branch="false" />
+            <line number="69" hits="42" branch="false" />
+            <line number="70" hits="42" branch="false" />
+            <line number="71" hits="42" branch="false" />
+            <line number="73" hits="42" branch="false" />
           </lines>
         </class>
         <class name="Ombor.API.Extensions.StartupExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/StartupExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
             <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="26" hits="50" branch="false" />
-                <line number="27" hits="50" branch="false" />
-                <line number="29" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-                <line number="32" hits="50" branch="false" />
-                <line number="33" hits="50" branch="false" />
-                <line number="35" hits="50" branch="false" />
+                <line number="26" hits="42" branch="false" />
+                <line number="27" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="30" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+                <line number="35" hits="42" branch="false" />
               </lines>
             </method>
             <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="26" hits="50" branch="false" />
-                <line number="27" hits="50" branch="false" />
-                <line number="29" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-                <line number="32" hits="50" branch="false" />
-                <line number="33" hits="50" branch="false" />
-                <line number="35" hits="50" branch="false" />
+                <line number="26" hits="42" branch="false" />
+                <line number="27" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="30" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+                <line number="35" hits="42" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="26" hits="50" branch="false" />
-            <line number="27" hits="50" branch="false" />
-            <line number="29" hits="50" branch="false" />
-            <line number="30" hits="50" branch="false" />
-            <line number="31" hits="50" branch="false" />
-            <line number="32" hits="50" branch="false" />
-            <line number="33" hits="50" branch="false" />
-            <line number="35" hits="50" branch="false" />
+            <line number="26" hits="42" branch="false" />
+            <line number="27" hits="42" branch="false" />
+            <line number="29" hits="42" branch="false" />
+            <line number="30" hits="42" branch="false" />
+            <line number="31" hits="42" branch="false" />
+            <line number="32" hits="42" branch="false" />
+            <line number="33" hits="42" branch="false" />
+            <line number="35" hits="42" branch="false" />
           </lines>
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="1" branch-rate="0.9864864864864865" complexity="247">
+    <package name="Ombor.Application" line-rate="0.9024390243902439" branch-rate="0.6818181818181818" complexity="359">
       <classes>
         <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
             <method name="get_CurrentAssembly" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="17" hits="50" branch="false" />
+                <line number="18" hits="42" branch="false" />
               </lines>
             </method>
             <method name="AddApplication" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="27" hits="50" branch="false" />
-                <line number="28" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-                <line number="32" hits="50" branch="false" />
-                <line number="33" hits="50" branch="false" />
-                <line number="34" hits="50" branch="false" />
-                <line number="35" hits="50" branch="false" />
-                <line number="37" hits="50" branch="false" />
-                <line number="39" hits="50" branch="false" />
+                <line number="28" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+                <line number="34" hits="42" branch="false" />
+                <line number="35" hits="42" branch="false" />
+                <line number="36" hits="42" branch="false" />
+                <line number="37" hits="42" branch="false" />
+                <line number="38" hits="42" branch="false" />
+                <line number="40" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
               </lines>
             </method>
             <method name="AddConfigurations" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="44" hits="50" branch="false" />
-                <line number="45" hits="50" branch="false" />
-                <line number="46" hits="50" branch="false" />
-                <line number="47" hits="50" branch="false" />
-                <line number="49" hits="50" branch="false" />
+                <line number="47" hits="42" branch="false" />
+                <line number="48" hits="42" branch="false" />
+                <line number="49" hits="42" branch="false" />
+                <line number="50" hits="42" branch="false" />
+                <line number="52" hits="42" branch="false" />
               </lines>
             </method>
             <method name="CurrentAssembly" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
-                <line number="17" hits="50" branch="false" />
+                <line number="18" hits="42" branch="false" />
               </lines>
             </method>
             <method name="AddApplication" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="27" hits="50" branch="false" />
-                <line number="28" hits="50" branch="false" />
-                <line number="30" hits="50" branch="false" />
-                <line number="31" hits="50" branch="false" />
-                <line number="32" hits="50" branch="false" />
-                <line number="33" hits="50" branch="false" />
-                <line number="34" hits="50" branch="false" />
-                <line number="35" hits="50" branch="false" />
-                <line number="37" hits="50" branch="false" />
-                <line number="39" hits="50" branch="false" />
+                <line number="28" hits="42" branch="false" />
+                <line number="29" hits="42" branch="false" />
+                <line number="31" hits="42" branch="false" />
+                <line number="32" hits="42" branch="false" />
+                <line number="33" hits="42" branch="false" />
+                <line number="34" hits="42" branch="false" />
+                <line number="35" hits="42" branch="false" />
+                <line number="36" hits="42" branch="false" />
+                <line number="37" hits="42" branch="false" />
+                <line number="38" hits="42" branch="false" />
+                <line number="40" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
               </lines>
             </method>
             <method name="AddConfigurations" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="44" hits="50" branch="false" />
-                <line number="45" hits="50" branch="false" />
-                <line number="46" hits="50" branch="false" />
-                <line number="47" hits="50" branch="false" />
-                <line number="49" hits="50" branch="false" />
+                <line number="47" hits="42" branch="false" />
+                <line number="48" hits="42" branch="false" />
+                <line number="49" hits="42" branch="false" />
+                <line number="50" hits="42" branch="false" />
+                <line number="52" hits="42" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="17" hits="50" branch="false" />
-            <line number="27" hits="50" branch="false" />
-            <line number="28" hits="50" branch="false" />
-            <line number="30" hits="50" branch="false" />
-            <line number="31" hits="50" branch="false" />
-            <line number="32" hits="50" branch="false" />
-            <line number="33" hits="50" branch="false" />
-            <line number="34" hits="50" branch="false" />
-            <line number="35" hits="50" branch="false" />
-            <line number="37" hits="50" branch="false" />
-            <line number="39" hits="50" branch="false" />
-            <line number="44" hits="50" branch="false" />
-            <line number="45" hits="50" branch="false" />
-            <line number="46" hits="50" branch="false" />
-            <line number="47" hits="50" branch="false" />
-            <line number="49" hits="50" branch="false" />
+            <line number="18" hits="42" branch="false" />
+            <line number="28" hits="42" branch="false" />
+            <line number="29" hits="42" branch="false" />
+            <line number="31" hits="42" branch="false" />
+            <line number="32" hits="42" branch="false" />
+            <line number="33" hits="42" branch="false" />
+            <line number="34" hits="42" branch="false" />
+            <line number="35" hits="42" branch="false" />
+            <line number="36" hits="42" branch="false" />
+            <line number="37" hits="42" branch="false" />
+            <line number="38" hits="42" branch="false" />
+            <line number="40" hits="42" branch="false" />
+            <line number="42" hits="42" branch="false" />
+            <line number="47" hits="42" branch="false" />
+            <line number="48" hits="42" branch="false" />
+            <line number="49" hits="42" branch="false" />
+            <line number="50" hits="42" branch="false" />
+            <line number="52" hits="42" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Extensions.EnumExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/EnumExtensions.cs" line-rate="0.5405405405405406" branch-rate="0.4583333333333333" complexity="48">
+          <methods>
+            <method name="ToDomainStatus" signature="(Ombor.Contracts.Enums.TransactionStatus)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="7" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="9" hits="0" branch="false" />
+                <line number="12" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Contracts.Enums.TransactionType)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="17" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="19" hits="40" branch="false" />
+                <line number="22" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="GetPaymentDirection" signature="(Ombor.Contracts.Enums.TransactionType)" line-rate="0.875" branch-rate="0.8" complexity="5">
+              <lines>
+                <line number="26" hits="16" branch="true" condition-coverage="80% (8/10)" />
+                <line number="27" hits="16" branch="false" />
+                <line number="28" hits="16" branch="false" />
+                <line number="29" hits="8" branch="false" />
+                <line number="30" hits="16" branch="false" />
+                <line number="31" hits="8" branch="false" />
+                <line number="32" hits="0" branch="false" />
+                <line number="33" hits="16" branch="false" />
+              </lines>
+            </method>
+            <method name="GetPaymentDirection" signature="(Ombor.Domain.Enums.TransactionType)" line-rate="0.875" branch-rate="0.8" complexity="5">
+              <lines>
+                <line number="36" hits="40" branch="true" condition-coverage="80% (8/10)" />
+                <line number="37" hits="40" branch="false" />
+                <line number="38" hits="40" branch="false" />
+                <line number="39" hits="20" branch="false" />
+                <line number="40" hits="40" branch="false" />
+                <line number="41" hits="20" branch="false" />
+                <line number="42" hits="0" branch="false" />
+                <line number="43" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainPaymentMethod" signature="(Ombor.Contracts.Enums.PaymentMethod)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="47" hits="48" branch="true" condition-coverage="50% (2/4)" />
+                <line number="49" hits="48" branch="false" />
+                <line number="52" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToPaymentAllocationType" signature="(Ombor.Domain.Enums.TransactionType)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="57" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="59" hits="44" branch="false" />
+                <line number="62" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Contracts.Enums.PaymentType)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="67" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="69" hits="0" branch="false" />
+                <line number="72" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Domain.Enums.PaymentAllocationType)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="77" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="79" hits="0" branch="false" />
+                <line number="81" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainDirection" signature="(Ombor.Contracts.Enums.PaymentDirection)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="86" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="88" hits="0" branch="false" />
+                <line number="91" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainStatus" signature="(Ombor.Contracts.Enums.TransactionStatus)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="7" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="9" hits="0" branch="false" />
+                <line number="12" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Contracts.Enums.TransactionType)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="17" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="19" hits="40" branch="false" />
+                <line number="22" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="GetPaymentDirection" signature="(Ombor.Contracts.Enums.TransactionType)" line-rate="0.875" branch-rate="0.8" complexity="5">
+              <lines>
+                <line number="26" hits="16" branch="true" condition-coverage="80% (8/10)" />
+                <line number="27" hits="16" branch="false" />
+                <line number="28" hits="16" branch="false" />
+                <line number="29" hits="8" branch="false" />
+                <line number="30" hits="16" branch="false" />
+                <line number="31" hits="8" branch="false" />
+                <line number="32" hits="0" branch="false" />
+                <line number="33" hits="16" branch="false" />
+              </lines>
+            </method>
+            <method name="GetPaymentDirection" signature="(Ombor.Domain.Enums.TransactionType)" line-rate="0.875" branch-rate="0.8" complexity="5">
+              <lines>
+                <line number="36" hits="40" branch="true" condition-coverage="80% (8/10)" />
+                <line number="37" hits="40" branch="false" />
+                <line number="38" hits="40" branch="false" />
+                <line number="39" hits="20" branch="false" />
+                <line number="40" hits="40" branch="false" />
+                <line number="41" hits="20" branch="false" />
+                <line number="42" hits="0" branch="false" />
+                <line number="43" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainPaymentMethod" signature="(Ombor.Contracts.Enums.PaymentMethod)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="47" hits="48" branch="true" condition-coverage="50% (2/4)" />
+                <line number="49" hits="48" branch="false" />
+                <line number="52" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToPaymentAllocationType" signature="(Ombor.Domain.Enums.TransactionType)" line-rate="0.6666666666666666" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="57" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="59" hits="44" branch="false" />
+                <line number="62" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Contracts.Enums.PaymentType)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="67" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="69" hits="0" branch="false" />
+                <line number="72" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainType" signature="(Ombor.Domain.Enums.PaymentAllocationType)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="77" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="79" hits="0" branch="false" />
+                <line number="81" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDomainDirection" signature="(Ombor.Contracts.Enums.PaymentDirection)" line-rate="0" branch-rate="0" complexity="2">
+              <lines>
+                <line number="86" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="88" hits="0" branch="false" />
+                <line number="91" hits="0" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="7" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="9" hits="0" branch="false" />
+            <line number="12" hits="0" branch="false" />
+            <line number="17" hits="40" branch="true" condition-coverage="50% (2/4)" />
+            <line number="19" hits="40" branch="false" />
+            <line number="22" hits="0" branch="false" />
+            <line number="26" hits="16" branch="true" condition-coverage="80% (8/10)" />
+            <line number="27" hits="16" branch="false" />
+            <line number="28" hits="16" branch="false" />
+            <line number="29" hits="8" branch="false" />
+            <line number="30" hits="16" branch="false" />
+            <line number="31" hits="8" branch="false" />
+            <line number="32" hits="0" branch="false" />
+            <line number="33" hits="16" branch="false" />
+            <line number="36" hits="40" branch="true" condition-coverage="80% (8/10)" />
+            <line number="37" hits="40" branch="false" />
+            <line number="38" hits="40" branch="false" />
+            <line number="39" hits="20" branch="false" />
+            <line number="40" hits="40" branch="false" />
+            <line number="41" hits="20" branch="false" />
+            <line number="42" hits="0" branch="false" />
+            <line number="43" hits="40" branch="false" />
+            <line number="47" hits="48" branch="true" condition-coverage="50% (2/4)" />
+            <line number="49" hits="48" branch="false" />
+            <line number="52" hits="0" branch="false" />
+            <line number="57" hits="44" branch="true" condition-coverage="50% (2/4)" />
+            <line number="59" hits="44" branch="false" />
+            <line number="62" hits="0" branch="false" />
+            <line number="67" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="69" hits="0" branch="false" />
+            <line number="72" hits="0" branch="false" />
+            <line number="77" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="79" hits="0" branch="false" />
+            <line number="81" hits="0" branch="false" />
+            <line number="86" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="88" hits="0" branch="false" />
+            <line number="91" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Extensions.FormFileExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/FormFileExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -397,6 +624,114 @@
             <line number="10" hits="46" branch="false" />
             <line number="12" hits="46" branch="false" />
             <line number="14" hits="46" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Extensions.PartnerExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/PartnerExtensions.cs" line-rate="0.6" branch-rate="0.25" complexity="16">
+          <methods>
+            <method name="CanHandleTransaction" signature="(Ombor.Domain.Entities.Partner,Ombor.Contracts.Enums.TransactionType)" line-rate="0.6" branch-rate="0.25" complexity="8">
+              <lines>
+                <line number="10" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="12" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="15" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="17" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="20" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="CanHandleTransaction" signature="(Ombor.Domain.Entities.Partner,Ombor.Contracts.Enums.TransactionType)" line-rate="0.6" branch-rate="0.25" complexity="8">
+              <lines>
+                <line number="10" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="12" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="15" hits="40" branch="true" condition-coverage="50% (2/4)" />
+                <line number="17" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="20" hits="40" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="40" branch="true" condition-coverage="50% (2/4)" />
+            <line number="12" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="15" hits="40" branch="true" condition-coverage="50% (2/4)" />
+            <line number="17" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="20" hits="40" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Extensions.RequestExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/RequestExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="ToPaymentRequest" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionRequest,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="40" branch="false" />
+                <line number="11" hits="40" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="13" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
+                <line number="15" hits="40" branch="false" />
+                <line number="16" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToPaymentRequest" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionRequest,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="40" branch="false" />
+                <line number="11" hits="40" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="13" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
+                <line number="15" hits="40" branch="false" />
+                <line number="16" hits="40" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="40" branch="false" />
+            <line number="11" hits="40" branch="false" />
+            <line number="12" hits="40" branch="false" />
+            <line number="13" hits="40" branch="false" />
+            <line number="14" hits="40" branch="false" />
+            <line number="15" hits="40" branch="false" />
+            <line number="16" hits="40" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Extensions.TransactionExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/TransactionExtensions.cs" line-rate="0.8" branch-rate="0.6666666666666666" complexity="12">
+          <methods>
+            <method name="AddPayment" signature="(Ombor.Domain.Entities.TransactionRecord,System.Decimal)" line-rate="0.8" branch-rate="0.6666666666666666" complexity="6">
+              <lines>
+                <line number="9" hits="44" branch="false" />
+                <line number="11" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="13" hits="0" branch="false" />
+                <line number="16" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="18" hits="0" branch="false" />
+                <line number="21" hits="44" branch="false" />
+                <line number="23" hits="44" branch="true" condition-coverage="100% (4/4)" />
+                <line number="25" hits="12" branch="false" />
+                <line number="29" hits="32" branch="false" />
+                <line number="31" hits="32" branch="false" />
+              </lines>
+            </method>
+            <method name="AddPayment" signature="(Ombor.Domain.Entities.TransactionRecord,System.Decimal)" line-rate="0.8" branch-rate="0.6666666666666666" complexity="6">
+              <lines>
+                <line number="9" hits="44" branch="false" />
+                <line number="11" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="13" hits="0" branch="false" />
+                <line number="16" hits="44" branch="true" condition-coverage="50% (2/4)" />
+                <line number="18" hits="0" branch="false" />
+                <line number="21" hits="44" branch="false" />
+                <line number="23" hits="44" branch="true" condition-coverage="100% (4/4)" />
+                <line number="25" hits="12" branch="false" />
+                <line number="29" hits="32" branch="false" />
+                <line number="31" hits="32" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="9" hits="44" branch="false" />
+            <line number="11" hits="44" branch="true" condition-coverage="50% (2/4)" />
+            <line number="13" hits="0" branch="false" />
+            <line number="16" hits="44" branch="true" condition-coverage="50% (2/4)" />
+            <line number="18" hits="0" branch="false" />
+            <line number="21" hits="44" branch="false" />
+            <line number="23" hits="44" branch="true" condition-coverage="100% (4/4)" />
+            <line number="25" hits="12" branch="false" />
+            <line number="29" hits="32" branch="false" />
+            <line number="31" hits="32" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Helpers.ImageHelper" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Helpers/ImageHelper.cs" line-rate="1" branch-rate="1" complexity="20">
@@ -537,124 +872,6 @@
             <line number="35" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.EmployeeMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/EmployeeMappings.cs" line-rate="1" branch-rate="1" complexity="10">
-          <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="10" hits="2" branch="false" />
-                <line number="11" hits="2" branch="false" />
-                <line number="12" hits="2" branch="false" />
-                <line number="13" hits="2" branch="false" />
-                <line number="14" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="2" branch="false" />
-                <line number="19" hits="2" branch="false" />
-                <line number="20" hits="2" branch="false" />
-                <line number="21" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="24" hits="2" branch="false" />
-                <line number="25" hits="2" branch="false" />
-                <line number="26" hits="2" branch="false" />
-                <line number="27" hits="2" branch="false" />
-                <line number="28" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="31" hits="2" branch="false" />
-                <line number="32" hits="2" branch="false" />
-                <line number="33" hits="2" branch="false" />
-                <line number="34" hits="2" branch="false" />
-                <line number="35" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="39" hits="2" branch="false" />
-                <line number="40" hits="2" branch="false" />
-                <line number="41" hits="2" branch="false" />
-                <line number="42" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="10" hits="2" branch="false" />
-                <line number="11" hits="2" branch="false" />
-                <line number="12" hits="2" branch="false" />
-                <line number="13" hits="2" branch="false" />
-                <line number="14" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="2" branch="false" />
-                <line number="19" hits="2" branch="false" />
-                <line number="20" hits="2" branch="false" />
-                <line number="21" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="24" hits="2" branch="false" />
-                <line number="25" hits="2" branch="false" />
-                <line number="26" hits="2" branch="false" />
-                <line number="27" hits="2" branch="false" />
-                <line number="28" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="31" hits="2" branch="false" />
-                <line number="32" hits="2" branch="false" />
-                <line number="33" hits="2" branch="false" />
-                <line number="34" hits="2" branch="false" />
-                <line number="35" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="39" hits="2" branch="false" />
-                <line number="40" hits="2" branch="false" />
-                <line number="41" hits="2" branch="false" />
-                <line number="42" hits="2" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="10" hits="2" branch="false" />
-            <line number="11" hits="2" branch="false" />
-            <line number="12" hits="2" branch="false" />
-            <line number="13" hits="2" branch="false" />
-            <line number="14" hits="2" branch="false" />
-            <line number="17" hits="2" branch="false" />
-            <line number="18" hits="2" branch="false" />
-            <line number="19" hits="2" branch="false" />
-            <line number="20" hits="2" branch="false" />
-            <line number="21" hits="2" branch="false" />
-            <line number="24" hits="2" branch="false" />
-            <line number="25" hits="2" branch="false" />
-            <line number="26" hits="2" branch="false" />
-            <line number="27" hits="2" branch="false" />
-            <line number="28" hits="2" branch="false" />
-            <line number="31" hits="2" branch="false" />
-            <line number="32" hits="2" branch="false" />
-            <line number="33" hits="2" branch="false" />
-            <line number="34" hits="2" branch="false" />
-            <line number="35" hits="2" branch="false" />
-            <line number="39" hits="2" branch="false" />
-            <line number="40" hits="2" branch="false" />
-            <line number="41" hits="2" branch="false" />
-            <line number="42" hits="2" branch="false" />
-          </lines>
-        </class>
         <class name="Ombor.Application.Mappings.PartnerMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/SupplierMappings.cs" line-rate="1" branch-rate="1" complexity="10">
           <methods>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
@@ -667,11 +884,11 @@
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Partner.CreatePartnerRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
                 <line number="24" hits="6" branch="false" />
@@ -681,11 +898,11 @@
                 <line number="28" hits="6" branch="false" />
                 <line number="29" hits="6" branch="false" />
                 <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
                 <line number="35" hits="6" branch="false" />
                 <line number="36" hits="6" branch="false" />
@@ -693,11 +910,11 @@
                 <line number="38" hits="6" branch="false" />
                 <line number="39" hits="6" branch="false" />
                 <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
@@ -705,11 +922,11 @@
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
                 <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Partner,Ombor.Contracts.Requests.Partner.UpdatePartnerRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="54" hits="6" branch="false" />
                 <line number="55" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
@@ -717,6 +934,7 @@
                 <line number="59" hits="6" branch="false" />
                 <line number="60" hits="6" branch="false" />
                 <line number="61" hits="6" branch="false" />
+                <line number="62" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
@@ -729,11 +947,11 @@
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Partner.CreatePartnerRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
                 <line number="24" hits="6" branch="false" />
@@ -743,11 +961,11 @@
                 <line number="28" hits="6" branch="false" />
                 <line number="29" hits="6" branch="false" />
                 <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
                 <line number="35" hits="6" branch="false" />
                 <line number="36" hits="6" branch="false" />
@@ -755,11 +973,11 @@
                 <line number="38" hits="6" branch="false" />
                 <line number="39" hits="6" branch="false" />
                 <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Partner)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
@@ -767,11 +985,11 @@
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
                 <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Partner,Ombor.Contracts.Requests.Partner.UpdatePartnerRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="54" hits="6" branch="false" />
                 <line number="55" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
@@ -779,6 +997,7 @@
                 <line number="59" hits="6" branch="false" />
                 <line number="60" hits="6" branch="false" />
                 <line number="61" hits="6" branch="false" />
+                <line number="62" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
@@ -791,7 +1010,7 @@
             <line number="16" hits="6" branch="false" />
             <line number="17" hits="6" branch="false" />
             <line number="18" hits="6" branch="false" />
-            <line number="21" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
             <line number="22" hits="6" branch="false" />
             <line number="23" hits="6" branch="false" />
             <line number="24" hits="6" branch="false" />
@@ -801,7 +1020,7 @@
             <line number="28" hits="6" branch="false" />
             <line number="29" hits="6" branch="false" />
             <line number="30" hits="6" branch="false" />
-            <line number="33" hits="6" branch="false" />
+            <line number="31" hits="6" branch="false" />
             <line number="34" hits="6" branch="false" />
             <line number="35" hits="6" branch="false" />
             <line number="36" hits="6" branch="false" />
@@ -809,7 +1028,7 @@
             <line number="38" hits="6" branch="false" />
             <line number="39" hits="6" branch="false" />
             <line number="40" hits="6" branch="false" />
-            <line number="43" hits="6" branch="false" />
+            <line number="41" hits="6" branch="false" />
             <line number="44" hits="6" branch="false" />
             <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
@@ -817,7 +1036,7 @@
             <line number="48" hits="6" branch="false" />
             <line number="49" hits="6" branch="false" />
             <line number="50" hits="6" branch="false" />
-            <line number="54" hits="6" branch="false" />
+            <line number="51" hits="6" branch="false" />
             <line number="55" hits="6" branch="false" />
             <line number="56" hits="6" branch="false" />
             <line number="57" hits="6" branch="false" />
@@ -825,6 +1044,7 @@
             <line number="59" hits="6" branch="false" />
             <line number="60" hits="6" branch="false" />
             <line number="61" hits="6" branch="false" />
+            <line number="62" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.ProductImageMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/ProductImageMappings.cs" line-rate="1" branch-rate="1" complexity="6">
@@ -1530,6 +1750,129 @@
             <line number="145" hits="8" branch="false" />
           </lines>
         </class>
+        <class name="Ombor.Application.Mappings.TransactionMapper" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/TransactionMapper.cs" line-rate="1" branch-rate="1" complexity="8">
+          <methods>
+            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionRequest)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="18" hits="40" branch="true" condition-coverage="100% (4/4)" />
+                <line number="19" hits="40" branch="false" />
+                <line number="20" hits="40" branch="false" />
+                <line number="21" hits="40" branch="false" />
+                <line number="22" hits="40" branch="false" />
+                <line number="23" hits="40" branch="false" />
+                <line number="24" hits="40" branch="false" />
+                <line number="25" hits="40" branch="false" />
+                <line number="26" hits="40" branch="false" />
+                <line number="27" hits="40" branch="false" />
+                <line number="28" hits="40" branch="false" />
+                <line number="29" hits="40" branch="false" />
+                <line number="30" hits="40" branch="false" />
+                <line number="31" hits="40" branch="false" />
+                <line number="32" hits="40" branch="false" />
+                <line number="33" hits="40" branch="false" />
+                <line number="34" hits="40" branch="false" />
+                <line number="35" hits="40" branch="false" />
+                <line number="36" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDto" signature="(Ombor.Domain.Entities.TransactionRecord)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="41" hits="40" branch="false" />
+                <line number="42" hits="40" branch="false" />
+                <line number="43" hits="40" branch="false" />
+                <line number="44" hits="40" branch="false" />
+                <line number="45" hits="40" branch="false" />
+                <line number="46" hits="40" branch="false" />
+                <line number="47" hits="40" branch="false" />
+                <line number="48" hits="40" branch="false" />
+                <line number="49" hits="40" branch="false" />
+                <line number="50" hits="40" branch="false" />
+                <line number="51" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="CalculateLineTotal" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionLine)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="55" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionRequest)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="18" hits="40" branch="true" condition-coverage="100% (4/4)" />
+                <line number="19" hits="40" branch="false" />
+                <line number="20" hits="40" branch="false" />
+                <line number="21" hits="40" branch="false" />
+                <line number="22" hits="40" branch="false" />
+                <line number="23" hits="40" branch="false" />
+                <line number="24" hits="40" branch="false" />
+                <line number="25" hits="40" branch="false" />
+                <line number="26" hits="40" branch="false" />
+                <line number="27" hits="40" branch="false" />
+                <line number="28" hits="40" branch="false" />
+                <line number="29" hits="40" branch="false" />
+                <line number="30" hits="40" branch="false" />
+                <line number="31" hits="40" branch="false" />
+                <line number="32" hits="40" branch="false" />
+                <line number="33" hits="40" branch="false" />
+                <line number="34" hits="40" branch="false" />
+                <line number="35" hits="40" branch="false" />
+                <line number="36" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDto" signature="(Ombor.Domain.Entities.TransactionRecord)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="41" hits="40" branch="false" />
+                <line number="42" hits="40" branch="false" />
+                <line number="43" hits="40" branch="false" />
+                <line number="44" hits="40" branch="false" />
+                <line number="45" hits="40" branch="false" />
+                <line number="46" hits="40" branch="false" />
+                <line number="47" hits="40" branch="false" />
+                <line number="48" hits="40" branch="false" />
+                <line number="49" hits="40" branch="false" />
+                <line number="50" hits="40" branch="false" />
+                <line number="51" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="CalculateLineTotal" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionLine)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="55" hits="40" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="18" hits="40" branch="true" condition-coverage="100% (4/4)" />
+            <line number="19" hits="40" branch="false" />
+            <line number="20" hits="40" branch="false" />
+            <line number="21" hits="40" branch="false" />
+            <line number="22" hits="40" branch="false" />
+            <line number="23" hits="40" branch="false" />
+            <line number="24" hits="40" branch="false" />
+            <line number="25" hits="40" branch="false" />
+            <line number="26" hits="40" branch="false" />
+            <line number="27" hits="40" branch="false" />
+            <line number="28" hits="40" branch="false" />
+            <line number="29" hits="40" branch="false" />
+            <line number="30" hits="40" branch="false" />
+            <line number="31" hits="40" branch="false" />
+            <line number="32" hits="40" branch="false" />
+            <line number="33" hits="40" branch="false" />
+            <line number="34" hits="40" branch="false" />
+            <line number="35" hits="40" branch="false" />
+            <line number="36" hits="40" branch="false" />
+            <line number="41" hits="40" branch="false" />
+            <line number="42" hits="40" branch="false" />
+            <line number="43" hits="40" branch="false" />
+            <line number="44" hits="40" branch="false" />
+            <line number="45" hits="40" branch="false" />
+            <line number="46" hits="40" branch="false" />
+            <line number="47" hits="40" branch="false" />
+            <line number="48" hits="40" branch="false" />
+            <line number="49" hits="40" branch="false" />
+            <line number="50" hits="40" branch="false" />
+            <line number="51" hits="40" branch="false" />
+            <line number="55" hits="40" branch="false" />
+          </lines>
+        </class>
         <class name="Ombor.Application.Services.CategoryService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/CategoryService.cs" line-rate="1" branch-rate="1" complexity="4">
           <methods>
             <method name="GetAsync" signature="(Ombor.Contracts.Requests.Category.GetCategoriesRequest)" line-rate="1" branch-rate="1" complexity="2">
@@ -1700,84 +2043,89 @@
             <line number="190" hits="10" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Services.PartnerService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/PartnerService.cs" line-rate="1" branch-rate="1" complexity="4">
+        <class name="Ombor.Application.Services.PaymentService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/PaymentService.cs" line-rate="0" branch-rate="0" complexity="26">
           <methods>
-            <method name="GetAsync" signature="(Ombor.Contracts.Requests.Partner.GetPartnersRequest)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="CreateAsync" signature="(Ombor.Contracts.Requests.Payment.CreatePaymentRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="15" hits="16" branch="false" />
-                <line number="17" hits="14" branch="false" />
-                <line number="19" hits="14" branch="false" />
-                <line number="21" hits="14" branch="true" condition-coverage="100% (4/4)" />
-                <line number="23" hits="4" branch="false" />
-                <line number="24" hits="4" branch="false" />
-                <line number="25" hits="4" branch="false" />
-                <line number="26" hits="4" branch="false" />
-                <line number="27" hits="4" branch="false" />
-                <line number="30" hits="14" branch="false" />
-                <line number="31" hits="14" branch="false" />
-                <line number="32" hits="14" branch="false" />
-                <line number="33" hits="14" branch="false" />
-                <line number="34" hits="14" branch="false" />
-                <line number="35" hits="14" branch="false" />
-                <line number="36" hits="14" branch="false" />
-                <line number="37" hits="14" branch="false" />
-                <line number="38" hits="14" branch="false" />
-                <line number="39" hits="14" branch="false" />
-                <line number="40" hits="14" branch="false" />
-                <line number="41" hits="14" branch="false" />
-                <line number="42" hits="14" branch="false" />
+                <line number="20" hits="0" branch="false" />
               </lines>
             </method>
-            <method name="GetAsync" signature="(Ombor.Contracts.Requests.Partner.GetPartnersRequest)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Payment.GetPaymentsRequest)" line-rate="0" branch-rate="0" complexity="12">
               <lines>
-                <line number="15" hits="16" branch="false" />
-                <line number="17" hits="14" branch="false" />
-                <line number="19" hits="14" branch="false" />
-                <line number="21" hits="14" branch="true" condition-coverage="100% (4/4)" />
-                <line number="23" hits="4" branch="false" />
-                <line number="24" hits="4" branch="false" />
-                <line number="25" hits="4" branch="false" />
-                <line number="26" hits="4" branch="false" />
-                <line number="27" hits="4" branch="false" />
-                <line number="30" hits="14" branch="false" />
-                <line number="31" hits="14" branch="false" />
-                <line number="32" hits="14" branch="false" />
-                <line number="33" hits="14" branch="false" />
-                <line number="34" hits="14" branch="false" />
-                <line number="35" hits="14" branch="false" />
-                <line number="36" hits="14" branch="false" />
-                <line number="37" hits="14" branch="false" />
-                <line number="38" hits="14" branch="false" />
-                <line number="39" hits="14" branch="false" />
-                <line number="40" hits="14" branch="false" />
-                <line number="41" hits="14" branch="false" />
-                <line number="42" hits="14" branch="false" />
+                <line number="251" hits="0" branch="false" />
+                <line number="252" hits="0" branch="false" />
+                <line number="253" hits="0" branch="false" />
+                <line number="254" hits="0" branch="false" />
+                <line number="255" hits="0" branch="false" />
+                <line number="257" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="259" hits="0" branch="false" />
+                <line number="262" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="264" hits="0" branch="false" />
+                <line number="267" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="269" hits="0" branch="false" />
+                <line number="272" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="274" hits="0" branch="false" />
+                <line number="277" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="279" hits="0" branch="false" />
+                <line number="280" hits="0" branch="false" />
+                <line number="283" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="285" hits="0" branch="false" />
+                <line number="286" hits="0" branch="false" />
+                <line number="289" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="CreateAsync" signature="(Ombor.Contracts.Requests.Payment.CreatePaymentRequest)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Payment.GetPaymentsRequest)" line-rate="0" branch-rate="0" complexity="12">
+              <lines>
+                <line number="251" hits="0" branch="false" />
+                <line number="252" hits="0" branch="false" />
+                <line number="253" hits="0" branch="false" />
+                <line number="254" hits="0" branch="false" />
+                <line number="255" hits="0" branch="false" />
+                <line number="257" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="259" hits="0" branch="false" />
+                <line number="262" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="264" hits="0" branch="false" />
+                <line number="267" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="269" hits="0" branch="false" />
+                <line number="272" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="274" hits="0" branch="false" />
+                <line number="277" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="279" hits="0" branch="false" />
+                <line number="280" hits="0" branch="false" />
+                <line number="283" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="285" hits="0" branch="false" />
+                <line number="286" hits="0" branch="false" />
+                <line number="289" hits="0" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="15" hits="16" branch="false" />
-            <line number="17" hits="14" branch="false" />
-            <line number="19" hits="14" branch="false" />
-            <line number="21" hits="14" branch="true" condition-coverage="100% (4/4)" />
-            <line number="23" hits="4" branch="false" />
-            <line number="24" hits="4" branch="false" />
-            <line number="25" hits="4" branch="false" />
-            <line number="26" hits="4" branch="false" />
-            <line number="27" hits="4" branch="false" />
-            <line number="30" hits="14" branch="false" />
-            <line number="31" hits="14" branch="false" />
-            <line number="32" hits="14" branch="false" />
-            <line number="33" hits="14" branch="false" />
-            <line number="34" hits="14" branch="false" />
-            <line number="35" hits="14" branch="false" />
-            <line number="36" hits="14" branch="false" />
-            <line number="37" hits="14" branch="false" />
-            <line number="38" hits="14" branch="false" />
-            <line number="39" hits="14" branch="false" />
-            <line number="40" hits="14" branch="false" />
-            <line number="41" hits="14" branch="false" />
-            <line number="42" hits="14" branch="false" />
+            <line number="20" hits="0" branch="false" />
+            <line number="251" hits="0" branch="false" />
+            <line number="252" hits="0" branch="false" />
+            <line number="253" hits="0" branch="false" />
+            <line number="254" hits="0" branch="false" />
+            <line number="255" hits="0" branch="false" />
+            <line number="257" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="259" hits="0" branch="false" />
+            <line number="262" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="264" hits="0" branch="false" />
+            <line number="267" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="269" hits="0" branch="false" />
+            <line number="272" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="274" hits="0" branch="false" />
+            <line number="277" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="279" hits="0" branch="false" />
+            <line number="280" hits="0" branch="false" />
+            <line number="283" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="285" hits="0" branch="false" />
+            <line number="286" hits="0" branch="false" />
+            <line number="289" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Services.ProductService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/ProductService.cs" line-rate="1" branch-rate="1" complexity="26">
@@ -1918,6 +2266,129 @@
             <line number="83" hits="4" branch="false" />
             <line number="84" hits="4" branch="false" />
             <line number="87" hits="10" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Services.TransactionService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/TransactionService.cs" line-rate="0.03225806451612903" branch-rate="0" complexity="20">
+          <methods>
+            <method name="GetAsync" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="22" hits="0" branch="false" />
+                <line number="24" hits="0" branch="false" />
+                <line number="25" hits="0" branch="false" />
+                <line number="26" hits="0" branch="false" />
+                <line number="27" hits="0" branch="false" />
+                <line number="28" hits="0" branch="false" />
+                <line number="29" hits="0" branch="false" />
+                <line number="30" hits="0" branch="false" />
+                <line number="31" hits="0" branch="false" />
+                <line number="32" hits="0" branch="false" />
+                <line number="33" hits="0" branch="false" />
+                <line number="34" hits="0" branch="false" />
+                <line number="35" hits="0" branch="false" />
+                <line number="36" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="CalculateLineTotal" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionLine)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="159" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="8">
+              <lines>
+                <line number="196" hits="0" branch="false" />
+                <line number="198" hits="0" branch="false" />
+                <line number="199" hits="0" branch="false" />
+                <line number="200" hits="0" branch="false" />
+                <line number="201" hits="0" branch="false" />
+                <line number="202" hits="0" branch="false" />
+                <line number="203" hits="0" branch="false" />
+                <line number="205" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="207" hits="0" branch="false" />
+                <line number="210" hits="0" branch="true" condition-coverage="0% (0/8)" />
+                <line number="212" hits="0" branch="false" />
+                <line number="213" hits="0" branch="false" />
+                <line number="216" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="218" hits="0" branch="false" />
+                <line number="219" hits="0" branch="false" />
+                <line number="222" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="GetAsync" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="1" complexity="1">
+              <lines>
+                <line number="22" hits="0" branch="false" />
+                <line number="24" hits="0" branch="false" />
+                <line number="25" hits="0" branch="false" />
+                <line number="26" hits="0" branch="false" />
+                <line number="27" hits="0" branch="false" />
+                <line number="28" hits="0" branch="false" />
+                <line number="29" hits="0" branch="false" />
+                <line number="30" hits="0" branch="false" />
+                <line number="31" hits="0" branch="false" />
+                <line number="32" hits="0" branch="false" />
+                <line number="33" hits="0" branch="false" />
+                <line number="34" hits="0" branch="false" />
+                <line number="35" hits="0" branch="false" />
+                <line number="36" hits="0" branch="false" />
+              </lines>
+            </method>
+            <method name="CalculateLineTotal" signature="(Ombor.Contracts.Requests.Transaction.CreateTransactionLine)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="159" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="8">
+              <lines>
+                <line number="196" hits="0" branch="false" />
+                <line number="198" hits="0" branch="false" />
+                <line number="199" hits="0" branch="false" />
+                <line number="200" hits="0" branch="false" />
+                <line number="201" hits="0" branch="false" />
+                <line number="202" hits="0" branch="false" />
+                <line number="203" hits="0" branch="false" />
+                <line number="205" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="207" hits="0" branch="false" />
+                <line number="210" hits="0" branch="true" condition-coverage="0% (0/8)" />
+                <line number="212" hits="0" branch="false" />
+                <line number="213" hits="0" branch="false" />
+                <line number="216" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="218" hits="0" branch="false" />
+                <line number="219" hits="0" branch="false" />
+                <line number="222" hits="0" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="22" hits="0" branch="false" />
+            <line number="24" hits="0" branch="false" />
+            <line number="25" hits="0" branch="false" />
+            <line number="26" hits="0" branch="false" />
+            <line number="27" hits="0" branch="false" />
+            <line number="28" hits="0" branch="false" />
+            <line number="29" hits="0" branch="false" />
+            <line number="30" hits="0" branch="false" />
+            <line number="31" hits="0" branch="false" />
+            <line number="32" hits="0" branch="false" />
+            <line number="33" hits="0" branch="false" />
+            <line number="34" hits="0" branch="false" />
+            <line number="35" hits="0" branch="false" />
+            <line number="36" hits="0" branch="false" />
+            <line number="159" hits="40" branch="false" />
+            <line number="196" hits="0" branch="false" />
+            <line number="198" hits="0" branch="false" />
+            <line number="199" hits="0" branch="false" />
+            <line number="200" hits="0" branch="false" />
+            <line number="201" hits="0" branch="false" />
+            <line number="202" hits="0" branch="false" />
+            <line number="203" hits="0" branch="false" />
+            <line number="205" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="207" hits="0" branch="false" />
+            <line number="210" hits="0" branch="true" condition-coverage="0% (0/8)" />
+            <line number="212" hits="0" branch="false" />
+            <line number="213" hits="0" branch="false" />
+            <line number="216" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="218" hits="0" branch="false" />
+            <line number="219" hits="0" branch="false" />
+            <line number="222" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Category.CreateCategoryRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Category/CreateCategoryRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -2075,167 +2546,6 @@
             <line number="23" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Validators.Employee.CreateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/CreateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
-          <methods>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="4" branch="false" />
-                <line number="16" hits="4" branch="false" />
-                <line number="17" hits="4" branch="false" />
-                <line number="18" hits="4" branch="false" />
-                <line number="19" hits="4" branch="false" />
-                <line number="20" hits="4" branch="false" />
-                <line number="21" hits="4" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="4" branch="false" />
-                <line number="16" hits="4" branch="false" />
-                <line number="17" hits="4" branch="false" />
-                <line number="18" hits="4" branch="false" />
-                <line number="19" hits="4" branch="false" />
-                <line number="20" hits="4" branch="false" />
-                <line number="21" hits="4" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="8" hits="4" branch="false" />
-            <line number="10" hits="4" branch="false" />
-            <line number="11" hits="4" branch="false" />
-            <line number="12" hits="4" branch="false" />
-            <line number="13" hits="4" branch="false" />
-            <line number="14" hits="4" branch="false" />
-            <line number="16" hits="4" branch="false" />
-            <line number="17" hits="4" branch="false" />
-            <line number="18" hits="4" branch="false" />
-            <line number="19" hits="4" branch="false" />
-            <line number="20" hits="4" branch="false" />
-            <line number="21" hits="4" branch="false" />
-          </lines>
-        </class>
-        <class name="Ombor.Application.Validators.Employee.DeleteEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/DeleteEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
-          <methods>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="8" hits="4" branch="false" />
-            <line number="10" hits="4" branch="false" />
-            <line number="11" hits="4" branch="false" />
-            <line number="12" hits="4" branch="false" />
-            <line number="13" hits="4" branch="false" />
-          </lines>
-        </class>
-        <class name="Ombor.Application.Validators.Employee.GetEmployeeByIdRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/GetEmployeeByIdRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
-          <methods>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="8" hits="4" branch="false" />
-            <line number="10" hits="4" branch="false" />
-            <line number="11" hits="4" branch="false" />
-            <line number="12" hits="4" branch="false" />
-            <line number="13" hits="4" branch="false" />
-          </lines>
-        </class>
-        <class name="Ombor.Application.Validators.Employee.UpdateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/UpdateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
-          <methods>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="6" branch="false" />
-                <line number="10" hits="6" branch="false" />
-                <line number="11" hits="6" branch="false" />
-                <line number="12" hits="6" branch="false" />
-                <line number="14" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
-                <line number="16" hits="6" branch="false" />
-                <line number="17" hits="6" branch="false" />
-                <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
-                <line number="21" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
-                <line number="24" hits="6" branch="false" />
-              </lines>
-            </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
-                <line number="8" hits="6" branch="false" />
-                <line number="10" hits="6" branch="false" />
-                <line number="11" hits="6" branch="false" />
-                <line number="12" hits="6" branch="false" />
-                <line number="14" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
-                <line number="16" hits="6" branch="false" />
-                <line number="17" hits="6" branch="false" />
-                <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
-                <line number="21" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
-                <line number="24" hits="6" branch="false" />
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="8" hits="6" branch="false" />
-            <line number="10" hits="6" branch="false" />
-            <line number="11" hits="6" branch="false" />
-            <line number="12" hits="6" branch="false" />
-            <line number="14" hits="6" branch="false" />
-            <line number="15" hits="6" branch="false" />
-            <line number="16" hits="6" branch="false" />
-            <line number="17" hits="6" branch="false" />
-            <line number="18" hits="6" branch="false" />
-            <line number="20" hits="6" branch="false" />
-            <line number="21" hits="6" branch="false" />
-            <line number="22" hits="6" branch="false" />
-            <line number="24" hits="6" branch="false" />
-          </lines>
-        </class>
         <class name="Ombor.Application.Validators.Partner.CreatePartnerRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Partner/CreatePartnerRequestValidator.cs" line-rate="1" branch-rate="1" complexity="4">
           <methods>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
@@ -2254,13 +2564,14 @@
                 <line number="22" hits="4" branch="false" />
                 <line number="23" hits="4" branch="false" />
                 <line number="24" hits="4" branch="false" />
-                <line number="26" hits="4" branch="false" />
+                <line number="25" hits="4" branch="false" />
                 <line number="27" hits="4" branch="false" />
                 <line number="28" hits="4" branch="false" />
-                <line number="30" hits="4" branch="true" condition-coverage="100% (4/4)" />
-                <line number="31" hits="4" branch="false" />
+                <line number="29" hits="4" branch="false" />
+                <line number="31" hits="4" branch="true" condition-coverage="100% (4/4)" />
                 <line number="32" hits="4" branch="false" />
                 <line number="33" hits="4" branch="false" />
+                <line number="34" hits="4" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
@@ -2279,13 +2590,14 @@
                 <line number="22" hits="4" branch="false" />
                 <line number="23" hits="4" branch="false" />
                 <line number="24" hits="4" branch="false" />
-                <line number="26" hits="4" branch="false" />
+                <line number="25" hits="4" branch="false" />
                 <line number="27" hits="4" branch="false" />
                 <line number="28" hits="4" branch="false" />
-                <line number="30" hits="4" branch="true" condition-coverage="100% (4/4)" />
-                <line number="31" hits="4" branch="false" />
+                <line number="29" hits="4" branch="false" />
+                <line number="31" hits="4" branch="true" condition-coverage="100% (4/4)" />
                 <line number="32" hits="4" branch="false" />
                 <line number="33" hits="4" branch="false" />
+                <line number="34" hits="4" branch="false" />
               </lines>
             </method>
           </methods>
@@ -2304,13 +2616,14 @@
             <line number="22" hits="4" branch="false" />
             <line number="23" hits="4" branch="false" />
             <line number="24" hits="4" branch="false" />
-            <line number="26" hits="4" branch="false" />
+            <line number="25" hits="4" branch="false" />
             <line number="27" hits="4" branch="false" />
             <line number="28" hits="4" branch="false" />
-            <line number="30" hits="4" branch="true" condition-coverage="100% (4/4)" />
-            <line number="31" hits="4" branch="false" />
+            <line number="29" hits="4" branch="false" />
+            <line number="31" hits="4" branch="true" condition-coverage="100% (4/4)" />
             <line number="32" hits="4" branch="false" />
             <line number="33" hits="4" branch="false" />
+            <line number="34" hits="4" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Partner.DeletePartnerRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Partner/DeletePartnerRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -2998,6 +3311,89 @@
             <line number="23" hits="6" branch="false" />
           </lines>
         </class>
+        <class name="Ombor.Application.Validators.Transaction.CreateTransactionValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Transaction/CreateTransactionValidator.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="8" hits="40" branch="false" />
+                <line number="10" hits="40" branch="false" />
+                <line number="11" hits="40" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
+                <line number="15" hits="40" branch="false" />
+                <line number="16" hits="40" branch="false" />
+                <line number="18" hits="40" branch="false" />
+                <line number="19" hits="40" branch="false" />
+                <line number="20" hits="40" branch="false" />
+                <line number="21" hits="40" branch="false" />
+                <line number="22" hits="40" branch="false" />
+                <line number="24" hits="40" branch="false" />
+                <line number="25" hits="40" branch="false" />
+                <line number="26" hits="40" branch="false" />
+                <line number="27" hits="40" branch="false" />
+                <line number="28" hits="40" branch="false" />
+                <line number="29" hits="40" branch="false" />
+                <line number="30" hits="40" branch="false" />
+                <line number="32" hits="40" branch="false" />
+                <line number="33" hits="40" branch="false" />
+                <line number="34" hits="40" branch="false" />
+                <line number="35" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="8" hits="40" branch="false" />
+                <line number="10" hits="40" branch="false" />
+                <line number="11" hits="40" branch="false" />
+                <line number="12" hits="40" branch="false" />
+                <line number="14" hits="40" branch="false" />
+                <line number="15" hits="40" branch="false" />
+                <line number="16" hits="40" branch="false" />
+                <line number="18" hits="40" branch="false" />
+                <line number="19" hits="40" branch="false" />
+                <line number="20" hits="40" branch="false" />
+                <line number="21" hits="40" branch="false" />
+                <line number="22" hits="40" branch="false" />
+                <line number="24" hits="40" branch="false" />
+                <line number="25" hits="40" branch="false" />
+                <line number="26" hits="40" branch="false" />
+                <line number="27" hits="40" branch="false" />
+                <line number="28" hits="40" branch="false" />
+                <line number="29" hits="40" branch="false" />
+                <line number="30" hits="40" branch="false" />
+                <line number="32" hits="40" branch="false" />
+                <line number="33" hits="40" branch="false" />
+                <line number="34" hits="40" branch="false" />
+                <line number="35" hits="40" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="8" hits="40" branch="false" />
+            <line number="10" hits="40" branch="false" />
+            <line number="11" hits="40" branch="false" />
+            <line number="12" hits="40" branch="false" />
+            <line number="14" hits="40" branch="false" />
+            <line number="15" hits="40" branch="false" />
+            <line number="16" hits="40" branch="false" />
+            <line number="18" hits="40" branch="false" />
+            <line number="19" hits="40" branch="false" />
+            <line number="20" hits="40" branch="false" />
+            <line number="21" hits="40" branch="false" />
+            <line number="22" hits="40" branch="false" />
+            <line number="24" hits="40" branch="false" />
+            <line number="25" hits="40" branch="false" />
+            <line number="26" hits="40" branch="false" />
+            <line number="27" hits="40" branch="false" />
+            <line number="28" hits="40" branch="false" />
+            <line number="29" hits="40" branch="false" />
+            <line number="30" hits="40" branch="false" />
+            <line number="32" hits="40" branch="false" />
+            <line number="33" hits="40" branch="false" />
+            <line number="34" hits="40" branch="false" />
+            <line number="35" hits="40" branch="false" />
+          </lines>
+        </class>
         <class name="Ombor.Application.Validators.ValidationHelpers" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/ValidationHelpers.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
             <method name="IsValidPhoneNumber" signature="(System.String)" line-rate="1" branch-rate="1" complexity="1">
@@ -3017,15 +3413,66 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Domain" line-rate="0.2972972972972973" branch-rate="1" complexity="40">
+    <package name="Ombor.Domain" line-rate="0.35" branch-rate="1" complexity="43">
       <classes>
+        <class name="Ombor.Domain.Entities.PartnerBalance" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/PartnerBalance.cs" line-rate="1" branch-rate="1" complexity="1">
+          <methods>
+            <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="146" branch="false" />
+              </lines>
+            </method>
+            <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
+              <lines>
+                <line number="10" hits="146" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="146" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Domain.Entities.TransactionLine" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionLine.cs" line-rate="1" branch-rate="1" complexity="1">
+          <methods>
+            <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="40" branch="false" />
+              </lines>
+            </method>
+            <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
+              <lines>
+                <line number="12" hits="40" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="40" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Domain.Entities.TransactionRecord" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionRecord.cs" line-rate="1" branch-rate="1" complexity="1">
+          <methods>
+            <method name="get_UnpaidAmount" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="144" branch="false" />
+              </lines>
+            </method>
+            <method name="UnpaidAmount" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
+              <lines>
+                <line number="15" hits="144" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="15" hits="144" branch="false" />
+          </lines>
+        </class>
         <class name="Ombor.Domain.Exceptions.EntityNotFoundException" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Exceptions/EntityNotFoundException.cs" line-rate="0.3333333333333333" branch-rate="1" complexity="8">
           <methods>
             <method name=".ctor" signature="(System.Type,System.Object)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="48" branch="false" />
-                <line number="14" hits="48" branch="false" />
-                <line number="17" hits="48" branch="false" />
+                <line number="12" hits="42" branch="false" />
+                <line number="14" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
@@ -3048,9 +3495,9 @@
             </method>
             <method name=".ctor" signature="(System.Type,System.Object)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="48" branch="false" />
-                <line number="14" hits="48" branch="false" />
-                <line number="17" hits="48" branch="false" />
+                <line number="12" hits="42" branch="false" />
+                <line number="14" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
@@ -3073,9 +3520,9 @@
             </method>
           </methods>
           <lines>
-            <line number="12" hits="48" branch="false" />
-            <line number="14" hits="48" branch="false" />
-            <line number="17" hits="48" branch="false" />
+            <line number="12" hits="42" branch="false" />
+            <line number="14" hits="42" branch="false" />
+            <line number="17" hits="42" branch="false" />
             <line number="19" hits="0" branch="false" />
             <line number="24" hits="0" branch="false" />
             <line number="26" hits="0" branch="false" />
@@ -3103,7 +3550,7 @@
             </method>
             <method name=".ctor" signature="(System.Object)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="50" hits="96" branch="false" />
+                <line number="50" hits="84" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(System.Type,System.Object)" line-rate="0" branch-rate="1" complexity="1">
@@ -3128,7 +3575,7 @@
             </method>
             <method name=".ctor" signature="(System.Object)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="50" hits="96" branch="false" />
+                <line number="50" hits="84" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(System.Type,System.Object)" line-rate="0" branch-rate="1" complexity="1">
@@ -3141,7 +3588,7 @@
             <line number="44" hits="0" branch="false" />
             <line number="46" hits="0" branch="false" />
             <line number="48" hits="0" branch="false" />
-            <line number="50" hits="96" branch="false" />
+            <line number="50" hits="84" branch="false" />
             <line number="52" hits="0" branch="false" />
           </lines>
         </class>
@@ -3322,55 +3769,55 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Infrastructure" line-rate="1" branch-rate="1" complexity="66">
+    <package name="Ombor.Infrastructure" line-rate="1" branch-rate="1" complexity="78">
       <classes>
         <class name="Ombor.Infrastructure.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
             <method name="AddInfrastructure" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="16" hits="50" branch="false" />
-                <line number="17" hits="50" branch="false" />
-                <line number="19" hits="50" branch="false" />
-                <line number="20" hits="50" branch="false" />
-                <line number="21" hits="50" branch="false" />
-                <line number="23" hits="50" branch="false" />
+                <line number="16" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
+                <line number="19" hits="42" branch="false" />
+                <line number="20" hits="42" branch="false" />
+                <line number="21" hits="42" branch="false" />
+                <line number="23" hits="42" branch="false" />
               </lines>
             </method>
             <method name="AddInfrastructure" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="16" hits="50" branch="false" />
-                <line number="17" hits="50" branch="false" />
-                <line number="19" hits="50" branch="false" />
-                <line number="20" hits="50" branch="false" />
-                <line number="21" hits="50" branch="false" />
-                <line number="23" hits="50" branch="false" />
+                <line number="16" hits="42" branch="false" />
+                <line number="17" hits="42" branch="false" />
+                <line number="19" hits="42" branch="false" />
+                <line number="20" hits="42" branch="false" />
+                <line number="21" hits="42" branch="false" />
+                <line number="23" hits="42" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="16" hits="50" branch="false" />
-            <line number="17" hits="50" branch="false" />
-            <line number="19" hits="50" branch="false" />
-            <line number="20" hits="50" branch="false" />
-            <line number="21" hits="50" branch="false" />
-            <line number="23" hits="50" branch="false" />
+            <line number="16" hits="42" branch="false" />
+            <line number="17" hits="42" branch="false" />
+            <line number="19" hits="42" branch="false" />
+            <line number="20" hits="42" branch="false" />
+            <line number="21" hits="42" branch="false" />
+            <line number="23" hits="42" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Extensions.PropertyBuilderExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/PropertyBuilderExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
             <method name="HasCurrencyPrecision" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1&lt;System.Decimal&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="36" branch="false" />
+                <line number="8" hits="108" branch="false" />
               </lines>
             </method>
             <method name="HasCurrencyPrecision" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1&lt;System.Decimal&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="36" branch="false" />
+                <line number="8" hits="108" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="8" hits="36" branch="false" />
+            <line number="8" hits="108" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Extensions.StringExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/StringExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -3515,34 +3962,34 @@
           <methods>
             <method name="OnModelCreating" signature="(Microsoft.EntityFrameworkCore.ModelBuilder)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="20" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
-                <line number="23" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Microsoft.EntityFrameworkCore.DbContextOptions`1&lt;Ombor.Infrastructure.Persistence.ApplicationDbContext&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="168" branch="false" />
+                <line number="8" hits="174" branch="false" />
               </lines>
             </method>
             <method name="OnModelCreating" signature="(Microsoft.EntityFrameworkCore.ModelBuilder)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="20" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
-                <line number="23" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Microsoft.EntityFrameworkCore.DbContextOptions`1&lt;Ombor.Infrastructure.Persistence.ApplicationDbContext&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="168" branch="false" />
+                <line number="8" hits="174" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="8" hits="168" branch="false" />
-            <line number="20" hits="6" branch="false" />
-            <line number="22" hits="6" branch="false" />
-            <line number="23" hits="6" branch="false" />
+            <line number="8" hits="174" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="29" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/CategoryConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -3607,51 +4054,63 @@
             <line number="34" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Infrastructure.Persistence.Configurations.EmployeeConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/EmployeeConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+        <class name="Ombor.Infrastructure.Persistence.Configurations.PartnerBalanceConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PartnerBalanceConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
-            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Employee&gt;)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PartnerBalance&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="6" branch="false" />
                 <line number="12" hits="6" branch="false" />
                 <line number="14" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
                 <line number="19" hits="6" branch="false" />
                 <line number="20" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Employee&gt;)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PartnerBalance&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="6" branch="false" />
                 <line number="12" hits="6" branch="false" />
                 <line number="14" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
                 <line number="19" hits="6" branch="false" />
                 <line number="20" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="10" hits="6" branch="false" />
             <line number="12" hits="6" branch="false" />
             <line number="14" hits="6" branch="false" />
-            <line number="15" hits="6" branch="false" />
             <line number="16" hits="6" branch="false" />
             <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
             <line number="19" hits="6" branch="false" />
             <line number="20" hits="6" branch="false" />
             <line number="21" hits="6" branch="false" />
             <line number="22" hits="6" branch="false" />
             <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Persistence.Configurations.PartnerConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PartnerConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -3663,30 +4122,36 @@
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="20" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
                 <line number="25" hits="6" branch="false" />
-                <line number="26" hits="6" branch="false" />
                 <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
                 <line number="29" hits="6" branch="false" />
                 <line number="30" hits="6" branch="false" />
-                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
-                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
-                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
-                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
-                <line number="47" hits="6" branch="false" />
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
               </lines>
             </method>
             <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Partner&gt;)" line-rate="1" branch-rate="1" complexity="1">
@@ -3696,30 +4161,36 @@
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="20" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
-                <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
                 <line number="25" hits="6" branch="false" />
-                <line number="26" hits="6" branch="false" />
                 <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
                 <line number="29" hits="6" branch="false" />
                 <line number="30" hits="6" branch="false" />
-                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
-                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
-                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
-                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
-                <line number="47" hits="6" branch="false" />
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
@@ -3729,19 +4200,387 @@
             <line number="16" hits="6" branch="false" />
             <line number="17" hits="6" branch="false" />
             <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
             <line number="20" hits="6" branch="false" />
             <line number="21" hits="6" branch="false" />
-            <line number="22" hits="6" branch="false" />
             <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="29" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+            <line number="32" hits="6" branch="false" />
+            <line number="33" hits="6" branch="false" />
+            <line number="34" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
+            <line number="37" hits="6" branch="false" />
+            <line number="38" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
+            <line number="41" hits="6" branch="false" />
+            <line number="42" hits="6" branch="false" />
+            <line number="44" hits="6" branch="false" />
+            <line number="45" hits="6" branch="false" />
+            <line number="46" hits="6" branch="false" />
+            <line number="48" hits="6" branch="false" />
+            <line number="49" hits="6" branch="false" />
+            <line number="50" hits="6" branch="false" />
+            <line number="51" hits="6" branch="false" />
+            <line number="53" hits="6" branch="false" />
+            <line number="54" hits="6" branch="false" />
+            <line number="55" hits="6" branch="false" />
+            <line number="56" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Persistence.Configurations.PaymentAllocationConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PaymentAllocationConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentAllocation&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+              </lines>
+            </method>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentAllocation&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="6" branch="false" />
+            <line number="14" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="21" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
             <line number="25" hits="6" branch="false" />
             <line number="26" hits="6" branch="false" />
             <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+            <line number="31" hits="6" branch="false" />
+            <line number="32" hits="6" branch="false" />
+            <line number="33" hits="6" branch="false" />
+            <line number="35" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
+            <line number="37" hits="6" branch="false" />
+            <line number="38" hits="6" branch="false" />
+            <line number="39" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Persistence.Configurations.PaymentAttachmentConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PaymentAttachmentConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentAttachment&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="15" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="22" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+              </lines>
+            </method>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentAttachment&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="15" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="22" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="11" hits="6" branch="false" />
+            <line number="13" hits="6" branch="false" />
+            <line number="15" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="22" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="29" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Persistence.Configurations.PaymentComponentConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PaymentComponentConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentComponent&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+              </lines>
+            </method>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.PaymentComponent&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="6" branch="false" />
+            <line number="14" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="21" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
             <line number="29" hits="6" branch="false" />
             <line number="30" hits="6" branch="false" />
             <line number="31" hits="6" branch="false" />
             <line number="33" hits="6" branch="false" />
             <line number="34" hits="6" branch="false" />
             <line number="35" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
+            <line number="38" hits="6" branch="false" />
+            <line number="39" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
+            <line number="41" hits="6" branch="false" />
+            <line number="42" hits="6" branch="false" />
+            <line number="43" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Persistence.Configurations.PaymentConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/PaymentConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Payment&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="15" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="22" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
+                <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
+                <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
+              </lines>
+            </method>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Payment&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
+                <line number="15" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="22" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
+                <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
+                <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="11" hits="6" branch="false" />
+            <line number="13" hits="6" branch="false" />
+            <line number="15" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="22" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="29" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+            <line number="31" hits="6" branch="false" />
+            <line number="32" hits="6" branch="false" />
+            <line number="33" hits="6" branch="false" />
+            <line number="34" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
             <line number="37" hits="6" branch="false" />
             <line number="38" hits="6" branch="false" />
             <line number="39" hits="6" branch="false" />
@@ -3749,10 +4588,16 @@
             <line number="42" hits="6" branch="false" />
             <line number="43" hits="6" branch="false" />
             <line number="44" hits="6" branch="false" />
-            <line number="46" hits="6" branch="false" />
+            <line number="45" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
             <line number="48" hits="6" branch="false" />
             <line number="49" hits="6" branch="false" />
+            <line number="50" hits="6" branch="false" />
+            <line number="51" hits="6" branch="false" />
+            <line number="53" hits="6" branch="false" />
+            <line number="54" hits="6" branch="false" />
+            <line number="55" hits="6" branch="false" />
+            <line number="56" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/ProductConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -3782,31 +4627,32 @@
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
                 <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
                 <line number="43" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
+                <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
                 <line number="51" hits="6" branch="false" />
-                <line number="52" hits="6" branch="false" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
-                <line number="57" hits="6" branch="false" />
-                <line number="58" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="59" hits="6" branch="false" />
+                <line number="60" hits="6" branch="false" />
                 <line number="61" hits="6" branch="false" />
                 <line number="62" hits="6" branch="false" />
-                <line number="63" hits="6" branch="false" />
                 <line number="64" hits="6" branch="false" />
+                <line number="65" hits="6" branch="false" />
                 <line number="66" hits="6" branch="false" />
                 <line number="67" hits="6" branch="false" />
-                <line number="68" hits="6" branch="false" />
                 <line number="69" hits="6" branch="false" />
+                <line number="70" hits="6" branch="false" />
                 <line number="71" hits="6" branch="false" />
                 <line number="72" hits="6" branch="false" />
-                <line number="73" hits="6" branch="false" />
+                <line number="74" hits="6" branch="false" />
                 <line number="75" hits="6" branch="false" />
                 <line number="76" hits="6" branch="false" />
                 <line number="77" hits="6" branch="false" />
@@ -3822,12 +4668,18 @@
                 <line number="91" hits="6" branch="false" />
                 <line number="92" hits="6" branch="false" />
                 <line number="93" hits="6" branch="false" />
-                <line number="94" hits="6" branch="false" />
+                <line number="95" hits="6" branch="false" />
                 <line number="96" hits="6" branch="false" />
                 <line number="97" hits="6" branch="false" />
-                <line number="98" hits="6" branch="false" />
                 <line number="99" hits="6" branch="false" />
+                <line number="100" hits="6" branch="false" />
+                <line number="101" hits="6" branch="false" />
                 <line number="102" hits="6" branch="false" />
+                <line number="104" hits="6" branch="false" />
+                <line number="105" hits="6" branch="false" />
+                <line number="106" hits="6" branch="false" />
+                <line number="107" hits="6" branch="false" />
+                <line number="110" hits="6" branch="false" />
               </lines>
             </method>
             <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Product&gt;)" line-rate="1" branch-rate="1" complexity="1">
@@ -3855,31 +4707,32 @@
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
                 <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
                 <line number="43" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
+                <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
                 <line number="51" hits="6" branch="false" />
-                <line number="52" hits="6" branch="false" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
-                <line number="57" hits="6" branch="false" />
-                <line number="58" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="59" hits="6" branch="false" />
+                <line number="60" hits="6" branch="false" />
                 <line number="61" hits="6" branch="false" />
                 <line number="62" hits="6" branch="false" />
-                <line number="63" hits="6" branch="false" />
                 <line number="64" hits="6" branch="false" />
+                <line number="65" hits="6" branch="false" />
                 <line number="66" hits="6" branch="false" />
                 <line number="67" hits="6" branch="false" />
-                <line number="68" hits="6" branch="false" />
                 <line number="69" hits="6" branch="false" />
+                <line number="70" hits="6" branch="false" />
                 <line number="71" hits="6" branch="false" />
                 <line number="72" hits="6" branch="false" />
-                <line number="73" hits="6" branch="false" />
+                <line number="74" hits="6" branch="false" />
                 <line number="75" hits="6" branch="false" />
                 <line number="76" hits="6" branch="false" />
                 <line number="77" hits="6" branch="false" />
@@ -3895,12 +4748,18 @@
                 <line number="91" hits="6" branch="false" />
                 <line number="92" hits="6" branch="false" />
                 <line number="93" hits="6" branch="false" />
-                <line number="94" hits="6" branch="false" />
+                <line number="95" hits="6" branch="false" />
                 <line number="96" hits="6" branch="false" />
                 <line number="97" hits="6" branch="false" />
-                <line number="98" hits="6" branch="false" />
                 <line number="99" hits="6" branch="false" />
+                <line number="100" hits="6" branch="false" />
+                <line number="101" hits="6" branch="false" />
                 <line number="102" hits="6" branch="false" />
+                <line number="104" hits="6" branch="false" />
+                <line number="105" hits="6" branch="false" />
+                <line number="106" hits="6" branch="false" />
+                <line number="107" hits="6" branch="false" />
+                <line number="110" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
@@ -3928,31 +4787,32 @@
             <line number="37" hits="6" branch="false" />
             <line number="38" hits="6" branch="false" />
             <line number="39" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
             <line number="41" hits="6" branch="false" />
             <line number="42" hits="6" branch="false" />
             <line number="43" hits="6" branch="false" />
             <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
+            <line number="49" hits="6" branch="false" />
+            <line number="50" hits="6" branch="false" />
             <line number="51" hits="6" branch="false" />
-            <line number="52" hits="6" branch="false" />
             <line number="53" hits="6" branch="false" />
             <line number="54" hits="6" branch="false" />
-            <line number="56" hits="6" branch="false" />
-            <line number="57" hits="6" branch="false" />
-            <line number="58" hits="6" branch="false" />
+            <line number="55" hits="6" branch="false" />
             <line number="59" hits="6" branch="false" />
+            <line number="60" hits="6" branch="false" />
             <line number="61" hits="6" branch="false" />
             <line number="62" hits="6" branch="false" />
-            <line number="63" hits="6" branch="false" />
             <line number="64" hits="6" branch="false" />
+            <line number="65" hits="6" branch="false" />
             <line number="66" hits="6" branch="false" />
             <line number="67" hits="6" branch="false" />
-            <line number="68" hits="6" branch="false" />
             <line number="69" hits="6" branch="false" />
+            <line number="70" hits="6" branch="false" />
             <line number="71" hits="6" branch="false" />
             <line number="72" hits="6" branch="false" />
-            <line number="73" hits="6" branch="false" />
+            <line number="74" hits="6" branch="false" />
             <line number="75" hits="6" branch="false" />
             <line number="76" hits="6" branch="false" />
             <line number="77" hits="6" branch="false" />
@@ -3968,12 +4828,18 @@
             <line number="91" hits="6" branch="false" />
             <line number="92" hits="6" branch="false" />
             <line number="93" hits="6" branch="false" />
-            <line number="94" hits="6" branch="false" />
+            <line number="95" hits="6" branch="false" />
             <line number="96" hits="6" branch="false" />
             <line number="97" hits="6" branch="false" />
-            <line number="98" hits="6" branch="false" />
             <line number="99" hits="6" branch="false" />
+            <line number="100" hits="6" branch="false" />
+            <line number="101" hits="6" branch="false" />
             <line number="102" hits="6" branch="false" />
+            <line number="104" hits="6" branch="false" />
+            <line number="105" hits="6" branch="false" />
+            <line number="106" hits="6" branch="false" />
+            <line number="107" hits="6" branch="false" />
+            <line number="110" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Persistence.Configurations.ProductImageConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/ProductImageConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -4261,21 +5127,256 @@
             <line number="53" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Infrastructure.Services.ImageSharpThumbnailer" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Services/ImageSharpThumbnailer.cs" line-rate="1" branch-rate="1" complexity="2">
+        <class name="Ombor.Infrastructure.Persistence.Configurations.TransactionConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/TransactionConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
-            <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.TransactionRecord&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="82" branch="false" />
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="44" hits="6" branch="false" />
+                <line number="46" hits="6" branch="false" />
+                <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="52" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
+                <line number="57" hits="6" branch="false" />
+                <line number="58" hits="6" branch="false" />
+                <line number="59" hits="6" branch="false" />
+                <line number="60" hits="6" branch="false" />
+                <line number="62" hits="6" branch="false" />
+                <line number="63" hits="6" branch="false" />
               </lines>
             </method>
-            <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.TransactionRecord&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="12" hits="82" branch="false" />
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="34" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="44" hits="6" branch="false" />
+                <line number="46" hits="6" branch="false" />
+                <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
+                <line number="51" hits="6" branch="false" />
+                <line number="52" hits="6" branch="false" />
+                <line number="53" hits="6" branch="false" />
+                <line number="54" hits="6" branch="false" />
+                <line number="56" hits="6" branch="false" />
+                <line number="57" hits="6" branch="false" />
+                <line number="58" hits="6" branch="false" />
+                <line number="59" hits="6" branch="false" />
+                <line number="60" hits="6" branch="false" />
+                <line number="62" hits="6" branch="false" />
+                <line number="63" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="12" hits="82" branch="false" />
+            <line number="12" hits="6" branch="false" />
+            <line number="14" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="21" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+            <line number="32" hits="6" branch="false" />
+            <line number="33" hits="6" branch="false" />
+            <line number="34" hits="6" branch="false" />
+            <line number="35" hits="6" branch="false" />
+            <line number="37" hits="6" branch="false" />
+            <line number="38" hits="6" branch="false" />
+            <line number="39" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
+            <line number="42" hits="6" branch="false" />
+            <line number="43" hits="6" branch="false" />
+            <line number="44" hits="6" branch="false" />
+            <line number="46" hits="6" branch="false" />
+            <line number="47" hits="6" branch="false" />
+            <line number="48" hits="6" branch="false" />
+            <line number="50" hits="6" branch="false" />
+            <line number="51" hits="6" branch="false" />
+            <line number="52" hits="6" branch="false" />
+            <line number="53" hits="6" branch="false" />
+            <line number="54" hits="6" branch="false" />
+            <line number="56" hits="6" branch="false" />
+            <line number="57" hits="6" branch="false" />
+            <line number="58" hits="6" branch="false" />
+            <line number="59" hits="6" branch="false" />
+            <line number="60" hits="6" branch="false" />
+            <line number="62" hits="6" branch="false" />
+            <line number="63" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Persistence.Configurations.TransactionLineConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/TransactionLineConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.TransactionLine&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
+                <line number="46" hits="6" branch="false" />
+              </lines>
+            </method>
+            <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.TransactionLine&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
+                <line number="16" hits="6" branch="false" />
+                <line number="17" hits="6" branch="false" />
+                <line number="18" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
+                <line number="20" hits="6" branch="false" />
+                <line number="21" hits="6" branch="false" />
+                <line number="23" hits="6" branch="false" />
+                <line number="24" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
+                <line number="26" hits="6" branch="false" />
+                <line number="27" hits="6" branch="false" />
+                <line number="28" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
+                <line number="31" hits="6" branch="false" />
+                <line number="32" hits="6" branch="false" />
+                <line number="33" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
+                <line number="37" hits="6" branch="false" />
+                <line number="38" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
+                <line number="41" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
+                <line number="46" hits="6" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="6" branch="false" />
+            <line number="14" hits="6" branch="false" />
+            <line number="16" hits="6" branch="false" />
+            <line number="17" hits="6" branch="false" />
+            <line number="18" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
+            <line number="20" hits="6" branch="false" />
+            <line number="21" hits="6" branch="false" />
+            <line number="23" hits="6" branch="false" />
+            <line number="24" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
+            <line number="26" hits="6" branch="false" />
+            <line number="27" hits="6" branch="false" />
+            <line number="28" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
+            <line number="31" hits="6" branch="false" />
+            <line number="32" hits="6" branch="false" />
+            <line number="33" hits="6" branch="false" />
+            <line number="35" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
+            <line number="37" hits="6" branch="false" />
+            <line number="38" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
+            <line number="41" hits="6" branch="false" />
+            <line number="42" hits="6" branch="false" />
+            <line number="43" hits="6" branch="false" />
+            <line number="45" hits="6" branch="false" />
+            <line number="46" hits="6" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Infrastructure.Services.ImageSharpThumbnailer" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Services/ImageSharpThumbnailer.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="74" branch="false" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(Microsoft.Extensions.Options.IOptions`1&lt;Ombor.Application.Configurations.FileSettings&gt;)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="74" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="74" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Services.LocalFilePathProvider" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Services/LocalFilePathProvider.cs" line-rate="1" branch-rate="1" complexity="6">
