@@ -107,8 +107,8 @@ internal sealed class TransactionService(
         var partnerBalance = await context.PartnerBalances
             .FirstAsync(x => x.PartnerId == request.PartnerId);
         var totalDebt = request.Type == Contracts.Enums.TransactionType.Sale
-            ? partnerBalance.PayableDebt
-            : partnerBalance.ReceivableDebt;
+            ? Math.Abs(partnerBalance.PayableDebt)
+            : Math.Abs(partnerBalance.ReceivableDebt);
 
         var totalDue = request.Lines.Sum(CalculateLineTotal);
         var totalPaid = request.Payments.Sum(x => x.Amount * x.ExchangeRate);

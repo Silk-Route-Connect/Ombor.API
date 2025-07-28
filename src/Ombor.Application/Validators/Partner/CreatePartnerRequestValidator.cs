@@ -21,7 +21,8 @@ public sealed class CreatePartnerRequestValidator : AbstractValidator<CreatePart
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.")
             .EmailAddress()
-            .WithMessage("Invalid email address.");
+            .WithMessage("Invalid email address.")
+            .When(x => !string.IsNullOrEmpty(x.Email));
 
         RuleFor(x => x.CompanyName)
             .MaximumLength(ValidationConstants.DefaultStringLength)

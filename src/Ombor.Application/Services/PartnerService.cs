@@ -44,7 +44,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                    pb.partner.Name,
                    pb.partner.Type.ToString(),
                    pb.partner.Address,
-                   pb.partner.Address,
+                   pb.partner.Email,
                    pb.partner.CompanyName,
                    pb.balances.Total,
                    pb.partner.PhoneNumbers,
