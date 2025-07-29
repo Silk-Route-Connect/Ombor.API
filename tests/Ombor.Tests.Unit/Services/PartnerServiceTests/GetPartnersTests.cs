@@ -39,7 +39,8 @@ public sealed class GetPartnersTests : PartnerTestsBase
     {
         // Arrange
         var request = new GetPartnersRequest(string.Empty);
-        Setuppartners([]);
+        SetupPartners([]);
+        SetupPartnerBalances([]);
 
         // Act
         var response = await _service.GetAsync(request);
@@ -48,6 +49,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
         Assert.Empty(response);
 
         _mockContext.Verify(mock => mock.Partners, Times.Once);
+        _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -57,25 +59,36 @@ public sealed class GetPartnersTests : PartnerTestsBase
     {
         // Arrange 
         var matchingpartners = CreateMatchingpartners(request);
-        Partner[] allpartners = [.. _defaultpartners, .. matchingpartners];
-        var expectedpartners = request.IsEmpty()
-            ? allpartners : matchingpartners;
+        Partner[] allPartners = [.. _defaultpartners, .. matchingpartners];
+        var expectedPartners = request.IsEmpty()
+            ? allPartners : matchingpartners;
+        PartnerBalance[] balances = [.. allPartners
+            .Select(x => new PartnerBalance
+            {
+                PartnerId = x.Id,
+                CompanyAdvance = x.Id + 100,
+                PartnerAdvance = x.Id + 50,
+                PayableDebt = x.Id + 50,
+                ReceivableDebt = x.Id + 100,
+            })];
 
-        Setuppartners([.. _defaultpartners, .. matchingpartners]);
+        SetupPartners([.. _defaultpartners, .. matchingpartners]);
+        SetupPartnerBalances(balances);
 
         // Act
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedpartners.Length, response.Length);
+        Assert.Equal(expectedPartners.Length, response.Length);
         Assert.All(response, actual =>
         {
-            var expected = expectedpartners.SingleOrDefault(x => x.Id == actual.Id);
+            var expected = expectedPartners.SingleOrDefault(x => x.Id == actual.Id);
 
             PartnerAssertionHelper.AssertEquivalent(expected, actual);
         });
 
         _mockContext.Verify(mock => mock.Partners, Times.Once);
+        _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
         VerifyNoOtherCalls();
     }

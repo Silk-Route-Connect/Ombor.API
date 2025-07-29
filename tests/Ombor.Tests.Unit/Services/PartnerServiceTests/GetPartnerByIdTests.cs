@@ -50,7 +50,7 @@ public sealed class GetPartnerByIdTests : PartnerTestsBase
         var expected = CreatePartner();
         var request = new GetPartnerByIdRequest(expected.Id);
 
-        Setuppartners([.. _defaultpartners, expected]);
+        SetupPartners([.. _defaultpartners, expected]);
 
         // Act 
         var response = await _service.GetByIdAsync(request);

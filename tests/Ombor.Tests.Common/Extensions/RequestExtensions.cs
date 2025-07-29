@@ -1,8 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Template;
+using Ombor.Contracts.Requests.Transaction;
 
 namespace Ombor.Tests.Common.Extensions;
 
@@ -111,6 +113,63 @@ public static class RequestExtensions
             foreach (var imageIdToDelete in request.ImagesToDelete)
             {
                 content.Add(new StringContent(imageIdToDelete.ToString()), nameof(request.ImagesToDelete));
+            }
+        }
+
+        return content;
+    }
+
+    public static MultipartFormDataContent ToMultipartFormData(this CreateTransactionRequest request)
+    {
+        var content = new MultipartFormDataContent
+        {
+            { new StringContent(request.PartnerId.ToString()),        nameof(request.PartnerId) },
+            { new StringContent(((int)request.Type).ToString()),      nameof(request.Type) }
+        };
+
+        // ─── Lines ───────────────────────────────────────────
+        for (var i = 0; i < request.Lines.Length; i++)
+        {
+            var l = request.Lines[i];
+            content.Add(new StringContent(l.ProductId.ToString()), $"Lines[{i}].ProductId");
+            content.Add(new StringContent(l.UnitPrice.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].UnitPrice");
+            content.Add(new StringContent(l.Discount.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].Discount");
+            content.Add(new StringContent(l.Quantity.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].Quantity");
+        }
+
+        // ─── Payments ────────────────────────────────────────
+        for (var i = 0; i < request.Payments.Length; i++)
+        {
+            var p = request.Payments[i];
+            content.Add(new StringContent(p.Amount.ToString(CultureInfo.InvariantCulture)), $"Payments[{i}].Amount");
+            content.Add(new StringContent(p.ExchangeRate.ToString(CultureInfo.InvariantCulture)), $"Payments[{i}].ExchangeRate");
+            content.Add(new StringContent(p.Currency), $"Payments[{i}].Currency");
+            content.Add(new StringContent(((int)p.Method).ToString()), $"Payments[{i}].Method");
+        }
+
+        // ─── Debt-payments (optional) ────────────────────────
+        if (request.DebtPayments is not null)
+        {
+            for (var i = 0; i < request.DebtPayments.Length; i++)
+            {
+                var d = request.DebtPayments[i];
+                content.Add(new StringContent(d.TransactionId.ToString()), $"DebtPayments[{i}].TransactionId");
+                content.Add(new StringContent(d.Amount.ToString(CultureInfo.InvariantCulture)), $"DebtPayments[{i}].Amount");
+            }
+        }
+
+        if (!string.IsNullOrEmpty(request.Notes))
+            content.Add(new StringContent(request.Notes), nameof(request.Notes));
+
+        // ─── Attachments ─────────────────────────────────────
+        if (request.Attachments is not null)
+        {
+            foreach (var f in request.Attachments)
+            {
+                var s = f.OpenReadStream();
+                var fc = new StreamContent(s);
+                fc.Headers.ContentType = MediaTypeHeaderValue.Parse(f.ContentType ?? "application/octet-stream");
+                content.Add(fc, nameof(request.Attachments), f.FileName);
             }
         }
 

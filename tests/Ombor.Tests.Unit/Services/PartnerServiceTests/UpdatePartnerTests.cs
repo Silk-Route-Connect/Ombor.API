@@ -50,7 +50,7 @@ public sealed class UpdatePartnerTests : PartnerTestsBase
         var partnerToUpdate = CreatePartner();
         var request = PartnerRequestFactory.GenerateValidUpdateRequest(partnerToUpdate.Id);
 
-        Setuppartners([.. _defaultpartners, partnerToUpdate]);
+        SetupPartners([.. _defaultpartners, partnerToUpdate]);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
         .ReturnsAsync(1);
