@@ -16,7 +16,7 @@ public class Employee : AuditableEntity
     /// <summary>
     /// Gets or sets the role associated with employee.
     /// </summary>
-    public required string Role { get; set; }
+    public required EmployeeRole Role { get; set; }
 
     /// <summary>
     /// Gets or sets the salary of the employee.
