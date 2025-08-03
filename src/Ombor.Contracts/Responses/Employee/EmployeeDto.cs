@@ -1,7 +1,17 @@
+using Ombor.Contracts.Enums;
+
 namespace Ombor.Contracts.Responses.Employee;
 
 public sealed record EmployeeDto(
     int Id,
     string FullName,
-    string Role,
-    bool IsActive);
+    decimal Salary,
+    string PhoneNumber,
+    string Email,
+    string Address,
+    string? Description,
+    EmployeeRole Role,
+    EmployeeAccess Access,
+    EmployeeStatus Status,
+    DateTime DateOfEmployment
+    );
