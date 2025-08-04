@@ -19,13 +19,25 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(x => x.FullName.Contains(request.SearchTerm) ||
-                                x.Role.Contains(request.SearchTerm));
+                                x.Role.ToString().Contains(request.SearchTerm) ||
+                                x.Status.ToString().Contains(request.SearchTerm));
         }
 
         return await query
             .AsNoTracking()
             .OrderBy(x => x.FullName)
-            .Select(x => new EmployeeDto(x.Id, x.FullName, x.Role, x.IsActive))
+            .Select(x => new EmployeeDto(
+                x.Id,
+                x.FullName,
+                x.Salary,
+                x.PhoneNumber,
+                x.Email,
+                x.Address,
+                x.Description,
+                x.Role.ToString(),
+                x.Access.ToString(),
+                x.Status.ToString(),
+                x.DateOfEmployment))
             .ToArrayAsync();
     }
 
