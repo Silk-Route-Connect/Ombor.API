@@ -11,5 +11,5 @@ public sealed record CreateEmployeeRequest(
     string? Description,
     EmployeeRole Role,
     EmployeeAccess Access,
-    DateTime DateOfEmployment
+    DateOnly DateOfEmployment
     );

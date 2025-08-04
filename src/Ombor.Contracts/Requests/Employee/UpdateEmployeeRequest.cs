@@ -13,5 +13,5 @@ public sealed record UpdateEmployeeRequest(
     EmployeeRole Role,
     EmployeeAccess Access,
     EmployeeStatus Status,
-    DateTime DateOfEmployment
+    DateOnly DateOfEmployment
     );
