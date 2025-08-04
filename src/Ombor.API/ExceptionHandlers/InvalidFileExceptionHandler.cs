@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Exceptions;
+using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -28,6 +29,8 @@ internal sealed class InvalidFileExceptionHandler(ILogger<InvalidFileException> 
             exception,
             "Error while processing file. {Message}",
             fileException.Message);
+
+        SentrySdk.CaptureException(fileException);
 
         return true;
     }
