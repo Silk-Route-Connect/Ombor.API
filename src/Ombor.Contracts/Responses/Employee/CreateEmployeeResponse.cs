@@ -1,5 +1,3 @@
-using Ombor.Contracts.Enums;
-
 namespace Ombor.Contracts.Responses.Employee;
 
 public sealed record CreateEmployeeResponse(
@@ -10,7 +8,7 @@ public sealed record CreateEmployeeResponse(
     string Email,
     string Address,
     string? Description,
-    EmployeeRole Role,
-    EmployeeAccess Access,
-    EmployeeStatus Status,
-    DateTime DateOfEmployment);
+    string Role,
+    string Access,
+    string Status,
+    DateOnly DateOfEmployment);
