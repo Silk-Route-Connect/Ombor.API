@@ -153,8 +153,15 @@ internal sealed class TestingDatabaseSeeder(
             .Select(i => new Employee
             {
                 FullName = $"test employee {i}",
-                Role = $"test role {i}",
-                IsActive = _faker.Random.Bool(),
+                Salary = 1000 + i,
+                PhoneNumber = $"+99890-100-00-{i}{i}",
+                Email = $"employee{i}@test.com",
+                Address = $"Test Employee {i} address",
+                Description = $"Test Employee {i} description",
+                DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i)),
+                Access = EmployeeAccess.All,
+                Status = EmployeeStatus.Active,
+                Role = EmployeeRole.Clerk,
             });
 
         context.Employees.AddRange(employees);
