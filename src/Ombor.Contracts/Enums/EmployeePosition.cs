@@ -1,5 +1,5 @@
 ﻿namespace Ombor.Contracts.Enums;
-public enum EmployeeRole
+public enum EmployeePosition
 {
     Admin,
     Clerk,
