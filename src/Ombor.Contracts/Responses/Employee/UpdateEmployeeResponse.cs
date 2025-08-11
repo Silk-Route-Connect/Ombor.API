@@ -5,10 +5,9 @@ public sealed record UpdateEmployeeResponse(
     string FullName,
     decimal Salary,
     string PhoneNumber,
-    string Email,
-    string Address,
+    string? Email,
+    string? Address,
     string? Description,
-    string Role,
-    string Access,
+    string Position,
     string Status,
     DateOnly DateOfEmployment);
