@@ -159,9 +159,8 @@ internal sealed class TestingDatabaseSeeder(
                 Address = $"Test Employee {i} address",
                 Description = $"Test Employee {i} description",
                 DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i)),
-                Access = EmployeeAccess.All,
                 Status = EmployeeStatus.Active,
-                Role = EmployeeRole.Clerk,
+                Position = EmployeePosition.Viewer,
             });
 
         context.Employees.AddRange(employees);

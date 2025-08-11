@@ -15,8 +15,7 @@ public static class EmployeeGenerator
         .RuleFor(x => x.Email, f => f.Person.Email)
         .RuleFor(x => x.Address, f => f.Address.StreetAddress())
         .RuleFor(x => x.Description, f => f.Lorem.Sentences())
-        .RuleFor(x => x.Role, f => f.PickRandom<EmployeeRole>())
-        .RuleFor(x => x.Access, f => f.PickRandom<EmployeeAccess>())
+        .RuleFor(x => x.Position, f => f.PickRandom<EmployeePosition>())
         .RuleFor(x => x.Status, f => f.PickRandom<EmployeeStatus>())
         .RuleFor(x => x.DateOfEmployment, f => f.Date.PastDateOnly());
 
@@ -27,8 +26,7 @@ public static class EmployeeGenerator
         .RuleFor(x => x.Email, f => f.Person.Email)
         .RuleFor(x => x.Address, f => f.Address.StreetAddress())
         .RuleFor(x => x.Description, f => f.Lorem.Sentences())
-        .RuleFor(x => x.Role, f => f.PickRandom<EmployeeRole>())
-        .RuleFor(x => x.Access, f => f.PickRandom<EmployeeAccess>())
+        .RuleFor(x => x.Position, f => f.PickRandom<EmployeePosition>())
         .RuleFor(x => x.Status, f => f.PickRandom<EmployeeStatus>())
         .RuleFor(x => x.DateOfEmployment, f => f.Date.PastDateOnly())
         .Generate(count);
