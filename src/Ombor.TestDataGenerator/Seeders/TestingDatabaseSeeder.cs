@@ -185,10 +185,10 @@ internal sealed class TestingDatabaseSeeder(
         Directory.CreateDirectory(originalsDir);
         Directory.CreateDirectory(thumbsDir);
 
-        if (Directory.EnumerateFiles(originalsDir).Any())
-        {
-            return [];
-        }
+        //if (Directory.EnumerateFiles(originalsDir).Any())
+        //{
+        //    return [];
+        //}
 
         return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
     }

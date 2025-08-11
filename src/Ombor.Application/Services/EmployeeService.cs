@@ -18,9 +18,7 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(x => x.FullName.Contains(request.SearchTerm) ||
-                                x.Position.ToString().Contains(request.SearchTerm) ||
-                                x.Status.ToString().Contains(request.SearchTerm));
+            query = query.Where(x => x.FullName.Contains(request.SearchTerm));
         }
 
         return await query

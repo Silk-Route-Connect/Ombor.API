@@ -34,7 +34,7 @@ public static class EmployeeRequestFactory
     public static UpdateEmployeeRequest GenerateValidUpdateRequest(int? employeeId = null)
         => new(
             Id: employeeId ?? DefaultEmployeeId,
-            FullName: "",
+            FullName: "Test employee",
             Salary: 1000,
             PhoneNumber: "+99890-000-00-00",
             Email: "employeeTestemail@test.com",
