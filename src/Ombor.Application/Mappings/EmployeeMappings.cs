@@ -16,8 +16,7 @@ internal static class EmployeeMappings
             employee.Email,
             employee.Address,
             employee.Description,
-            employee.Role.ToString(),
-            employee.Access.ToString(),
+            employee.Position.ToString(),
             employee.Status.ToString(),
             employee.DateOfEmployment
         );
@@ -31,8 +30,7 @@ internal static class EmployeeMappings
             Email = request.Email,
             Address = request.Address,
             Description = request.Description,
-            Access = Enum.Parse<EmployeeAccess>(request.Access.ToString()),
-            Role = Enum.Parse<EmployeeRole>(request.Role.ToString()),
+            Position = Enum.Parse<EmployeePosition>(request.Position.ToString()),
             DateOfEmployment = request.DateOfEmployment,
         };
 
@@ -45,8 +43,7 @@ internal static class EmployeeMappings
             employee.Email,
             employee.Address,
             employee.Description,
-            employee.Role.ToString(),
-            employee.Access.ToString(),
+            employee.Position.ToString(),
             employee.Status.ToString(),
             employee.DateOfEmployment
         );
@@ -60,8 +57,7 @@ internal static class EmployeeMappings
         employee.Email,
         employee.Address,
         employee.Description,
-        employee.Role.ToString(),
-        employee.Access.ToString(),
+        employee.Position.ToString(),
         employee.Status.ToString(),
         employee.DateOfEmployment
        );
@@ -74,8 +70,7 @@ internal static class EmployeeMappings
         employee.Email = request.Email;
         employee.Address = request.Address;
         employee.Description = request.Description;
-        employee.Role = Enum.Parse<EmployeeRole>(request.Role.ToString());
-        employee.Access = Enum.Parse<EmployeeAccess>(request.Access.ToString());
+        employee.Position = Enum.Parse<EmployeePosition>(request.Position.ToString());
         employee.Status = Enum.Parse<EmployeeStatus>(request.Status.ToString());
         employee.DateOfEmployment = request.DateOfEmployment;
     }
