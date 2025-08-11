@@ -27,6 +27,7 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await AppEmployeesAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -141,6 +142,31 @@ internal sealed class TestingDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task AppEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = Enumerable.Range(1, seedSettings.NumberOfEmployees)
+            .Select(i => new Employee
+            {
+                FullName = $"test employee {i}",
+                Salary = 1000 + i,
+                PhoneNumber = $"+99890-100-00-{i}{i}",
+                Email = $"employee{i}@test.com",
+                Address = $"Test Employee {i} address",
+                Description = $"Test Employee {i} description",
+                DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i)),
+                Status = EmployeeStatus.Active,
+                Position = EmployeePosition.Viewer,
+            });
+
+        context.Employees.AddRange(employees);
+        await context.SaveChangesAsync();
+    }
+
     private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     {
         var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
@@ -159,10 +185,10 @@ internal sealed class TestingDatabaseSeeder(
         Directory.CreateDirectory(originalsDir);
         Directory.CreateDirectory(thumbsDir);
 
-        if (Directory.EnumerateFiles(originalsDir).Any())
-        {
-            return [];
-        }
+        //if (Directory.EnumerateFiles(originalsDir).Any())
+        //{
+        //    return [];
+        //}
 
         return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
     }
