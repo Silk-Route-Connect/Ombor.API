@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 
@@ -56,8 +55,6 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder
             .Property(e => e.DateOfEmployment)
-            .HasColumnType("date")
-            .HasConversion<DateOnlyConverter>()
             .IsRequired();
     }
 }
