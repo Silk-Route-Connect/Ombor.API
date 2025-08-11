@@ -65,7 +65,8 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(x => x.FullName.Contains(request.SearchTerm) ||
-                x.Role.Contains(request.SearchTerm));
+                x.Position.ToString().Contains(request.SearchTerm) ||
+                x.Status.ToString().Contains(request.SearchTerm));
         }
 
         return await query

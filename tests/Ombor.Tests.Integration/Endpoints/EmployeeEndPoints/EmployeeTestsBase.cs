@@ -1,4 +1,5 @@
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -21,8 +22,10 @@ public class EmployeeTestsBase(
         var employee = new Employee
         {
             FullName = "John Doe",
-            Role = "Admin",
-            IsActive = true,
+            PhoneNumber = "+99890-000-00-00",
+            Position = EmployeePosition.Admin,
+            Status = EmployeeStatus.Active,
+            DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow)
         };
 
         _context.Employees.Add(employee);

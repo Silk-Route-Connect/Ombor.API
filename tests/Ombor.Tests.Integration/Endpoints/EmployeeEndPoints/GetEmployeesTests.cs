@@ -1,6 +1,7 @@
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Responses.Employee;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -43,29 +44,53 @@ public class GetEmployeesTests(
             new()
             {
                 FullName=searchTerm,
-                Role="qwerty",
-                IsActive=true
+                Salary=1000,
+                PhoneNumber="",
+                Email="",
+                Address="",
+                Description="",
+                Position=EmployeePosition.Viewer,
+                Status=EmployeeStatus.Active,
+                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
             },
 
             new()
             {
                 FullName="John",
-                Role=searchTerm,
-                IsActive=false
+                Salary=1000,
+                PhoneNumber="",
+                Email="",
+                Address=searchTerm,
+                Description="",
+                Position=EmployeePosition.Viewer,
+                Status=EmployeeStatus.Active,
+                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
             },
 
             new()
             {
                 FullName=string.Empty,
-                Role="qwerty",
-                IsActive=true
+                Salary=1000,
+                PhoneNumber="",
+                Email="",
+                Address="",
+                Description="",
+                Position=EmployeePosition.Viewer,
+                Status=EmployeeStatus.Active,
+                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
             },
 
             new()
             {
                 FullName="          ",
-                Role="",
-                IsActive=true
+                Salary=1000,
+                PhoneNumber="",
+                Email="",
+                Address="",
+                Description="",
+                Position=EmployeePosition.Viewer,
+                Status=EmployeeStatus.Active,
+                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
             },
         };
 
