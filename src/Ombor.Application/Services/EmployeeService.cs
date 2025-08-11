@@ -19,7 +19,7 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             query = query.Where(x => x.FullName.Contains(request.SearchTerm) ||
-                                x.Role.ToString().Contains(request.SearchTerm) ||
+                                x.Position.ToString().Contains(request.SearchTerm) ||
                                 x.Status.ToString().Contains(request.SearchTerm));
         }
 
@@ -34,8 +34,7 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
                 x.Email,
                 x.Address,
                 x.Description,
-                x.Role.ToString(),
-                x.Access.ToString(),
+                x.Position.ToString(),
                 x.Status.ToString(),
                 x.DateOfEmployment))
             .ToArrayAsync();
