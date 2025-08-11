@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 
@@ -18,12 +19,19 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .IsRequired();
 
         builder
-            .Property(e => e.Role)
+            .Property(e => e.Position)
+            .HasConversion<string>()
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();
 
         builder
+            .Property(e => e.Status)
+            .HasConversion<string>()
+            .IsRequired();
+
+        builder
             .Property(e => e.Salary)
+            .HasColumnType("decimal(18,2)")
             .IsRequired();
 
         builder
@@ -38,10 +46,18 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder
             .Property(e => e.Email)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength);
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired(false);
 
         builder
             .Property(e => e.PhoneNumber)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength);
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired();
+
+        builder
+            .Property(e => e.DateOfEmployment)
+            .HasColumnType("date")
+            .HasConversion<DateOnlyConverter>()
+            .IsRequired();
     }
 }
