@@ -14,9 +14,9 @@ public class Employee : AuditableEntity
     public required string FullName { get; set; }
 
     /// <summary>
-    /// Gets or sets the role associated with employee.
+    /// Gets or sets the position associated with employee.
     /// </summary>
-    public required EmployeeRole Role { get; set; }
+    public required EmployeePosition Position { get; set; }
 
     /// <summary>
     /// Gets or sets the salary of the employee.
@@ -26,7 +26,7 @@ public class Employee : AuditableEntity
     /// <summary>
     /// Gets or sets the phone number of the employee.
     /// </summary>
-    public string? PhoneNumber { get; set; }
+    public required string PhoneNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the email address of the employee.
@@ -49,12 +49,7 @@ public class Employee : AuditableEntity
     public EmployeeStatus Status { get; set; }
 
     /// <summary>
-    /// Gets or sets the access level assigned to the employee.
-    /// </summary>
-    public EmployeeAccess Access { get; set; }
-
-    /// <summary>
     /// Gets or sets the date of employement of the employee
     /// </summary>
-    public DateTime DateOfEmployment { get; set; }
+    public required DateOnly DateOfEmployment { get; set; }
 }
