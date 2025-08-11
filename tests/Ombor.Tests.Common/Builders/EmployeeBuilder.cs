@@ -1,5 +1,6 @@
 using Bogus;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Common.Interfaces;
 
 namespace Ombor.Tests.Common.Builders;
@@ -8,8 +9,14 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
 {
     private int? _id;
     private string? _fullName;
-    private string? _role;
-    private bool? _isActive;
+    private decimal? _salary;
+    private string? _phoneNumber;
+    private string? _email;
+    private string? _address;
+    private string? _description;
+    private EmployeePosition? _position;
+    private EmployeeStatus? _status;
+    private DateOnly? _dateOfEmployment;
 
     public IEmployeeBuilder WithId(int? id = null)
     {
@@ -25,28 +32,76 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
         return this;
     }
 
-
-    public IEmployeeBuilder WithIsActive(bool? isActive = null)
+    public IEmployeeBuilder WithSalary(decimal? salary = null)
     {
-        _isActive = isActive ?? _faker.Random.Bool();
+        _salary = salary ?? _faker.Random.Decimal(100, 10000);
 
         return this;
     }
 
-    public IEmployeeBuilder WithRole(string? role = null)
+    public IEmployeeBuilder WithPhoneNumber(string? phoneNumber = null)
     {
-        _role = role ?? _faker.Name.JobTitle();
+        _phoneNumber = phoneNumber ?? _faker.Phone.PhoneNumber("+998-##-###-##-##");
 
         return this;
     }
+
+    public IEmployeeBuilder WithEmail(string? email = null)
+    {
+        _email = email ?? _faker.Person.Email;
+
+        return this;
+    }
+
+    public IEmployeeBuilder WithAddress(string? address = null)
+    {
+        _address = address ?? _faker.Address.StreetAddress();
+
+        return this;
+    }
+
+    public IEmployeeBuilder WithDescription(string? description = null)
+    {
+        _description = description ?? _faker.Lorem.Sentence();
+
+        return this;
+    }
+
+    public IEmployeeBuilder WithPosition(EmployeePosition? position = null)
+    {
+        _position = position ?? _faker.PickRandom<EmployeePosition>();
+
+        return this;
+    }
+
+    public IEmployeeBuilder WithStatus(EmployeeStatus? status = null)
+    {
+        _status = status ?? _faker.PickRandom<EmployeeStatus>();
+
+        return this;
+    }
+
+    public IEmployeeBuilder WithDateOfEmployment(DateOnly? dateOfEmployment = null)
+    {
+        _dateOfEmployment = dateOfEmployment ?? _faker.Date.PastDateOnly();
+
+        return this;
+    }
+
     public Employee Build() =>
-        new()
-        {
-            Id = _id ?? default,
-            FullName = _fullName ?? string.Empty,
-            Role = _role ?? string.Empty,
-            IsActive = _isActive ?? default
-        };
+      new()
+      {
+          Id = _id ?? default,
+          FullName = _fullName ?? string.Empty,
+          Salary = _salary ?? default,
+          PhoneNumber = _phoneNumber ?? string.Empty,
+          Email = _email ?? string.Empty,
+          Address = _address ?? string.Empty,
+          Description = _description ?? string.Empty,
+          Position = _position ?? default,
+          Status = _status ?? default,
+          DateOfEmployment = _dateOfEmployment ?? default,
+      };
 
     public Employee BuildAndPopulate()
     {
@@ -56,8 +111,14 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
         {
             Id = _id ?? id,
             FullName = _fullName ?? _faker.Person.FullName,
-            Role = _role ?? _faker.Name.JobTitle(),
-            IsActive = _isActive ?? _faker.Random.Bool()
+            Salary = _salary ?? _faker.Random.Decimal(100, 10000),
+            PhoneNumber = _phoneNumber ?? faker.Phone.PhoneNumber("+998-##-###-##-##"),
+            Email = _email ?? _faker.Person.Email,
+            Address = _address ?? _faker.Address.StreetAddress(),
+            Description = _description ?? _faker.Lorem.Sentence(),
+            Position = _position ?? _faker.PickRandom<EmployeePosition>(),
+            Status = _status ?? _faker.PickRandom<EmployeeStatus>(),
+            DateOfEmployment = _dateOfEmployment ?? _faker.Date.PastDateOnly(),
         };
     }
 }
