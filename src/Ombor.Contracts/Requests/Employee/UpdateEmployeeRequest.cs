@@ -10,8 +10,7 @@ public sealed record UpdateEmployeeRequest(
     string Email,
     string? Address,
     string? Description,
-    EmployeeRole Role,
-    EmployeeAccess Access,
+    EmployeePosition Position,
     EmployeeStatus Status,
     DateOnly DateOfEmployment
     );

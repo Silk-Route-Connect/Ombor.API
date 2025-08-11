@@ -9,7 +9,6 @@ public sealed record CreateEmployeeRequest(
     string Email,
     string? Address,
     string? Description,
-    EmployeeRole Role,
-    EmployeeAccess Access,
+    EmployeePosition Position,
     DateOnly DateOfEmployment
     );
