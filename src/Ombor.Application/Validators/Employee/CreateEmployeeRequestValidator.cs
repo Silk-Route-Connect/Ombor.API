@@ -18,14 +18,14 @@ public sealed class CreateEmployeeRequestValidator : AbstractValidator<CreateEmp
             .WithMessage("Salary must be greater than zero.");
 
         RuleFor(x => x.Email)
-            .NotEmpty()
-            .WithMessage("Email is required.")
             .EmailAddress()
             .WithMessage("Email is in invalid format.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleFor(x => x.PhoneNumber)
+            .NotEmpty()
+            .WithMessage("Phone number is required.")
             .Must(ValidationHelpers.IsValidPhoneNumber)
             .WithMessage("Phone number is in invalid format.");
 
@@ -37,13 +37,9 @@ public sealed class CreateEmployeeRequestValidator : AbstractValidator<CreateEmp
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Description must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
-        RuleFor(x => x.Role)
+        RuleFor(x => x.Position)
             .IsInEnum()
-            .WithMessage("Role must be a valid enum value.");
-
-        RuleFor(x => x.Access)
-            .IsInEnum()
-            .WithMessage("Access must be a valid enum value.");
+            .WithMessage("Position must be a valid enum value.");
 
         RuleFor(x => x.DateOfEmployment)
             .NotEmpty()
