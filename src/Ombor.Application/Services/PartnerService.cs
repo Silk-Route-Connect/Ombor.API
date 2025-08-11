@@ -10,7 +10,7 @@ namespace Ombor.Application.Services;
 
 internal sealed class PartnerService(IApplicationDbContext context, IRequestValidator validator) : IPartnerService
 {
-    public Task<PartnerDto[]> GetAsync(GetPartnersRequest request)
+    public async Task<PartnerDto[]> GetAsync(GetPartnersRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -27,19 +27,34 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 (x.CompanyName != null && x.CompanyName.Contains(searchTerm)));
         }
 
-        return query
+        var partnersWithBalances = await query
             .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .Select(x => new PartnerDto(
-                x.Id,
-                x.Name,
-                x.Type.ToString(),
-                x.Address,
-                x.Email,
-                x.CompanyName,
-                x.Balance,
-                x.PhoneNumbers))
+            .Join(
+                context.PartnerBalances,
+                partner => partner.Id,
+                balance => balance.PartnerId,
+                (partner, balances) => new { partner, balances })
+            .Select(pb => pb)
+            .OrderBy(x => x.partner.Name)
             .ToArrayAsync();
+
+        return partnersWithBalances.Select(
+               pb => new PartnerDto(
+                   pb.partner.Id,
+                   pb.partner.Name,
+                   pb.partner.Type.ToString(),
+                   pb.partner.Address,
+                   pb.partner.Email,
+                   pb.partner.CompanyName,
+                   pb.balances.Total,
+                   pb.partner.PhoneNumbers,
+                   new PartnerBalanceDto(
+                       pb.balances.Total,
+                       pb.balances.PartnerAdvance,
+                       pb.balances.CompanyAdvance,
+                       pb.balances.PayableDebt,
+                       pb.balances.ReceivableDebt)))
+           .ToArray();
     }
 
     public async Task<PartnerDto> GetByIdAsync(GetPartnerByIdRequest request)

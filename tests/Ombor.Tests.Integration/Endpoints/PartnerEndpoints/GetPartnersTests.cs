@@ -61,7 +61,7 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Name = "Test Partner for search matching Company",
                 Address = "Tashkent",
                 CompanyName = searchTerm,
-                Type = PartnerType.All,
+                Type = PartnerType.Both,
                 Balance = 10_000,
                 PhoneNumbers = ["+99890-100-00-00"]
             },

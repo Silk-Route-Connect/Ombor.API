@@ -67,7 +67,7 @@ internal sealed class TestingDatabaseSeeder(
                 SalePrice = _faker.Finance.Amount(),
                 SupplyPrice = _faker.Finance.Amount(),
                 RetailPrice = _faker.Finance.Amount(),
-                QuantityInStock = _faker.Random.Number(),
+                QuantityInStock = _faker.Random.Number(100, 1_000),
                 LowStockThreshold = _faker.Random.Number(),
                 Measurement = _faker.Random.Enum<UnitOfMeasurement>(),
                 CategoryId = _faker.PickRandom<int>(categoryIds),
@@ -133,7 +133,7 @@ internal sealed class TestingDatabaseSeeder(
                 Address = "Test Partner address",
                 CompanyName = "Random Company",
                 Balance = 5_000,
-                Type = PartnerType.All,
+                Type = PartnerType.Both,
                 Email = $"partner{i}@test.com",
                 PhoneNumbers = ["+99890-100-00-00"]
             });
@@ -171,6 +171,16 @@ internal sealed class TestingDatabaseSeeder(
     {
         var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
         var thumbsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder);
+
+        if (Directory.Exists(originalsDir))
+        {
+            Directory.Delete(originalsDir, true);
+        }
+
+        if (Directory.Exists(thumbsDir))
+        {
+            Directory.Delete(thumbsDir, true);
+        }
 
         Directory.CreateDirectory(originalsDir);
         Directory.CreateDirectory(thumbsDir);

@@ -85,7 +85,7 @@ public interface IPartnerBuilder
     ///   <item><term><c>Email</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>CompanyName</c></term><description> <see cref="string.Empty"/> if not set.</description></item>
     ///   <item><term><c>Balance</c></term><description> <see cref="0"/> if not set.</description></item>
-    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.All"/> if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.Both"/> if not set.</description></item>
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
     /// </list>
     /// </summary>
@@ -102,7 +102,7 @@ public interface IPartnerBuilder
     ///   <item><term><c>Email</c></term><description> random if not set.</description></item>
     ///   <item><term><c>CompanyName</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Balance</c></term><description> random if not set.</description></item>
-    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.All"/> if not set.</description></item>
+    ///   <item><term><c>Type</c></term><description> <see cref="PartnerType.Both"/> if not set.</description></item>
     ///   <item><term><c>PhoneNumbers</c></term><description> <c>null</c> if not set.</description></item>
     /// </list>
     /// </summary>
