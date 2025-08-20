@@ -207,10 +207,10 @@ internal sealed class TransactionService(
             query = query.Where(x => x.PartnerId == request.PartnerId.Value);
         }
 
-        if (request.Statuses?.Length > 0)
+        if (request.Status.HasValue)
         {
-            var domainStatuses = request.Statuses.Select(x => x.ToDomainStatus());
-            query = query.Where(x => domainStatuses.Contains(x.Status));
+            var domainStatus = request.Status.Value.ToDomainStatus();
+            query = query.Where(x => x.Status == domainStatus);
         }
 
         if (request.Type.HasValue)
