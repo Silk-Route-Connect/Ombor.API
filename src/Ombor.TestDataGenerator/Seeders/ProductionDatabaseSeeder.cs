@@ -11,6 +11,7 @@ internal sealed class ProductionDatabaseSeeder(DataSeedSettings settings) : IDat
     {
         await AddCategoriesAsync(context);
         await AddProductsAsync(context);
+        await AddEmployeesAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -44,6 +45,21 @@ internal sealed class ProductionDatabaseSeeder(DataSeedSettings settings) : IDat
             .ToArray();
 
         context.Products.AddRange(products);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = EmployeeGenerator.Generate(settings.NumberOfEmployees, settings.Locale)
+            .DistinctBy(x => x.FullName)
+            .ToArray();
+
+        context.Employees.AddRange(employees);
         await context.SaveChangesAsync();
     }
 }
