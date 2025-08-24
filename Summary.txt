@@ -1,22 +1,22 @@
 Summary
-  Generated on: 08/20/2025 - 20:51:59
-  Coverage date: 08/20/2025 - 20:51:15 - 08/20/2025 - 20:51:56
+  Generated on: 08/24/2025 - 16:38:49
+  Coverage date: 08/24/2025 - 16:38:02 - 08/24/2025 - 16:38:48
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 74
-  Files: 73
-  Line coverage: 92.2%
-  Covered lines: 1188
-  Uncovered lines: 100
-  Coverable lines: 1288
-  Total lines: 3975
-  Branch coverage: 71.6% (212 of 296)
+  Classes: 75
+  Files: 74
+  Line coverage: 91.8%
+  Covered lines: 1191
+  Uncovered lines: 106
+  Coverable lines: 1297
+  Total lines: 4038
+  Branch coverage: 70.6% (212 of 300)
   Covered branches: 212
-  Total branches: 296
-  Method coverage: 83.3% (240 of 288)
+  Total branches: 300
+  Method coverage: 82.7% (240 of 290)
   Covered methods: 240
-  Total methods: 288
-  Tag: 186_17109995023
+  Total methods: 290
+  Tag: 188_17191193753
 
 Ombor.API                                                                          96.6%
   Ombor.API.Controllers.CategoriesController                                      100.0%
@@ -28,7 +28,7 @@ Ombor.API                                                                       
   Ombor.API.Extensions.DependencyInjection                                         97.6%
   Ombor.API.Extensions.StartupExtensions                                          100.0%
 
-Ombor.Application                                                                  90.2%
+Ombor.Application                                                                  89.5%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
   Ombor.Application.Extensions.FormFileExtensions                                 100.0%
@@ -59,6 +59,7 @@ Ombor.Application                                                               
   Ombor.Application.Validators.Product.CreateProductRequestValidator              100.0%
   Ombor.Application.Validators.Product.DeleteProductRequestValidator              100.0%
   Ombor.Application.Validators.Product.GetProductByIdRequestValidator             100.0%
+  Ombor.Application.Validators.Product.GetProductTransactionsValidator              0.0%
   Ombor.Application.Validators.Product.UpdateProductRequestValidator              100.0%
   Ombor.Application.Validators.Template.CreateTemplateRequestValidator            100.0%
   Ombor.Application.Validators.Template.DeleteTemplateRequestValidator            100.0%
