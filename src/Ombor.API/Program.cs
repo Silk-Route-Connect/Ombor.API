@@ -2,17 +2,13 @@ using Ombor.API.Extensions;
 using Ombor.Application.Extensions;
 using Ombor.Infrastructure.Extensions;
 using Ombor.TestDataGenerator.Extensions;
-using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseSentry();
-
-SentrySdk.Init(o =>
+if (builder.Environment.IsProduction())
 {
-    o.Dsn = "https://aa99676eb90be73842484c78b9a6adc6@o4508670634557440.ingest.de.sentry.io/4509785954713680";
-    o.Debug = true;
-});
+    builder.WebHost.UseSentry();
+}
 
 try
 {
@@ -43,11 +39,14 @@ try
 
     await app.UseDatabaseSeederAsync();
 
+    SentrySdk.CaptureMessage("API started...");
+
     await app.RunAsync();
 }
 catch (Exception ex)
 {
     SentrySdk.CaptureException(ex);
+    throw;
 }
 
 #pragma warning disable S1118 // For API tests
