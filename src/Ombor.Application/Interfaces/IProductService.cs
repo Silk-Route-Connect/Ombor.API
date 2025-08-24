@@ -33,6 +33,8 @@ public interface IProductService
     /// <exception cref="EntityNotFoundException{Product}">If no product with the given ID exists.</exception>
     Task<ProductDto> GetByIdAsync(GetProductByIdRequest request);
 
+    Task<ProductTransactionDto[]> GetTransactionsAsync(GetProductTransactionsRequest request);
+
     /// <summary>
     /// Creates a new product.
     /// </summary>
