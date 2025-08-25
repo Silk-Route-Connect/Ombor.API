@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Ombor.Application.Configurations;
-using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Domain.Entities;
@@ -14,15 +13,17 @@ internal sealed class ProductionDatabaseSeeder(
     DataSeedSettings seedSettings,
     FileSettings fileSettings,
     IWebHostEnvironment env,
-    IImageThumbnailer thumbnailer) : IDatabaseSeeder
+    IImageThumbnailer thumbnailer) : SeederBase(fileSettings, env, thumbnailer), IDatabaseSeeder
 {
-    private static readonly Random _random = new();
-
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
         await AddCategoriesAsync(context);
         await AddProductsAsync(context);
         await AddProductImagesAsync(context);
+        await AddPartnersAsync(context);
+        await AddTemplatesAsync(context);
+        await AddSalesAsync(context);
+        await AddSuppliesAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -100,62 +101,106 @@ internal sealed class ProductionDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
+    private async Task AddPartnersAsync(IApplicationDbContext context)
     {
-        var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
-        var thumbsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.ThumbnailsSubfolder);
-
-        if (Directory.Exists(originalsDir))
+        if (context.Partners.Any())
         {
-            Directory.Delete(originalsDir, true);
+            return;
         }
 
-        if (Directory.Exists(thumbsDir))
-        {
-            Directory.Delete(thumbsDir, true);
-        }
+        var partners = PartnerGenerator.Generate(seedSettings.NumberOfPartners, seedSettings.Locale)
+            .DistinctBy(x => x.Name)
+            .ToArray();
 
-        Directory.CreateDirectory(originalsDir);
-        Directory.CreateDirectory(thumbsDir);
-
-        if (Directory.EnumerateFiles(originalsDir).Any())
-        {
-            return [];
-        }
-
-        return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
+        context.Partners.AddRange(partners);
+        await context.SaveChangesAsync();
     }
 
-    private async Task<Dictionary<string, string>> ExtractAndSaveSeedImagesAsync(string originalsDir, string thumbsDir)
+    private async Task AddTemplatesAsync(IApplicationDbContext context)
     {
-        const string imagesNamespace = "Ombor.TestDataGenerator.Resources.Images.";
-
-        var currentAssembly = typeof(ProductGenerator).Assembly;
-        var nameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        var resourceNames = currentAssembly.GetManifestResourceNames()
-                     .Where(n => n.StartsWith(imagesNamespace, StringComparison.OrdinalIgnoreCase));
-
-        foreach (var resourceName in resourceNames)
+        if (context.Templates.Any())
         {
-            var originalFileName = resourceName[imagesNamespace.Length..];
-            var extension = Path.GetExtension(originalFileName);
-            var storageFileName = $"{Guid.NewGuid():N}{extension}";
-
-            nameMap[storageFileName] = originalFileName;
-
-            // copy original
-            await using var originalImageStream = currentAssembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException(resourceName);
-            await using var originalImageFileStream = File.Create(Path.Combine(originalsDir, storageFileName));
-            await originalImageStream.CopyToAsync(originalImageFileStream);
-
-            // generate & save thumbnail
-            originalImageStream.Position = 0;
-            var format = ImageHelper.GetThumbnailFormat(extension);
-            await using var thumbnailStream = await thumbnailer.GenerateThumbnailAsync(originalImageFileStream, format);
-            await using var thumbnailImageFileStream = File.Create(Path.Combine(thumbsDir, storageFileName));
-            await thumbnailStream.CopyToAsync(thumbnailImageFileStream);
+            return;
         }
 
-        return nameMap;
+        var allTemplates = new List<Template>();
+        var partners = context.Partners
+            .Select(x => x.Id)
+            .ToArray();
+        var products = context.Products
+            .Select(x => x.Id)
+            .ToArray();
+
+        foreach (var partnerId in partners)
+        {
+            var templates = TemplateGenerator.Generate(
+                partnerId,
+                products,
+                seedSettings.NumberOfTemplatesPerPartner,
+                seedSettings.NumberOfItemsPerTemplate,
+                seedSettings.Locale)
+                .DistinctBy(x => x.Name)
+                .ToArray();
+            allTemplates.AddRange(templates);
+        }
+
+        context.Templates.AddRange(allTemplates);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSalesAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale))
+        {
+            return;
+        }
+
+        var allSales = new List<TransactionRecord>();
+        var products = context.Products.ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
+            .ToArray();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(
+                partner.Id,
+                Domain.Enums.TransactionType.Sale,
+                products,
+                seedSettings.NumberOfMaxTransactionsPerPartner);
+
+            allSales.AddRange(sales);
+        }
+
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSuppliesAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Supply))
+        {
+            return;
+        }
+
+        var allSales = new List<TransactionRecord>();
+        var products = context.Products.ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Customer)
+            .ToArray();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(
+                partner.Id,
+                Domain.Enums.TransactionType.Supply,
+                products,
+                seedSettings.NumberOfMaxTransactionsPerPartner);
+
+            allSales.AddRange(sales);
+        }
+
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
     }
 }
