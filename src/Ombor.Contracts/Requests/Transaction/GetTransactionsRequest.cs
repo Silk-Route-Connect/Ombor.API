@@ -5,5 +5,5 @@ namespace Ombor.Contracts.Requests.Transaction;
 public sealed record GetTransactionsRequest(
     string? SearchTerm,
     int? PartnerId,
-    TransactionStatus[] Statuses,
+    TransactionStatus? Status,
     TransactionType? Type);
