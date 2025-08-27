@@ -2,11 +2,10 @@ using Ombor.API.Extensions;
 using Ombor.Application.Extensions;
 using Ombor.Infrastructure.Extensions;
 using Ombor.TestDataGenerator.Extensions;
-using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseSentry();
+//builder.WebHost.UseSentry();
 
 SentrySdk.Init(o =>
 {
