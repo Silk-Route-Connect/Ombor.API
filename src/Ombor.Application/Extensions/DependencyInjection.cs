@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddTransient<IFileService, FileService>();
 
