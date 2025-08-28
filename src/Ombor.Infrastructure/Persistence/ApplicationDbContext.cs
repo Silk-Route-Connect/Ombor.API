@@ -20,6 +20,8 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<PaymentComponent> PaymentComponents { get; set; }
     public virtual DbSet<PaymentAllocation> PaymentAllocations { get; set; }
     public virtual DbSet<PaymentAttachment> PaymentAttachments { get; set; }
+    public virtual DbSet<UserAccount> UserAccounts { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
