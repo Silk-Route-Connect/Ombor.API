@@ -1,32 +1,33 @@
 Summary
-  Generated on: 08/24/2025 - 16:43:08
-  Coverage date: 08/24/2025 - 16:42:20 - 08/24/2025 - 16:43:05
+  Generated on: 08/30/2025 - 16:37:48
+  Coverage date: 08/30/2025 - 16:36:59 - 08/30/2025 - 16:37:47
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 75
-  Files: 74
-  Line coverage: 91.8%
-  Covered lines: 1191
-  Uncovered lines: 106
-  Coverable lines: 1297
-  Total lines: 4038
+  Classes: 76
+  Files: 75
+  Line coverage: 91.2%
+  Covered lines: 1193
+  Uncovered lines: 114
+  Coverable lines: 1307
+  Total lines: 4062
   Branch coverage: 70.6% (212 of 300)
   Covered branches: 212
   Total branches: 300
-  Method coverage: 82.7% (240 of 290)
+  Method coverage: 82.1% (240 of 292)
   Covered methods: 240
-  Total methods: 290
-  Tag: 189_17191237342
+  Total methods: 292
+  Tag: 190_17346120570
 
-Ombor.API                                                                          96.6%
+Ombor.API                                                                          85.7%
   Ombor.API.Controllers.CategoriesController                                      100.0%
   Ombor.API.Controllers.PartnersController                                        100.0%
   Ombor.API.Controllers.PaymentsController                                          0.0%
   Ombor.API.Controllers.ProductsController                                        100.0%
   Ombor.API.Controllers.TemplatesController                                       100.0%
   Ombor.API.Controllers.TransactionsController                                    100.0%
-  Ombor.API.Extensions.DependencyInjection                                         97.6%
+  Ombor.API.Extensions.DependencyInjection                                         97.7%
   Ombor.API.Extensions.StartupExtensions                                          100.0%
+  Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
 Ombor.Application                                                                  89.5%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
