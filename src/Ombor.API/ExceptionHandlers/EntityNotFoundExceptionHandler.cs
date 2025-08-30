@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Exceptions;
+using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -24,6 +25,8 @@ internal sealed class EntityNotFoundExceptionHandler(ILogger<EntityNotFoundExcep
 
         httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+        SentrySdk.CaptureException(entityNotFoundException);
 
         logger.LogWarning(
             exception,

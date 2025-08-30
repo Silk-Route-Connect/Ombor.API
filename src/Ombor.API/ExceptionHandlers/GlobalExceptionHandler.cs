@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -25,6 +26,8 @@ internal sealed class GlobalExceptionHandler(
             ProblemDetails = problemDetails,
             Exception = exception,
         });
+
+        SentrySdk.CaptureException(exception);
 
         logger.LogError(
             exception,
