@@ -7,11 +7,11 @@ namespace Ombor.TestDataGenerator.Generators;
 
 public static class PaymentGenerator
 {
-    private const string Uzs = "UZS";
-    private const string Usd = "USD";
-    private const decimal UzsStep = 1_000m; // Minimal denomination in UZS
-    private const decimal UsdRate = 13_000m; // 1 USD = 13,000 UZS
-    private const decimal UsdStepBase = 5m * UsdRate; // $5 * 13,000 = 65,000 UZS per USD component step
+    private const string UZS = "UZS";
+    private const string USD = "USD";
+    private const decimal UZS_STEP = 1_000m; // Minimal denomination in UZS
+    private const decimal USD_RATE = 13_000m; // 1 USD = 13,000 UZS
+    private const decimal USD_STEP_BASE = 5m * USD_RATE; // $5 * 13,000 = 65,000 UZS per USD component step
 
     private static readonly Random Rng = new();
     private static readonly Faker faker = new();
@@ -74,7 +74,7 @@ public static class PaymentGenerator
 
             // Enforce thousand-floor and min 1,000 UZS
             var paymentTotal = FloorToThousand(installmentBaseAmount);
-            if (paymentTotal < UzsStep)
+            if (paymentTotal < UZS_STEP)
             {
                 continue;
             }
@@ -95,25 +95,25 @@ public static class PaymentGenerator
             for (int componentIndex = 0; componentIndex < componentCount; componentIndex++)
             {
                 var useUsd = NextDecimal() < options.ChanceUsdComponent;
-                componentCurrencies.Add(useUsd ? Usd : Uzs);
+                componentCurrencies.Add(useUsd ? USD : UZS);
             }
 
             // If all USD and total is not multiple of 65,000 UZS, force one UZS so we can hit exact total
-            if (componentCurrencies.All(code => code == Usd) && (paymentTotal % UsdStepBase != 0m))
+            if (componentCurrencies.All(code => code == USD) && (paymentTotal % USD_STEP_BASE != 0m))
             {
-                componentCurrencies[0] = Uzs;
+                componentCurrencies[0] = UZS;
             }
 
             // If minimal sum (one step per component) exceeds total, fallback to single-component UZS
-            var minimalFeasibleSum = componentCurrencies.Sum(code => code == Uzs ? UzsStep : UsdStepBase);
+            var minimalFeasibleSum = componentCurrencies.Sum(code => code == UZS ? UZS_STEP : USD_STEP_BASE);
             if (minimalFeasibleSum > paymentTotal)
             {
                 componentCurrencies.Clear();
-                componentCurrencies.Add(Uzs);
+                componentCurrencies.Add(UZS);
             }
 
             // Split base amount by per-currency base steps so components have real-life denominations
-            var baseSteps = componentCurrencies.Select(code => code == Uzs ? UzsStep : UsdStepBase).ToArray();
+            var baseSteps = componentCurrencies.Select(code => code == UZS ? UZS_STEP : USD_STEP_BASE).ToArray();
             var baseParts = SplitBaseBySteps(paymentTotal, baseSteps);
 
             // Build components from base parts
@@ -127,13 +127,13 @@ public static class PaymentGenerator
                     continue;
                 }
 
-                if (currency == Uzs)
+                if (currency == UZS)
                 {
                     // UZS component: already multiple of 1,000
                     payment.Components.Add(new PaymentComponent
                     {
                         Amount = RoundMoney(basePortion), // amount in UZS
-                        Currency = Uzs,
+                        Currency = UZS,
                         ExchangeRate = 1m,
                         Method = RollMethod(),
                         Payment = payment
@@ -142,12 +142,12 @@ public static class PaymentGenerator
                 else
                 {
                     // USD component: base portion multiple of 65,000 → amount multiple of $5
-                    var usdAmount = RoundMoney(basePortion / UsdRate);
+                    var usdAmount = RoundMoney(basePortion / USD_RATE);
                     payment.Components.Add(new PaymentComponent
                     {
                         Amount = usdAmount,               // amount in USD
-                        Currency = Usd,
-                        ExchangeRate = UsdRate,
+                        Currency = USD,
+                        ExchangeRate = USD_RATE,
                         Method = RollMethod(),
                         Payment = payment
                     });
@@ -213,7 +213,7 @@ public static class PaymentGenerator
             return 0m;
         }
 
-        return Math.Floor(amount / UzsStep) * UzsStep;
+        return Math.Floor(amount / UZS_STEP) * UZS_STEP;
     }
 
     /// <summary>
