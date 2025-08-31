@@ -11,7 +11,7 @@ internal static class TransactionGenerator
         => GetGenerator(partnerId, type, products).Generate();
 
     public static List<TransactionRecord> Generate(int partnerId, TransactionType type, Product[] products, int maxCount)
-        => GetGenerator(partnerId, type, products).GenerateBetween(5, maxCount);
+        => GetGenerator(partnerId, type, products).GenerateBetween(1, maxCount);
 
     private static Faker<TransactionRecord> GetGenerator(int partnerId, TransactionType type, Product[] products) => new Faker<TransactionRecord>()
         .RuleFor(x => x.PartnerId, _ => partnerId)
@@ -27,7 +27,7 @@ internal static class TransactionGenerator
         .RuleFor(x => x.UnitPrice, _ => GetRandomProductPrice(products, type))
         .RuleFor(x => x.Quantity, f => f.Random.Number(1, 10))
         .RuleFor(x => x.Discount, f => f.Random.Discount(1, 80, 90))
-        .GenerateBetween(5, 20)
+        .GenerateBetween(1, 10)
         .ToArray();
 
     private static decimal GetRandomProductPrice(Product[] products, TransactionType type)

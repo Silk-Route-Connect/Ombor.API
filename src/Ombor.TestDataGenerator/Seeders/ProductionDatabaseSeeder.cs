@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
@@ -15,6 +16,8 @@ internal sealed class ProductionDatabaseSeeder(
     IWebHostEnvironment env,
     IImageThumbnailer thumbnailer) : SeederBase(fileSettings, env, thumbnailer), IDatabaseSeeder
 {
+    private readonly PaymentSeedSettings _paymentOptions = seedSettings.PaymentSettings;
+
     public async Task SeedDatabaseAsync(IApplicationDbContext context)
     {
         await AddCategoriesAsync(context);
@@ -24,6 +27,9 @@ internal sealed class ProductionDatabaseSeeder(
         await AddTemplatesAsync(context);
         await AddSalesAsync(context);
         await AddSuppliesAsync(context);
+        await AddSaleRefundsAsync(context);
+        await AddSupplyRefundsAsync(context);
+        await AddPaymentsAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -202,5 +208,95 @@ internal sealed class ProductionDatabaseSeeder(
 
         context.Transactions.AddRange(allSales);
         await context.SaveChangesAsync();
+    }
+
+    private async Task AddSaleRefundsAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.SaleRefund))
+        {
+            return;
+        }
+
+        var allSales = new List<TransactionRecord>();
+        var products = context.Products.ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
+            .ToArray();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(
+                partner.Id,
+                Domain.Enums.TransactionType.SaleRefund,
+                products,
+                seedSettings.NumberOfMaxTransactionsPerPartner);
+
+            allSales.AddRange(sales);
+        }
+
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddSupplyRefundsAsync(IApplicationDbContext context)
+    {
+        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.SupplyRefund))
+        {
+            return;
+        }
+
+        var allSales = new List<TransactionRecord>();
+        var products = context.Products.ToArray();
+        var partners = context.Partners
+            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
+            .ToArray();
+
+        foreach (var partner in partners)
+        {
+            var sales = TransactionGenerator.Generate(
+                partner.Id,
+                Domain.Enums.TransactionType.SupplyRefund,
+                products,
+                seedSettings.NumberOfMaxTransactionsPerPartner);
+
+            allSales.AddRange(sales);
+        }
+
+        context.Transactions.AddRange(allSales);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddPaymentsAsync(IApplicationDbContext context)
+    {
+        // Load all transactions that do not yet have any allocations OR still have unpaid amounts
+        var transactions = await context.Transactions
+            .Include(t => t.PaymentAllocations)
+            .Include(t => t.Partner)
+            .Include(t => t.Lines)
+            .Where(t => t.TotalDue > 0) // skip weird zero-due transactions
+            .ToListAsync();
+
+        var allPayments = new List<Payment>();
+
+        foreach (var t in transactions)
+        {
+            // If already fully paid, skip (or regenerate if you want)
+            if (t.UnpaidAmount == 0) continue;
+
+            var generated = PaymentGenerator.GeneratePayments(t, _paymentOptions);
+            if (generated.Count == 0) continue;
+
+            allPayments.AddRange(generated);
+        }
+
+        if (allPayments.Count > 0)
+        {
+            context.Payments.AddRange(allPayments);
+
+            // Ensure transaction aggregates & statuses are persisted
+            context.Transactions.UpdateRange(transactions);
+
+            await context.SaveChangesAsync();
+        }
     }
 }

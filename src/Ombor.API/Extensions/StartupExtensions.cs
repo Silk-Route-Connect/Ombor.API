@@ -14,6 +14,7 @@ public static class StartupExtensions
         var seeder = seederFactory.CreateSeeder();
         var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
+        // await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
         await seeder.SeedDatabaseAsync(context);
