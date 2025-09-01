@@ -53,8 +53,6 @@ public interface IApplicationDbContext
 
     DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
-    DbSet<UserAccount> UserAccounts { get; set; }
-
     DbSet<RefreshToken> RefreshTokens { get; set; }
 
     /// <summary>
