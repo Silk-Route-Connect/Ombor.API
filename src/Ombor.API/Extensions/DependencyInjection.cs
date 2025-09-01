@@ -1,5 +1,10 @@
 ﻿using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
 using Ombor.API.Filters;
@@ -13,12 +18,22 @@ internal static class DependencyInjection
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddControllers(options => options.SuppressAsyncSuffixInActionNames = false)
+            .AddControllers(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+                options.SuppressAsyncSuffixInActionNames = false;
+
+            })
             .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
             .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
         services.AddCors(configuration);
+        AddAuthentication(services, configuration);
 
         return services;
     }
@@ -42,29 +57,29 @@ internal static class DependencyInjection
         {
             c.SwaggerDoc("v1", openApiConfigurations);
 
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
-                In = ParameterLocation.Header,
-                Description = "Please enter token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
-                Scheme = "bearer"
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                Description = "Enter your JWT token in the format: Bearer {your token}",
+
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
-
-                new OpenApiSecurityScheme
-                {
-                    Reference =new OpenApiReference
+                    new OpenApiSecurityScheme
                     {
-                        Type=ReferenceType.SecurityScheme,
-                        Id="Bearer"
-                    }
-                },
-                new string[]{}
+                        Reference = new OpenApiReference
+                        {
+                            Id = JwtBearerDefaults.AuthenticationScheme,
+                            Type = ReferenceType.SecurityScheme
+                        }
+                    },
+                    Array.Empty<string>()
                 }
             });
 
@@ -97,5 +112,33 @@ internal static class DependencyInjection
         });
 
         return services;
+    }
+
+    private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = true;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+                };
+            });
     }
 }

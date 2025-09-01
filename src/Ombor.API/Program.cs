@@ -32,8 +32,11 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseRouting();
+
     app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();

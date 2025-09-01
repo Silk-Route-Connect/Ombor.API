@@ -15,13 +15,26 @@ namespace Ombor.Application.Services;
 
 internal sealed class AuthService(
     UserManager<UserAccount> userManager,
+    IApplicationDbContext context,
     ISmsService smsService,
     ITokenHandlerService tokenHandler,
     IConfiguration configuration) : IAuthService
 {
-    public Task<LoginResponse> LoginAsync(LoginRequest request)
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        throw new NotImplementedException();
+        var user = await userManager.FindByNameAsync(request.PhoneNumber);
+
+        if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
+        {
+            throw new ArgumentException("Invalid Phone number or password.");
+        }
+
+        var accessToken = tokenHandler.GenerateAccessToken(user);
+        var refreshToken = tokenHandler.GenerateRefreshToken();
+
+        await SaveRefreshTokenAsync(user, refreshToken);
+
+        return new LoginResponse(accessToken, refreshToken);
     }
 
     public async Task<string> RegisterAsync(RegisterRequest request)
@@ -116,5 +129,20 @@ internal sealed class AuthService(
             return false;
         }
 
+    }
+
+    private async Task SaveRefreshTokenAsync(UserAccount user, string refreshToken)
+    {
+        var tokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            IsRevoked = false,
+            ExpiresAt = DateTime.UtcNow.AddDays(int.Parse(configuration["Jwt:RefreshTokenExpiresInDays"]!)),
+            UserId = user.Id,
+            User = user
+        };
+
+        context.RefreshTokens.Add(tokenEntity);
+        await context.SaveChangesAsync();
     }
 }

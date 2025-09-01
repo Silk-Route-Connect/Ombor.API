@@ -19,15 +19,17 @@ public static class DependencyInjection
         services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<UserAccount, IdentityRole<int>>(options =>
-        {
-            options.Password.RequiredLength = 8;
-            options.Password.RequireUppercase = false;
-            options.Password.RequireDigit = true;
-            options.Password.RequireNonAlphanumeric = false;
-        })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
-        .AddDefaultTokenProviders();
+        services
+            .AddIdentityCore<UserAccount>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+            .AddRoles<IdentityRole<int>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
         services.AddTransient<IFileStorage, LocalFileStorage>();
