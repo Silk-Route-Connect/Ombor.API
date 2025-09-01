@@ -27,4 +27,6 @@ public enum UserAccess
     /// Full access to all application features.
     /// </summary>
     FullAccess = 5,
+
+    BasicAccess = 100
 }
