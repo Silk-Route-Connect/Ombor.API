@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9127773527161438" branch-rate="0.7066666666666667" lines-covered="1193" lines-valid="1307" branches-covered="212" branches-valid="300" complexity="510" version="0" timestamp="1757010398">
+<coverage line-rate="0.9122137404580153" branch-rate="0.7012987012987013" lines-covered="1195" lines-valid="1310" branches-covered="216" branches-valid="308" complexity="516" version="0" timestamp="1757011302">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
   <packages>
-    <package name="Ombor.API" line-rate="0.8571428571428571" branch-rate="0.3333333333333333" complexity="32">
+    <package name="Ombor.API" line-rate="0.8493150684931506" branch-rate="0.4" complexity="38">
       <classes>
         <class name="Ombor.API.Controllers.CategoriesController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/CategoriesController.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
@@ -291,42 +291,51 @@
             <line number="75" hits="42" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.API.Extensions.StartupExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/StartupExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
+        <class name="Ombor.API.Extensions.StartupExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Extensions/StartupExtensions.cs" line-rate="0.9090909090909091" branch-rate="0.5" complexity="8">
           <methods>
-            <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="0.9090909090909091" branch-rate="0.5" complexity="4">
               <lines>
-                <line number="27" hits="42" branch="false" />
-                <line number="28" hits="42" branch="false" />
-                <line number="30" hits="42" branch="false" />
-                <line number="31" hits="42" branch="false" />
-                <line number="32" hits="42" branch="false" />
-                <line number="33" hits="42" branch="false" />
-                <line number="34" hits="42" branch="false" />
+                <line number="28" hits="42" branch="true" condition-coverage="50% (2/4)" />
+                <line number="30" hits="42" branch="true" condition-coverage="50% (2/4)" />
+                <line number="33" hits="0" branch="false" />
                 <line number="36" hits="42" branch="false" />
+                <line number="39" hits="42" branch="false" />
+                <line number="41" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
+                <line number="43" hits="42" branch="false" />
+                <line number="44" hits="42" branch="false" />
+                <line number="45" hits="42" branch="false" />
+                <line number="47" hits="42" branch="false" />
               </lines>
             </method>
-            <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="UseStaticFiles" signature="(Microsoft.AspNetCore.Builder.WebApplication)" line-rate="0.9090909090909091" branch-rate="0.5" complexity="4">
               <lines>
-                <line number="27" hits="42" branch="false" />
-                <line number="28" hits="42" branch="false" />
-                <line number="30" hits="42" branch="false" />
-                <line number="31" hits="42" branch="false" />
-                <line number="32" hits="42" branch="false" />
-                <line number="33" hits="42" branch="false" />
-                <line number="34" hits="42" branch="false" />
+                <line number="28" hits="42" branch="true" condition-coverage="50% (2/4)" />
+                <line number="30" hits="42" branch="true" condition-coverage="50% (2/4)" />
+                <line number="33" hits="0" branch="false" />
                 <line number="36" hits="42" branch="false" />
+                <line number="39" hits="42" branch="false" />
+                <line number="41" hits="42" branch="false" />
+                <line number="42" hits="42" branch="false" />
+                <line number="43" hits="42" branch="false" />
+                <line number="44" hits="42" branch="false" />
+                <line number="45" hits="42" branch="false" />
+                <line number="47" hits="42" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="27" hits="42" branch="false" />
-            <line number="28" hits="42" branch="false" />
-            <line number="30" hits="42" branch="false" />
-            <line number="31" hits="42" branch="false" />
-            <line number="32" hits="42" branch="false" />
-            <line number="33" hits="42" branch="false" />
-            <line number="34" hits="42" branch="false" />
+            <line number="28" hits="42" branch="true" condition-coverage="50% (2/4)" />
+            <line number="30" hits="42" branch="true" condition-coverage="50% (2/4)" />
+            <line number="33" hits="0" branch="false" />
             <line number="36" hits="42" branch="false" />
+            <line number="39" hits="42" branch="false" />
+            <line number="41" hits="42" branch="false" />
+            <line number="42" hits="42" branch="false" />
+            <line number="43" hits="42" branch="false" />
+            <line number="44" hits="42" branch="false" />
+            <line number="45" hits="42" branch="false" />
+            <line number="47" hits="42" branch="false" />
           </lines>
         </class>
         <class name="Ombor.API.Filters.EnumSchemaFilter" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Filters/EnumSchemaFilter.cs" line-rate="0" branch-rate="0" complexity="4">
@@ -3504,17 +3513,17 @@
           <methods>
             <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="152" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
             <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
-                <line number="10" hits="152" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="10" hits="152" branch="false" />
+            <line number="10" hits="146" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Domain.Entities.TransactionLine" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionLine.cs" line-rate="1" branch-rate="1" complexity="1">

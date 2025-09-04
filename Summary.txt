@@ -1,24 +1,24 @@
 Summary
-  Generated on: 09/04/2025 - 18:26:38
-  Coverage date: 09/04/2025 - 18:25:53 - 09/04/2025 - 18:26:37
+  Generated on: 09/04/2025 - 18:41:42
+  Coverage date: 09/04/2025 - 18:40:55 - 09/04/2025 - 18:41:41
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 76
   Files: 75
   Line coverage: 91.2%
-  Covered lines: 1193
-  Uncovered lines: 114
-  Coverable lines: 1307
-  Total lines: 4063
-  Branch coverage: 70.6% (212 of 300)
-  Covered branches: 212
-  Total branches: 300
+  Covered lines: 1195
+  Uncovered lines: 115
+  Coverable lines: 1310
+  Total lines: 4074
+  Branch coverage: 70.1% (216 of 308)
+  Covered branches: 216
+  Total branches: 308
   Method coverage: 82.1% (240 of 292)
   Covered methods: 240
   Total methods: 292
-  Tag: 199_17473173069
+  Tag: 200_17473513643
 
-Ombor.API                                                                          85.7%
+Ombor.API                                                                          84.9%
   Ombor.API.Controllers.CategoriesController                                      100.0%
   Ombor.API.Controllers.PartnersController                                        100.0%
   Ombor.API.Controllers.PaymentsController                                          0.0%
@@ -26,7 +26,7 @@ Ombor.API                                                                       
   Ombor.API.Controllers.TemplatesController                                       100.0%
   Ombor.API.Controllers.TransactionsController                                    100.0%
   Ombor.API.Extensions.DependencyInjection                                         97.7%
-  Ombor.API.Extensions.StartupExtensions                                          100.0%
+  Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
 Ombor.Application                                                                  89.5%
