@@ -2,7 +2,7 @@ name: CD - Deploy to SmarterASP.NET
 
 on:
   workflow_run:
-    workflows: ['CI - Build, Test, Analyze, and Coverage Check']
+    workflows: ["CI - Build, Test, Analyze, and Coverage Check"]
     types:
       - completed
     branches:
@@ -10,10 +10,10 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to latest version
+    name: Deploy to SmarterASP.NET
     runs-on: windows-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,9 +34,8 @@ jobs:
           dotnet publish src/Ombor.API/Ombor.API.csproj `
             --configuration Release `
             --output ./publish `
-            --no-build `
-            --self-contained false `
-            --runtime win-x86
+            --no-restore `
+            --self-contained false
 
       - name: Create Production Settings
         run: |
@@ -74,7 +73,7 @@ jobs:
             }
           }
           $settings | ConvertTo-Json -Depth 10 | Set-Content ./publish/appsettings.Production.json
-
+      
       # Option 1: Using Web Deploy (Recommended - faster and more reliable)
       - name: Deploy to SmarterASP using Web Deploy
         run: |
@@ -109,7 +108,7 @@ jobs:
     name: Notify Deployment Failure
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-
+    
     steps:
       - name: Create Issue on Failure
         uses: actions/github-script@v7
