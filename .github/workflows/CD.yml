@@ -1,20 +1,20 @@
 name: CD - Deploy to SmarterASP.NET
 
 on:
-  # workflow_run:
-  #   workflows: ["CI - Build, Test, Analyze, and Coverage Check"]
-  #   types:
-  #     - completed
-  #   branches:
-  #     - master
-  push:
-    branches: [master, development]
+  workflow_run:
+    workflows: ["CI - Build, Test, Analyze, and Coverage Check"]
+    types:
+      - completed
+    branches:
+      - master
+  # push:
+  #   branches: [master, development]
 
 jobs:
   deploy:
     name: Deploy to SmarterASP.NET
     runs-on: windows-latest
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
       - name: Checkout code
