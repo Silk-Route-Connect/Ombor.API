@@ -1,0 +1,125 @@
+name: CD - Deploy to SmarterASP.NET
+
+on:
+  workflow_run:
+    workflows: ['CI - Build, Test, Analyze, and Coverage Check']
+    types:
+      - completed
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to latest version
+    runs-on: windows-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Ombor.sln
+
+      - name: Build for Release
+        run: dotnet build Ombor.sln --configuration Release --no-restore
+
+      - name: Publish Application
+        run: |
+          dotnet publish src/Ombor.API/Ombor.API.csproj `
+            --configuration Release `
+            --output ./publish `
+            --no-build `
+            --self-contained false `
+            --runtime win-x86
+
+      - name: Create Production Settings
+        run: |
+          $settings = @{
+            ConnectionStrings = @{
+              DefaultConnection = "${{ secrets.PRODUCTION_CONNECTION_STRING }}"
+            }
+            Cors = @{
+              AllowedOrigins = @(
+                "${{ secrets.PRODUCTION_FRONTEND_URL }}",
+                "http://localhost:4200",
+                "https://localhost:4200"
+              )
+            }
+            DataSeedSettings = @{
+              Locale = "ru"
+              NumberOfCategories = 20
+              NumberOfProducts = 200
+              NumberOfMaxImagesPerProduct = 10
+              NumberOfPartners = 50
+              NumberOfTemplatesPerPartner = 5
+              NumberOfItemsPerTemplate = 10
+              NumberOfMaxTransactionsPerPartner = 5
+              NumberOfMaxLinesPerTransaction = 10
+            }
+            Sentry = @{
+              Dsn = "${{ secrets.SENTRY_DSN }}"
+              SendDefaultPii = $true
+              MaxRequestBodySize = "Always"
+              MinimumBreadcrumbLevel = "Debug"
+              MinimumEventLevel = "Warning"
+              AttachStackTrace = $true
+              Debug = $false
+              DiagnosticLevel = "Error"
+            }
+          }
+          $settings | ConvertTo-Json -Depth 10 | Set-Content ./publish/appsettings.Production.json
+
+      # Option 1: Using Web Deploy (Recommended - faster and more reliable)
+      - name: Deploy to SmarterASP using Web Deploy
+        run: |
+          & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
+            -verb:sync `
+            -source:contentPath="${{ github.workspace }}\publish" `
+            -dest:contentPath="${{ secrets.SMARTERASP_SITE_NAME }}",ComputerName="${{ secrets.SMARTERASP_SERVER_URL }}",UserName="${{ secrets.SMARTERASP_USERNAME }}",Password="${{ secrets.SMARTERASP_PASSWORD }}",AuthType="Basic" `
+            -allowUntrusted `
+            -enableRule:AppOffline `
+            -skip:objectName=filePath,absolutePath=".*(appsettings\.Development\.json)$" `
+            -skip:objectName=dirPath,absolutePath="logs$"
+        env:
+          MSDEPLOY_SHOW_COMMANDLINE: true
+
+      # Alternative Option 2: Using FTP (uncomment if Web Deploy doesn't work)
+      # - name: Deploy to SmarterASP using FTP
+      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      #   with:
+      #     server: ${{ secrets.SMARTERASP_FTP_SERVER }}
+      #     username: ${{ secrets.SMARTERASP_FTP_USERNAME }}
+      #     password: ${{ secrets.SMARTERASP_FTP_PASSWORD }}
+      #     local-dir: ./publish/
+      #     server-dir: /
+      #     exclude: |
+      #       **/.git*
+      #       **/.git*/**
+      #       **/node_modules/**
+      #       appsettings.Development.json
+      #       logs/**
+
+  notify-failure:
+    name: Notify Deployment Failure
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Create Issue on Failure
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 CI Pipeline Failed - Deployment Skipped',
+              body: `The CI pipeline failed for commit ${context.sha}. Deployment to SmarterASP.NET was skipped.\n\nPlease check the [failed workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+              labels: ['deployment', 'ci-failure']
+            })

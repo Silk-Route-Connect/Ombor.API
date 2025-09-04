@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Test, Generate Coverage & Deploy
+    name: Build, Test, Generate Coverage
     runs-on: ubuntu-latest
     env:
       MINIMUM_LINE_RATE: 10
