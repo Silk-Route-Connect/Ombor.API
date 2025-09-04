@@ -1,6 +1,6 @@
 Summary
-  Generated on: 08/30/2025 - 17:43:06
-  Coverage date: 08/30/2025 - 17:42:21 - 08/30/2025 - 17:43:05
+  Generated on: 09/04/2025 - 17:46:14
+  Coverage date: 09/04/2025 - 17:45:25 - 09/04/2025 - 17:46:12
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 76
@@ -9,14 +9,14 @@ Summary
   Covered lines: 1193
   Uncovered lines: 114
   Coverable lines: 1307
-  Total lines: 4062
+  Total lines: 4063
   Branch coverage: 70.6% (212 of 300)
   Covered branches: 212
   Total branches: 300
   Method coverage: 82.1% (240 of 292)
   Covered methods: 240
   Total methods: 292
-  Tag: 192_17346746824
+  Tag: 195_17472246054
 
 Ombor.API                                                                          85.7%
   Ombor.API.Controllers.CategoriesController                                      100.0%
