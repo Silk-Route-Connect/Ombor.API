@@ -79,14 +79,12 @@ jobs:
         run: |
           & "C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" `
             -verb:sync `
-            -source:contentPath="${{ github.workspace }}\publish" `
-            -dest:contentPath="${{ secrets.SMARTERASP_SITE_NAME }}",ComputerName="${{ secrets.SMARTERASP_SERVER_URL }}",UserName="${{ secrets.SMARTERASP_USERNAME }}",Password="${{ secrets.SMARTERASP_PASSWORD }}",AuthType="Basic" `
+            -source:contentPath='${{ github.workspace }}\publish' `
+            -dest:contentPath='${{ secrets.SMARTERASP_SITE_NAME }}',ComputerName='${{ secrets.SMARTERASP_SERVER_URL }}',UserName='${{ secrets.SMARTERASP_USERNAME }}',Password='${{ secrets.SMARTERASP_PASSWORD }}',AuthType='Basic' `
             -allowUntrusted `
             -enableRule:AppOffline `
-            -skip:objectName=filePath,absolutePath=".*(appsettings\.Development\.json)$" `
-            -skip:objectName=dirPath,absolutePath="logs$"
-        env:
-          MSDEPLOY_SHOW_COMMANDLINE: true
+            -skip:objectName=filePath,absolutePath='\.git' `
+            -skip:objectName=filePath,absolutePath='appsettings\.Development\.json
 
       # Alternative Option 2: Using FTP (uncomment if Web Deploy doesn't work)
       # - name: Deploy to SmarterASP using FTP
@@ -121,4 +119,5 @@ jobs:
               title: '🚨 CI Pipeline Failed - Deployment Skipped',
               body: `The CI pipeline failed for commit ${context.sha}. Deployment to SmarterASP.NET was skipped.\n\nPlease check the [failed workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
               labels: ['deployment', 'ci-failure']
-            })
+            }) `
+            -skip:objectName=dirPath,absolutePath='logs
