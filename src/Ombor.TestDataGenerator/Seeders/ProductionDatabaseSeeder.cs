@@ -73,8 +73,8 @@ internal sealed class ProductionDatabaseSeeder(
         {
             return;
         }
-        
-        var employees = EmployeeGenerator.Generate(settings.NumberOfEmployees, settings.Locale)
+
+        var employees = EmployeeGenerator.Generate(seedSettings.NumberOfEmployees, seedSettings.Locale)
             .DistinctBy(x => x.FullName)
             .ToArray();
 
@@ -82,13 +82,13 @@ internal sealed class ProductionDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-private async Task AddProductImagesAsync(IApplicationDbContext context)
+    private async Task AddProductImagesAsync(IApplicationDbContext context)
     {
         if (context.ProductImages.Any())
         {
             return;
         }
-        
+
         // Ensure seed images are in wwwroot and get the map of GUID → original name
         var nameMap = await EnsureImagesCopiedAsync();
 
