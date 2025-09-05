@@ -14,6 +14,7 @@ public static class StartupExtensions
         var seeder = seederFactory.CreateSeeder();
         var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
+        // await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
         await seeder.SeedDatabaseAsync(context);
@@ -23,7 +24,18 @@ public static class StartupExtensions
 
     public static IApplicationBuilder UseStaticFiles(this WebApplication app)
     {
-        var fullPath = Path.Combine(app.Environment.WebRootPath, "uploads", "products");
+        // Handle null WebRootPath - use ContentRoot as fallback
+        var rootPath = app.Environment.WebRootPath ?? app.Environment.ContentRootPath;
+
+        if (string.IsNullOrEmpty(rootPath))
+        {
+            // If both are null, use the current directory
+            rootPath = Directory.GetCurrentDirectory();
+        }
+
+        var fullPath = Path.Combine(rootPath, "wwwroot", "uploads", "products");
+
+        // Ensure the directory exists
         Directory.CreateDirectory(fullPath);
 
         app.UseStaticFiles(new StaticFileOptions
