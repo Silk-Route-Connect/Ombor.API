@@ -5,35 +5,49 @@ using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddApi(builder.Configuration)
-    .AddApplication(builder.Configuration)
-    .AddInfrastructure(builder.Configuration)
-    .AddTestDataGenerator(builder.Configuration);
-
-var app = builder.Build();
-
-if (!app.Environment.IsProduction())
+if (builder.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    builder.WebHost.UseSentry();
 }
 
-app.UseExceptionHandler(_ => { });
+try
+{
+    SentrySdk.CaptureMessage("Starting API...");
 
-app.UseHttpsRedirection();
+    builder.Services
+        .AddApi(builder.Configuration)
+        .AddApplication(builder.Configuration)
+        .AddInfrastructure(builder.Configuration)
+        .AddTestDataGenerator(builder.Configuration);
 
-app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
+    var app = builder.Build();
 
-app.UseAuthorization();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-app.MapControllers();
+    app.UseExceptionHandler(_ => { });
 
-app.UseStaticFiles();
+    app.UseHttpsRedirection();
 
-await app.UseDatabaseSeederAsync();
+    app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
 
-await app.RunAsync();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.UseStaticFiles();
+
+    await app.UseDatabaseSeederAsync();
+
+    SentrySdk.CaptureMessage("API started...");
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    SentrySdk.CaptureException(ex);
+    throw;
+}
 
 #pragma warning disable S1118 // For API tests
 public partial class Program;

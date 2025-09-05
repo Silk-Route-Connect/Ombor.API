@@ -42,6 +42,31 @@ internal sealed class ProductService(
         return entity.ToDto();
     }
 
+    public async Task<ProductTransactionDto[]> GetTransactionsAsync(GetProductTransactionsRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var transactionLines = await context.TransactionLines
+            .AsNoTracking()
+            .Where(x => x.ProductId == request.Id)
+            .Include(x => x.Product)
+            .Include(x => x.Transaction)
+            .ThenInclude(t => t.Partner)
+            .ToArrayAsync();
+
+        return [.. transactionLines.Select(x => new ProductTransactionDto(
+            x.TransactionId,
+            x.Transaction.Type.ToString(),
+            x.ProductId,
+            x.Product.Name,
+            x.Transaction.PartnerId,
+            x.Transaction.Partner.Name,
+            x.Transaction.DateUtc,
+            x.Quantity,
+            x.Discount,
+            x.UnitPrice))];
+    }
+
     public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)
     {
         await validator.ValidateAndThrowAsync(request, default);
