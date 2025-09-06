@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Contracts.Responses.Product;
 
 namespace Ombor.Tests.Common.Factories;
 
@@ -23,6 +24,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
             Attachments: []);
@@ -46,6 +48,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
             Attachments: [
@@ -66,6 +69,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.Supply,
             Attachments: [],
@@ -91,6 +95,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.Sale,
             Attachments: [],
