@@ -1,36 +1,35 @@
 Summary
-  Generated on: 09/05/2025 - 19:06:21
-  Coverage date: 09/05/2025 - 19:05:32 - 09/05/2025 - 19:06:20
+  Generated on: 09/06/2025 - 14:27:54
+  Coverage date: 09/06/2025 - 14:27:06 - 09/06/2025 - 14:27:53
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 82
-  Files: 81
-  Line coverage: 88.7%
-  Covered lines: 1334
-  Uncovered lines: 169
-  Coverable lines: 1503
-  Total lines: 4470
-  Branch coverage: 67.5% (216 of 320)
+  Classes: 76
+  Files: 75
+  Line coverage: 91.2%
+  Covered lines: 1195
+  Uncovered lines: 115
+  Coverable lines: 1310
+  Total lines: 4075
+  Branch coverage: 70.1% (216 of 308)
   Covered branches: 216
-  Total branches: 320
-  Method coverage: 78.8% (246 of 312)
-  Covered methods: 246
-  Total methods: 312
-  Tag: 205_17502127964
+  Total branches: 308
+  Method coverage: 82.1% (240 of 292)
+  Covered methods: 240
+  Total methods: 292
+  Tag: 206_17515665943
 
-Ombor.API                                                                          91.1%
-  Ombor.API.Controllers.AuthController                                              0.0%
+Ombor.API                                                                          84.9%
   Ombor.API.Controllers.CategoriesController                                      100.0%
   Ombor.API.Controllers.PartnersController                                        100.0%
   Ombor.API.Controllers.PaymentsController                                          0.0%
   Ombor.API.Controllers.ProductsController                                        100.0%
   Ombor.API.Controllers.TemplatesController                                       100.0%
   Ombor.API.Controllers.TransactionsController                                    100.0%
-  Ombor.API.Extensions.DependencyInjection                                         99.0%
+  Ombor.API.Extensions.DependencyInjection                                         97.7%
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  84.9%
+Ombor.Application                                                                  89.5%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
   Ombor.Application.Extensions.FormFileExtensions                                 100.0%
@@ -49,7 +48,6 @@ Ombor.Application                                                               
   Ombor.Application.Services.PaymentService                                         0.0%
   Ombor.Application.Services.ProductService                                       100.0%
   Ombor.Application.Services.TemplateService                                      100.0%
-  Ombor.Application.Services.TokenHandlerService                                    0.0%
   Ombor.Application.Services.TransactionService                                     3.2%
   Ombor.Application.Validators.Category.CreateCategoryRequestValidator            100.0%
   Ombor.Application.Validators.Category.DeleteCategoryRequestValidator            100.0%
@@ -83,13 +81,12 @@ Ombor.Domain                                                                    
   Ombor.Domain.Exceptions.InvalidFileException                                     33.3%
   Ombor.Domain.Exceptions.UnsupportedFileFormatException                           33.3%
 
-Ombor.Infrastructure                                                               97.7%
+Ombor.Infrastructure                                                              100.0%
   Ombor.Infrastructure.Extensions.DependencyInjection                             100.0%
   Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                       100.0%
   Ombor.Infrastructure.Extensions.StringExtensions                                100.0%
   Ombor.Infrastructure.Helpers.PathHelpers                                        100.0%
   Ombor.Infrastructure.Persistence.ApplicationDbContext                           100.0%
-  Ombor.Infrastructure.Persistence.ApplicationDbContextFactory                      0.0%
   Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration           100.0%
   Ombor.Infrastructure.Persistence.Configurations.PartnerBalanceConfiguration     100.0%
   Ombor.Infrastructure.Persistence.Configurations.PartnerConfiguration            100.0%
@@ -99,15 +96,12 @@ Ombor.Infrastructure                                                            
   Ombor.Infrastructure.Persistence.Configurations.PaymentConfiguration            100.0%
   Ombor.Infrastructure.Persistence.Configurations.ProductConfiguration            100.0%
   Ombor.Infrastructure.Persistence.Configurations.ProductImageConfiguration       100.0%
-  Ombor.Infrastructure.Persistence.Configurations.RefreshTokenConfiguration       100.0%
   Ombor.Infrastructure.Persistence.Configurations.TemplateConfiguration           100.0%
   Ombor.Infrastructure.Persistence.Configurations.TemplateItemConfiguration       100.0%
   Ombor.Infrastructure.Persistence.Configurations.TransactionConfiguration        100.0%
   Ombor.Infrastructure.Persistence.Configurations.TransactionLineConfiguration    100.0%
-  Ombor.Infrastructure.Persistence.Configurations.UserAccountConfiguration        100.0%
   Ombor.Infrastructure.Services.ImageSharpThumbnailer                             100.0%
   Ombor.Infrastructure.Services.LocalFilePathProvider                             100.0%
-  Ombor.Infrastructure.Sms.SmsService                                               0.0%
   Ombor.Infrastructure.Storage.LocalFileStorage                                   100.0%
 
 Ombor.TestDataGenerator                                                                 
