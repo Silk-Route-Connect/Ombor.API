@@ -35,7 +35,6 @@ public static class StartupExtensions
 
         var fullPath = Path.Combine(rootPath, "wwwroot", "uploads", "products");
 
-        // Ensure the directory exists
         Directory.CreateDirectory(fullPath);
 
         app.UseStaticFiles(new StaticFileOptions
