@@ -53,6 +53,8 @@ public interface IApplicationDbContext
 
     DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
+    DbSet<RefreshToken> RefreshTokens { get; set; }
+
     /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>

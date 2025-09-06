@@ -5,6 +5,7 @@ using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 if (builder.Environment.IsProduction())
 {
     builder.WebHost.UseSentry();
@@ -29,8 +30,11 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseRouting();
+
     app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();

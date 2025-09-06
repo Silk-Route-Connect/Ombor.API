@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
 
 namespace Ombor.Tests.Integration.Helpers;
@@ -58,6 +60,15 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 options => options.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .UseSqlServer(_databaseFixture.DatabaseConnectionString));
+
+            services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, AuthHandler>("Test", _ => { });
+
+            services.PostConfigure<AuthenticationOptions>(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+            });
         });
 
         builder.UseEnvironment("Testing");
