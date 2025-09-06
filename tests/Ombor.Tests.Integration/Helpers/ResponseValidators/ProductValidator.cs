@@ -139,6 +139,7 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.Measurement.ToString(),
                 x.Type.ToString(),
+                x.Packaging == null ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode),
                 x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
             .ToArray();
     }

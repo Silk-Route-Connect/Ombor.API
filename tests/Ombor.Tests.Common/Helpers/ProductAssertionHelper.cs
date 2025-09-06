@@ -35,6 +35,9 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+        Assert.Equal(expected.Packaging?.Size, actual.Packaging?.Size);
+        Assert.Equal(expected.Packaging?.Label, actual.Packaging?.Label);
+        Assert.Equal(expected.Packaging?.Barcode, actual.Packaging?.Barcode);
 
         AssertAttachments(expected.Images, actual.Images);
     }
@@ -64,6 +67,9 @@ public static class ProductAssertionHelper
         Assert.Equal(request.CategoryId, response.CategoryId);
         Assert.Equal(request.QuantityInStock <= request.LowStockThreshold, response.IsLowStock);
         Assert.Equal(request.Attachments?.Length, response.Images.Length);
+        Assert.Equal(request.Packaging?.Size, response.Packaging?.Size);
+        Assert.Equal(request.Packaging?.Label, response.Packaging?.Label);
+        Assert.Equal(request.Packaging?.Barcode, response.Packaging?.Barcode);
 
         AssertAttachments(request.Attachments, response.Images);
     }
@@ -90,6 +96,9 @@ public static class ProductAssertionHelper
         Assert.Equal((int)expected.Measurement, (int)actual.Measurement);
         Assert.Equal((int)expected.Type, (int)actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
+        Assert.Equal(expected.Packaging?.Size, actual.Packaging?.Size);
+        Assert.Equal(expected.Packaging?.Label, actual.Packaging?.Label);
+        Assert.Equal(expected.Packaging?.Barcode, actual.Packaging?.Barcode);
 
         AssertAttachments(expected.Attachments, actual.Images);
     }
@@ -117,6 +126,9 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+        Assert.Equal(expected.Packaging?.Size, actual.Packaging?.Size);
+        Assert.Equal(expected.Packaging?.Label, actual.Packaging?.Label);
+        Assert.Equal(expected.Packaging?.Barcode, actual.Packaging?.Barcode);
 
         AssertAttachments(expected.Images, actual.Images);
     }
@@ -145,6 +157,9 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Type.ToString(), response.Type);
         Assert.Equal(request.CategoryId, response.CategoryId);
         Assert.Equal(request.QuantityInStock <= request.LowStockThreshold, response.IsLowStock);
+        Assert.Equal(request.Packaging?.Size, response.Packaging?.Size);
+        Assert.Equal(request.Packaging?.Label, response.Packaging?.Label);
+        Assert.Equal(request.Packaging?.Barcode, response.Packaging?.Barcode);
     }
 
     /// <summary>
@@ -170,6 +185,9 @@ public static class ProductAssertionHelper
         Assert.Equal((int)expected.Measurement, (int)actual.Measurement);
         Assert.Equal((int)expected.Type, (int)actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
+        Assert.Equal(expected.Packaging?.Size, actual.Packaging?.Size);
+        Assert.Equal(expected.Packaging?.Label, actual.Packaging?.Label);
+        Assert.Equal(expected.Packaging?.Barcode, actual.Packaging?.Barcode);
     }
 
     /// <summary>
@@ -196,6 +214,9 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
         Assert.Equal(expected.Category.Name, actual.CategoryName);
+        Assert.Equal(expected.Packaging?.Size, actual.Packaging?.Size);
+        Assert.Equal(expected.Packaging?.Label, actual.Packaging?.Label);
+        Assert.Equal(expected.Packaging?.Barcode, actual.Packaging?.Barcode);
     }
 
     private static void AssertAttachments(IEnumerable<IFormFile>? attachments, IEnumerable<ProductImageDto>? images)
