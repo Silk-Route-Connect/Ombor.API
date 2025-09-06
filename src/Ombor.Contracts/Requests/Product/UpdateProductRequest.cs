@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Ombor.Contracts.Enums;
+using Ombor.Contracts.Responses.Product;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -31,6 +32,7 @@ public sealed record UpdateProductRequest(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
+    ProductPackagingDto? Packaging,
     UnitOfMeasurement Measurement,
     ProductType Type,
     IFormFile[]? Attachments,

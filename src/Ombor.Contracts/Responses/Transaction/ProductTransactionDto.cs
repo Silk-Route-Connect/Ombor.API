@@ -1,4 +1,4 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿namespace Ombor.Contracts.Responses.Transaction;
 
 public sealed record ProductTransactionDto(
     int Id,

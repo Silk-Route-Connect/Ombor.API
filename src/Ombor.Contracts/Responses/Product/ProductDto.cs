@@ -34,4 +34,5 @@ public sealed record ProductDto(
     bool IsLowStock,
     string Measurement,
     string Type,
+    ProductPackagingDto? Packaging,
     ProductImageDto[] Images);

@@ -33,4 +33,5 @@ public sealed record UpdateProductResponse(
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
-    string Type);
+    string Type,
+    ProductPackagingDto? Packaging);
