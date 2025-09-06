@@ -1,5 +1,6 @@
 ﻿using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
 using ContractMeasurement = Ombor.Contracts.Enums.UnitOfMeasurement;
 using ContractType = Ombor.Contracts.Enums.ProductType;
@@ -208,6 +209,7 @@ public class ProductMappingsTests
             RetailPrice: 12m,
             QuantityInStock: 8,
             LowStockThreshold: 3,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: ContractMeasurement.Piece,
             Type: ContractType.Sale,
             Attachments: []);
@@ -228,6 +230,9 @@ public class ProductMappingsTests
         Assert.Equal(DomainMeasurement.Piece, entity.Measurement);
         Assert.Equal(DomainType.Sale, entity.Type);
         Assert.Equal(77, entity.CategoryId);
+        Assert.Equal(10, entity.Packaging?.Size);
+        Assert.Equal("Test Package Label", entity.Packaging?.Label);
+        Assert.Equal("Test Package Barcode", entity.Packaging?.Barcode);
     }
 
     [Fact]
@@ -267,6 +272,7 @@ public class ProductMappingsTests
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
             Type: ContractType.All,
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Attachments: [],
             ImagesToDelete: []);
 
@@ -286,6 +292,9 @@ public class ProductMappingsTests
         Assert.Equal(DomainMeasurement.Ton, product.Measurement);
         Assert.Equal(DomainType.All, product.Type);
         Assert.Equal(10, product.CategoryId);
+        Assert.Equal(10, product.Packaging?.Size);
+        Assert.Equal("Test Package Label", product.Packaging?.Label);
+        Assert.Equal("Test Package Barcode", product.Packaging?.Barcode);
 
         // Note: ApplyUpdate changes CategoryId but leaves the navigation property untouched.
         // If you expect the Category reference to update (or clear), you may need to adjust the mapping.
