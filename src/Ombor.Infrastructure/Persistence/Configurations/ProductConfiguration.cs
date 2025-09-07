@@ -38,7 +38,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMany(p => p.InventoryItems)
             .WithOne(i => i.Product)
             .HasForeignKey(i => i.ProductId)
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasMany(p => p.Lines)

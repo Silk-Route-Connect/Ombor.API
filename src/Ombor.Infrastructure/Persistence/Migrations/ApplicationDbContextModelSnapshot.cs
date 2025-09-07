@@ -787,7 +787,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         {
                             b.Navigation("Items");
                         });
-                });
 
             modelBuilder.Entity("Ombor.Domain.Entities.TransactionRecord", b =>
                 {
