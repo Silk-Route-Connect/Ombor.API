@@ -16,6 +16,7 @@ internal static class ProductMappings
         var images = product.Images
             .Select(x => x.ToDto())
             .ToArray();
+        var packaging = product.Packaging.Size == 0 ? null : product.Packaging.ToDto();
 
         return new(
             Id: product.Id,
@@ -33,7 +34,7 @@ internal static class ProductMappings
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
-            Packaging: product.Packaging?.ToDto(),
+            Packaging: packaging,
             Images: images);
     }
 
@@ -143,8 +144,10 @@ internal static class ProductMappings
     public static Domain.Enums.ProductType ToDomain(this Contracts.Enums.ProductType type)
         => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
 
-    private static ProductPackagingDto ToDto(this ProductPackaging packaging)
-        => new(
+    private static ProductPackagingDto? ToDto(this ProductPackaging packaging)
+        => packaging.Size == 0
+        ? null
+        : new(
             Size: packaging.Size,
             Label: packaging.Label,
             Barcode: packaging.Barcode);
