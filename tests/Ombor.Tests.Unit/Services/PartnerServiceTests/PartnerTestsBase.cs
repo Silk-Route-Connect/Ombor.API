@@ -12,7 +12,7 @@ public class PartnerTestsBase : ServiceTestsBase
     protected PartnerTestsBase()
     {
         _defaultpartners = GenerateRandomPartners();
-        Setuppartners(_defaultpartners);
+        SetupPartners(_defaultpartners);
 
         _service = new PartnerService(_mockContext.Object, _mockValidator.Object);
     }

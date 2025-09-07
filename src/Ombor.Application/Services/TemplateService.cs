@@ -54,7 +54,9 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
 
         await context.SaveChangesAsync();
 
-        return template.ToUpdateResponse();
+        var updatedTemplate = await GetOrThrowAsync(request.Id);
+
+        return updatedTemplate.ToUpdateResponse();
     }
 
     public async Task DeleteAsync(DeleteTemplateRequest request)

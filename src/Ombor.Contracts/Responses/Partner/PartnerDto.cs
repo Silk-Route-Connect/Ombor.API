@@ -19,4 +19,5 @@ public sealed record PartnerDto(
     string? Email,
     string? CompanyName,
     decimal Balance,
-    List<string> PhoneNumbers);
+    List<string> PhoneNumbers,
+    PartnerBalanceDto? BalanceDto);

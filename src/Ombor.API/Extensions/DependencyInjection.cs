@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
 using Ombor.API.Filters;
@@ -13,7 +14,8 @@ internal static class DependencyInjection
     {
         services
             .AddControllers(options => options.SuppressAsyncSuffixInActionNames = false)
-            .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+            .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
         services.AddCors(configuration);
@@ -45,6 +47,8 @@ internal static class DependencyInjection
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
+
+            c.SchemaFilter<EnumSchemaFilter>();
         }).AddSwaggerGenNewtonsoftSupport();
     }
 

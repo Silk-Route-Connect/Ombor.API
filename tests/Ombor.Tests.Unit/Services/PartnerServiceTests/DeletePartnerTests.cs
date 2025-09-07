@@ -50,7 +50,7 @@ public sealed class DeletePartnerTests : PartnerTestsBase
         var partnerToDelete = CreatePartner();
         var request = new DeletePartnerRequest(partnerToDelete.Id);
 
-        var mockSet = Setuppartners([.. _defaultpartners, partnerToDelete]);
+        var mockSet = SetupPartners([.. _defaultpartners, partnerToDelete]);
         mockSet.Setup(mock => mock.Remove(partnerToDelete));
 
         // Act

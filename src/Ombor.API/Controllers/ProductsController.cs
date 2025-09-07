@@ -44,6 +44,22 @@ public sealed class ProductsController(IProductService productService) : Control
     }
 
     /// <summary>
+    /// Retrieves product transactions by product ID.
+    /// </summary>
+    /// <param name="request">Request containing the product ID.</param>
+    /// <returns>The transactions of the product.</returns>
+    [HttpGet("{Id:int:min(1)}/transactions")]
+    [ProducesResponseType(typeof(ProductTransactionDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductTransactionDto[]>> GetProductTransactionsByIdAsync(
+        [FromRoute] GetProductTransactionsRequest request)
+    {
+        var response = await productService.GetTransactionsAsync(request);
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Creates a new product.
     /// </summary>
     /// <param name="request">Payload describing the product to create.</param>
@@ -55,6 +71,7 @@ public sealed class ProductsController(IProductService productService) : Control
     public async Task<ActionResult<CreateProductResponse>> PostAsync(
         [FromForm] CreateProductRequest request)
     {
+        await Task.Delay(4000);
         var response = await productService.CreateAsync(request);
 
         return CreatedAtAction(
@@ -77,6 +94,7 @@ public sealed class ProductsController(IProductService productService) : Control
         [FromRoute] int id,
         [FromForm] UpdateProductRequest request)
     {
+        await Task.Delay(4000);
         if (id != request.Id)
         {
             return BadRequest(new ProblemDetails

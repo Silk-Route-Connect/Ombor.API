@@ -11,14 +11,18 @@ public sealed class PartnerValidator(IApplicationDbContext context)
 {
     public async Task ValidateGetAsync(GetPartnersRequest request, PartnerDto[] response)
     {
-        var exceptedpartners = await GetAsync(request);
+        var expectedPartners = await GetAsync(request);
+        var balances = await context.PartnerBalances
+            .ToDictionaryAsync(x => x.PartnerId);
 
-        Assert.Equal(exceptedpartners.Length, response.Length);
-        Assert.All(exceptedpartners, expected =>
+        Assert.Equal(expectedPartners.Length, response.Length);
+        Assert.All(expectedPartners, expected =>
         {
-            var actual = response.FirstOrDefault(s => s.Id == expected.Id);
+            var actual = response.First(s => s.Id == expected.Id);
+            var expectedBalance = balances[actual.Id];
 
             PartnerAssertionHelper.AssertEquivalent(expected, actual);
+            PartnerAssertionHelper.AssertEquivalent(expectedBalance, actual.BalanceDto);
         });
     }
 

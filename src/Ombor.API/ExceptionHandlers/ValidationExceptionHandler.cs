@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -23,6 +24,7 @@ internal sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHand
         var problem = new ValidationProblemDetails
         {
             Title = "One or more validation errors occurred.",
+            Detail = validationException.Message,
             Status = StatusCodes.Status400BadRequest,
             Type = "https://httpstatuses.com/400",
             Instance = httpContext.Request.Path,
@@ -32,7 +34,10 @@ internal sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHand
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
 
+        SentrySdk.CaptureException(validationException);
+
         logger.LogWarning(validationException, "Validation failed: {Errors}", errors);
+
         return true;
     }
 }
