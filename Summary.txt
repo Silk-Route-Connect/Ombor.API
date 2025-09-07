@@ -1,22 +1,22 @@
 Summary
-  Generated on: 09/07/2025 - 10:57:16
-  Coverage date: 09/07/2025 - 10:56:28 - 09/07/2025 - 10:57:15
+  Generated on: 09/07/2025 - 19:16:02
+  Coverage date: 09/07/2025 - 19:15:14 - 09/07/2025 - 19:16:01
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 84
   Files: 83
-  Line coverage: 91.6%
-  Covered lines: 1316
-  Uncovered lines: 120
+  Line coverage: 91.9%
+  Covered lines: 1321
+  Uncovered lines: 115
   Coverable lines: 1436
-  Total lines: 4414
+  Total lines: 4413
   Branch coverage: 70% (224 of 320)
   Covered branches: 224
   Total branches: 320
-  Method coverage: 83% (264 of 318)
-  Covered methods: 264
+  Method coverage: 83.6% (266 of 318)
+  Covered methods: 266
   Total methods: 318
-  Tag: 208_17527582197
+  Tag: 209_17531350081
 
 Ombor.API                                                                          85.1%
   Ombor.API.Controllers.CategoriesController                                      100.0%
@@ -30,7 +30,7 @@ Ombor.API                                                                       
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  89.9%
+Ombor.Application                                                                  90.5%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
   Ombor.Application.Extensions.FormFileExtensions                                 100.0%
@@ -56,7 +56,7 @@ Ombor.Application                                                               
   Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator           100.0%
   Ombor.Application.Validators.Category.UpdateCategoryRequestValidator            100.0%
   Ombor.Application.Validators.Inventory.CreateInventoryRequestValidator          100.0%
-  Ombor.Application.Validators.Inventory.DeleteInventoryRequestValidator            0.0%
+  Ombor.Application.Validators.Inventory.DeleteInventoryRequestValidator          100.0%
   Ombor.Application.Validators.Inventory.GetInventoryByIdRequestValidator         100.0%
   Ombor.Application.Validators.Inventory.UpdateInventoryRequestValidator          100.0%
   Ombor.Application.Validators.Partner.CreatePartnerRequestValidator              100.0%
