@@ -54,6 +54,16 @@ public interface IApplicationDbContext
     DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
     /// <summary>
+    /// Gets or sets the Inventories set.
+    /// </summary>
+    DbSet<Inventory> Inventories { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Inventory Items set.
+    /// </summary>
+    DbSet<InventoryItem> InventoryItems { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>

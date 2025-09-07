@@ -2,6 +2,7 @@
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Contracts.Responses.Inventory;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Tests.Common.Helpers;
 
@@ -119,6 +120,9 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         }
 
         var products = await query
+            .Include(x => x.Category)
+            .Include(x => x.Images)
+            .Include(x => x.InventoryItems)
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
@@ -139,7 +143,8 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.Measurement.ToString(),
                 x.Type.ToString(),
-                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
+                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
+                x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.InventoryId, item.ProductId)).ToArray()))
             .ToArray();
     }
 

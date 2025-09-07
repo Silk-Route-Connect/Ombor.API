@@ -35,9 +35,15 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder
+            .HasMany(p => p.InventoryItems)
+            .WithOne(i => i.Product)
+            .HasForeignKey(i => i.ProductId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
             .HasMany(p => p.Lines)
             .WithOne(tl => tl.Product)
-            .HasForeignKey(tl => tl.ProductId)
             .HasForeignKey(tl => tl.ProductId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();

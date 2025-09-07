@@ -27,6 +27,8 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await CreateInventoriesAsync(context);
+        await CreateInventoryItemsAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -138,6 +140,54 @@ internal sealed class TestingDatabaseSeeder(
             });
 
         context.Partners.AddRange(partners);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreateInventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+        {
+            return;
+        }
+
+        var inventoryItems = context.InventoryItems.ToList();
+
+        var inventories = Enumerable.Range(1, seedSettings.NumberOfInventories)
+            .Select(i => new Inventory
+            {
+                Name = $"Test Inventory {i}",
+                Location = _faker.Address.StreetAddress(),
+                IsActive = _faker.Random.Bool(),
+            });
+
+        context.Inventories.AddRange(inventories);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreateInventoryItemsAsync(IApplicationDbContext context)
+    {
+        if (context.InventoryItems.Any())
+        {
+            return;
+        }
+
+        var products = context.Products.Select(p => p.Id).ToArray();
+        var inventories = context.Inventories.Select(i => i.Id).ToArray();
+
+        var baseFaker = new Faker<InventoryItem>()
+            .RuleFor(i => i.Quantity, f => f.Random.Number(1, 100))
+            .RuleFor(i => i.ProductId, f => f.PickRandom(products));
+
+        var items = new List<InventoryItem>(inventories.Length * seedSettings.NumberOfItemsPerInventory);
+
+        foreach (var inventoryId in inventories)
+        {
+            var perInventoryFaker = baseFaker.Clone()
+                .RuleFor(i => i.InventoryId, _ => inventoryId);
+            items.AddRange(perInventoryFaker.Generate(seedSettings.NumberOfItemsPerInventory));
+        }
+
+        context.InventoryItems.AddRange(items);
         await context.SaveChangesAsync();
     }
 
