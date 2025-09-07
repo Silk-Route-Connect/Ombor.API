@@ -38,7 +38,7 @@ public abstract class EntityNotFoundException : Exception
     }
 }
 
-public sealed class EntityNotFoundException<TEntity> : EntityNotFoundException
+public class EntityNotFoundException<TEntity> : EntityNotFoundException
     where TEntity : EntityBase
 {
     public EntityNotFoundException() { }
