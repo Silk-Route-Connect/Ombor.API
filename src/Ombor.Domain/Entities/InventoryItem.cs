@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Ombor.Domain.Common;
 
 namespace Ombor.Domain.Entities;
@@ -10,6 +11,7 @@ public class InventoryItem : EntityBase
     /// <summary>
     /// Gets or sets quantity of the <see cref="InventoryItem"/>.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public required int Quantity { get; set; }
 
     /// <summary>

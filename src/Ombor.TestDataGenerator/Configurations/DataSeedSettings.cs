@@ -10,31 +10,31 @@ public sealed class DataSeedSettings
     [AllowedValues(["en", "ru"], ErrorMessage = "Only 'en' and 'ru' locales are allowed")]
     public required string Locale { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of categories.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of categories.")]
     public int NumberOfCategories { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of products.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of products.")]
     public int NumberOfProducts { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of images per product.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of images per product.")]
     public int NumberOfMaxImagesPerProduct { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of partners.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of partners.")]
     public int NumberOfPartners { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of templates per partner.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of templates per partner.")]
     public int NumberOfTemplatesPerPartner { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of items per template.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of items per template.")]
     public int NumberOfItemsPerTemplate { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of inventories.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of inventories.")]
     public int NumberOfInventories { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of items per inventory.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of items per inventory.")]
     public int NumberOfItemsPerInventory { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of transactions per partner.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of transactions per partner.")]
     public int NumberOfMaxTransactionsPerPartner { get; set; }
 
     public PaymentSeedSettings PaymentSettings { get; init; } = new PaymentSeedSettings();

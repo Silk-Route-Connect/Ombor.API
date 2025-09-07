@@ -171,18 +171,23 @@ internal sealed class TestingDatabaseSeeder(
             return;
         }
 
-        var products = context.Products.ToList();
-        var inventories = context.Inventories.ToList();
+        var products = context.Products.Select(p => p.Id).ToArray();
+        var inventories = context.Inventories.Select(i => i.Id).ToArray();
 
-        var inventoryItemsFaker = new Faker<InventoryItem>()
-        .RuleFor(i => i.Quantity, f => f.Random.Number(1, 100))
-        .RuleFor(i => i.Product, f => f.PickRandom(products))
-        .RuleFor(i => i.ProductId, (f, i) => i.Product.Id)
-        .RuleFor(i => i.Inventory, f => f.PickRandom(inventories))
-        .RuleFor(i => i.InventoryId, (f, i) => i.Inventory.Id);
+        var baseFaker = new Faker<InventoryItem>()
+            .RuleFor(i => i.Quantity, f => f.Random.Number(1, 100))
+            .RuleFor(i => i.ProductId, f => f.PickRandom(products));
 
-        var inventoryItems = inventoryItemsFaker.Generate(seedSettings.NumberOfItemsPerInventory);
-        context.InventoryItems.AddRange(inventoryItems);
+        var items = new List<InventoryItem>(inventories.Length * seedSettings.NumberOfItemsPerInventory);
+
+        foreach (var inventoryId in inventories)
+        {
+            var perInventoryFaker = baseFaker.Clone()
+                .RuleFor(i => i.InventoryId, _ => inventoryId);
+            items.AddRange(perInventoryFaker.Generate(seedSettings.NumberOfItemsPerInventory));
+        }
+
+        context.InventoryItems.AddRange(items);
         await context.SaveChangesAsync();
     }
 

@@ -55,7 +55,7 @@ public sealed class InventoryValidator(IApplicationDbContext context)
         var inventory = await context.Inventories
             .FirstOrDefaultAsync(x => x.Id == inventoryId);
 
-        Assert.NotNull(inventory);
+        Assert.Null(inventory);
     }
 
     private async Task<Inventory[]> GetInventoriesAsync(GetInventoriesRequest request)

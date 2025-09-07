@@ -120,6 +120,9 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         }
 
         var products = await query
+            .Include(x => x.Category)
+            .Include(x => x.Images)
+            .Include(x => x.InventoryItems)
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 

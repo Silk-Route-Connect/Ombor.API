@@ -748,12 +748,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Ombor.Domain.Entities.Inventory", b =>
                 {
                     b.Navigation("InventoryItems");
-
-                    b.Navigation("Payments");
-
-                    b.Navigation("Templates");
-
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>

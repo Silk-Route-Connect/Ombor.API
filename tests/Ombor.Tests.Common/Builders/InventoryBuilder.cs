@@ -34,7 +34,7 @@ internal sealed class InventoryBuilder(Faker faker) : BuilderBase(faker), IInven
         return this;
     }
 
-    public IInventoryBuilder WithIsAction(bool? isActive = null)
+    public IInventoryBuilder WithIsActive(bool? isActive = null)
     {
         _isActive = isActive ?? _faker.Random.Bool();
 
@@ -44,7 +44,7 @@ internal sealed class InventoryBuilder(Faker faker) : BuilderBase(faker), IInven
     public IInventoryBuilder WithInventoryItems(IEnumerable<InventoryItem>? inventoryItems = null)
     {
         var inventoryIdForItems = _id ?? _faker.Random.Number();
-        var productIdForItems = _id ?? _faker.Random.Number();
+        var productIdForItems = _faker.Random.Number();
 
         _inventoryItems = inventoryItems is null
             ? InventoryItemGenerator.Generate(productIdForItems, inventoryIdForItems, 10)
@@ -66,7 +66,7 @@ internal sealed class InventoryBuilder(Faker faker) : BuilderBase(faker), IInven
     public Inventory BuildAndPopulate()
     {
         var inventoryId = _id ?? _faker.Random.Number();
-        var productId = _id ?? _faker.Random.Number();
+        var productId = _faker.Random.Number();
 
         var inventoryItems = _inventoryItems ?? InventoryItemGenerator.Generate(productId, inventoryId, 10);
 

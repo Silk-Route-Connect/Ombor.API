@@ -6,11 +6,10 @@ namespace Ombor.TestDataGenerator.Generators;
 public static class InventoryItemGenerator
 {
     private const string DefaultLocale = "en";
-    private const int DefaultMaxItemsCount = 10;
     public static InventoryItem Generate(int productId, int inventoryId) =>
-    GetGenerator([productId], [inventoryId]);
+        GetGenerator([productId], [inventoryId]).Generate();
 
-    public static List<InventoryItem> Generate(int productId, int inventoryId, int itemsCount = DefaultMaxItemsCount) =>
+    public static List<InventoryItem> Generate(int productId, int inventoryId, int itemsCount) =>
     GetGenerator([productId], [inventoryId]).Generate(itemsCount);
 
     private static Faker<InventoryItem> GetGenerator(

@@ -38,7 +38,8 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMany(p => p.InventoryItems)
             .WithOne(i => i.Product)
             .HasForeignKey(i => i.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         builder
             .HasMany(p => p.Lines)
@@ -53,10 +54,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder
             .Navigation(x => x.Images)
-            .AutoInclude();
-
-        builder
-            .Navigation(x => x.InventoryItems)
             .AutoInclude();
 
         builder
