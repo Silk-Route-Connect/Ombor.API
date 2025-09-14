@@ -54,6 +54,11 @@ public interface IApplicationDbContext
     DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
     /// <summary>
+    /// Gets or sets the Employees set.
+    /// </summary>
+    DbSet<Employee> Employees { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>
