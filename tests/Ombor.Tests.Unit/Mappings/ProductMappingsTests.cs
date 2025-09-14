@@ -70,6 +70,7 @@ public class ProductMappingsTests
         Assert.True(dto.IsLowStock);
         Assert.Equal("Kilogram", dto.Measurement);
         Assert.Equal("Supply", dto.Type);
+        Assert.Null(dto.Packaging);
     }
 
     [Fact]
@@ -348,5 +349,46 @@ public class ProductMappingsTests
             var contractValue = Enum.Parse<ContractType>(name);
             Assert.Equal(name, contractValue.ToString());
         }
+    }
+
+    [Fact]
+    public void ApplyUpdate_ShouldClearPackaging_WhenPackagingIsNull()
+    {
+        // Arrange
+        var product = new Product
+        {
+            Id = 22,
+            CategoryId = 9,
+            Category = new Category { Id = 9, Name = "Tools" },
+            Name = "Hammer",
+            SKU = "HMR-01",
+            Packaging = new ProductPackaging { Size = 10, Label = "Box", Barcode = "PKG-123" }
+        };
+
+        var update = new UpdateProductRequest(
+            Id: product.Id,
+            CategoryId: product.CategoryId,
+            Name: product.Name,
+            SKU: product.SKU,
+            Description: product.Description,
+            Barcode: product.Barcode,
+            SalePrice: product.SalePrice,
+            SupplyPrice: product.SupplyPrice,
+            RetailPrice: product.RetailPrice,
+            QuantityInStock: product.QuantityInStock,
+            LowStockThreshold: product.LowStockThreshold,
+            Measurement: ContractMeasurement.None,
+            Type: ContractType.All,
+            Attachments: [],
+            ImagesToDelete: [],
+            Packaging: null);
+
+        // Act
+        product.ApplyUpdate(update);
+
+        // Assert
+        Assert.Equal(0, product.Packaging.Size);
+        Assert.Null(product.Packaging.Label);
+        Assert.Null(product.Packaging.Barcode);
     }
 }

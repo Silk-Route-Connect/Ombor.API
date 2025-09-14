@@ -20,7 +20,7 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="LowStockThreshold">The updated low‑stock threshold (must be ≥ 0).</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
-/// <param name="Packaging">The packaging of the product. If product doesn't have packaging <see langword="null"/> is used.</param>
+/// <param name="Packaging">Optional packaging, send <see langword="null"/> to clear packaging.</param>
 public sealed record UpdateProductRequest(
     int Id,
     int CategoryId,

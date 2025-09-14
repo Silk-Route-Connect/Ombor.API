@@ -227,8 +227,8 @@ public static class ProductAssertionHelper
         if (expected is null)
         {
             Assert.Equal(0, actual.Size);
-            Assert.Equal(null, actual.Label);
-            Assert.Equal(null, actual.Barcode);
+            Assert.Null(actual.Label);
+            Assert.Null(actual.Barcode);
         }
         else
         {

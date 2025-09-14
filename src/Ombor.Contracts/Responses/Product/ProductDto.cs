@@ -20,6 +20,8 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="IsLowStock">Whether stock ≤ threshold.</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
+/// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
+/// <param name="Images">Associated product images.</param>
 public sealed record ProductDto(
     int Id,
     int CategoryId,
