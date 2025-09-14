@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9146250927988122" branch-rate="0.7088607594936709" lines-covered="1232" lines-valid="1347" branches-covered="224" branches-valid="316" complexity="524" version="0" timestamp="1757867982">
+<coverage line-rate="0.9146250927988122" branch-rate="0.7088607594936709" lines-covered="1232" lines-valid="1347" branches-covered="224" branches-valid="316" complexity="524" version="0" timestamp="1757871328">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -3651,17 +3651,17 @@
           <methods>
             <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="158" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
             <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
-                <line number="10" hits="158" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="10" hits="158" branch="false" />
+            <line number="10" hits="146" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Domain.Entities.TransactionLine" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionLine.cs" line-rate="1" branch-rate="1" complexity="1">
