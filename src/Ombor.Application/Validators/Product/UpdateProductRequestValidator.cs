@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
 
 namespace Ombor.Application.Validators.Product;
 
 public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequest>
 {
-    public UpdateProductRequestValidator(IApplicationDbContext context)
+    public UpdateProductRequestValidator(IApplicationDbContext context, IValidator<ProductPackagingDto> packagingValidator)
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
@@ -72,7 +73,7 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .WithMessage("Low stock threshold must be greater than or equal to zero.");
 
         RuleFor(x => x.Packaging!)
-            .SetValidator(new ProductPackagingValidator())
+            .SetValidator(packagingValidator)
             .When(x => x.Packaging is not null);
     }
 }
