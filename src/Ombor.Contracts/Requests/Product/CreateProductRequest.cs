@@ -32,7 +32,7 @@ public sealed record CreateProductRequest(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
-    ProductPackagingDto? Packaging,
     UnitOfMeasurement Measurement,
     ProductType Type,
-    IFormFile[]? Attachments);
+    IFormFile[]? Attachments,
+    ProductPackagingDto? Packaging);

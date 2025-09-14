@@ -12,8 +12,11 @@ public static class ProductRequestFactory
     private const int DefaultProductId = 10;
     private const int DefaultCategoryId = 5;
 
-    private static readonly ProductPackagingDto TestPackaging =
+    private static readonly ProductPackagingDto ValidPackaging =
         new(10, "Test Package Label", "Test Package Barcode");
+
+    private static readonly ProductPackagingDto InvalidPackaging =
+        new(1, null, null); // Invalid because Size is 1
 
     public static CreateProductRequest GenerateValidCreateRequestWithoutAttachments(int? categoryId = null, string? sku = null)
         => new(
@@ -27,10 +30,10 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: TestPackaging,
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
-            Attachments: []);
+            Attachments: [],
+            Packaging: ValidPackaging);
 
     public static CreateProductRequest GenerateValidCreateRequestWithAttachments(int? categoryId = null, string? sku = null)
     {
@@ -51,13 +54,13 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: TestPackaging,
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
             Attachments: [
                 CreateTestFormFile("product-1.jpg", "image/jpg"),
                 CreateTestFormFile("product-2.jpg", "image/jpg")
-            ]);
+            ],
+            Packaging: InvalidPackaging);
 
     public static UpdateProductRequest GenerateValidUpdateRequest(int? productId, int? categoryId = null)
         => new(
@@ -76,7 +79,7 @@ public static class ProductRequestFactory
             Type: ProductType.Supply,
             Attachments: [],
             ImagesToDelete: [],
-            Packaging: TestPackaging);
+            Packaging: ValidPackaging);
 
     public static UpdateProductRequest GenerateValidUpdateRequestWithAttachments(int? productId, int? categoryId = null, int[]? imagesToDelete = null)
     {
@@ -102,7 +105,7 @@ public static class ProductRequestFactory
             Type: ProductType.Sale,
             Attachments: [],
             ImagesToDelete: [],
-            Packaging: TestPackaging);
+            Packaging: InvalidPackaging);
 
     private static FormFile[] GenerateAttachments()
         =>

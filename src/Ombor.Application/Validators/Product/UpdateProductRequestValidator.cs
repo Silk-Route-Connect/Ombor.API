@@ -70,5 +70,9 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
         RuleFor(x => x.LowStockThreshold)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Low stock threshold must be greater than or equal to zero.");
+
+        RuleFor(x => x.Packaging!)
+            .SetValidator(new ProductPackagingValidator())
+            .When(x => x.Packaging is not null);
     }
 }
