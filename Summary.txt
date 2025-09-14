@@ -1,24 +1,24 @@
 Summary
-  Generated on: 09/09/2025 - 15:22:32
-  Coverage date: 09/09/2025 - 15:21:44 - 09/09/2025 - 15:22:31
+  Generated on: 09/14/2025 - 12:26:17
+  Coverage date: 09/14/2025 - 12:25:28 - 09/14/2025 - 12:26:16
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 76
   Files: 75
-  Line coverage: 91.4%
-  Covered lines: 1220
-  Uncovered lines: 114
-  Coverable lines: 1334
-  Total lines: 4104
-  Branch coverage: 69.7% (226 of 324)
-  Covered branches: 226
-  Total branches: 324
+  Line coverage: 91.3%
+  Covered lines: 1222
+  Uncovered lines: 115
+  Coverable lines: 1337
+  Total lines: 4111
+  Branch coverage: 69.5% (228 of 328)
+  Covered branches: 228
+  Total branches: 328
   Method coverage: 82.4% (244 of 296)
   Covered methods: 244
   Total methods: 296
-  Tag: 210_17587444251
+  Tag: 211_17711111851
 
-Ombor.API                                                                          85.7%
+Ombor.API                                                                          84.9%
   Ombor.API.Controllers.CategoriesController                                      100.0%
   Ombor.API.Controllers.PartnersController                                        100.0%
   Ombor.API.Controllers.PaymentsController                                          0.0%
@@ -26,7 +26,7 @@ Ombor.API                                                                       
   Ombor.API.Controllers.TemplatesController                                       100.0%
   Ombor.API.Controllers.TransactionsController                                    100.0%
   Ombor.API.Extensions.DependencyInjection                                         97.7%
-  Ombor.API.Extensions.StartupExtensions                                          100.0%
+  Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
 Ombor.Application                                                                  89.9%
