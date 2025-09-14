@@ -67,7 +67,7 @@ public static class ProductAssertionHelper
         Assert.Equal(request.QuantityInStock <= request.LowStockThreshold, response.IsLowStock);
         Assert.Equal(request.Attachments?.Length, response.Images.Length);
 
-        Assert.Equivalent(request.Packaging, response.Packaging);
+        AssertPackaging(request.Packaging, response.Packaging);
         AssertAttachments(request.Attachments, response.Images);
     }
 
@@ -235,6 +235,18 @@ public static class ProductAssertionHelper
             Assert.Equal(expected.Size, actual.Size);
             Assert.Equal(expected.Label, actual.Label);
             Assert.Equal(expected.Barcode, actual.Barcode);
+        }
+    }
+
+    private static void AssertPackaging(ProductPackagingDto? expected, ProductPackagingDto? actual)
+    {
+        if (expected is null)
+        {
+            Assert.Null(actual);
+        }
+        else
+        {
+            Assert.Equal(expected, actual);
         }
     }
 
