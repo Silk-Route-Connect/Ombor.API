@@ -2,7 +2,7 @@
 
 public sealed class ProductPackaging
 {
-    public int Size { get; set; }
-    public string? Label { get; set; }
-    public string? Barcode { get; set; }
+    public int Size { get; init; }
+    public string? Label { get; init; }
+    public string? Barcode { get; init; }
 }

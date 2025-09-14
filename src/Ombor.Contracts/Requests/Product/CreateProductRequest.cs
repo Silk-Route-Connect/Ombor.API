@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Enums;
-using Ombor.Contracts.Responses.Product;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -20,6 +20,7 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
 /// <param name="Attachments">The attachments of the product. (e.g. “image”, “file”).</param>
+/// <param name="Packaging">The packaging of the product. If product doesn't have packaging <see langword="null"/> is used.</param>
 public sealed record CreateProductRequest(
     int CategoryId,
     string Name,

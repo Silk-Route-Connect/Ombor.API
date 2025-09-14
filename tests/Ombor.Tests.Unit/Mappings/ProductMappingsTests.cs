@@ -1,6 +1,6 @@
 ﻿using Ombor.Application.Mappings;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
-using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
 using ContractMeasurement = Ombor.Contracts.Enums.UnitOfMeasurement;
 using ContractType = Ombor.Contracts.Enums.ProductType;
@@ -272,9 +272,9 @@ public class ProductMappingsTests
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
             Type: ContractType.All,
-            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Attachments: [],
-            ImagesToDelete: []);
+            ImagesToDelete: [],
+            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"));
 
         // Act
         product.ApplyUpdate(updateRequest);

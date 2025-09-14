@@ -76,7 +76,8 @@ public static class RequestExtensions
             // open a fresh stream for each
             var stream = file.OpenReadStream();
             var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType!);
+            var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType;
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             content.Add(fileContent, nameof(request.Attachments), file.FileName);
         }
 

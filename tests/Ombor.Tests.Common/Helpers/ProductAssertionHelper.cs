@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;

@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Common;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// DTO representing a product for client consumption.

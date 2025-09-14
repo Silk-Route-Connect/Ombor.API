@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Product;
-using Ombor.Contracts.Responses.Product;
 
 namespace Ombor.Tests.Common.Factories;
 
@@ -11,6 +11,9 @@ public static class ProductRequestFactory
     private const string ImageFolder = "Resources/Images";
     private const int DefaultProductId = 10;
     private const int DefaultCategoryId = 5;
+
+    private static readonly ProductPackagingDto TestPackaging =
+        new(10, "Test Package Label", "Test Package Barcode");
 
     public static CreateProductRequest GenerateValidCreateRequestWithoutAttachments(int? categoryId = null, string? sku = null)
         => new(
@@ -24,7 +27,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
+            Packaging: TestPackaging,
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
             Attachments: []);
@@ -48,7 +51,7 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
+            Packaging: TestPackaging,
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.All,
             Attachments: [
@@ -69,11 +72,11 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.Supply,
             Attachments: [],
-            ImagesToDelete: []);
+            ImagesToDelete: [],
+            Packaging: TestPackaging);
 
     public static UpdateProductRequest GenerateValidUpdateRequestWithAttachments(int? productId, int? categoryId = null, int[]? imagesToDelete = null)
     {
@@ -95,11 +98,11 @@ public static class ProductRequestFactory
             RetailPrice: 95,
             QuantityInStock: 10,
             LowStockThreshold: 5,
-            Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: UnitOfMeasurement.Kilogram,
             Type: ProductType.Sale,
             Attachments: [],
-            ImagesToDelete: []);
+            ImagesToDelete: [],
+            Packaging: TestPackaging);
 
     private static FormFile[] GenerateAttachments()
         =>

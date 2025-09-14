@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Enums;
-using Ombor.Contracts.Responses.Product;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -20,6 +20,7 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="LowStockThreshold">The updated low‑stock threshold (must be ≥ 0).</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
+/// <param name="Packaging">The packaging of the product. If product doesn't have packaging <see langword="null"/> is used.</param>
 public sealed record UpdateProductRequest(
     int Id,
     int CategoryId,
@@ -32,8 +33,8 @@ public sealed record UpdateProductRequest(
     decimal RetailPrice,
     int QuantityInStock,
     int LowStockThreshold,
-    ProductPackagingDto? Packaging,
     UnitOfMeasurement Measurement,
     ProductType Type,
     IFormFile[]? Attachments,
-    int[]? ImagesToDelete);
+    int[]? ImagesToDelete,
+    ProductPackagingDto? Packaging);

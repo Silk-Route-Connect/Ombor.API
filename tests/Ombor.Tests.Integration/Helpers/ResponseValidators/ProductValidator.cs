@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Tests.Common.Helpers;
