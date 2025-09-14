@@ -10,6 +10,8 @@ namespace Ombor.Tests.Common.Extensions;
 
 public static class RequestExtensions
 {
+    private static readonly CultureInfo cultureInfo = CultureInfo.InvariantCulture;
+
     public static bool IsEmpty(this GetCategoriesRequest request) =>
         string.IsNullOrWhiteSpace(request.SearchTerm);
 
@@ -40,9 +42,9 @@ public static class RequestExtensions
             { new StringContent(request.CategoryId.ToString()), nameof(request.CategoryId) },
             { new StringContent(request.Name), nameof(request.Name) },
             { new StringContent(request.SKU), nameof(request.SKU) },
-            { new StringContent(request.SalePrice.ToString()), nameof(request.SalePrice) },
-            { new StringContent(request.SupplyPrice.ToString()), nameof(request.SupplyPrice) },
-            { new StringContent(request.RetailPrice.ToString()), nameof(request.RetailPrice) },
+            { new StringContent(request.SalePrice.ToString(cultureInfo)), nameof(request.SalePrice) },
+            { new StringContent(request.SupplyPrice.ToString(cultureInfo)), nameof(request.SupplyPrice) },
+            { new StringContent(request.RetailPrice.ToString(cultureInfo)), nameof(request.RetailPrice) },
             { new StringContent(request.QuantityInStock.ToString()), nameof(request.QuantityInStock) },
             { new StringContent(request.LowStockThreshold.ToString()), nameof(request.LowStockThreshold) },
             { new StringContent(((int)request.Measurement).ToString()), nameof(request.Measurement) },
@@ -55,6 +57,15 @@ public static class RequestExtensions
             content.Add(new StringContent(request.Barcode), nameof(request.Barcode));
 
         // 2) object types
+        if (request.Packaging is not null)
+        {
+            content.Add(new StringContent(request.Packaging.Size.ToString()), "Packaging.Size");
+            if (request.Packaging.Label is not null)
+                content.Add(new StringContent(request.Packaging.Label), "Packaging.Label");
+            if (request.Packaging.Barcode is not null)
+                content.Add(new StringContent(request.Packaging.Barcode), "Packaging.Barcode");
+        }
+
         if (request.Attachments is null || request.Attachments.Length == 0)
         {
             return content;
@@ -65,7 +76,8 @@ public static class RequestExtensions
             // open a fresh stream for each
             var stream = file.OpenReadStream();
             var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType!);
+            var contentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType;
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
             content.Add(fileContent, nameof(request.Attachments), file.FileName);
         }
 
@@ -81,19 +93,28 @@ public static class RequestExtensions
             { new StringContent(request.CategoryId.ToString()), nameof(request.CategoryId) },
             { new StringContent(request.Name), nameof(request.Name) },
             { new StringContent(request.SKU), nameof(request.SKU) },
-            { new StringContent(request.SalePrice.ToString()), nameof(request.SalePrice) },
-            { new StringContent(request.SupplyPrice.ToString()), nameof(request.SupplyPrice) },
-            { new StringContent(request.RetailPrice.ToString()), nameof(request.RetailPrice) },
+            { new StringContent(request.SalePrice.ToString(cultureInfo)), nameof(request.SalePrice) },
+            { new StringContent(request.SupplyPrice.ToString(cultureInfo)), nameof(request.SupplyPrice) },
+            { new StringContent(request.RetailPrice.ToString(cultureInfo)), nameof(request.RetailPrice) },
             { new StringContent(request.QuantityInStock.ToString()), nameof(request.QuantityInStock) },
             { new StringContent(request.LowStockThreshold.ToString()), nameof(request.LowStockThreshold) },
             { new StringContent(((int)request.Measurement).ToString()), nameof(request.Measurement) },
-            { new StringContent(((int)request.Type).ToString()), nameof(request.Type) }
+            { new StringContent(((int)request.Type).ToString()), nameof(request.Type) },
         };
 
         if (request.Description is not null)
             content.Add(new StringContent(request.Description), nameof(request.Description));
         if (request.Barcode is not null)
             content.Add(new StringContent(request.Barcode), nameof(request.Barcode));
+
+        if (request.Packaging is not null)
+        {
+            content.Add(new StringContent(request.Packaging.Size.ToString()), "Packaging.Size");
+            if (request.Packaging.Label is not null)
+                content.Add(new StringContent(request.Packaging.Label), "Packaging.Label");
+            if (request.Packaging.Barcode is not null)
+                content.Add(new StringContent(request.Packaging.Barcode), "Packaging.Barcode");
+        }
 
         // 2) object types
         if (request.Attachments?.Length > 0)
@@ -127,41 +148,41 @@ public static class RequestExtensions
             { new StringContent(((int)request.Type).ToString()),      nameof(request.Type) }
         };
 
-        // ─── Lines ───────────────────────────────────────────
+        // Lines
         for (var i = 0; i < request.Lines.Length; i++)
         {
             var l = request.Lines[i];
             content.Add(new StringContent(l.ProductId.ToString()), $"Lines[{i}].ProductId");
-            content.Add(new StringContent(l.UnitPrice.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].UnitPrice");
-            content.Add(new StringContent(l.Discount.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].Discount");
-            content.Add(new StringContent(l.Quantity.ToString(CultureInfo.InvariantCulture)), $"Lines[{i}].Quantity");
+            content.Add(new StringContent(l.UnitPrice.ToString(cultureInfo)), $"Lines[{i}].UnitPrice");
+            content.Add(new StringContent(l.Discount.ToString(cultureInfo)), $"Lines[{i}].Discount");
+            content.Add(new StringContent(l.Quantity.ToString(cultureInfo)), $"Lines[{i}].Quantity");
         }
 
-        // ─── Payments ────────────────────────────────────────
+        // Payments
         for (var i = 0; i < request.Payments.Length; i++)
         {
             var p = request.Payments[i];
-            content.Add(new StringContent(p.Amount.ToString(CultureInfo.InvariantCulture)), $"Payments[{i}].Amount");
-            content.Add(new StringContent(p.ExchangeRate.ToString(CultureInfo.InvariantCulture)), $"Payments[{i}].ExchangeRate");
+            content.Add(new StringContent(p.Amount.ToString(cultureInfo)), $"Payments[{i}].Amount");
+            content.Add(new StringContent(p.ExchangeRate.ToString(cultureInfo)), $"Payments[{i}].ExchangeRate");
             content.Add(new StringContent(p.Currency), $"Payments[{i}].Currency");
             content.Add(new StringContent(((int)p.Method).ToString()), $"Payments[{i}].Method");
         }
 
-        // ─── Debt-payments (optional) ────────────────────────
+        // Debt-payments (optional)
         if (request.DebtPayments is not null)
         {
             for (var i = 0; i < request.DebtPayments.Length; i++)
             {
                 var d = request.DebtPayments[i];
                 content.Add(new StringContent(d.TransactionId.ToString()), $"DebtPayments[{i}].TransactionId");
-                content.Add(new StringContent(d.Amount.ToString(CultureInfo.InvariantCulture)), $"DebtPayments[{i}].Amount");
+                content.Add(new StringContent(d.Amount.ToString(cultureInfo)), $"DebtPayments[{i}].Amount");
             }
         }
 
         if (!string.IsNullOrEmpty(request.Notes))
             content.Add(new StringContent(request.Notes), nameof(request.Notes));
 
-        // ─── Attachments ─────────────────────────────────────
+        // Attachments
         if (request.Attachments is not null)
         {
             foreach (var f in request.Attachments)

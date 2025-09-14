@@ -2,6 +2,7 @@
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
+using Ombor.Contracts.Responses.Transaction;
 
 namespace Ombor.API.Controllers;
 

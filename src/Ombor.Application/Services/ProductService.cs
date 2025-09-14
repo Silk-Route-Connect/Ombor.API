@@ -8,6 +8,7 @@ using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
+using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 
