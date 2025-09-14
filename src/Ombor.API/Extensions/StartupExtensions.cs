@@ -24,7 +24,14 @@ public static class StartupExtensions
 
     public static IApplicationBuilder UseStaticFiles(this WebApplication app)
     {
-        var fullPath = Path.Combine(app.Environment.WebRootPath, "uploads", "products");
+        var webRootPath = app.Environment.WebRootPath;
+
+        if (string.IsNullOrEmpty(webRootPath))
+        {
+            webRootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+        }
+
+        var fullPath = Path.Combine(webRootPath, "uploads", "products");
 
         Directory.CreateDirectory(fullPath);
 
