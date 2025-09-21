@@ -8,5 +8,5 @@ public class RefreshToken : EntityBase
     public bool IsRevoked { get; set; }
 
     public int UserId { get; set; }
-    public virtual UserAccount User { get; set; } = default!;
+    public virtual User User { get; set; } = default!;
 }
