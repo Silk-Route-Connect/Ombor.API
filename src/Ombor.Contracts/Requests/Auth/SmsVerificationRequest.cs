@@ -1,3 +1,3 @@
 ﻿namespace Ombor.Contracts.Requests.Auth;
 
-public sealed record SmsVerificationRequest(string Token, string Code);
+public sealed record SmsVerificationRequest(string PhoneNumber, string Code);

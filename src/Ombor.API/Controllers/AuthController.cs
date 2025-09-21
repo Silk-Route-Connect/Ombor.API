@@ -15,27 +15,22 @@ public class AuthController(IAuthService service) : ControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var result = await service.RegisterAsync(request);
 
-        return Ok(new { Token = result });
+        return Accepted(result.Message);
     }
 
     [HttpPost("sms/verification")]
     public async Task<ActionResult> SmsVerificationAsync([FromBody] SmsVerificationRequest request)
     {
-        var success = await service.SmsVerificationAsync(request);
+        var result = await service.VerifyRegistrationOtpAsync(request);
 
-        if (!success)
+        if (!result.Success)
         {
             return BadRequest("Invalid verification code.");
         }
 
-        return Ok("Phone number verified successfully.");
+        return Ok("Phone number successfully verified .");
     }
 
     [HttpPost("login")]

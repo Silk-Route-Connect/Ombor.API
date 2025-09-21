@@ -1,9 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
 using Ombor.Contracts.Requests.Auth;
@@ -14,124 +11,147 @@ using Ombor.Domain.Enums;
 namespace Ombor.Application.Services;
 
 internal sealed class AuthService(
-    UserManager<UserAccount> userManager,
     IApplicationDbContext context,
     ISmsService smsService,
-    ITokenHandlerService tokenHandler,
+    IJwtTokenService tokenService,
+    IRedisService redisService,
+    IPasswordHasher passwordHasher,
     IConfiguration configuration) : IAuthService
 {
-    public async Task<LoginResponse> LoginAsync(LoginRequest request)
-    {
-        var user = await userManager.FindByNameAsync(request.PhoneNumber);
-
-        if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
-        {
-            throw new ArgumentException("Invalid Phone number or password.");
-        }
-
-        var accessToken = tokenHandler.GenerateAccessToken(user);
-        var refreshToken = tokenHandler.GenerateRefreshToken();
-
-        await SaveRefreshTokenAsync(user, refreshToken);
-
-        return new LoginResponse(accessToken, refreshToken);
-    }
-
-    public async Task<string> RegisterAsync(RegisterRequest request)
+    public async Task<SendOtpResponse> RegisterAsync(RegisterRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        if (request.Password != request.ConfirmPassword)
-        {
-            throw new ArgumentException("Password and Confirm Password do not match.");
-        }
-
-        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        var existingUser = await context.Users
+            .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
 
         if (existingUser is not null)
         {
             throw new ArgumentException("User with this phone number already exists.");
         }
 
-        var newUser = new UserAccount
+        var (hash, salt) = passwordHasher.HashPassword(request.Password);
+
+        var newUser = new User
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
             TelegramAccount = request.TelegramAccount,
-            UserName = request.PhoneNumber,
             PhoneNumber = request.PhoneNumber,
             Email = request.Email,
-            Access = UserAccess.BasicAccess
+            PasswordHash = hash,
+            PasswordSalt = salt,
+            IsPhoneNumberConfirmed = false
         };
 
-        var result = await userManager.CreateAsync(newUser, request.Password);
+        var key = $"reg:user:${newUser.PhoneNumber}";
+        await redisService.SetAsync<User>(key, newUser, TimeSpan.FromMinutes(10));
 
-        if (!result.Succeeded)
-        {
-            throw new ArgumentException(string.Join(", ", result.Errors.Select(e => e.Description)));
-        }
-
-        var verificationCode = new Random().Next(1000, 9999).ToString();
-
-        var jwt = tokenHandler.GenerateVerificationToken(newUser, verificationCode);
+        var code = await GenerateOtpCode(request.PhoneNumber);
 
         var message = new SmsMessage
         (
             request.PhoneNumber,
-            $"Код подтверждения: {verificationCode}",
-            "Добро пожаловать"
+            $"Bu Eskiz dan test",
+            "Bu Eskiz dan test"
         );
 
         await smsService.SendMessageAsync(message);
 
-        return jwt;
+        return new SendOtpResponse("Registration OTP code sent to your phone number.", 5);
     }
 
-    public async Task<bool> SmsVerificationAsync(SmsVerificationRequest request)
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
+    {
+        var user = await GetUserByPhoneNumberAsync(request.PhoneNumber);
+
+        CheckUser(user, request.Password);
+
+        var accessToken = tokenService.GenerateAccessToken(user);
+        var refreshToken = tokenService.GenerateRefreshToken();
+
+        await SaveRefreshTokenAsync(user, refreshToken);
+
+        return new LoginResponse(accessToken, refreshToken);
+    }
+
+    public async Task<VerificationResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
+        var otpKey = $"otp:{request.PhoneNumber}:{OtpPurpose.Registration}";
+        var otpData = await redisService.GetAsync<OtpCode>(otpKey);
 
-        try
+        if (otpData is null)
         {
-            var principal = tokenHandler.ValidateToken(request.Token, new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
-                ValidateAudience = true,
-                ValidAudience = configuration["Jwt:Audience"],
-                ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.Zero
-            }, out var validatedToken);
-
-            if (!int.TryParse(principal
-                .Claims.
-                FirstOrDefault(x => x.Type == "UserId")?.Value, out int userId))
-            {
-                return false;
-            }
-            var verificationCode = principal.Claims.FirstOrDefault(x => x.Type == "VerificationCode")?.Value;
-
-            var user = await userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
-            if (user is null)
-            {
-                return false;
-            }
-
-            return verificationCode == request.Code;
+            return new VerificationResponse(false, "OTP expired or not found");
         }
-        catch
+
+        if (DateTime.UtcNow > otpData.ExpiresAt)
         {
-            return false;
+            return new VerificationResponse(false, "OTP expired");
         }
+
+        if (otpData.Code != request.Code)
+        {
+            return new VerificationResponse(false, "The code is incorrect.");
+        }
+
+        var userKey = $"reg:user:${request.PhoneNumber}";
+        var user = await redisService.GetAsync<User>(userKey);
+
+        if (user is null)
+        {
+            return new VerificationResponse(false, "User not found");
+        }
+
+        user.IsPhoneNumberConfirmed = true;
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        await redisService.RemoveAsync(otpKey);
+        await redisService.RemoveAsync(userKey);
+
+        return new VerificationResponse(true, "Phone number successfully verified");
+    }
+
+    public async Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var refreshToken = await context.RefreshTokens
+            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken);
+
+        if (refreshToken is null || refreshToken.IsRevoked)
+        {
+            throw new UnauthorizedAccessException("Invalid refresh token");
+        }
+
+        if (refreshToken.ExpiresAt <= DateTime.UtcNow)
+        {
+            refreshToken.IsRevoked = true;
+
+            throw new UnauthorizedAccessException("Invalid refresh token");
+        }
+
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == refreshToken.UserId);
+
+        if (user is null)
+        {
+            throw new UnauthorizedAccessException("User not found");
+        }
+
+        var newAccessToken = tokenService.GenerateAccessToken(user);
+        var newRefreshToken = tokenService.GenerateRefreshToken();
+
+        await SaveRefreshTokenAsync(user, newRefreshToken);
+
+        return new LoginResponse(newAccessToken, newRefreshToken);
 
     }
 
-    private async Task SaveRefreshTokenAsync(UserAccount user, string refreshToken)
+    private async Task SaveRefreshTokenAsync(User user, string refreshToken)
     {
         var tokenEntity = new RefreshToken
         {
@@ -144,5 +164,47 @@ internal sealed class AuthService(
 
         context.RefreshTokens.Add(tokenEntity);
         await context.SaveChangesAsync();
+    }
+
+    private async Task<string> GenerateOtpCode(string phoneNumber)
+    {
+        var code = RandomNumberGenerator.GetInt32(1000, 9999).ToString();
+
+        var otpData = new OtpCode
+        {
+            PhoneNumber = phoneNumber,
+            Code = code,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(5),
+            Purpose = OtpPurpose.Registration
+        };
+
+        var key = $"otp:{otpData.PhoneNumber}:{otpData.Purpose}";
+
+        await redisService.SetAsync(key, otpData, otpData.ExpiresAt - DateTime.UtcNow);
+
+        Console.WriteLine($"[SMS] {phoneNumber} uchun code: {code}");
+
+        return code;
+    }
+
+    private async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
+    {
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+
+        return user is null ? throw new InvalidOperationException("User not found") : user;
+    }
+
+    private void CheckUser(User user, string password)
+    {
+        if (!passwordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+        {
+            throw new UnauthorizedAccessException("Invalid password");
+        }
+
+        if (!user.IsPhoneNumberConfirmed)
+        {
+            throw new UnauthorizedAccessException("Phone number is not confirmed");
+        }
     }
 }

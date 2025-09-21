@@ -6,5 +6,6 @@ internal static class ConfigurationConstants
     public const int MaxStringLength = 500;
     public const int EnumLength = 50;
     public const int PhoneNumberLength = 20;
+    public const int OtpCodeLength = 4;
     public const string VarcharMax = "nvarchar(max)";
 }

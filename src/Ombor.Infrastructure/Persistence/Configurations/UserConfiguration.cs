@@ -4,13 +4,26 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
-internal sealed class UserAccountConfiguration : IEntityTypeConfiguration<UserAccount>
+internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<UserAccount> builder)
+    public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable(nameof(UserAccount));
+        builder.ToTable(nameof(User));
 
         builder.HasKey(u => u.Id);
+
+        builder.HasOne(u => u.Organization)
+            .WithMany(o => o.Users)
+            .HasForeignKey(u => u.OrganizationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Roles)
+            .WithMany(ur => ur.Users);
+
+        builder.HasMany(u => u.RefreshTokens)
+            .WithOne(rt => rt.User)
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasIndex(u => u.PhoneNumber)
@@ -18,6 +31,10 @@ internal sealed class UserAccountConfiguration : IEntityTypeConfiguration<UserAc
 
         builder
             .HasIndex(u => u.Email)
+            .IsUnique();
+
+        builder
+            .HasIndex(u => u.TelegramAccount)
             .IsUnique();
 
         builder
@@ -33,7 +50,7 @@ internal sealed class UserAccountConfiguration : IEntityTypeConfiguration<UserAc
         builder
             .Property(u => u.TelegramAccount)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(u => u.PhoneNumber)
@@ -43,12 +60,6 @@ internal sealed class UserAccountConfiguration : IEntityTypeConfiguration<UserAc
         builder
             .Property(u => u.Email)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
-            .IsRequired();
-
-        builder
-             .Property(u => u.Access)
-             .HasConversion<string>()
-             .HasMaxLength(ConfigurationConstants.EnumLength)
-             .IsRequired();
+            .IsRequired(false);
     }
 }

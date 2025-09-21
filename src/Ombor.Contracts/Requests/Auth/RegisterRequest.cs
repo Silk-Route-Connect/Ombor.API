@@ -3,8 +3,9 @@
 public sealed record RegisterRequest(
     string FirstName,
     string LastName,
-    string Password,
-    string ConfirmPassword,
     string PhoneNumber,
     string Email,
-    string TelegramAccount);
+    string TelegramAccount,
+    string Password,
+    string ConfirmPassword,
+    string? OrganizationName);

@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Persistence;
 
 internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<UserAccount, IdentityRole<int>, int>(options), IApplicationDbContext
+    : DbContext(options), IApplicationDbContext
 {
     public virtual DbSet<Category> Categories { get; set; }
     public virtual DbSet<Product> Products { get; set; }
@@ -22,6 +20,11 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<PaymentComponent> PaymentComponents { get; set; }
     public virtual DbSet<PaymentAllocation> PaymentAllocations { get; set; }
     public virtual DbSet<PaymentAttachment> PaymentAttachments { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Organization> Organizations { get; set; }
+    public virtual DbSet<Permission> Permissions { get; set; }
+    public virtual DbSet<OtpCode> OtpCodes { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,13 +32,5 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<UserAccount>().ToTable("UserAccount");
-        modelBuilder.Entity<IdentityRole<int>>().ToTable("Role");
-        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRole");
-        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaim");
-        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogin");
-        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaim");
-        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("UserToken");
     }
 }

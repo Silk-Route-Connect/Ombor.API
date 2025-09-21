@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
 
-namespace Ombor.Infrastructure.Sms;
+namespace Ombor.Infrastructure.Services;
 
 internal sealed class SmsService : ISmsService
 {

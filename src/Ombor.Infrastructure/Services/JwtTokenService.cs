@@ -7,11 +7,11 @@ using Microsoft.IdentityModel.Tokens;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 
-namespace Ombor.Application.Services;
+namespace Ombor.Infrastructure.Services;
 
-internal class TokenHandlerService(IConfiguration configuration) : ITokenHandlerService
+internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
-    public string GenerateVerificationToken(UserAccount user, string code)
+    public string GenerateVerificationToken(User user, string code)
     {
 
         var credentials = GetCredentials();
@@ -35,7 +35,7 @@ internal class TokenHandlerService(IConfiguration configuration) : ITokenHandler
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateAccessToken(UserAccount user)
+    public string GenerateAccessToken(User user)
     {
         var claims = new[]
         {
