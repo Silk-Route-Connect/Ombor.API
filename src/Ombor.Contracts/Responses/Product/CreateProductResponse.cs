@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Common;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// Response returned after successfully creating a product.
@@ -34,4 +36,5 @@ public sealed record CreateProductResponse(
     bool IsLowStock,
     string Measurement,
     string Type,
+    ProductPackagingDto? Packaging,
     ProductImageDto[] Images);

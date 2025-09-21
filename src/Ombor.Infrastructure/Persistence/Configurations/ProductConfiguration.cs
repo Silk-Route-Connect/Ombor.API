@@ -106,6 +106,8 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasConversion<string>()
             .IsRequired();
 
+        builder.ComplexProperty(p => p.Packaging).IsRequired();
+
         #endregion
     }
 }

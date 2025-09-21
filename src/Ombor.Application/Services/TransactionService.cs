@@ -177,12 +177,14 @@ internal sealed class TransactionService(
                 var lineProduct = lineProducts[productToUpdate.Id];
                 productToUpdate.QuantityInStock += lineProduct.Quantity;
             }
+
+            return;
         }
 
         foreach (var productToUpdate in productsToUpdate)
         {
             var lineProduct = lineProducts[productToUpdate.Id];
-            if (productToUpdate.QuantityInStock <= lineProduct.Quantity)
+            if (productToUpdate.QuantityInStock < lineProduct.Quantity)
             {
                 throw new ValidationException($"Product stock is not enough for sale."); // TODO: replace with domain exception
             }
