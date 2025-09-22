@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Auth;
+using Ombor.Contracts.Responses.Auth;
 
 namespace Ombor.API.Controllers;
 
@@ -11,17 +12,19 @@ namespace Ombor.API.Controllers;
 public class AuthController(IAuthService service) : ControllerBase
 {
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequest request)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<SendOtpResponse>> RegisterAsync([FromBody] RegisterRequest request)
     {
         var result = await service.RegisterAsync(request);
-
-        return Accepted(result.Message);
+        return Ok(result);
     }
 
-    [HttpPost("sms/verification")]
-    public async Task<ActionResult> SmsVerificationAsync([FromBody] SmsVerificationRequest request)
+    [HttpPost("verification")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<VerificationResponse>> SmsVerificationAsync([FromBody] SmsVerificationRequest request)
     {
         var result = await service.VerifyRegistrationOtpAsync(request);
 
@@ -30,14 +33,25 @@ public class AuthController(IAuthService service) : ControllerBase
             return BadRequest("Invalid verification code.");
         }
 
-        return Ok("Phone number successfully verified .");
+        return Ok(result);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> LoginAsync([FromBody] LoginRequest request)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<LoginResponse>> LoginAsync([FromBody] LoginRequest request)
     {
         var response = await service.LoginAsync(request);
-
         return Ok(response);
+    }
+
+    [HttpPost("refresh-token")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<LoginResponse>> RefreshTokenAsync([FromBody] RefreshTokenRequest request)
+    {
+        var result = await service.RefreshTokenAsync(request);
+
+        return Ok(result);
     }
 }

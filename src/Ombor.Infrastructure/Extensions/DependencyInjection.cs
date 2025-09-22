@@ -37,10 +37,10 @@ public static class DependencyInjection
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
         services.AddTransient<IFileStorage, LocalFileStorage>();
         services.AddTransient<IFilePathProvider, LocalFilePathProvider>();
-        services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IRedisService, RedisService>();
+        services.AddHttpClient<ISmsService, SmsService>();
 
         return services;
     }

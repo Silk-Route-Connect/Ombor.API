@@ -7,4 +7,4 @@ public sealed record UpdateUserRequest(
     string PhoneNumber,
     string? Email,
     string? TelegramAccount,
-    List<Guid>? RoleIds);
+    List<int>? RoleIds);

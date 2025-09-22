@@ -7,32 +7,49 @@ using Ombor.Application.Models;
 
 namespace Ombor.Infrastructure.Services;
 
-internal sealed class SmsService : ISmsService
+internal sealed class SmsService(IConfiguration configuration, HttpClient client) : ISmsService
 {
-    private readonly IConfiguration _configuration;
-    private readonly HttpClient _client;
-
-    public SmsService(IConfiguration configuration, HttpClient client)
-    {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
     public async Task SendMessageAsync(SmsMessage message)
     {
+        if (message is null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
         if (string.IsNullOrWhiteSpace(message.ToNumber))
+        {
             throw new ArgumentException("Phone number cannot be empty.", nameof(message));
+        }
 
         if (string.IsNullOrWhiteSpace(message.Message))
+        {
             throw new ArgumentException("Message cannot be empty.", nameof(message));
+        }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, _configuration["SmsConfigurations:ApiUrl"]);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _configuration["SmsConfigurations:Token"]);
+        var apiUrl = configuration["SmsConfigurations:ApiUrl"];
+        var token = configuration["SmsConfigurations:Token"];
+        var from = configuration["SmsConfigurations:From"];
+
+        if (string.IsNullOrWhiteSpace(apiUrl) ||
+           string.IsNullOrWhiteSpace(token) ||
+           string.IsNullOrWhiteSpace(from))
+        {
+            throw new InvalidOperationException("SMS configuration is missing required values.");
+        }
+
+        if (!Uri.TryCreate(apiUrl, UriKind.Absolute, out var uriResult))
+        {
+            throw new InvalidOperationException("SMS provider Api URL is invalid.");
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", configuration["SmsConfigurations:Token"]);
 
         var payload = new
         {
             mobile_phone = message.ToNumber,
             message = message.Message,
-            from = _configuration["SmsConfigurations:From"]
+            from = from
         };
 
         request.Content = new StringContent(
@@ -41,11 +58,11 @@ internal sealed class SmsService : ISmsService
             "application/json"
         );
 
-        var response = await _client.SendAsync(request);
-        var body = await response.Content.ReadAsStringAsync();
+        using var response = await client.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException($"Eskiz SMS error: {response.StatusCode}, {body}");
+        {
+            throw new HttpRequestException($"SMS provider request failed with status {(int)response.StatusCode} {response.ReasonPhrase}.");
+        }
     }
-
 }

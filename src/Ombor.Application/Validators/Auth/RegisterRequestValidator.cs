@@ -44,6 +44,18 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.")
             .EmailAddress()
             .WithMessage("Invalid email address.")
-            .When(x => !string.IsNullOrEmpty(x.Email));
+            .When(x => !string.IsNullOrWhiteSpace(x.Email));
+
+        RuleFor(x => x.TelegramAccount)
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"TelegramAccount must not exceed {ValidationConstants.DefaultStringLength} characters.")
+            .When(x => !string.IsNullOrWhiteSpace(x.TelegramAccount));
+
+        RuleFor(x => x.OrganizationName)
+            .NotEmpty()
+            .WithMessage("OrganizationName is required.")
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"OrganizationName must not exceed {ValidationConstants.DefaultStringLength} characters.")
+            .When(x => !string.IsNullOrWhiteSpace(x.OrganizationName));
     }
 }

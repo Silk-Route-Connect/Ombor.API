@@ -31,11 +31,13 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder
             .HasIndex(u => u.Email)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[Email] IS NOT NULL");
 
         builder
             .HasIndex(u => u.TelegramAccount)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[TelegramAccount] IS NOT NULL");
 
         builder
             .Property(u => u.FirstName)

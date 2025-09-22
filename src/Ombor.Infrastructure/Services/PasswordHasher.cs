@@ -1,25 +1,41 @@
 ﻿using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Models;
+using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Services;
 
 internal sealed class PasswordHasher : IPasswordHasher
 {
-    public (string hash, string salt) HashPassword(string password)
+    public PasswordHash HashPassword(string password)
     {
-        using var hmac = new HMACSHA512();
-        var salt = Convert.ToBase64String(hmac.Key);
-        var hash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        var saltBytes = RandomNumberGenerator.GetBytes(16);
+        var hashBytes = KeyDerivation.Pbkdf2(
+            password: password,
+            salt: saltBytes,
+            prf: KeyDerivationPrf.HMACSHA256,
+            iterationCount: 310_000,
+            numBytesRequested: 32);
 
-        return (hash, salt);
+        return new PasswordHash(
+            Hash: Convert.ToBase64String(hashBytes),
+            Salt: Convert.ToBase64String(saltBytes)
+            );
     }
 
-    public bool VerifyPassword(string password, string storedHash, string storedSalt)
+    public bool VerifyPassword(string password, User user)
     {
-        using var hmac = new HMACSHA512(Convert.FromBase64String(storedSalt));
-        var computedHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
+        var saltBytes = Convert.FromBase64String(user.PasswordSalt);
+        var expectedHashBytes = Convert.FromBase64String(user.PasswordHash);
 
-        return computedHash == storedHash;
+        var actualHash = KeyDerivation.Pbkdf2(
+            password: password,
+            salt: saltBytes,
+            prf: KeyDerivationPrf.HMACSHA256,
+            iterationCount: 310_000,
+            numBytesRequested: expectedHashBytes.Length);
+
+        return CryptographicOperations.FixedTimeEquals(actualHash, expectedHashBytes);
     }
 }

@@ -7,6 +7,7 @@ using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
@@ -16,7 +17,8 @@ internal sealed class AuthService(
     IJwtTokenService tokenService,
     IRedisService redisService,
     IPasswordHasher passwordHasher,
-    IConfiguration configuration) : IAuthService
+    IConfiguration configuration,
+    IOrganizationService organizationService) : IAuthService
 {
     public async Task<SendOtpResponse> RegisterAsync(RegisterRequest request)
     {
@@ -27,10 +29,12 @@ internal sealed class AuthService(
 
         if (existingUser is not null)
         {
-            throw new ArgumentException("User with this phone number already exists.");
+            throw new InvalidOperationException("User with this phone number already exists.");
         }
 
-        var (hash, salt) = passwordHasher.HashPassword(request.Password);
+        var passwordHash = passwordHasher.HashPassword(request.Password);
+
+        var organization = await organizationService.EnsureOrganizationExistsAsync(request.OrganizationName);
 
         var newUser = new User
         {
@@ -39,12 +43,13 @@ internal sealed class AuthService(
             TelegramAccount = request.TelegramAccount,
             PhoneNumber = request.PhoneNumber,
             Email = request.Email,
-            PasswordHash = hash,
-            PasswordSalt = salt,
-            IsPhoneNumberConfirmed = false
+            PasswordHash = passwordHash.Hash,
+            PasswordSalt = passwordHash.Salt,
+            IsPhoneNumberConfirmed = false,
+            OrganizationId = organization.Id
         };
 
-        var key = $"reg:user:${newUser.PhoneNumber}";
+        var key = $"reg:user:{newUser.PhoneNumber}";
         await redisService.SetAsync<User>(key, newUser, TimeSpan.FromMinutes(10));
 
         var code = await GenerateOtpCode(request.PhoneNumber);
@@ -63,7 +68,7 @@ internal sealed class AuthService(
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        var user = await GetUserByPhoneNumberAsync(request.PhoneNumber);
+        var user = await GetOrThrowAsync(request.PhoneNumber);
 
         CheckUser(user, request.Password);
 
@@ -97,7 +102,7 @@ internal sealed class AuthService(
             return new VerificationResponse(false, "The code is incorrect.");
         }
 
-        var userKey = $"reg:user:${request.PhoneNumber}";
+        var userKey = $"reg:user:{request.PhoneNumber}";
         var user = await redisService.GetAsync<User>(userKey);
 
         if (user is null)
@@ -130,25 +135,22 @@ internal sealed class AuthService(
         if (refreshToken.ExpiresAt <= DateTime.UtcNow)
         {
             refreshToken.IsRevoked = true;
+            await context.SaveChangesAsync();
 
             throw new UnauthorizedAccessException("Invalid refresh token");
         }
 
-        var user = await context.Users
-            .FirstOrDefaultAsync(u => u.Id == refreshToken.UserId);
-
-        if (user is null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+        var user = await GetOrThrowAsync(refreshToken.UserId);
 
         var newAccessToken = tokenService.GenerateAccessToken(user);
         var newRefreshToken = tokenService.GenerateRefreshToken();
 
+        refreshToken.IsRevoked = true;
+        await context.SaveChangesAsync();
+
         await SaveRefreshTokenAsync(user, newRefreshToken);
 
         return new LoginResponse(newAccessToken, newRefreshToken);
-
     }
 
     private async Task SaveRefreshTokenAsync(User user, string refreshToken)
@@ -157,7 +159,8 @@ internal sealed class AuthService(
         {
             Token = refreshToken,
             IsRevoked = false,
-            ExpiresAt = DateTime.UtcNow.AddDays(int.Parse(configuration["Jwt:RefreshTokenExpiresInDays"]!)),
+            ExpiresAt = DateTime.UtcNow.AddDays(
+                int.TryParse(configuration["Jwt:RefreshTokenExpiresInDays"], out var days) ? days : 15),
             UserId = user.Id,
             User = user
         };
@@ -182,29 +185,27 @@ internal sealed class AuthService(
 
         await redisService.SetAsync(key, otpData, otpData.ExpiresAt - DateTime.UtcNow);
 
-        Console.WriteLine($"[SMS] {phoneNumber} uchun code: {code}");
-
         return code;
     }
 
-    private async Task<User> GetUserByPhoneNumberAsync(string phoneNumber)
-    {
-        var user = await context.Users
-            .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+    private async Task<User> GetOrThrowAsync(string phoneNumber) =>
+       await context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber)
+       ?? throw new EntityNotFoundException<User>(phoneNumber);
 
-        return user is null ? throw new InvalidOperationException("User not found") : user;
-    }
+    private async Task<User> GetOrThrowAsync(int id) =>
+       await context.Users.FirstOrDefaultAsync(x => x.Id == id)
+       ?? throw new EntityNotFoundException<User>(id);
 
     private void CheckUser(User user, string password)
     {
-        if (!passwordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+        if (!passwordHasher.VerifyPassword(password, user))
         {
-            throw new UnauthorizedAccessException("Invalid password");
+            throw new UnauthorizedAccessException("Invalid phone number or password.");
         }
 
         if (!user.IsPhoneNumberConfirmed)
         {
-            throw new UnauthorizedAccessException("Phone number is not confirmed");
+            throw new UnauthorizedAccessException("Invalid phone number or password.");
         }
     }
 }

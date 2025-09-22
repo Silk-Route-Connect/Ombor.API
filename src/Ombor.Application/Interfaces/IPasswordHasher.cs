@@ -1,7 +1,10 @@
-﻿namespace Ombor.Application.Interfaces;
+﻿using Ombor.Application.Models;
+using Ombor.Domain.Entities;
+
+namespace Ombor.Application.Interfaces;
 
 public interface IPasswordHasher
 {
-    (string hash, string salt) HashPassword(string password);
-    bool VerifyPassword(string password, string storedHash, string storedSalt);
+    PasswordHash HashPassword(string password);
+    bool VerifyPassword(string password, User user);
 }

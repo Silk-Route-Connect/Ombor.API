@@ -30,6 +30,8 @@ internal static class DependencyInjection
             })
             .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
             .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+        services.AddAuthorization();
         services.AddSwagger(configuration);
         services.AddErrorHandlers();
         services.AddCors(configuration);

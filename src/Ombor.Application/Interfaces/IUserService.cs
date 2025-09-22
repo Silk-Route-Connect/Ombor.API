@@ -7,7 +7,7 @@ namespace Ombor.Application.Interfaces;
 
 public interface IUserService
 {
-    Task<PagedResponse<UserDto>> GetUsersAsync(int organizationId, PagedRequest request);
+    Task<PagedResponse<UserDto>> GetUsersAsync(PagedRequest request);
     Task<UserDto> GetUserByIdAsync(int userId);
     Task<UserDto> CreateUserAsync(CreateUserRequest request, int organizationId, int createdBy);
     Task<UserDto> UpdateUserAsync(int userId, UpdateUserRequest request, int organizationId);

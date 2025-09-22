@@ -11,30 +11,6 @@ namespace Ombor.Infrastructure.Services;
 
 internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
 {
-    public string GenerateVerificationToken(User user, string code)
-    {
-
-        var credentials = GetCredentials();
-
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-            new Claim("UserId",user.Id.ToString()),
-            new Claim("VerificationCode",code),
-            new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-        };
-
-        var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(5),
-            signingCredentials: credentials
-            );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
     public string GenerateAccessToken(User user)
     {
         var claims = new[]
@@ -49,7 +25,7 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(double.Parse(configuration["Jwt:AccessTokenExpiresInHours"]!)),
+            expires: DateTime.UtcNow.AddHours(configuration.GetValue<double>("Jwt:AccessTokenExpiresInHours")),
             signingCredentials: credentials
             );
 
