@@ -1,22 +1,22 @@
 Summary
-  Generated on: 09/21/2025 - 07:44:39
-  Coverage date: 09/21/2025 - 07:43:51 - 09/21/2025 - 07:44:38
+  Generated on: 09/22/2025 - 19:46:37
+  Coverage date: 09/22/2025 - 19:45:46 - 09/22/2025 - 19:46:35
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 91
   Files: 90
-  Line coverage: 86.6%
-  Covered lines: 1427
-  Uncovered lines: 219
-  Coverable lines: 1646
+  Line coverage: 86.0%
+  Covered lines: 1434
+  Uncovered lines: 232
+  Coverable lines: 1666
   Total lines: 4955
-  Branch coverage: 65.8% (224 of 340)
+  Branch coverage: 66.6% (224 of 336)
   Covered branches: 224
-  Total branches: 340
-  Method coverage: 77.3% (260 of 336)
+  Total branches: 336
+  Method coverage: 77.8% (260 of 334)
   Covered methods: 260
-  Total methods: 336
-  Tag: 218_17890820111
+  Total methods: 334
+  Tag: 219_17926626370
 
 Ombor.API                                                                          91.1%
   Ombor.API.Controllers.AuthController                                              0.0%
@@ -30,7 +30,7 @@ Ombor.API                                                                       
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  85.6%
+Ombor.Application                                                                  83.9%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
   Ombor.Application.Extensions.FormFileExtensions                                 100.0%
@@ -51,6 +51,7 @@ Ombor.Application                                                               
   Ombor.Application.Services.ProductService                                       100.0%
   Ombor.Application.Services.TemplateService                                      100.0%
   Ombor.Application.Services.TransactionService                                     3.2%
+  Ombor.Application.Validators.Auth.RefreshTokenRequestValidator                    0.0%
   Ombor.Application.Validators.Auth.RegisterRequestValidator                        0.0%
   Ombor.Application.Validators.Category.CreateCategoryRequestValidator            100.0%
   Ombor.Application.Validators.Category.DeleteCategoryRequestValidator            100.0%
@@ -85,7 +86,7 @@ Ombor.Domain                                                                    
   Ombor.Domain.Exceptions.InvalidFileException                                     33.3%
   Ombor.Domain.Exceptions.UnsupportedFileFormatException                           33.3%
 
-Ombor.Infrastructure                                                               90.2%
+Ombor.Infrastructure                                                               90.8%
   Ombor.Infrastructure.Extensions.DependencyInjection                             100.0%
   Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                       100.0%
   Ombor.Infrastructure.Extensions.StringExtensions                                100.0%
@@ -116,7 +117,6 @@ Ombor.Infrastructure                                                            
   Ombor.Infrastructure.Services.LocalFilePathProvider                             100.0%
   Ombor.Infrastructure.Services.PasswordHasher                                      0.0%
   Ombor.Infrastructure.Services.RedisService                                        0.0%
-  Ombor.Infrastructure.Services.SmsService                                          0.0%
   Ombor.Infrastructure.Storage.LocalFileStorage                                   100.0%
 
 Ombor.TestDataGenerator                                                                 
