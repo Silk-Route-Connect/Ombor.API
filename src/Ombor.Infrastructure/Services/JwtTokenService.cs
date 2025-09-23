@@ -13,12 +13,16 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
 {
     public string GenerateAccessToken(User user)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-            new Claim(ClaimTypes.Name,user.FirstName),
-            new Claim(ClaimTypes.MobilePhone,user.PhoneNumber!)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.FirstName),
         };
+
+        if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+        {
+            claims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
+        }
 
         var credentials = GetCredentials();
         var issuer = configuration["Jwt:Issuer"];
