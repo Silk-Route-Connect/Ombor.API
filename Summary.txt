@@ -1,22 +1,22 @@
 Summary
-  Generated on: 09/23/2025 - 08:43:28
-  Coverage date: 09/23/2025 - 08:42:39 - 09/23/2025 - 08:43:27
+  Generated on: 09/23/2025 - 08:55:05
+  Coverage date: 09/23/2025 - 08:54:17 - 09/23/2025 - 08:55:04
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 91
   Files: 90
-  Line coverage: 85.5%
+  Line coverage: 85.4%
   Covered lines: 1434
-  Uncovered lines: 243
-  Coverable lines: 1677
-  Total lines: 4977
-  Branch coverage: 64.3% (224 of 348)
+  Uncovered lines: 244
+  Coverable lines: 1678
+  Total lines: 4981
+  Branch coverage: 63.6% (224 of 352)
   Covered branches: 224
-  Total branches: 348
+  Total branches: 352
   Method coverage: 77.8% (260 of 334)
   Covered methods: 260
   Total methods: 334
-  Tag: 220_17940476686
+  Tag: 221_17940746763
 
 Ombor.API                                                                          91.1%
   Ombor.API.Controllers.AuthController                                              0.0%
@@ -86,7 +86,7 @@ Ombor.Domain                                                                    
   Ombor.Domain.Exceptions.InvalidFileException                                     33.3%
   Ombor.Domain.Exceptions.UnsupportedFileFormatException                           33.3%
 
-Ombor.Infrastructure                                                               89.3%
+Ombor.Infrastructure                                                               89.2%
   Ombor.Infrastructure.Extensions.DependencyInjection                             100.0%
   Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                       100.0%
   Ombor.Infrastructure.Extensions.StringExtensions                                100.0%

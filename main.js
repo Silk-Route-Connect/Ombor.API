@@ -323,7 +323,7 @@ var assemblies = [
       { "name": "Ombor.Infrastructure.Persistence.Configurations.TransactionLineConfiguration", "rp": "Ombor.Infrastructure_TransactionLineConfiguration.html", "cl": 28, "ucl": 0, "cal": 28, "tl": 47, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Persistence.Configurations.UserConfiguration", "rp": "Ombor.Infrastructure_UserConfiguration.html", "cl": 44, "ucl": 0, "cal": 44, "tl": 67, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.ImageSharpThumbnailer", "rp": "Ombor.Infrastructure_ImageSharpThumbnailer.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 56, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Infrastructure.Services.JwtTokenService", "rp": "Ombor.Infrastructure_JwtTokenService.html", "cl": 0, "ucl": 36, "cal": 36, "tl": 79, "cb": 0, "tb": 12, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Infrastructure.Services.JwtTokenService", "rp": "Ombor.Infrastructure_JwtTokenService.html", "cl": 0, "ucl": 37, "cal": 37, "tl": 83, "cb": 0, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.LocalFilePathProvider", "rp": "Ombor.Infrastructure_LocalFilePathProvider.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 29, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.PasswordHasher", "rp": "Ombor.Infrastructure_PasswordHasher.html", "cl": 0, "ucl": 20, "cal": 20, "tl": 41, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.RedisService", "rp": "Ombor.Infrastructure_RedisService.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 29, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -370,7 +370,13 @@ var riskHotspots = [
       { "value": 4, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.JwtTokenService", "reportPath": "Ombor.Infrastructure_JwtTokenService.html", "methodName": "GetCredentials()", "methodShortName": "GetCredentials()", "fileIndex": 0, "line": 60,
+    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.JwtTokenService", "reportPath": "Ombor.Infrastructure_JwtTokenService.html", "methodName": "GenerateAccessToken(Ombor.Domain.Entities.User)", "methodShortName": "GenerateAccessToken(...)", "fileIndex": 0, "line": 16,
+    "metrics": [
+      { "value": 20, "exceeded": true },
+      { "value": 4, "exceeded": false },
+    ]},
+  {
+    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.JwtTokenService", "reportPath": "Ombor.Infrastructure_JwtTokenService.html", "methodName": "GetCredentials()", "methodShortName": "GetCredentials()", "fileIndex": 0, "line": 64,
     "metrics": [
       { "value": 20, "exceeded": true },
       { "value": 4, "exceeded": false },
