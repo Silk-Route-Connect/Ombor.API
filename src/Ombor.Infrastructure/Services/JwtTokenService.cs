@@ -21,13 +21,22 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
         };
 
         var credentials = GetCredentials();
+        var issuer = configuration["Jwt:Issuer"];
+        var audience = configuration["Jwt:Audience"];
+        var hours = configuration.GetValue<double>("Jwt:AccessTokenExpiresInHours");
+
+        if (hours <= 0)
+        {
+            throw new InvalidOperationException("Jwt:AccessTokenExpiresInHours must be > 0.");
+        }
+
         var securityToken = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
+            issuer: issuer,
+            audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(configuration.GetValue<double>("Jwt:AccessTokenExpiresInHours")),
+            expires: DateTime.UtcNow.AddHours(hours),
             signingCredentials: credentials
-            );
+        );
 
         var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
@@ -48,7 +57,21 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
 
     private SigningCredentials GetCredentials()
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
+        var key = configuration["Jwt:Key"];
+
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            throw new InvalidOperationException("Jwt:Key is missing.");
+        }
+
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+
+        if (keyBytes.Length < 32)
+        {
+            throw new InvalidOperationException("Jwt:Key must be at least 256 bits.");
+        }
+
+        var securityKey = new SymmetricSecurityKey(keyBytes);
         var signingKey = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         return signingKey;
