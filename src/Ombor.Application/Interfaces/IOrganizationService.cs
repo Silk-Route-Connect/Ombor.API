@@ -4,5 +4,5 @@ namespace Ombor.Application.Interfaces;
 
 public interface IOrganizationService
 {
-    Task<Organization> EnsureOrganizationExistsAsync(string OrganizationName);
+    Task<Organization> EnsureOrganizationExistsAsync(string organizationName);
 }
