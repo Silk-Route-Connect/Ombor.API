@@ -228,7 +228,7 @@ var assemblies = [
       { "name": "Ombor.API.Controllers.ProductsController", "rp": "Ombor.API_ProductsController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 128, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.TemplatesController", "rp": "Ombor.API_TemplatesController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 70, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.TransactionsController", "rp": "Ombor.API_TransactionsController.html", "cl": 3, "ucl": 0, "cal": 3, "tl": 51, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.API.Extensions.DependencyInjection", "rp": "Ombor.API_DependencyInjection.html", "cl": 105, "ucl": 1, "cal": 106, "tl": 148, "cb": 4, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.API.Extensions.DependencyInjection", "rp": "Ombor.API_DependencyInjection.html", "cl": 103, "ucl": 1, "cal": 104, "tl": 146, "cb": 4, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Extensions.StartupExtensions", "rp": "Ombor.API_StartupExtensions.html", "cl": 10, "ucl": 1, "cal": 11, "tl": 46, "cb": 2, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Filters.EnumSchemaFilter", "rp": "Ombor.API_EnumSchemaFilter.html", "cl": 0, "ucl": 8, "cal": 8, "tl": 22, "cb": 0, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
@@ -248,7 +248,7 @@ var assemblies = [
       { "name": "Ombor.Application.Mappings.ProductMappings", "rp": "Ombor.Application_ProductMappings.html", "cl": 106, "ucl": 0, "cal": 106, "tl": 150, "cb": 22, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Mappings.TemplateMappings", "rp": "Ombor.Application_TemplateMappings.html", "cl": 88, "ucl": 0, "cal": 88, "tl": 146, "cb": 38, "tb": 40, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Mappings.TransactionMapper", "rp": "Ombor.Application_TransactionMapper.html", "cl": 31, "ucl": 0, "cal": 31, "tl": 56, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.AuthService", "rp": "Ombor.Application_AuthService.html", "cl": 0, "ucl": 5, "cal": 5, "tl": 211, "cb": 0, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.AuthService", "rp": "Ombor.Application_AuthService.html", "cl": 0, "ucl": 5, "cal": 5, "tl": 212, "cb": 0, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.CategoryService", "rp": "Ombor.Application_CategoryService.html", "cl": 10, "ucl": 0, "cal": 10, "tl": 77, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.FileService", "rp": "Ombor.Application_FileService.html", "cl": 24, "ucl": 0, "cal": 24, "tl": 192, "cb": 24, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.PaymentService", "rp": "Ombor.Application_PaymentService.html", "cl": 0, "ucl": 21, "cal": 21, "tl": 291, "cb": 0, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -358,7 +358,7 @@ var riskHotspots = [
       { "value": 6, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.AuthService", "reportPath": "Ombor.Application_AuthService.html", "methodName": "CheckUser(Ombor.Domain.Entities.User,System.String)", "methodShortName": "CheckUser(...)", "fileIndex": 0, "line": 201,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.AuthService", "reportPath": "Ombor.Application_AuthService.html", "methodName": "CheckUser(Ombor.Domain.Entities.User,System.String)", "methodShortName": "CheckUser(...)", "fileIndex": 0, "line": 202,
     "metrics": [
       { "value": 20, "exceeded": true },
       { "value": 4, "exceeded": false },
