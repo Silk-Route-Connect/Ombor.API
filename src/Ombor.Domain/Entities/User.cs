@@ -12,8 +12,8 @@ public class User : AuditableEntity
     public string? Email { get; set; }
     public bool IsPhoneNumberConfirmed { get; set; }
 
-    public virtual int OrganizationId { get; set; }
-    public virtual Organization Organization { get; set; }
+    public int OrganizationId { get; set; }
+    public required virtual Organization Organization { get; set; }
     public virtual ICollection<Role> Roles { get; set; }
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
 

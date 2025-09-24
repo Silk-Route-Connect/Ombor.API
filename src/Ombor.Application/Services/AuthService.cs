@@ -46,7 +46,8 @@ internal sealed class AuthService(
             PasswordHash = passwordHash.Hash,
             PasswordSalt = passwordHash.Salt,
             IsPhoneNumberConfirmed = false,
-            OrganizationId = organization.Id
+            OrganizationId = organization.Id,
+            Organization = null! // To be set by EF Core
         };
 
         var key = $"reg:user:{newUser.PhoneNumber}";

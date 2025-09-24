@@ -6,8 +6,8 @@ public class Role : EntityBase
 {
     public required string Name { get; set; }
     public string? Description { get; set; }
-    public virtual int OrganizationId { get; set; }
-    public virtual Organization Organization { get; set; }
+    public int OrganizationId { get; set; }
+    public required virtual Organization Organization { get; set; }
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Permission> Permissions { get; set; }
 

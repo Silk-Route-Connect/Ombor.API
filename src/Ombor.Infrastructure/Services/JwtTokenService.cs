@@ -15,8 +15,8 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.FirstName),
+            new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new (ClaimTypes.Name, user.FirstName),
         };
 
         if (!string.IsNullOrWhiteSpace(user.PhoneNumber))

@@ -5,7 +5,6 @@ using Ombor.TestDataGenerator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 if (builder.Environment.IsProduction())
 {
     builder.WebHost.UseSentry();

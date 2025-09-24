@@ -26,7 +26,6 @@ internal static class DependencyInjection
 
                 options.Filters.Add(new AuthorizeFilter(policy));
                 options.SuppressAsyncSuffixInActionNames = false;
-
             })
             .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
             .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -67,7 +66,6 @@ internal static class DependencyInjection
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 Description = "Enter your JWT token in the format: Bearer {your token}",
-
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement

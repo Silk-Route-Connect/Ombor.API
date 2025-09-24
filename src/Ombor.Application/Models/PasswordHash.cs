@@ -1,5 +1,3 @@
 ﻿namespace Ombor.Application.Models;
 
-public sealed record PasswordHash(
-    string Hash,
-    string Salt);
+public sealed record PasswordHash(string Hash, string Salt);

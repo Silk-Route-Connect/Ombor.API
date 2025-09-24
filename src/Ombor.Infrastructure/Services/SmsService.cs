@@ -11,10 +11,7 @@ internal sealed class SmsService(IConfiguration configuration, HttpClient client
 {
     public async Task SendMessageAsync(SmsMessage message)
     {
-        if (message is null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentNullException.ThrowIfNull(nameof(message));
 
         if (string.IsNullOrWhiteSpace(message.ToNumber))
         {
