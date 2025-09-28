@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9219810040705563" branch-rate="0.7073170731707317" lines-covered="1359" lines-valid="1474" branches-covered="232" branches-valid="328" complexity="556" version="0" timestamp="1759063192">
+<coverage line-rate="0.9219810040705563" branch-rate="0.7134146341463414" lines-covered="1359" lines-valid="1474" branches-covered="234" branches-valid="328" complexity="556" version="0" timestamp="1759063941">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -395,7 +395,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.9097222222222222" branch-rate="0.6971830985915493" complexity="395">
+    <package name="Ombor.Application" line-rate="0.9097222222222222" branch-rate="0.704225352112676" complexity="395">
       <classes>
         <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
@@ -945,11 +945,11 @@
             <line number="35" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
+        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
           <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1010,9 +1010,9 @@
                 <line number="68" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1075,7 +1075,7 @@
             </method>
           </methods>
           <lines>
-            <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
+            <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
             <line number="12" hits="232" branch="false" />
             <line number="13" hits="232" branch="false" />
             <line number="15" hits="232" branch="false" />
