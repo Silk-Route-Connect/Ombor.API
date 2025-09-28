@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Common;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// Response returned after successfully updating a product.
@@ -18,6 +20,7 @@
 /// <param name="IsLowStock">Whether stock ≤ threshold post‑update.</param>
 /// <param name="Measurement">The updated measurement.</param>
 /// <param name="Type">The updated type.</param>
+/// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
 public sealed record UpdateProductResponse(
     int Id,
     int CategoryId,
@@ -33,4 +36,5 @@ public sealed record UpdateProductResponse(
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
-    string Type);
+    string Type,
+    ProductPackagingDto? Packaging);

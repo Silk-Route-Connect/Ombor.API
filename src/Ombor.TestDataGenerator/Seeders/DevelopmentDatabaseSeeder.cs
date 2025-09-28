@@ -26,6 +26,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
         await AddEmployeesAsync(context);
+        await AddInventoriesAsync(context);
         await AddSalesAsync(context);
         await AddSuppliesAsync(context);
         await AddSaleRefundsAsync(context);
@@ -167,6 +168,24 @@ internal sealed class DevelopmentDatabaseSeeder(
             .ToArray();
 
         context.Employees.AddRange(employees);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddInventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+            var products = context.Products
+                .Select(x => x.Id)
+                .ToArray();
+        var inventories = InventoryGenerator.Generate(
+            products,
+            seedSettings.NumberOfItemsPerInventory,
+            seedSettings.NumberOfInventories,
+            seedSettings.Locale)
+            .DistinctBy(x => x.Name)
+            .ToArray();
+
+        context.Inventories.AddRange(inventories);
         await context.SaveChangesAsync();
     }
 

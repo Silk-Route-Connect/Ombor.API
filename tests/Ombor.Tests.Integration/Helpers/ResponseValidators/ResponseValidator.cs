@@ -19,4 +19,7 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
 
     private EmployeeValidator? _employee;
     public EmployeeValidator Employee => _employee ??= new(context);
+
+    private InventoryValidator? _inventory;
+    public InventoryValidator Inventory => _inventory ??= new(context);
 }

@@ -41,6 +41,8 @@ public class Product : EntityBase
     /// <summary>Gets or sets type of the product.</summary>
     public ProductType Type { get; set; }
 
+    public ProductPackaging Packaging { get; set; } = new();
+
     /// <summary>Gets or sets the foreign key to the Category entity.</summary>
     public int CategoryId { get; set; }
 
@@ -52,6 +54,9 @@ public class Product : EntityBase
 
     /// <summary>Gets or sets collection of <see cref="TemplateItem"/>. </summary>
     public virtual List<TemplateItem> TemplateItems { get; set; } = [];
+
+    /// <summary>Gets or sets collection of <see cref="InventoryItem"/>. </summary>
+    public virtual ICollection<InventoryItem> InventoryItems { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the collection of <see cref="TransactionLine>"/> for product.

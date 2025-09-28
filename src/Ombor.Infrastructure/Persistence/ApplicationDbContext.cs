@@ -15,6 +15,8 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Template> Templates { get; set; }
     public virtual DbSet<TemplateItem> TemplateItems { get; set; }
     public virtual DbSet<Employee> Employees { get; set; }
+    public virtual DbSet<Inventory> Inventories { get; set; }
+    public virtual DbSet<InventoryItem> InventoryItems { get; set; }
     public virtual DbSet<TransactionRecord> Transactions { get; set; }
     public virtual DbSet<TransactionLine> TransactionLines { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }

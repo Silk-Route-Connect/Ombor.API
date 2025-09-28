@@ -1,4 +1,7 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Common;
+using Ombor.Contracts.Responses.Inventory;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// DTO representing a product for client consumption.
@@ -18,6 +21,9 @@
 /// <param name="IsLowStock">Whether stock ≤ threshold.</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
+/// <param name="Images">Associated product images.</param>
+/// <param name="InventoryItems">Inventory item quantities for the product.</param>
+/// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
 public sealed record ProductDto(
     int Id,
     int CategoryId,
@@ -34,4 +40,6 @@ public sealed record ProductDto(
     bool IsLowStock,
     string Measurement,
     string Type,
-    ProductImageDto[] Images);
+    ProductImageDto[] Images,
+    InventoryItemDto[] InventoryItems,
+    ProductPackagingDto? Packaging);
