@@ -41,6 +41,8 @@ public class Product : EntityBase
     /// <summary>Gets or sets type of the product.</summary>
     public ProductType Type { get; set; }
 
+    public ProductPackaging Packaging { get; set; } = new();
+
     /// <summary>Gets or sets the foreign key to the Category entity.</summary>
     public int CategoryId { get; set; }
 

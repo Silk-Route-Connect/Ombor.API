@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Inventory;
 using Ombor.Contracts.Responses.Product;
@@ -144,7 +145,9 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                 x.Measurement.ToString(),
                 x.Type.ToString(),
                 x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
-                x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.InventoryId, item.ProductId)).ToArray()))
+                x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.InventoryId, item.ProductId)).ToArray()),
+                x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode),
+                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray())
             .ToArray();
     }
 

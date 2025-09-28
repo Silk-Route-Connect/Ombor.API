@@ -1,4 +1,6 @@
-﻿namespace Ombor.Contracts.Responses.Product;
+﻿using Ombor.Contracts.Common;
+
+namespace Ombor.Contracts.Responses.Product;
 
 /// <summary>
 /// Response returned after successfully updating a product.
@@ -33,4 +35,5 @@ public sealed record UpdateProductResponse(
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
-    string Type);
+    string Type,
+    ProductPackagingDto? Packaging);

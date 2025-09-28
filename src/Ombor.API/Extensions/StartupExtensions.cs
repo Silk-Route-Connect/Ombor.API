@@ -24,16 +24,14 @@ public static class StartupExtensions
 
     public static IApplicationBuilder UseStaticFiles(this WebApplication app)
     {
-        // Handle null WebRootPath - use ContentRoot as fallback
-        var rootPath = app.Environment.WebRootPath ?? app.Environment.ContentRootPath;
+        var webRootPath = app.Environment.WebRootPath;
 
-        if (string.IsNullOrEmpty(rootPath))
+        if (string.IsNullOrEmpty(webRootPath))
         {
-            // If both are null, use the current directory
-            rootPath = Directory.GetCurrentDirectory();
+            webRootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
         }
 
-        var fullPath = Path.Combine(rootPath, "wwwroot", "uploads", "products");
+        var fullPath = Path.Combine(webRootPath, "uploads", "products");
 
         Directory.CreateDirectory(fullPath);
 

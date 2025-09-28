@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Requests.Product;
+﻿using Ombor.Contracts.Common;
+using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
 
@@ -38,7 +39,9 @@ internal static class ProductMappings
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
             Images: images,
-            InventoryItems: inventoryItems);
+            InventoryItems: inventoryItems,
+            Packaging: product.Packaging.ToDto(),
+            Images: images);
     }
 
     public static Product ToEntity(this CreateProductRequest request)
@@ -56,6 +59,7 @@ internal static class ProductMappings
             LowStockThreshold = request.LowStockThreshold,
             Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
             Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
+            Packaging = (request.Packaging ?? new(0, null, null)).ToEntity(), // TODO: Remove default value when upgraded to .NET 10
             CategoryId = request.CategoryId,
             Category = null! // should be taken from CategoryId
         };
@@ -89,7 +93,9 @@ internal static class ProductMappings
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
             Images: product.Images.ToDto(),
-            InventoryItems: inventoryItems);
+            InventoryItems: inventoryItems,
+            Packaging: product.Packaging.ToDto(),
+            Images: product.Images.ToDto());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)
@@ -114,7 +120,8 @@ internal static class ProductMappings
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
-            Type: product.Type.ToString());
+            Type: product.Type.ToString(),
+            Packaging: product.Packaging.ToDto());
     }
 
     public static void ApplyUpdate(this Product product, UpdateProductRequest request)
@@ -131,8 +138,25 @@ internal static class ProductMappings
         product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
         product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
         product.CategoryId = request.CategoryId;
+        product.Packaging = (request.Packaging ?? new(0, null, null)).ToEntity(); // TODO: Remove default value when upgraded to .NET 10
     }
 
     public static Domain.Enums.ProductType ToDomain(this Contracts.Enums.ProductType type)
         => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
+
+    private static ProductPackagingDto? ToDto(this ProductPackaging packaging)
+        => packaging.Size == 0
+        ? null
+        : new(
+            Size: packaging.Size,
+            Label: packaging.Label,
+            Barcode: packaging.Barcode);
+
+    private static ProductPackaging ToEntity(this ProductPackagingDto packaging)
+        => new()
+        {
+            Size = packaging.Size,
+            Label = packaging.Label,
+            Barcode = packaging.Barcode
+        };
 }
