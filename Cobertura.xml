@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9220867208672087" branch-rate="0.7134146341463414" lines-covered="1361" lines-valid="1476" branches-covered="234" branches-valid="328" complexity="556" version="0" timestamp="1759061439">
+<coverage line-rate="0.9219810040705563" branch-rate="0.7073170731707317" lines-covered="1359" lines-valid="1474" branches-covered="232" branches-valid="328" complexity="556" version="0" timestamp="1759063192">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -395,7 +395,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.9097222222222222" branch-rate="0.704225352112676" complexity="395">
+    <package name="Ombor.Application" line-rate="0.9097222222222222" branch-rate="0.6971830985915493" complexity="395">
       <classes>
         <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
@@ -945,11 +945,11 @@
             <line number="35" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
+        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
           <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -961,11 +961,11 @@
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.InventoryItem)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="23" hits="1620" branch="false" />
-                <line number="24" hits="1620" branch="false" />
-                <line number="25" hits="1620" branch="false" />
-                <line number="26" hits="1620" branch="false" />
-                <line number="27" hits="1620" branch="false" />
+                <line number="23" hits="1020" branch="false" />
+                <line number="24" hits="1020" branch="false" />
+                <line number="25" hits="1020" branch="false" />
+                <line number="26" hits="1020" branch="false" />
+                <line number="27" hits="1020" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
@@ -1010,9 +1010,9 @@
                 <line number="68" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1024,11 +1024,11 @@
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.InventoryItem)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="23" hits="1620" branch="false" />
-                <line number="24" hits="1620" branch="false" />
-                <line number="25" hits="1620" branch="false" />
-                <line number="26" hits="1620" branch="false" />
-                <line number="27" hits="1620" branch="false" />
+                <line number="23" hits="1020" branch="false" />
+                <line number="24" hits="1020" branch="false" />
+                <line number="25" hits="1020" branch="false" />
+                <line number="26" hits="1020" branch="false" />
+                <line number="27" hits="1020" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
@@ -1075,7 +1075,7 @@
             </method>
           </methods>
           <lines>
-            <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+            <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
             <line number="12" hits="232" branch="false" />
             <line number="13" hits="232" branch="false" />
             <line number="15" hits="232" branch="false" />
@@ -1083,11 +1083,11 @@
             <line number="17" hits="232" branch="false" />
             <line number="18" hits="232" branch="false" />
             <line number="19" hits="232" branch="false" />
-            <line number="23" hits="1620" branch="false" />
-            <line number="24" hits="1620" branch="false" />
-            <line number="25" hits="1620" branch="false" />
-            <line number="26" hits="1620" branch="false" />
-            <line number="27" hits="1620" branch="false" />
+            <line number="23" hits="1020" branch="false" />
+            <line number="24" hits="1020" branch="false" />
+            <line number="25" hits="1020" branch="false" />
+            <line number="26" hits="1020" branch="false" />
+            <line number="27" hits="1020" branch="false" />
             <line number="30" hits="6" branch="false" />
             <line number="31" hits="6" branch="false" />
             <line number="32" hits="6" branch="false" />
@@ -4379,36 +4379,30 @@
               <lines>
                 <line number="16" hits="52" branch="false" />
                 <line number="17" hits="52" branch="false" />
-                <line number="18" hits="52" branch="false" />
                 <line number="19" hits="52" branch="false" />
+                <line number="20" hits="52" branch="false" />
                 <line number="21" hits="52" branch="false" />
-                <line number="22" hits="52" branch="false" />
                 <line number="23" hits="52" branch="false" />
-                <line number="25" hits="52" branch="false" />
               </lines>
             </method>
             <method name="AddInfrastructure" signature="(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
                 <line number="16" hits="52" branch="false" />
                 <line number="17" hits="52" branch="false" />
-                <line number="18" hits="52" branch="false" />
                 <line number="19" hits="52" branch="false" />
+                <line number="20" hits="52" branch="false" />
                 <line number="21" hits="52" branch="false" />
-                <line number="22" hits="52" branch="false" />
                 <line number="23" hits="52" branch="false" />
-                <line number="25" hits="52" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
             <line number="16" hits="52" branch="false" />
             <line number="17" hits="52" branch="false" />
-            <line number="18" hits="52" branch="false" />
             <line number="19" hits="52" branch="false" />
+            <line number="20" hits="52" branch="false" />
             <line number="21" hits="52" branch="false" />
-            <line number="22" hits="52" branch="false" />
             <line number="23" hits="52" branch="false" />
-            <line number="25" hits="52" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Extensions.PropertyBuilderExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/PropertyBuilderExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -4733,7 +4727,7 @@
             <line number="34" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfigurarion" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/InventoryItemConfigurarion.cs" line-rate="1" branch-rate="1" complexity="2">
+        <class name="Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfiguration" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Persistence/Configurations/InventoryItemConfiguration.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
             <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.InventoryItem&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>

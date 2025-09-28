@@ -1,22 +1,22 @@
 Summary
-  Generated on: 09/28/2025 - 12:10:39
-  Coverage date: 09/28/2025 - 12:09:48 - 09/28/2025 - 12:10:38
+  Generated on: 09/28/2025 - 12:39:53
+  Coverage date: 09/28/2025 - 12:39:04 - 09/28/2025 - 12:39:51
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 85
   Files: 84
-  Line coverage: 92.2%
-  Covered lines: 1361
+  Line coverage: 92.1%
+  Covered lines: 1359
   Uncovered lines: 115
-  Coverable lines: 1476
-  Total lines: 4475
-  Branch coverage: 71.3% (234 of 328)
-  Covered branches: 234
+  Coverable lines: 1474
+  Total lines: 4473
+  Branch coverage: 70.7% (232 of 328)
+  Covered branches: 232
   Total branches: 328
   Method coverage: 83.9% (272 of 324)
   Covered methods: 272
   Total methods: 324
-  Tag: 226_18074017548
+  Tag: 227_18074358437
 
 Ombor.API                                                                          85.1%
   Ombor.API.Controllers.CategoriesController                                      100.0%
@@ -96,7 +96,7 @@ Ombor.Infrastructure                                                            
   Ombor.Infrastructure.Persistence.ApplicationDbContext                           100.0%
   Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration           100.0%
   Ombor.Infrastructure.Persistence.Configurations.InventoryConfiguration          100.0%
-  Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfigurarion      100.0%
+  Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfiguration      100.0%
   Ombor.Infrastructure.Persistence.Configurations.PartnerBalanceConfiguration     100.0%
   Ombor.Infrastructure.Persistence.Configurations.PartnerConfiguration            100.0%
   Ombor.Infrastructure.Persistence.Configurations.PaymentAllocationConfiguration  100.0%
