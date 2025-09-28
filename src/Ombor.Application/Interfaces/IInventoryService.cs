@@ -13,8 +13,7 @@ public interface IInventoryService
     /// <summary>
     /// Retrieves all inventories, optionally filtered by a search term.
     /// </summary>
-    /// <param name="request"></param>
-    /// The filtering options. <see cref="GetInventoryRequest.SearchTerm"/> may be null or whitespace.
+    /// <param name="request">Filtering parameter for fetching inventories.</param>
     /// <returns>An array of <see cref="InventoryDto"/> Matching the filter.</returns>
     Task<InventoryDto[]> GetAsync(GetInventoriesRequest request);
 

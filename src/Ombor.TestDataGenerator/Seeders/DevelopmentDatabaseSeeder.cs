@@ -165,19 +165,17 @@ internal sealed class DevelopmentDatabaseSeeder(
         var products = context.Products
             .Select(x => x.Id)
             .ToArray();
-        var inventories = InventoryGenerator
-            .Generate(
-                products,
-                seedSettings.NumberOfItemsPerInventory,
-                seedSettings.NumberOfInventories,
-                seedSettings.Locale)
+        var inventories = InventoryGenerator.Generate(
+            products,
+            seedSettings.NumberOfItemsPerInventory,
+            seedSettings.NumberOfInventories,
+            seedSettings.Locale)
             .DistinctBy(x => x.Name)
             .ToArray();
 
         context.Inventories.AddRange(inventories);
         await context.SaveChangesAsync();
     }
-
 
     //private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     private async Task AddSalesAsync(IApplicationDbContext context)

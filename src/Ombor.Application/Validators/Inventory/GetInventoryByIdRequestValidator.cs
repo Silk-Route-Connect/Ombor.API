@@ -9,6 +9,6 @@ public sealed class GetInventoryByIdRequestValidator : AbstractValidator<GetInve
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
-            .WithMessage("Invalid inventory ID.");
+            .WithMessage(x => $"Invalid inventory ID: {x.Id}.");
     }
 }

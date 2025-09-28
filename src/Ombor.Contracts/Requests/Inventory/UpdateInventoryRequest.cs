@@ -1,7 +1,7 @@
 namespace Ombor.Contracts.Requests.Inventory;
 
 /// <summary>
-/// Data required to update an existing inventory.
+/// Request to update an existing inventory.
 /// </summary>
 /// <param name="Id">The identifier of the inventory to update.</param>
 /// <param name="Name">The new inventory name.</param>

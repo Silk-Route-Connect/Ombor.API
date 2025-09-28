@@ -7,4 +7,8 @@ namespace Ombor.Contracts.Responses.Inventory;
 /// <param name="Quantity">The inventory item quantity.</param>
 /// <param name="InventoryId">The inventory ID.</param>
 /// <param name="ProductId">The product ID.</param>
-public sealed record InventoryItemDto(int Id, int Quantity, int InventoryId, int ProductId);
+public sealed record InventoryItemDto(
+    int Id,
+    int Quantity,
+    int InventoryId,
+    int ProductId);

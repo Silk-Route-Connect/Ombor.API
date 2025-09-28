@@ -1,7 +1,7 @@
 namespace Ombor.Contracts.Responses.Inventory;
 
 /// <summary>
-/// DTO representing an inventory
+/// DTO representing an inventory.
 /// </summary>
 /// <param name="Id">The inventory ID.</param>
 /// <param name="Name">The inventory name.</param>

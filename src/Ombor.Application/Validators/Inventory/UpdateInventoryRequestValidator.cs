@@ -9,7 +9,7 @@ public sealed class UpdateInventoryRequestValidator : AbstractValidator<UpdateIn
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
-            .WithMessage("Invalid inventory ID.");
+            .WithMessage(x => $"Invalid inventory ID: {x.Id}.");
 
         RuleFor(x => x.Name)
            .NotEmpty()

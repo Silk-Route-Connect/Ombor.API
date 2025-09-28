@@ -4,7 +4,7 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
-internal sealed class InventoryItemConfigurarion : IEntityTypeConfiguration<InventoryItem>
+internal sealed class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem>
 {
     public void Configure(EntityTypeBuilder<InventoryItem> builder)
     {

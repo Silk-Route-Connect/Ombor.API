@@ -1,7 +1,7 @@
 namespace Ombor.Contracts.Responses.Inventory;
 
 /// <summary>
-/// Response returned after successfully creating an inventory. 
+/// Response returned after successfully creating an inventory.
 /// </summary>
 /// <param name="Id">The newly created inventory's ID.</param>
 /// <param name="Name">The inventory's name.</param>

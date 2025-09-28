@@ -1,7 +1,7 @@
 namespace Ombor.Contracts.Requests.Inventory;
 
 /// <summary>
-/// Data required to create a new inventory.
+/// Request to create a new inventory.
 /// </summary>
 /// <param name="Name">The inventory name (required).</param>
 /// <param name="Location">An optional location.</param>

@@ -19,11 +19,9 @@ internal sealed class InventoryService(
         var query = context.Inventories.AsQueryable();
 
         var searchTerm = request.SearchTerm;
-
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(
-                x => x.Name.Contains(searchTerm) ||
+            query = query.Where(x => x.Name.Contains(searchTerm) ||
                 (x.Location != null && x.Location.Contains(searchTerm)));
         }
 
