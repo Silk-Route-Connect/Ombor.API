@@ -40,8 +40,7 @@ internal static class ProductMappings
             Type: product.Type.ToString(),
             Images: images,
             InventoryItems: inventoryItems,
-            Packaging: product.Packaging.ToDto(),
-            Images: images);
+            Packaging: product.Packaging.ToDto());
     }
 
     public static Product ToEntity(this CreateProductRequest request)
@@ -94,8 +93,7 @@ internal static class ProductMappings
             Type: product.Type.ToString(),
             Images: product.Images.ToDto(),
             InventoryItems: inventoryItems,
-            Packaging: product.Packaging.ToDto(),
-            Images: product.Images.ToDto());
+            Packaging: product.Packaging.ToDto());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)

@@ -10,6 +10,8 @@ internal sealed class InventoryItemConfigurarion : IEntityTypeConfiguration<Inve
     {
         builder.ToTable(nameof(InventoryItem));
 
+        builder.HasKey(x => x.Id);
+
         builder
             .HasOne(ii => ii.Inventory)
             .WithMany(i => i.InventoryItems)
@@ -24,10 +26,12 @@ internal sealed class InventoryItemConfigurarion : IEntityTypeConfiguration<Inve
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
-        builder.HasKey(x => x.Id);
-
         builder
             .Property(x => x.Quantity)
             .IsRequired();
+
+        builder
+            .HasIndex(x => new { x.InventoryId, x.ProductId })
+            .IsUnique();
     }
 }

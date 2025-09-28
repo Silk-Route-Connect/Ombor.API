@@ -1,5 +1,5 @@
-﻿using Ombor.Contracts.Responses.Inventory;
 ﻿using Ombor.Contracts.Common;
+using Ombor.Contracts.Responses.Inventory;
 
 namespace Ombor.Contracts.Responses.Product;
 
@@ -39,5 +39,4 @@ public sealed record CreateProductResponse(
     string Type,
     ProductImageDto[] Images,
     InventoryItemDto[] InventoryItems,
-    ProductPackagingDto? Packaging,
-    ProductImageDto[] Images);
+    ProductPackagingDto? Packaging);
