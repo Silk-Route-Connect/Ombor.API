@@ -56,8 +56,8 @@ public class Product : EntityBase
     public virtual List<TemplateItem> TemplateItems { get; set; } = [];
 
     /// <summary>Gets or sets collection of <see cref="InventoryItem"/>. </summary>
-    public virtual List<InventoryItem> InventoryItems { get; set; } = [];
-    
+    public virtual ICollection<InventoryItem> InventoryItems { get; set; } = [];
+
     /// <summary>
     /// Gets or sets the collection of <see cref="TransactionLine>"/> for product.
     /// </summary>
