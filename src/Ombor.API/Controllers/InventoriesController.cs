@@ -78,7 +78,7 @@ public sealed class InventoriesController(IInventoryService inventoryService) : 
     {
         if (id != request.Id)
         {
-            return BadRequest(new ProblemDetails
+            return BadRequest(new ValidationProblemDetails
             {
                 Title = "Id mismatch",
                 Detail = $"Route Id ({id}) does not match body Id ({request.Id}).",
