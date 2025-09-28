@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPartnerService, PartnerService>();
         services.AddScoped<ITemplateService, TemplateService>();
+        services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPaymentService, PaymentService>();
