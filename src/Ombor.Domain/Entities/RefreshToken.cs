@@ -1,6 +1,7 @@
 ﻿using Ombor.Domain.Common;
 
 namespace Ombor.Domain.Entities;
+
 public class RefreshToken : EntityBase
 {
     public string Token { get; set; } = string.Empty;

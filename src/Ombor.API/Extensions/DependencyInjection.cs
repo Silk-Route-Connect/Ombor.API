@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
 using Ombor.API.Filters;
+using Ombor.Application.Configurations;
 
 namespace Ombor.API.Extensions;
 
@@ -127,6 +128,9 @@ internal static class DependencyInjection
             })
             .AddJwtBearer(options =>
             {
+                using var scope = services.BuildServiceProvider().CreateScope();
+                var jwtSettings = scope.ServiceProvider.GetRequiredService<JwtSettings>();
+
                 options.RequireHttpsMetadata = true;
 
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -136,10 +140,10 @@ internal static class DependencyInjection
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+                        Encoding.UTF8.GetBytes(jwtSettings.Key))
                 };
             });
     }

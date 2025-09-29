@@ -1,4 +1,5 @@
 ﻿using Ombor.Domain.Common;
+
 namespace Ombor.Domain.Entities;
 
 public class User : AuditableEntity
@@ -14,6 +15,7 @@ public class User : AuditableEntity
 
     public int OrganizationId { get; set; }
     public required virtual Organization Organization { get; set; }
+
     public virtual ICollection<Role> Roles { get; set; }
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
 

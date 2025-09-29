@@ -7,6 +7,7 @@ namespace Ombor.Infrastructure.Services;
 internal sealed class RedisService(IConnectionMultiplexer connection) : IRedisService
 {
     private readonly IDatabase _redis = connection.GetDatabase();
+
     public async Task<bool> SetAsync<T>(string key, T value, TimeSpan? expiry = null)
     {
         var json = JsonSerializer.Serialize(value);

@@ -12,15 +12,18 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasKey(u => u.Id);
 
-        builder.HasOne(u => u.Organization)
+        builder
+            .HasOne(u => u.Organization)
             .WithMany(o => o.Users)
             .HasForeignKey(u => u.OrganizationId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(u => u.Roles)
+        builder
+            .HasMany(u => u.Roles)
             .WithMany(ur => ur.Users);
 
-        builder.HasMany(u => u.RefreshTokens)
+        builder
+            .HasMany(u => u.RefreshTokens)
             .WithOne(rt => rt.User)
             .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);

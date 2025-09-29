@@ -61,8 +61,6 @@ public interface IApplicationDbContext
 
     DbSet<Permission> Permissions { get; set; }
 
-    DbSet<OtpCode> OtpCodes { get; set; }
-
     DbSet<RefreshToken> RefreshTokens { get; set; }
 
     /// <summary>

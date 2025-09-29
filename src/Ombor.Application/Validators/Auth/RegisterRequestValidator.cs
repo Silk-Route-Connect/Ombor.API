@@ -11,13 +11,13 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .NotEmpty()
             .WithMessage("FirstName is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"FirstName must not exceed {ValidationConstants.DefaultStringLength}characters.");
+            .WithMessage($"FirstName must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleFor(x => x.LastName)
             .NotEmpty()
             .WithMessage("LastName is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"LastName must not exceed {ValidationConstants.DefaultStringLength}characters.");
+            .WithMessage($"LastName must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
@@ -25,13 +25,13 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .MinimumLength(8)
             .WithMessage("Password must be at least 8 characters long.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Password must not exceed {ValidationConstants.DefaultStringLength}characters.");
+            .WithMessage($"Password must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleFor(x => x.ConfirmPassword)
             .NotEmpty()
             .WithMessage("Confirm Password is required.")
             .Equal(x => x.Password)
-            .WithMessage("Passwords and Confirm Password do not match.");
+            .WithMessage("The password and confirmation password do not match.");
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()

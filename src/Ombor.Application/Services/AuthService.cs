@@ -1,6 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
 using Ombor.Contracts.Requests.Auth;
@@ -15,12 +15,12 @@ internal sealed class AuthService(
     IApplicationDbContext context,
     ISmsService smsService,
     IJwtTokenService tokenService,
-    IRedisService redisService,
+    IOtpCodeProvider otpCodeProvider,
     IPasswordHasher passwordHasher,
-    IConfiguration configuration,
-    IOrganizationService organizationService) : IAuthService
+    IOrganizationService organizationService,
+    JwtSettings jwtSettings) : IAuthService
 {
-    public async Task<SendOtpResponse> RegisterAsync(RegisterRequest request)
+    public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -32,46 +32,73 @@ internal sealed class AuthService(
             throw new InvalidOperationException("User with this phone number already exists.");
         }
 
-        var passwordHash = passwordHasher.HashPassword(request.Password);
-
-        var organization = await organizationService.EnsureOrganizationExistsAsync(request.OrganizationName);
-
-        var newUser = new User
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            TelegramAccount = request.TelegramAccount,
-            PhoneNumber = request.PhoneNumber,
-            Email = request.Email,
-            PasswordHash = passwordHash.Hash,
-            PasswordSalt = passwordHash.Salt,
-            IsPhoneNumberConfirmed = false,
-            OrganizationId = organization.Id,
-            Organization = null! // To be set by EF Core
-        };
-
-        var key = $"reg:user:{newUser.PhoneNumber}";
-        await redisService.SetAsync<User>(key, newUser, TimeSpan.FromMinutes(10));
-
-        var code = await GenerateOtpCode(request.PhoneNumber);
+        await otpCodeProvider.SetRegisterRequestAsync(request, TimeSpan.FromMinutes(5));
+        var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.Registration, 5);
 
         var message = new SmsMessage
         (
             request.PhoneNumber,
-            $"Bu Eskiz dan test",
-            "Bu Eskiz dan test"
+            $"Inventory Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
+            "Inventort Management"
         );
 
         await smsService.SendMessageAsync(message);
 
-        return new SendOtpResponse("Registration OTP code sent to your phone number.", 5);
+        return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
+    }
+
+    public async Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var otpCode = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
+
+        if (!TryVerifyOtp(request, otpCode!, out var response))
+        {
+            return response;
+        }
+
+        var registerRequest = await otpCodeProvider.GetRegisterRequestAsync(request.PhoneNumber);
+
+        if (registerRequest is null)
+        {
+            return new VerifyOtpResponse(false, "Registration request not found or has expired");
+        }
+
+        var organization = await organizationService.CreateAsync(registerRequest.OrganizationName);
+
+        var passwordHash = passwordHasher.HashPassword(registerRequest.Password);
+
+        var newUser = new User
+        {
+            FirstName = registerRequest.FirstName,
+            LastName = registerRequest.LastName,
+            TelegramAccount = registerRequest.TelegramAccount,
+            PhoneNumber = registerRequest.PhoneNumber,
+            Email = registerRequest.Email,
+            PasswordHash = passwordHash.Hash,
+            PasswordSalt = passwordHash.Salt,
+            IsPhoneNumberConfirmed = true,
+            OrganizationId = organization.Id,
+            Organization = null! // To be set by EF Core
+        };
+
+        context.Users.Add(newUser);
+        await context.SaveChangesAsync();
+
+        await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
+        await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
+
+        return new VerifyOtpResponse(true, "Phone number successfully verified");
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var user = await GetOrThrowAsync(request.PhoneNumber);
 
-        CheckUser(user, request.Password);
+        VerifyPassword(user, request.Password);
 
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
@@ -81,47 +108,7 @@ internal sealed class AuthService(
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    public async Task<VerificationResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var otpKey = $"otp:{request.PhoneNumber}:{OtpPurpose.Registration}";
-        var otpData = await redisService.GetAsync<OtpCode>(otpKey);
-
-        if (otpData is null)
-        {
-            return new VerificationResponse(false, "OTP expired or not found");
-        }
-
-        if (DateTime.UtcNow > otpData.ExpiresAt)
-        {
-            return new VerificationResponse(false, "OTP expired");
-        }
-
-        if (otpData.Code != request.Code)
-        {
-            return new VerificationResponse(false, "The code is incorrect.");
-        }
-
-        var userKey = $"reg:user:{request.PhoneNumber}";
-        var user = await redisService.GetAsync<User>(userKey);
-
-        if (user is null)
-        {
-            return new VerificationResponse(false, "User not found");
-        }
-
-        user.IsPhoneNumberConfirmed = true;
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        await redisService.RemoveAsync(otpKey);
-        await redisService.RemoveAsync(userKey);
-
-        return new VerificationResponse(true, "Phone number successfully verified");
-    }
-
-    public async Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -151,7 +138,7 @@ internal sealed class AuthService(
 
         await SaveRefreshTokenAsync(user, newRefreshToken);
 
-        return new LoginResponse(newAccessToken, newRefreshToken);
+        return new RefreshTokenResponse(newAccessToken);
     }
 
     private async Task SaveRefreshTokenAsync(User user, string refreshToken)
@@ -160,33 +147,13 @@ internal sealed class AuthService(
         {
             Token = refreshToken,
             IsRevoked = false,
-            ExpiresAt = DateTime.UtcNow.AddDays(
-                int.TryParse(configuration["Jwt:RefreshTokenExpiresInDays"], out var days) ? days : 15),
+            ExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.RefreshTokenExpiresInDays),
             UserId = user.Id,
             User = user
         };
 
         context.RefreshTokens.Add(tokenEntity);
         await context.SaveChangesAsync();
-    }
-
-    private async Task<string> GenerateOtpCode(string phoneNumber)
-    {
-        var code = RandomNumberGenerator.GetInt32(1000, 9999).ToString();
-
-        var otpData = new OtpCode
-        {
-            PhoneNumber = phoneNumber,
-            Code = code,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(5),
-            Purpose = OtpPurpose.Registration
-        };
-
-        var key = $"otp:{otpData.PhoneNumber}:{otpData.Purpose}";
-
-        await redisService.SetAsync(key, otpData, otpData.ExpiresAt - DateTime.UtcNow);
-
-        return code;
     }
 
     private async Task<User> GetOrThrowAsync(string phoneNumber) =>
@@ -197,7 +164,7 @@ internal sealed class AuthService(
        await context.Users.FirstOrDefaultAsync(x => x.Id == id)
        ?? throw new EntityNotFoundException<User>(id);
 
-    private void CheckUser(User user, string password)
+    private void VerifyPassword(User user, string password)
     {
         if (!passwordHasher.VerifyPassword(password, user))
         {
@@ -208,5 +175,21 @@ internal sealed class AuthService(
         {
             throw new UnauthorizedAccessException("Invalid phone number or password.");
         }
+    }
+
+    private static bool TryVerifyOtp(SmsVerificationRequest request, OtpCode otpData,
+        [NotNullWhen(false)] out VerifyOtpResponse? failResponse)
+    {
+        failResponse = otpData switch
+        {
+            null => new VerifyOtpResponse(false, "OTP expired or not found"),
+            { ExpiredAt: var exp } when DateTime.UtcNow > exp
+                => new VerifyOtpResponse(false, "OTP expired"),
+            { Code: var code } when code != request.Code
+                => new VerifyOtpResponse(false, "The code is incorrect."),
+            _ => null
+        };
+
+        return failResponse is null;
     }
 }

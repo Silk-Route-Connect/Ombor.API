@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ombor.Contracts.Requests.Common;
+
 public sealed record PagedRequest(
     [Range(1,int.MaxValue)]
     int PageNumber = 1,
@@ -10,5 +11,4 @@ public sealed record PagedRequest(
     [MaxLength(255)]
     string? SortBy = null,
     bool SortByDescending = false,
-    int? OrganizationId = null
-    );
+    int? OrganizationId = null);

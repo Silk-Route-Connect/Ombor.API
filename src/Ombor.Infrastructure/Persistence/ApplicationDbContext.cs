@@ -24,7 +24,6 @@ internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> optio
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Organization> Organizations { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
-    public virtual DbSet<OtpCode> OtpCodes { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

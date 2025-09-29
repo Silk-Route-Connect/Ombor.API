@@ -5,8 +5,8 @@ namespace Ombor.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<SendOtpResponse> RegisterAsync(RegisterRequest request);
+    Task<RegisterResponse> RegisterAsync(RegisterRequest request);
     Task<LoginResponse> LoginAsync(LoginRequest request);
-    Task<VerificationResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request);
-    Task<LoginResponse> RefreshTokenAsync(RefreshTokenRequest request);
+    Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request);
+    Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
 }

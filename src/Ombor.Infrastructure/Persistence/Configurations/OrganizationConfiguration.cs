@@ -13,10 +13,6 @@ internal sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organ
         builder.HasKey(o => o.Id);
 
         builder
-            .HasIndex(o => o.Name)
-            .IsUnique();
-
-        builder
             .Property(o => o.Name)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();

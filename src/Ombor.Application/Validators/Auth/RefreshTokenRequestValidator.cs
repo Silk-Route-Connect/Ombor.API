@@ -10,7 +10,7 @@ public sealed class RefreshTokenRequestValidator : AbstractValidator<RefreshToke
         RuleFor(x => x.RefreshToken)
             .NotEmpty()
             .WithMessage("RefreshToken is required.")
-            .MaximumLength(ValidationConstants.MaxStringLength)
-            .WithMessage($"RefreshToken must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .MaximumLength(ValidationConstants.TokenLength)
+            .WithMessage($"RefreshToken must not exceed {ValidationConstants.TokenLength} characters.");
     }
 }

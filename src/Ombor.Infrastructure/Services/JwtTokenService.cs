@@ -2,14 +2,14 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Services;
 
-internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenService
+internal sealed class JwtTokenService(JwtSettings jwtSettings) : IJwtTokenService
 {
     public string GenerateAccessToken(User user)
     {
@@ -25,13 +25,13 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
         }
 
         var credentials = GetCredentials();
-        var issuer = configuration["Jwt:Issuer"];
-        var audience = configuration["Jwt:Audience"];
-        var hours = configuration.GetValue<double>("Jwt:AccessTokenExpiresInHours");
+        var issuer = jwtSettings.Issuer;
+        var audience = jwtSettings.Audience;
+        var hours = jwtSettings.AccessTokenExpiresInHours;
 
         if (hours <= 0)
         {
-            throw new InvalidOperationException("Jwt:AccessTokenExpiresInHours must be > 0.");
+            throw new InvalidOperationException($"{jwtSettings.AccessTokenExpiresInHours} must be > 0.");
         }
 
         var securityToken = new JwtSecurityToken(
@@ -61,7 +61,7 @@ internal sealed class JwtTokenService(IConfiguration configuration) : IJwtTokenS
 
     private SigningCredentials GetCredentials()
     {
-        var key = configuration["Jwt:Key"];
+        var key = jwtSettings.Key;
 
         if (string.IsNullOrWhiteSpace(key))
         {
