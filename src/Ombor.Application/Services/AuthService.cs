@@ -138,7 +138,7 @@ internal sealed class AuthService(
 
         await SaveRefreshTokenAsync(user, newRefreshToken);
 
-        return new RefreshTokenResponse(newAccessToken);
+        return new RefreshTokenResponse(newAccessToken, newRefreshToken);
     }
 
     private async Task SaveRefreshTokenAsync(User user, string refreshToken)
