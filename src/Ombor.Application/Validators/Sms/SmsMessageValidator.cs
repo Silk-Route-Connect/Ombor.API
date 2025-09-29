@@ -15,6 +15,6 @@ public sealed class SmsMessageValidator : AbstractValidator<SmsMessage>
             .NotEmpty()
             .WithMessage("Phone number cannot be empty.")
             .Must(ValidationHelpers.IsValidPhoneNumber)
-            .WithMessage("One or more phone numbers are in invalid format."); ;
+            .WithMessage("One or more phone numbers are in invalid format.");
     }
 }

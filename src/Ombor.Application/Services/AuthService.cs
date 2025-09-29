@@ -39,7 +39,7 @@ internal sealed class AuthService(
         (
             request.PhoneNumber,
             $"Inventory Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-            "Inventort Management"
+            "Inventory Management"
         );
 
         await smsService.SendMessageAsync(message);
