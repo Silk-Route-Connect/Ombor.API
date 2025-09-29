@@ -7,7 +7,7 @@ public sealed class JwtSettings
     public const string SectionName = nameof(JwtSettings);
 
     [Required]
-    [MinLength(15)]
+    [MinLength(32)]
     public required string Key { get; init; }
 
     [Required]
