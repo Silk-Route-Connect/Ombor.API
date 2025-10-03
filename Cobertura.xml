@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.8587975730832874" branch-rate="0.6236559139784946" lines-covered="1557" lines-valid="1813" branches-covered="232" branches-valid="372" complexity="634" version="0" timestamp="1759147942">
+<coverage line-rate="0.8587975730832874" branch-rate="0.6290322580645161" lines-covered="1557" lines-valid="1813" branches-covered="234" branches-valid="372" complexity="634" version="0" timestamp="1759513346">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -609,7 +609,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.8315789473684211" branch-rate="0.6346153846153846" complexity="435">
+    <package name="Ombor.Application" line-rate="0.8315789473684211" branch-rate="0.6410256410256411" complexity="435">
       <classes>
         <class name="Ombor.Application.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="1" complexity="5">
           <methods>
@@ -1171,7 +1171,7 @@
             <line number="35" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
+        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
           <methods>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
@@ -1216,9 +1216,9 @@
                 <line number="47" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
+                <line number="52" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
@@ -1279,9 +1279,9 @@
                 <line number="47" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
+                <line number="52" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
@@ -1328,7 +1328,7 @@
             <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
-            <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
+            <line number="52" hits="6" branch="true" condition-coverage="100% (4/4)" />
             <line number="53" hits="6" branch="false" />
             <line number="54" hits="6" branch="false" />
             <line number="56" hits="6" branch="false" />
@@ -4603,17 +4603,17 @@
           <methods>
             <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="152" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
             <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
-                <line number="10" hits="152" branch="false" />
+                <line number="10" hits="146" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="10" hits="152" branch="false" />
+            <line number="10" hits="146" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Domain.Entities.TransactionLine" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionLine.cs" line-rate="1" branch-rate="1" complexity="1">
