@@ -25,6 +25,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddProductImagesAsync(context);
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
+        await AddInventoriesAsync(context);
         await AddSalesAsync(context);
         await AddSuppliesAsync(context);
         await AddSaleRefundsAsync(context);
@@ -154,6 +155,29 @@ internal sealed class DevelopmentDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task AddInventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+        {
+            return;
+        }
+
+        var products = context.Products
+            .Select(x => x.Id)
+            .ToArray();
+        var inventories = InventoryGenerator.Generate(
+            products,
+            seedSettings.NumberOfItemsPerInventory,
+            seedSettings.NumberOfInventories,
+            seedSettings.Locale)
+            .DistinctBy(x => x.Name)
+            .ToArray();
+
+        context.Inventories.AddRange(inventories);
+        await context.SaveChangesAsync();
+    }
+
+    //private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     private async Task AddSalesAsync(IApplicationDbContext context)
     {
         if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale))
@@ -268,7 +292,7 @@ internal sealed class DevelopmentDatabaseSeeder(
 
     private async Task AddPaymentsAsync(IApplicationDbContext context)
     {
-        if (context.TransactionLines.Any())
+        if (context.Transactions.Any())
         {
             return;
         }

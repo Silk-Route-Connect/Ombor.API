@@ -1,7 +1,7 @@
 namespace Ombor.Contracts.Responses.Partner;
 
 /// <summary>
-/// DTO representing a partner for client consumption
+/// DTO representing a partner for client consumption.
 /// </summary>
 /// <param name="Id">The partner ID</param>
 /// <param name="Name">The partner name</param>

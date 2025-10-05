@@ -33,9 +33,14 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IPartnerService, PartnerService>();
         services.AddScoped<ITemplateService, TemplateService>();
+        services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();
+        services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();
 
@@ -46,6 +51,16 @@ public static class DependencyInjection
     {
         services.AddOptions<FileSettings>()
             .Bind(configuration.GetSection(FileSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<JwtSettings>()
+            .Bind(configuration.GetSection(JwtSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<SmsSettings>()
+            .Bind(configuration.GetSection(SmsSettings.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

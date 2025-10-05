@@ -18,6 +18,10 @@ internal static class ProductMappings
             .Select(x => x.ToDto())
             .ToArray();
 
+        var inventoryItems = product.InventoryItems
+            .Select(x => x.ToDto())
+            .ToArray();
+
         return new(
             Id: product.Id,
             CategoryId: product.CategoryId,
@@ -34,8 +38,9 @@ internal static class ProductMappings
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
-            Packaging: product.Packaging.ToDto(),
-            Images: images);
+            Images: images,
+            InventoryItems: inventoryItems,
+            Packaging: product.Packaging.ToDto());
     }
 
     public static Product ToEntity(this CreateProductRequest request)
@@ -66,6 +71,10 @@ internal static class ProductMappings
             throw new InvalidOperationException("Cannot map product without Category.");
         }
 
+        var inventoryItems = product.InventoryItems
+            .Select(x => x.ToDto())
+            .ToArray();
+
         return new(
             Id: product.Id,
             CategoryId: product.CategoryId,
@@ -82,8 +91,9 @@ internal static class ProductMappings
             IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
-            Packaging: product.Packaging.ToDto(),
-            Images: product.Images.ToDto());
+            Images: product.Images.ToDto(),
+            InventoryItems: inventoryItems,
+            Packaging: product.Packaging.ToDto());
     }
 
     public static UpdateProductResponse ToUpdateResponse(this Product product)

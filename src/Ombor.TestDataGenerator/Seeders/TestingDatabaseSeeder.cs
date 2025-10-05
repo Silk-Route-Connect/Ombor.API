@@ -27,6 +27,8 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await CreateInventoriesAsync(context);
+        await CreateInventoryItemsAsync(context);
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -141,6 +143,55 @@ internal sealed class TestingDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task CreateInventoriesAsync(IApplicationDbContext context)
+    {
+        if (context.Inventories.Any())
+        {
+            return;
+        }
+
+        var inventories = Enumerable.Range(1, seedSettings.NumberOfInventories)
+            .Select(i => new Inventory
+            {
+                Name = $"Test Inventory {i}",
+                Location = _faker.Address.StreetAddress(),
+                IsActive = _faker.Random.Bool(),
+            });
+
+        context.Inventories.AddRange(inventories);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task CreateInventoryItemsAsync(IApplicationDbContext context)
+    {
+        if (context.InventoryItems.Any())
+        {
+            return;
+        }
+
+        var products = context.Products.Select(p => p.Id).ToArray();
+        var inventories = context.Inventories.Select(i => i.Id).ToArray();
+        var inventoryItems = new List<InventoryItem>();
+
+        foreach (var product in products.Take(seedSettings.NumberOfItemsPerInventory))
+        {
+            foreach (var inventory in inventories)
+            {
+                inventoryItems.Add(new InventoryItem
+                {
+                    Quantity = 10,
+                    ProductId = product,
+                    InventoryId = inventory,
+                    Product = null!, // EF Core will set these automatically
+                    Inventory = null! // EF Core will set these automatically
+                });
+            }
+        }
+
+        context.InventoryItems.AddRange(inventoryItems);
+        await context.SaveChangesAsync();
+    }
+
     private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     {
         var originalsDir = Path.Combine(env.WebRootPath, fileSettings.BasePath, fileSettings.ProductUploadsSection, fileSettings.OriginalsSubfolder);
@@ -174,7 +225,7 @@ internal sealed class TestingDatabaseSeeder(
         var currentAssembly = typeof(ProductGenerator).Assembly;
         var nameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var resourceNames = currentAssembly.GetManifestResourceNames()
-                     .Where(n => n.StartsWith(imagesNamespace, StringComparison.OrdinalIgnoreCase));
+            .Where(n => n.StartsWith(imagesNamespace, StringComparison.OrdinalIgnoreCase));
 
         foreach (var resourceName in resourceNames)
         {

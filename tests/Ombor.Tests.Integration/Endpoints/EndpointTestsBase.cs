@@ -61,6 +61,8 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         var client = factory.CreateDefaultClient(uri, loggingHandler);
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+
         return new ApiClient(client);
     }
 
@@ -70,6 +72,7 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         public const string Product = "products";
         public const string Partner = "partners";
         public const string Template = "templates";
+        public const string Inventory = "inventories";
         public const string Transaction = "transactions";
     }
 }

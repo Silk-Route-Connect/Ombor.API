@@ -53,6 +53,26 @@ public interface IApplicationDbContext
 
     DbSet<PaymentAttachment> PaymentAttachments { get; set; }
 
+    DbSet<User> Users { get; set; }
+
+    DbSet<Organization> Organizations { get; set; }
+
+    DbSet<Role> Roles { get; set; }
+
+    DbSet<Permission> Permissions { get; set; }
+
+    DbSet<RefreshToken> RefreshTokens { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Inventories set.
+    /// </summary>
+    DbSet<Inventory> Inventories { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Inventory Items set.
+    /// </summary>
+    DbSet<InventoryItem> InventoryItems { get; set; }
+
     /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
