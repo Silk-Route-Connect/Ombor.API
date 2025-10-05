@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.868224763799105" branch-rate="0.6201923076923077" lines-covered="1746" lines-valid="2011" branches-covered="258" branches-valid="416" complexity="703" version="0" timestamp="1759674354">
+<coverage line-rate="0.868224763799105" branch-rate="0.6201923076923077" lines-covered="1746" lines-valid="2011" branches-covered="258" branches-valid="416" complexity="703" version="0" timestamp="1759675255">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -1240,13 +1240,13 @@
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
-                <line number="74" hits="60" branch="false" />
-                <line number="75" hits="60" branch="false" />
-                <line number="76" hits="60" branch="false" />
-                <line number="77" hits="60" branch="false" />
-                <line number="78" hits="60" branch="false" />
-                <line number="79" hits="60" branch="false" />
+                <line number="73" hits="62" branch="true" condition-coverage="50% (2/4)" />
+                <line number="74" hits="62" branch="false" />
+                <line number="75" hits="62" branch="false" />
+                <line number="76" hits="62" branch="false" />
+                <line number="77" hits="62" branch="false" />
+                <line number="78" hits="62" branch="false" />
+                <line number="79" hits="62" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="2">
@@ -1324,13 +1324,13 @@
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
-                <line number="74" hits="60" branch="false" />
-                <line number="75" hits="60" branch="false" />
-                <line number="76" hits="60" branch="false" />
-                <line number="77" hits="60" branch="false" />
-                <line number="78" hits="60" branch="false" />
-                <line number="79" hits="60" branch="false" />
+                <line number="73" hits="62" branch="true" condition-coverage="50% (2/4)" />
+                <line number="74" hits="62" branch="false" />
+                <line number="75" hits="62" branch="false" />
+                <line number="76" hits="62" branch="false" />
+                <line number="77" hits="62" branch="false" />
+                <line number="78" hits="62" branch="false" />
+                <line number="79" hits="62" branch="false" />
               </lines>
             </method>
           </methods>
@@ -1384,13 +1384,13 @@
             <line number="68" hits="4" branch="false" />
             <line number="69" hits="4" branch="false" />
             <line number="70" hits="4" branch="false" />
-            <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
-            <line number="74" hits="60" branch="false" />
-            <line number="75" hits="60" branch="false" />
-            <line number="76" hits="60" branch="false" />
-            <line number="77" hits="60" branch="false" />
-            <line number="78" hits="60" branch="false" />
-            <line number="79" hits="60" branch="false" />
+            <line number="73" hits="62" branch="true" condition-coverage="50% (2/4)" />
+            <line number="74" hits="62" branch="false" />
+            <line number="75" hits="62" branch="false" />
+            <line number="76" hits="62" branch="false" />
+            <line number="77" hits="62" branch="false" />
+            <line number="78" hits="62" branch="false" />
+            <line number="79" hits="62" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
