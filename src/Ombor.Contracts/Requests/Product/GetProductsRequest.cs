@@ -18,6 +18,19 @@ public sealed record GetProductsRequest(
     decimal? MaxPrice = null,
     ProductType? Type = null,
     string? SearchTerm = null,
-    string? SortBy = "name_asc",
-    int PageNumber = 1,
-    int PageSize = 10) : PagedRequest(PageNumber, PageSize);
+    string? SortBy = "name_asc") : PagedRequest
+{
+    public GetProductsRequest(
+        int? categoryId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        ProductType? type,
+        string? searchTerm,
+        string? sortBy,
+        int pageNumber,
+        int pageSize) : this(categoryId, minPrice, maxPrice, type, searchTerm, sortBy)
+    {
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+    }
+}

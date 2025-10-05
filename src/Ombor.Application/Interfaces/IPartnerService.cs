@@ -17,7 +17,7 @@ public interface IPartnerService
     /// <param name="request">
     /// The filtering options. <see cref="GetPartnersRequest.SearchTerm"/> may be null or whitespace.
     /// </param>
-    /// <returns>An array of <see cref="PartnerDto"/>Matching the filter.</returns>
+    /// <returns>A paged list of <see cref="PartnerDto"/>Matching the filter.</returns>
     Task<PagedList<PartnerDto>> GetAsync(GetPartnersRequest request);
 
     /// <summary>

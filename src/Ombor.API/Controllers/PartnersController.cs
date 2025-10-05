@@ -22,7 +22,7 @@ public sealed class PartnersController(
     /// Retrieves a list of partners, with optional filtering by search term.
     /// </summary>
     /// <param name="request">Filtering and paging parameters.</param>
-    /// <returns>Array of <see cref="PartnerDto"/>.</returns>
+    /// <returns>Paged list of <see cref="PartnerDto"/>.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PartnerDto[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedList<PartnerDto>>> GetAsync(
@@ -56,7 +56,7 @@ public sealed class PartnersController(
     [HttpGet("{id:int:min(1)}/payments")]
     [ProducesResponseType(typeof(PaymentDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PaymentDto[]>> GetPartnerPaymentsAsync([FromRoute] int id)
+    public async Task<ActionResult<PagedList<PaymentDto>>> GetPartnerPaymentsAsync([FromRoute] int id)
     {
         var request = new GetPaymentsRequest(PartnerId: id);
         var response = await paymentService.GetAsync(request);

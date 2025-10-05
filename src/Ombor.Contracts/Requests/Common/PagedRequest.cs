@@ -10,6 +10,11 @@ public abstract record PagedRequest
     protected PagedRequest(int pageNumber, int pageSize)
     {
         PageNumber = pageNumber < 1 ? 1 : pageNumber;
-        PageSize = pageSize is < 1 or > 100 ? 10 : pageSize;
+        PageSize = pageSize switch
+        {
+            < 1 => 10,
+            > 100 => 100,
+            _ => pageSize
+        };
     }
 }

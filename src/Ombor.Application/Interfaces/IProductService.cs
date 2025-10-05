@@ -21,7 +21,7 @@ public interface IProductService
     /// <see cref="GetProductsRequest.MinPrice"/>,
     /// <see cref="GetProductsRequest.MaxPrice"/>.
     /// </param>
-    /// <returns>An array of <see cref="ProductDto"/> matching the criteria.</returns>
+    /// <returns>A paged list of <see cref="ProductDto"/> matching the criteria.</returns>
     Task<PagedList<ProductDto>> GetAsync(GetProductsRequest request);
 
     /// <summary>

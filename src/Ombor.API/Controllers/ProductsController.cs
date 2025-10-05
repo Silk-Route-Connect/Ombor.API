@@ -19,7 +19,7 @@ public sealed class ProductsController(IProductService productService) : Control
     /// Retrieves a list of products, with optional filtering by search term, category, and price range.
     /// </summary>
     /// <param name="request">Filtering and paging parameters.</param>
-    /// <returns>Array of <see cref="ProductDto"/>.</returns>
+    /// <returns>Paged lisf of <see cref="ProductDto"/>.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ProductDto[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedList<ProductDto>>> GetAsync(
