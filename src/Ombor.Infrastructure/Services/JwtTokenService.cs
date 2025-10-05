@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
@@ -9,8 +10,10 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Services;
 
-internal sealed class JwtTokenService(JwtSettings jwtSettings) : IJwtTokenService
+internal sealed class JwtTokenService(IOptions<JwtSettings> settings) : IJwtTokenService
 {
+    private readonly JwtSettings jwtSettings = settings.Value;
+
     public string GenerateAccessToken(User user)
     {
         var claims = new List<Claim>

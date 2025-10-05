@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
@@ -18,7 +19,7 @@ internal sealed class AuthService(
     IOtpCodeProvider otpCodeProvider,
     IPasswordHasher passwordHasher,
     IOrganizationService organizationService,
-    JwtSettings jwtSettings) : IAuthService
+    IOptions<JwtSettings> jwtSettings) : IAuthService
 {
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
     {
@@ -147,7 +148,7 @@ internal sealed class AuthService(
         {
             Token = refreshToken,
             IsRevoked = false,
-            ExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.RefreshTokenExpiresInDays),
+            ExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiresInDays),
             UserId = user.Id,
             User = user
         };

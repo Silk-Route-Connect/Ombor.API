@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
@@ -10,8 +11,10 @@ namespace Ombor.Infrastructure.Services;
 internal sealed class SmsService(
     IRequestValidator validator,
     HttpClient client,
-    SmsSettings options) : ISmsService
+    IOptions<SmsSettings> smsSettings) : ISmsService
 {
+    private readonly SmsSettings options = smsSettings.Value;
+
     public async Task SendMessageAsync(SmsMessage message)
     {
         await validator.ValidateAndThrowAsync(message);
@@ -27,7 +30,7 @@ internal sealed class SmsService(
             throw new InvalidOperationException("SMS configuration is missing required values.");
         }
 
-        if (!Uri.TryCreate(apiUrl, UriKind.Absolute, out var uriResult))
+        if (!Uri.TryCreate(apiUrl, UriKind.Absolute, out var _))
         {
             throw new InvalidOperationException("SMS provider Api URL is invalid.");
         }

@@ -1,14 +1,11 @@
 ﻿using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
 using Ombor.API.Filters;
-using Ombor.Application.Configurations;
 
 namespace Ombor.API.Extensions;
 
@@ -16,7 +13,15 @@ internal static class DependencyInjection
 {
     public const string CorsPolicyName = "DefaultCorsPolicy";
 
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration) =>
+        services
+        .AddControllers()
+        .AddAuthorization()
+        .AddSwagger(configuration)
+        .AddErrorHandlers()
+        .AddCors(configuration);
+
+    private static IServiceCollection AddControllers(this IServiceCollection services)
     {
         services
             .AddControllers(options =>
@@ -29,37 +34,38 @@ internal static class DependencyInjection
                 options.SuppressAsyncSuffixInActionNames = false;
             })
             .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true)
-            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-
-        services.AddAuthorization();
-        services.AddSwagger(configuration);
-        services.AddErrorHandlers();
-        services.AddCors(configuration);
-        AddAuthentication(services, configuration);
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
         return services;
     }
 
-    private static void AddErrorHandlers(this IServiceCollection services)
+    private static IServiceCollection AddErrorHandlers(this IServiceCollection services)
     {
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
         services.AddExceptionHandler<InvalidFileExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
+
         services.AddProblemDetails();
+
+        return services;
     }
 
-    private static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
     {
         var openApiConfigurations = new OpenApiInfo();
         configuration.GetSection("Swagger").Bind(openApiConfigurations);
 
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(c =>
+        services.AddSwaggerGen(setup =>
         {
-            c.SwaggerDoc("v1", openApiConfigurations);
+            setup.SwaggerDoc("v1", openApiConfigurations);
 
-            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            setup.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
                 BearerFormat = "JWT",
                 Name = "Authorization",
@@ -69,7 +75,7 @@ internal static class DependencyInjection
                 Description = "Enter your JWT token in the format: Bearer {your token}",
             });
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            setup.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
                     new OpenApiSecurityScheme
@@ -84,14 +90,16 @@ internal static class DependencyInjection
                 }
             });
 
-            c.OperationFilter<ValidationErrorsOperationFilter>();
+            setup.OperationFilter<ValidationErrorsOperationFilter>();
 
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
+            setup.IncludeXmlComments(xmlPath);
 
-            c.SchemaFilter<EnumSchemaFilter>();
+            setup.SchemaFilter<EnumSchemaFilter>();
         }).AddSwaggerGenNewtonsoftSupport();
+
+        return services;
     }
 
     private static IServiceCollection AddCors(this IServiceCollection services, IConfiguration configuration)
@@ -115,36 +123,5 @@ internal static class DependencyInjection
         });
 
         return services;
-    }
-
-    private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
-    {
-        services
-            .AddAuthentication(options =>
-            {
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                using var scope = services.BuildServiceProvider().CreateScope();
-                var jwtSettings = scope.ServiceProvider.GetRequiredService<JwtSettings>();
-
-                options.RequireHttpsMetadata = true;
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings.Key))
-                };
-            });
     }
 }

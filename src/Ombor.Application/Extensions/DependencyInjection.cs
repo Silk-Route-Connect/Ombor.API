@@ -55,6 +55,16 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<JwtSettings>()
+            .Bind(configuration.GetSection(JwtSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<SmsSettings>()
+            .Bind(configuration.GetSection(SmsSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }

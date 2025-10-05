@@ -48,16 +48,21 @@ internal sealed class FileService(
             ThumbnailUrl: thumbnailUrl);
     }
 
-    public Task<FileUploadResult[]> UploadAsync(
+    public async Task<FileUploadResult[]> UploadAsync(
         IEnumerable<IFormFile> files,
         string? subfolder = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(files);
 
-        var tasks = files.Select(f => UploadAsync(f, subfolder, cancellationToken));
+        var results = new List<FileUploadResult>();
+        foreach (var file in files)
+        {
+            var result = await UploadAsync(file, subfolder, cancellationToken);
+            results.Add(result);
+        }
 
-        return Task.WhenAll(tasks);
+        return [.. results];
     }
 
     public async Task DeleteAsync(
