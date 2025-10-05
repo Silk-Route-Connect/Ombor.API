@@ -2,6 +2,7 @@
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Common;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Tests.Common.Helpers;
@@ -11,13 +12,13 @@ namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 public class ProductValidator(IApplicationDbContext context, FileSettings fileSettings, string webRootPath)
     : ValidatorBase(context, fileSettings, webRootPath)
 {
-    public async Task ValidateGetAsync(GetProductsRequest request, ProductDto[] response)
+    public async Task ValidateGetAsync(GetProductsRequest request, PagedList<ProductDto> response)
     {
         var expectedProducts = await GetProductsAsync(request);
 
-        Assert.Equal(expectedProducts.Length, response.Length);
+        Assert.Equal(expectedProducts.Count, response.Count);
 
-        for (int i = 0; i < expectedProducts.Length; i++)
+        for (int i = 0; i < expectedProducts.Count; i++)
         {
             var expected = expectedProducts[i];
             var actual = response[i];
@@ -94,7 +95,7 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         }
     }
 
-    private async Task<ProductDto[]> GetProductsAsync(GetProductsRequest request)
+    private async Task<PagedList<ProductDto>> GetProductsAsync(GetProductsRequest request)
     {
         var query = context.Products.AsNoTracking();
 
@@ -121,9 +122,11 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
 
         var products = await query
             .OrderBy(x => x.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
 
-        return products
+        var dtos = products
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
@@ -141,8 +144,11 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                 x.Measurement.ToString(),
                 x.Type.ToString(),
                 x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode),
-                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()))
-            .ToArray();
+                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray()));
+
+        var count = dtos.Count();
+
+        return new PagedList<ProductDto>(dtos, count, request.PageNumber, request.PageSize);
     }
 
     private void ValidateFileExists(string fileName)

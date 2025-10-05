@@ -1,4 +1,5 @@
 ﻿using Ombor.Contracts.Requests.Category;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Responses.Category;
 
 namespace Ombor.Application.Interfaces;
@@ -15,7 +16,7 @@ public interface ICategoryService
     /// The filtering options. <see cref="GetCategoriesRequest.SearchTerm"/> may be null or whitespace.
     /// </param>
     /// <returns>An array of <see cref="CategoryDto"/> matching the filter.</returns>
-    Task<CategoryDto[]> GetAsync(GetCategoriesRequest request);
+    Task<PagedList<CategoryDto>> GetAsync(GetCategoriesRequest request);
 
     /// <summary>
     /// Retrieves a single category by its identifier.

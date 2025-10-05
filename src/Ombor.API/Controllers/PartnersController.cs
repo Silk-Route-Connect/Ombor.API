@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Partner;
@@ -23,10 +25,15 @@ public sealed class PartnersController(
     /// <returns>Array of <see cref="PartnerDto"/>.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PartnerDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PartnerDto[]>> GetAsync(
+    public async Task<ActionResult<PagedList<PartnerDto>>> GetAsync(
         [FromQuery] GetPartnersRequest request)
     {
         var response = await partnerService.GetAsync(request);
+
+        if (response is not null)
+        {
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
+        }
 
         return Ok(response);
     }
@@ -51,7 +58,7 @@ public sealed class PartnersController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PaymentDto[]>> GetPartnerPaymentsAsync([FromRoute] int id)
     {
-        var request = new GetPaymentsRequest { PartnerId = id };
+        var request = new GetPaymentsRequest(PartnerId: id);
         var response = await paymentService.GetAsync(request);
 
         return Ok(response);

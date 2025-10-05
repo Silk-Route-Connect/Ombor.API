@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Contracts.Responses.Transaction;
@@ -20,10 +22,12 @@ public sealed class ProductsController(IProductService productService) : Control
     /// <returns>Array of <see cref="ProductDto"/>.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ProductDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ProductDto[]>> GetAsync(
+    public async Task<ActionResult<PagedList<ProductDto>>> GetAsync(
         [FromQuery] GetProductsRequest request)
     {
         var response = await productService.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

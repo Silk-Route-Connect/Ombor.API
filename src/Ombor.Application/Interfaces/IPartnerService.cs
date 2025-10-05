@@ -1,4 +1,5 @@
 using FluentValidation;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Responses.Partner;
 using Ombor.Domain.Exceptions;
@@ -17,7 +18,7 @@ public interface IPartnerService
     /// The filtering options. <see cref="GetPartnersRequest.SearchTerm"/> may be null or whitespace.
     /// </param>
     /// <returns>An array of <see cref="PartnerDto"/>Matching the filter.</returns>
-    Task<PartnerDto[]> GetAsync(GetPartnersRequest request);
+    Task<PagedList<PartnerDto>> GetAsync(GetPartnersRequest request);
 
     /// <summary>
     /// Retrieves a single partner by its identifier.

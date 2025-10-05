@@ -1,4 +1,5 @@
 ﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
@@ -18,10 +19,10 @@ public sealed class GetTemplatesTests(
         new()
         {
             new GetTemplatesRequest(),
-            new GetTemplatesRequest("   "),
-            new GetTemplatesRequest("Test Template"),
-            new GetTemplatesRequest(null, TemplateType.Sale),
-            new GetTemplatesRequest("Test Template", TemplateType.Supply)
+            new GetTemplatesRequest(SearchTerm:"   "),
+            new GetTemplatesRequest(SearchTerm : "Test Template"),
+            new GetTemplatesRequest(Type:TemplateType.Sale),
+            new GetTemplatesRequest(SearchTerm : "Test Template",Type: TemplateType.Supply)
         };
 
     [Theory]
@@ -33,7 +34,7 @@ public sealed class GetTemplatesTests(
         var url = GetUrl(request);
 
         // Act
-        var response = await _client.GetAsync<TemplateDto[]>(url);
+        var response = await _client.GetAsync<PagedList<TemplateDto>>(url);
 
         // Assert
         await _responseValidator.Template.ValidateGetAsync(request, response);

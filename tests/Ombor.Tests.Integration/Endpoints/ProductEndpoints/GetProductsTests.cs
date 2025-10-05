@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Requests.Product;
+﻿using Ombor.Contracts.Requests.Common;
+using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -19,12 +20,18 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
     public async Task GetAsync_ShouldReturnFilteredProducts_WhenQueryParametersAreProvided()
     {
         // Arrange
-        var request = new GetProductsRequest(_matchingSearchTerm, _matchingCategoryId, _minPrice, _maxPrice, null);
+        var request = new GetProductsRequest
+        {
+            CategoryId = _matchingCategoryId,
+            SearchTerm = _matchingSearchTerm,
+            MinPrice = _minPrice,
+            MaxPrice = _maxPrice,
+        };
         await CreateProductsAsync(request);
         var url = GetUrl(request);
 
         // Act
-        var response = await _client.GetAsync<ProductDto[]>(url);
+        var response = await _client.GetAsync<PagedList<ProductDto>>(url);
 
         // Assert
         await _responseValidator.Product.ValidateGetAsync(request, response);

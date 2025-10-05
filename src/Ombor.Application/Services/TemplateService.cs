@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
@@ -10,16 +11,23 @@ namespace Ombor.Application.Services;
 
 internal sealed class TemplateService(IApplicationDbContext context, IRequestValidator validator) : ITemplateService
 {
-    public async Task<TemplateDto[]> GetAsync(GetTemplatesRequest request)
+    public async Task<PagedList<TemplateDto>> GetAsync(GetTemplatesRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var query = GetQuery(request);
-        var templates = await query
-            .OrderBy(x => x.Name)
-            .ToArrayAsync();
+        query = ApplySort(query, request.SortBy);
 
-        return [.. templates.Select(x => x.ToDto())];
+        var totalCount = await query.CountAsync();
+
+        var templates = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        var dtos = templates.Select(x => x.ToDto());
+
+        return PagedList<TemplateDto>.ToPagedList(dtos, totalCount, request.PageNumber, request.PageSize);
     }
 
     public async Task<TemplateDto> GetByIdAsync(GetTemplateByIdRequest request)
@@ -88,6 +96,15 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
 
         return query;
     }
+
+    private IQueryable<Template> ApplySort(IQueryable<Template> query, string? sortBy)
+        => sortBy?.ToLower() switch
+        {
+            "type_asc" => query.OrderBy(x => x.Type),
+            "type_desc" => query.OrderByDescending(x => x.Type),
+            "name_desc" => query.OrderByDescending(x => x.Name),
+            _ => query.OrderBy(x => x.Name)
+        };
 
     private async Task<Template> GetOrThrowAsync(int id)
         => await context.Templates

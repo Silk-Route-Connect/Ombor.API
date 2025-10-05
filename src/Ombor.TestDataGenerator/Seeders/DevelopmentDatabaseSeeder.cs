@@ -268,6 +268,11 @@ internal sealed class DevelopmentDatabaseSeeder(
 
     private async Task AddPaymentsAsync(IApplicationDbContext context)
     {
+        if (context.TransactionLines.Any())
+        {
+            return;
+        }
+
         // Load all transactions that do not yet have any allocations OR still have unpaid amounts
         var transactions = await context.Transactions
             .Include(t => t.PaymentAllocations)
