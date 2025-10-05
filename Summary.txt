@@ -1,26 +1,27 @@
 Summary
-  Generated on: 10/05/2025 - 11:09:57
-  Coverage date: 10/05/2025 - 11:09:07 - 10/05/2025 - 11:09:56
+  Generated on: 10/05/2025 - 12:02:17
+  Coverage date: 10/05/2025 - 12:01:26 - 10/05/2025 - 12:02:16
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 102
-  Files: 101
-  Line coverage: 85.4%
-  Covered lines: 1554
+  Classes: 109
+  Files: 108
+  Line coverage: 86.7%
+  Covered lines: 1736
   Uncovered lines: 265
-  Coverable lines: 1819
-  Total lines: 5476
-  Branch coverage: 61.5% (234 of 380)
-  Covered branches: 234
-  Total branches: 380
-  Method coverage: 75.2% (292 of 388)
-  Covered methods: 292
-  Total methods: 388
-  Tag: 238_18257888669
+  Coverable lines: 2001
+  Total lines: 5831
+  Branch coverage: 62.3% (242 of 388)
+  Covered branches: 242
+  Total branches: 388
+  Method coverage: 76.5% (314 of 410)
+  Covered methods: 314
+  Total methods: 410
+  Tag: 239_18258398426
 
-Ombor.API                                                                          89.5%
+Ombor.API                                                                          89.6%
   Ombor.API.Controllers.AuthController                                              0.0%
   Ombor.API.Controllers.CategoriesController                                      100.0%
+  Ombor.API.Controllers.EmployeesController                                       100.0%
   Ombor.API.Controllers.InventoriesController                                     100.0%
   Ombor.API.Controllers.PartnersController                                        100.0%
   Ombor.API.Controllers.PaymentsController                                          0.0%
@@ -31,7 +32,7 @@ Ombor.API                                                                       
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  83.2%
+Ombor.Application                                                                  85.4%
   Ombor.Application.Configurations.JwtSettings                                    100.0%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
@@ -41,6 +42,7 @@ Ombor.Application                                                               
   Ombor.Application.Extensions.TransactionExtensions                               80.0%
   Ombor.Application.Helpers.ImageHelper                                           100.0%
   Ombor.Application.Mappings.CategoryMappings                                     100.0%
+  Ombor.Application.Mappings.EmployeeMappings                                     100.0%
   Ombor.Application.Mappings.InventoryMappings                                    100.0%
   Ombor.Application.Mappings.PartnerMappings                                      100.0%
   Ombor.Application.Mappings.ProductImageMappings                                 100.0%
@@ -61,6 +63,10 @@ Ombor.Application                                                               
   Ombor.Application.Validators.Category.DeleteCategoryRequestValidator            100.0%
   Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator           100.0%
   Ombor.Application.Validators.Category.UpdateCategoryRequestValidator            100.0%
+  Ombor.Application.Validators.Employee.CreateEmployeeRequestValidator            100.0%
+  Ombor.Application.Validators.Employee.DeleteEmployeeRequestValidator            100.0%
+  Ombor.Application.Validators.Employee.GetEmployeeByIdRequestValidator           100.0%
+  Ombor.Application.Validators.Employee.UpdateEmployeeRequestValidator            100.0%
   Ombor.Application.Validators.Inventory.CreateInventoryRequestValidator          100.0%
   Ombor.Application.Validators.Inventory.DeleteInventoryRequestValidator          100.0%
   Ombor.Application.Validators.Inventory.GetInventoryByIdRequestValidator         100.0%
@@ -95,13 +101,14 @@ Ombor.Domain                                                                    
   Ombor.Domain.Exceptions.InvalidFileException                                     33.3%
   Ombor.Domain.Exceptions.UnsupportedFileFormatException                           33.3%
 
-Ombor.Infrastructure                                                               90.5%
+Ombor.Infrastructure                                                               91.0%
   Ombor.Infrastructure.Extensions.DependencyInjection                             100.0%
   Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                       100.0%
   Ombor.Infrastructure.Extensions.StringExtensions                                100.0%
   Ombor.Infrastructure.Helpers.PathHelpers                                        100.0%
   Ombor.Infrastructure.Persistence.ApplicationDbContext                           100.0%
   Ombor.Infrastructure.Persistence.Configurations.CategoryConfiguration           100.0%
+  Ombor.Infrastructure.Persistence.Configurations.EmployeeConfiguration           100.0%
   Ombor.Infrastructure.Persistence.Configurations.InventoryConfiguration          100.0%
   Ombor.Infrastructure.Persistence.Configurations.InventoryItemConfiguration      100.0%
   Ombor.Infrastructure.Persistence.Configurations.OrganizationConfiguration       100.0%
