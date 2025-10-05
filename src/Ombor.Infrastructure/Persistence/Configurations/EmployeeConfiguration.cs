@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
@@ -19,8 +20,12 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 
         builder
             .Property(e => e.Position)
-            .HasConversion<string>()
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired();
+
+        builder
+            .Property(e => e.Salary)
+            .HasCurrencyPrecision()
             .IsRequired();
 
         builder
@@ -29,32 +34,27 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .IsRequired();
 
         builder
-            .Property(e => e.Salary)
-            .HasColumnType("decimal(18,2)")
-            .IsRequired();
-
-        builder
-            .Property(e => e.Description)
-            .HasMaxLength(ConfigurationConstants.MaxStringLength)
-            .IsRequired(false);
-
-        builder
-            .Property(e => e.Address)
-            .HasMaxLength(ConfigurationConstants.MaxStringLength)
-            .IsRequired(false);
-
-        builder
-            .Property(e => e.Email)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
-            .IsRequired(false);
-
-        builder
-            .Property(e => e.PhoneNumber)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
-            .IsRequired();
-
-        builder
             .Property(e => e.DateOfEmployment)
             .IsRequired();
+
+        builder
+            .OwnsOne(e => e.ContactInfo, ci =>
+            {
+                ci.Property(i => i.Email)
+                    .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+                    .IsRequired(false);
+
+                ci.Property(i => i.Address)
+                    .HasMaxLength(ConfigurationConstants.MaxStringLength)
+                    .IsRequired(false);
+
+                ci.Property(i => i.TelegramAccount)
+                    .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+                    .IsRequired(false);
+
+                ci.PrimitiveCollection(i => i.PhoneNumbers)
+                    .HasMaxLength(ConfigurationConstants.MaxStringLength)
+                    .IsRequired();
+            });
     }
 }

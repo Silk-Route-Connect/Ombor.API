@@ -1,14 +1,21 @@
+using Ombor.Contracts.Common;
 using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Requests.Employee;
 
+/// <summary>
+/// Request to create a new employee.
+/// </summary>
+/// <param name="FullName">Full name of the employee.</param>
+/// <param name="Position">Position of the employee.</param>
+/// <param name="Salary">Salary of the employee</param>
+/// <param name="Status">Current status of the employee.</param>
+/// <param name="DateOfEmployment">Date of employement of the employee.</param>
+/// <param name="ContactInfo">Contact info of the employee.</param>
 public sealed record CreateEmployeeRequest(
     string FullName,
+    string Position,
     decimal Salary,
-    string PhoneNumber,
-    string Email,
-    string? Address,
-    string? Description,
-    EmployeePosition Position,
-    DateOnly DateOfEmployment
-    );
+    EmployeeStatus Status,
+    DateOnly DateOfEmployment,
+    ContactInfo? ContactInfo);

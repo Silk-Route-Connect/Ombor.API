@@ -60,11 +60,14 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
 
     private async Task<Employee[]> GetEmployeesAsync(GetEmployeesRequest request)
     {
+        var searchTerm = request.SearchTerm?.Trim();
         var query = context.Employees.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            query = query.Where(x => x.FullName.Contains(request.SearchTerm));
+            query = query.Where(x => x.FullName.Contains(searchTerm) ||
+                x.Position.Contains(searchTerm) ||
+                (x.ContactInfo != null && x.ContactInfo.PhoneNumbers.Contains(searchTerm)));
         }
 
         return await query

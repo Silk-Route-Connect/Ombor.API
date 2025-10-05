@@ -1,4 +1,5 @@
 using Bogus;
+using Ombor.Domain.Common;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Common.Interfaces;
@@ -9,14 +10,11 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
 {
     private int? _id;
     private string? _fullName;
+    private string? _position;
     private decimal? _salary;
-    private string? _phoneNumber;
-    private string? _email;
-    private string? _address;
-    private string? _description;
-    private EmployeePosition? _position;
     private EmployeeStatus? _status;
     private DateOnly? _dateOfEmployment;
+    private ContactInfo? _contactInfo;
 
     public IEmployeeBuilder WithId(int? id = null)
     {
@@ -39,37 +37,9 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
         return this;
     }
 
-    public IEmployeeBuilder WithPhoneNumber(string? phoneNumber = null)
+    public IEmployeeBuilder WithPosition(string? position = null)
     {
-        _phoneNumber = phoneNumber ?? _faker.Phone.PhoneNumber("+998-##-###-##-##");
-
-        return this;
-    }
-
-    public IEmployeeBuilder WithEmail(string? email = null)
-    {
-        _email = email ?? _faker.Person.Email;
-
-        return this;
-    }
-
-    public IEmployeeBuilder WithAddress(string? address = null)
-    {
-        _address = address ?? _faker.Address.StreetAddress();
-
-        return this;
-    }
-
-    public IEmployeeBuilder WithDescription(string? description = null)
-    {
-        _description = description ?? _faker.Lorem.Sentence();
-
-        return this;
-    }
-
-    public IEmployeeBuilder WithPosition(EmployeePosition? position = null)
-    {
-        _position = position ?? _faker.PickRandom<EmployeePosition>();
+        _position = position ?? _faker.Name.JobTitle();
 
         return this;
     }
@@ -88,19 +58,23 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
         return this;
     }
 
+    public IEmployeeBuilder WithContactInfo(ContactInfo? contactInfo = null)
+    {
+        _contactInfo = contactInfo ?? GetRandomContactInfo();
+
+        return this;
+    }
+
     public Employee Build() =>
       new()
       {
           Id = _id ?? default,
           FullName = _fullName ?? string.Empty,
+          Position = _position ?? string.Empty,
           Salary = _salary ?? default,
-          PhoneNumber = _phoneNumber ?? string.Empty,
-          Email = _email ?? string.Empty,
-          Address = _address ?? string.Empty,
-          Description = _description ?? string.Empty,
-          Position = _position ?? default,
           Status = _status ?? default,
           DateOfEmployment = _dateOfEmployment ?? default,
+          ContactInfo = _contactInfo ?? default
       };
 
     public Employee BuildAndPopulate()
@@ -112,13 +86,19 @@ internal sealed class EmployeeBuilder(Faker faker) : BuilderBase(faker), IEmploy
             Id = _id ?? id,
             FullName = _fullName ?? _faker.Person.FullName,
             Salary = _salary ?? _faker.Random.Decimal(100, 10000),
-            PhoneNumber = _phoneNumber ?? faker.Phone.PhoneNumber("+998-##-###-##-##"),
-            Email = _email ?? _faker.Person.Email,
-            Address = _address ?? _faker.Address.StreetAddress(),
-            Description = _description ?? _faker.Lorem.Sentence(),
-            Position = _position ?? _faker.PickRandom<EmployeePosition>(),
+            Position = _position ?? _faker.Name.JobTitle(),
             Status = _status ?? _faker.PickRandom<EmployeeStatus>(),
             DateOfEmployment = _dateOfEmployment ?? _faker.Date.PastDateOnly(),
+            ContactInfo = _contactInfo ?? GetRandomContactInfo()
         };
     }
+
+    private ContactInfo GetRandomContactInfo() =>
+        new()
+        {
+            Email = _faker.Person.Email,
+            Address = _faker.Address.StreetAddress(),
+            PhoneNumbers = [_faker.Phone.PhoneNumber("+998-##-###-##-##")],
+            TelegramAccount = _faker.Internet.UserName()
+        };
 }

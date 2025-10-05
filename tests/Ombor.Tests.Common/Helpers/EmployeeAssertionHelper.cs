@@ -1,7 +1,6 @@
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Responses.Employee;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 using Xunit;
 
 namespace Ombor.Tests.Common.Helpers;
@@ -15,14 +14,11 @@ public static class EmployeeAssertionHelper
 
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Position, Enum.Parse<EmployeePosition>(actual.Position.ToString()));
-        Assert.Equal(expected.Status, Enum.Parse<EmployeeStatus>(actual.Status.ToString()));
+        Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
+        AssertContactInfo(expected.ContactInfo, actual.ContactInfo);
     }
 
     public static void AssertEquivalent(CreateEmployeeRequest? expected, CreateEmployeeResponse? actual)
@@ -31,11 +27,9 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
+        Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
     }
 
@@ -45,11 +39,9 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
+        Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status.ToString()));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
     }
 
@@ -61,12 +53,7 @@ public static class EmployeeAssertionHelper
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.FullName, actual.FullName);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Position, Enum.Parse<EmployeePosition>(actual.Position.ToString()));
-        Assert.Equal(expected.Status, Enum.Parse<EmployeeStatus>(actual.Status.ToString()));
+        Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
     }
 
@@ -78,12 +65,8 @@ public static class EmployeeAssertionHelper
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.FullName, actual.FullName);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Position, Enum.Parse<Contracts.Enums.EmployeePosition>(actual.Position.ToString()));
-        Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status.ToString()));
+        Assert.Equal(expected.Position, actual.Position);
+        Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
     }
 
@@ -94,13 +77,9 @@ public static class EmployeeAssertionHelper
 
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(actual.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
-        Assert.Equal(expected.Email, actual.Email);
-        Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(Enum.Parse<EmployeePosition>(actual.Position.ToString()), actual.Position);
-        Assert.Equal(Enum.Parse<EmployeeStatus>(actual.Status.ToString()), actual.Status);
+        Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status.ToString()));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
     }
 
@@ -112,12 +91,29 @@ public static class EmployeeAssertionHelper
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.FullName, actual.FullName);
         Assert.Equal(expected.Salary, actual.Salary);
-        Assert.Equal(expected.PhoneNumber, actual.PhoneNumber);
+        Assert.Equal(expected.Position, actual.Position);
+        Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
+        Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
+    }
+
+    private static void AssertContactInfo(Domain.Common.ContactInfo? expected, Contracts.Common.ContactInfo? actual)
+    {
+        if (expected is null && actual is null)
+        {
+            return;
+        }
+
+        Assert.NotNull(actual);
+        Assert.NotNull(expected);
+
         Assert.Equal(expected.Email, actual.Email);
         Assert.Equal(expected.Address, actual.Address);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Position, Enum.Parse<EmployeePosition>(actual.Position.ToString()));
-        Assert.Equal(expected.Status, Enum.Parse<EmployeeStatus>(actual.Status.ToString()));
-        Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
+        Assert.Equal(expected.TelegramAccount, actual.TelegramAccount);
+        Assert.Equal(expected.PhoneNumbers.Length, actual.PhoneNumbers.Length);
+
+        for (int i = 0; i < expected.PhoneNumbers.Length; i++)
+        {
+            Assert.Contains(expected.PhoneNumbers[i], actual.PhoneNumbers);
+        }
     }
 }

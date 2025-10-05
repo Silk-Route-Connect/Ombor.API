@@ -1,4 +1,5 @@
 using FluentValidation;
+using Ombor.Application.Validators.Common;
 using Ombor.Contracts.Requests.Employee;
 
 namespace Ombor.Application.Validators.Employee;
@@ -17,33 +18,17 @@ public sealed class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmp
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Full name must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
+        RuleFor(x => x.Position)
+            .NotEmpty()
+            .WithMessage("Employee position is required.")
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"Position must not exceed {ValidationConstants.DefaultStringLength} characters.");
+
         RuleFor(x => x.Salary)
             .NotEmpty()
             .WithMessage("Salary is required.")
-            .GreaterThan(0)
-            .WithMessage("Salary must be greater than zero.");
-
-        RuleFor(x => x.Email)
-            .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Email must not exceed {ValidationConstants.DefaultStringLength} characters.");
-
-        RuleFor(x => x.PhoneNumber)
-            .NotEmpty()
-            .WithMessage("Phone number is required.")
-            .Must(ValidationHelpers.IsValidPhoneNumber)
-            .WithMessage("Phone number is in invalid format.");
-
-        RuleFor(x => x.Address)
-            .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Address must not exceed {ValidationConstants.DefaultStringLength} characters.");
-
-        RuleFor(x => x.Description)
-            .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Description must not exceed {ValidationConstants.DefaultStringLength} characters.");
-
-        RuleFor(x => x.Position)
-            .IsInEnum()
-            .WithMessage("Position must be a valid enum value.");
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Salary must be positive.");
 
         RuleFor(x => x.Status)
             .IsInEnum()
@@ -54,5 +39,9 @@ public sealed class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmp
             .WithMessage("Date of employment is required.")
             .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow))
             .WithMessage("Date of employment cannot be in the future.");
+
+        RuleFor(x => x.ContactInfo!)
+            .SetValidator(new ContactInfoValidator())
+            .When(x => x.ContactInfo is not null);
     }
 }

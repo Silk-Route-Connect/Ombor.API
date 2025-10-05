@@ -1,7 +1,7 @@
+using System.Globalization;
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Responses.Employee;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -11,6 +11,8 @@ public class GetEmployeesTests(
     TestingWebApplicationFactory factory, ITestOutputHelper outputHelper) : EmployeeTestsBase(factory, outputHelper)
 {
     private const string _matchingSearchTerm = "Test FullName";
+    private static readonly CultureInfo _culture = new("uz-UZ");
+
     public static TheoryData<GetEmployeesRequest> Requests =>
         new()
         {
@@ -41,57 +43,65 @@ public class GetEmployeesTests(
 
         var employees = new List<Employee>
         {
+            // Matching name
             new()
             {
-                FullName=searchTerm,
-                Salary=1000,
-                PhoneNumber="",
-                Email="",
-                Address="",
-                Description="",
-                Position=EmployeePosition.Viewer,
-                Status=EmployeeStatus.Active,
-                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
+                FullName = searchTerm,
+                Position = "Salesman",
+                Salary = 5_000,
+                Status = Domain.Enums.EmployeeStatus.Active,
+                DateOfEmployment = DateOnly.Parse("2020-01-01", _culture),
             },
-
+            // Matching position
             new()
             {
-                FullName="John",
-                Salary=1000,
-                PhoneNumber="",
-                Email="",
-                Address=searchTerm,
-                Description="",
-                Position=EmployeePosition.Viewer,
-                Status=EmployeeStatus.Active,
-                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
+                FullName = "Test Employee for Search - 1",
+                Position = searchTerm,
+                Salary = 10_000,
+                Status = Domain.Enums.EmployeeStatus.Active,
+                DateOfEmployment = DateOnly.Parse("2019-02-02", _culture)
             },
-
+            // Matching phone number
             new()
             {
-                FullName=string.Empty,
-                Salary=1000,
-                PhoneNumber="",
-                Email="",
-                Address="",
-                Description="",
-                Position=EmployeePosition.Viewer,
-                Status=EmployeeStatus.Active,
-                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
+                FullName = "Test Employee for Search - 2",
+                Position = "Manager",
+                Salary = 15_000,
+                Status = Domain.Enums.EmployeeStatus.Active,
+                DateOfEmployment = DateOnly.Parse("2018-03-03", _culture),
+                ContactInfo = new()
+                {
+                    PhoneNumbers = [searchTerm],
+                }
             },
-
+            // Matching email
             new()
             {
-                FullName="          ",
-                Salary=1000,
-                PhoneNumber="",
-                Email="",
-                Address="",
-                Description="",
-                Position=EmployeePosition.Viewer,
-                Status=EmployeeStatus.Active,
-                DateOfEmployment= DateOnly.FromDateTime(DateTime.UtcNow)
+                FullName = "Test Employee for Search - 3",
+                Position = "Driver",
+                Salary = 20_000,
+                Status = Domain.Enums.EmployeeStatus.Active,
+                DateOfEmployment = DateOnly.Parse("2017-04-04", _culture),
+                ContactInfo = new()
+                {
+                    PhoneNumbers = ["+998901234567"],
+                    Email = searchTerm + "@example.com",
+                }
             },
+            // Non-matching
+            new()
+            {
+                FullName = "Non-matching Employee",
+                Position = "Cleaner",
+                Salary = 2_000,
+                Status = Domain.Enums.EmployeeStatus.Active,
+                DateOfEmployment = DateOnly.Parse("2016-05-05", _culture),
+                ContactInfo = new()
+                {
+                    PhoneNumbers = ["+998909876543"],
+                    Email = "user@test.com",
+                }
+            }
         };
 
         _context.Employees.AddRange(employees);

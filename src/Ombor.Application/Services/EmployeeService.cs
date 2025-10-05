@@ -14,28 +14,14 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Employees.AsQueryable();
+        var query = GetQuery(request);
 
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-        {
-            query = query.Where(x => x.FullName.Contains(request.SearchTerm));
-        }
-
-        return await query
+        var employees = await query
             .AsNoTracking()
             .OrderBy(x => x.FullName)
-            .Select(x => new EmployeeDto(
-                x.Id,
-                x.FullName,
-                x.Salary,
-                x.PhoneNumber,
-                x.Email,
-                x.Address,
-                x.Description,
-                x.Position.ToString(),
-                x.Status.ToString(),
-                x.DateOfEmployment))
             .ToArrayAsync();
+
+        return [.. employees.Select(x => x.ToDto())];
     }
 
     public async Task<EmployeeDto> GetByIdAsync(GetEmployeeByIdRequest request)
@@ -83,4 +69,19 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
     private async Task<Employee> GetOrThrowAsync(int id) =>
         await context.Employees.FirstOrDefaultAsync(x => x.Id == id)
         ?? throw new EntityNotFoundException<Employee>(id);
+
+    private IQueryable<Employee> GetQuery(GetEmployeesRequest request)
+    {
+        var searchTerm = request.SearchTerm;
+        var query = context.Employees.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(x => x.FullName.Contains(searchTerm) ||
+                x.Position.Contains(searchTerm) ||
+                (x.ContactInfo != null && x.ContactInfo.PhoneNumbers.Contains(searchTerm)));
+        }
+
+        return query;
+    }
 }

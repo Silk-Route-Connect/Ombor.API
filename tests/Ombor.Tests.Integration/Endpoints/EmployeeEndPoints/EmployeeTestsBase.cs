@@ -22,10 +22,17 @@ public class EmployeeTestsBase(
         var employee = new Employee
         {
             FullName = "John Doe",
-            PhoneNumber = "+99890-000-00-00",
-            Position = EmployeePosition.Admin,
+            Position = "Test Employee Position",
+            Salary = 5_000,
             Status = EmployeeStatus.Active,
-            DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow)
+            DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow),
+            ContactInfo = new Domain.Common.ContactInfo
+            {
+                PhoneNumbers = ["+998-90-123-45-67", "+99890-000-00-00"],
+                Email = "test@mail.com",
+                Address = "Test Address for Employee",
+                TelegramAccount = "@test_telegram_account"
+            }
         };
 
         _context.Employees.Add(employee);

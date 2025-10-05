@@ -155,14 +155,10 @@ internal sealed class TestingDatabaseSeeder(
             .Select(i => new Employee
             {
                 FullName = $"test employee {i}",
+                Position = $"Test employee position {i}",
                 Salary = 1000 + i,
-                PhoneNumber = $"+99890-100-00-{i}{i}",
-                Email = $"employee{i}@test.com",
-                Address = $"Test Employee {i} address",
-                Description = $"Test Employee {i} description",
                 DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i)),
                 Status = EmployeeStatus.Active,
-                Position = EmployeePosition.Viewer,
             });
 
         context.Employees.AddRange(employees);
