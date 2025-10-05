@@ -1,24 +1,24 @@
 Summary
-  Generated on: 10/03/2025 - 17:42:26
-  Coverage date: 10/03/2025 - 17:41:34 - 10/03/2025 - 17:42:25
+  Generated on: 10/05/2025 - 11:03:12
+  Coverage date: 10/05/2025 - 11:02:21 - 10/05/2025 - 11:03:11
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
-  Classes: 99
-  Files: 98
-  Line coverage: 85.8%
-  Covered lines: 1557
-  Uncovered lines: 256
-  Coverable lines: 1813
-  Total lines: 5329
-  Branch coverage: 62.9% (234 of 372)
+  Classes: 102
+  Files: 101
+  Line coverage: 85.4%
+  Covered lines: 1554
+  Uncovered lines: 265
+  Coverable lines: 1819
+  Total lines: 5476
+  Branch coverage: 61.5% (234 of 380)
   Covered branches: 234
-  Total branches: 372
-  Method coverage: 76.7% (284 of 370)
-  Covered methods: 284
-  Total methods: 370
-  Tag: 235_18229553861
+  Total branches: 380
+  Method coverage: 75.2% (292 of 388)
+  Covered methods: 292
+  Total methods: 388
+  Tag: 237_18257810536
 
-Ombor.API                                                                          91.3%
+Ombor.API                                                                          89.5%
   Ombor.API.Controllers.AuthController                                              0.0%
   Ombor.API.Controllers.CategoriesController                                      100.0%
   Ombor.API.Controllers.InventoriesController                                     100.0%
@@ -27,11 +27,12 @@ Ombor.API                                                                       
   Ombor.API.Controllers.ProductsController                                        100.0%
   Ombor.API.Controllers.TemplatesController                                       100.0%
   Ombor.API.Controllers.TransactionsController                                    100.0%
-  Ombor.API.Extensions.DependencyInjection                                         99.0%
+  Ombor.API.Extensions.DependencyInjection                                         98.8%
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  83.1%
+Ombor.Application                                                                  83.2%
+  Ombor.Application.Configurations.JwtSettings                                    100.0%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      54.0%
   Ombor.Application.Extensions.FormFileExtensions                                 100.0%
@@ -94,7 +95,7 @@ Ombor.Domain                                                                    
   Ombor.Domain.Exceptions.InvalidFileException                                     33.3%
   Ombor.Domain.Exceptions.UnsupportedFileFormatException                           33.3%
 
-Ombor.Infrastructure                                                               91.5%
+Ombor.Infrastructure                                                               90.5%
   Ombor.Infrastructure.Extensions.DependencyInjection                             100.0%
   Ombor.Infrastructure.Extensions.PropertyBuilderExtensions                       100.0%
   Ombor.Infrastructure.Extensions.StringExtensions                                100.0%
@@ -123,8 +124,10 @@ Ombor.Infrastructure                                                            
   Ombor.Infrastructure.Services.ImageSharpThumbnailer                             100.0%
   Ombor.Infrastructure.Services.JwtTokenService                                     0.0%
   Ombor.Infrastructure.Services.LocalFilePathProvider                             100.0%
+  Ombor.Infrastructure.Services.MemoryCache                                         0.0%
   Ombor.Infrastructure.Services.PasswordHasher                                      0.0%
   Ombor.Infrastructure.Services.RedisService                                        0.0%
+  Ombor.Infrastructure.Services.SmsService                                          0.0%
   Ombor.Infrastructure.Storage.LocalFileStorage                                   100.0%
 
 Ombor.TestDataGenerator                                                                 
