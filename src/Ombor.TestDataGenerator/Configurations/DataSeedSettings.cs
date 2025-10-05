@@ -31,7 +31,6 @@ public sealed class DataSeedSettings
     [Range(1, double.MaxValue, ErrorMessage = "Invalid number of employees.")]
     public int NumberOfEmployees { get; set; }
 
-    [Range(1, double.MaxValue, ErrorMessage = "Invalid number of transactions per partner.")]
     [Range(1, int.MaxValue, ErrorMessage = "Invalid number of inventories.")]
     public int NumberOfInventories { get; set; }
 

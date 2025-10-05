@@ -174,9 +174,14 @@ internal sealed class DevelopmentDatabaseSeeder(
     private async Task AddInventoriesAsync(IApplicationDbContext context)
     {
         if (context.Inventories.Any())
-            var products = context.Products
+        {
+            return;
+        }
+
+        var products = context.Products
                 .Select(x => x.Id)
                 .ToArray();
+
         var inventories = InventoryGenerator.Generate(
             products,
             seedSettings.NumberOfItemsPerInventory,
