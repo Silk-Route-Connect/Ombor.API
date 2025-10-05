@@ -10,7 +10,7 @@ namespace Ombor.Contracts.Requests.Employee;
 /// <param name="Position">Position of the employee.</param>
 /// <param name="Salary">Salary of the employee</param>
 /// <param name="Status">Current status of the employee.</param>
-/// <param name="DateOfEmployment">Date of employement of the employee.</param>
+/// <param name="DateOfEmployment">Date of employment of the employee.</param>
 /// <param name="ContactInfo">Contact info of the employee.</param>
 public sealed record CreateEmployeeRequest(
     string FullName,

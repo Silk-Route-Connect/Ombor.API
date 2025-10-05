@@ -28,14 +28,14 @@ public class GetEmployeeByIdTests(
     public async Task GetByIdAsync_ShouldReturnEmployee_WhenEmployeeExists()
     {
         // Arrange
-        var employee = CreateEmployeeAsync();
-        var url = GetUrl(employee.Id);
+        var employeeId = await CreateEmployeeAsync();
+        var url = GetUrl(employeeId);
 
         // Act
         var response = await _client.GetAsync<EmployeeDto>(url);
 
         // Assert
-        await _responseValidator.Employee.ValidateGetByIdAsync(employee.Id, response);
+        await _responseValidator.Employee.ValidateGetByIdAsync(employeeId, response);
     }
 
 }

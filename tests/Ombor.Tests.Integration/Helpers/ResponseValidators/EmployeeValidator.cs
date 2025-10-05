@@ -71,7 +71,6 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
         }
 
         return await query
-            .AsNoTracking()
             .OrderBy(x => x.FullName)
             .ToArrayAsync();
     }
