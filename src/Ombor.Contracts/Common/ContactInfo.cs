@@ -5,8 +5,8 @@
 /// </summary>
 /// <remarks>
 /// This record encapsulates various forms of contact details, including phone numbers, email address,
-/// physical address, and a Telegram account. All fields are optional except for the phone numbers,
-/// which provides an empty array if no phone numbers are associated.
+/// physical address, and a Telegram account. All fields are optional except for the phone numbers, which must be
+/// provided as an empty array if no phone numbers are associated.
 /// </remarks>
 /// <param name="PhoneNumbers">A list of phone numbers.</param>
 /// <param name="Email">Email address.</param>

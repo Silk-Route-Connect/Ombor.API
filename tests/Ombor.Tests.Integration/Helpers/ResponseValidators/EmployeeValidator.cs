@@ -25,6 +25,7 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
     public async Task ValidateGetByIdAsync(int employeeId, EmployeeDto response)
     {
         var expected = await context.Employees
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == employeeId);
 
         EmployeeAssertionHelper.AssertEquivalent(expected, response);
@@ -33,6 +34,7 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
     public async Task ValidatePostAsync(CreateEmployeeRequest request, CreateEmployeeResponse response)
     {
         var employee = await context.Employees
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == response.Id);
 
         EmployeeAssertionHelper.AssertEquivalent(request, response);
@@ -43,6 +45,7 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
     public async Task ValidatePutAsync(UpdateEmployeeRequest request, UpdateEmployeeResponse response)
     {
         var employee = await context.Employees
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.Id);
 
         EmployeeAssertionHelper.AssertEquivalent(request, response);
@@ -53,6 +56,7 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
     public async Task ValidateDeleteAsync(int employeeId)
     {
         var employee = await context.Employees
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == employeeId);
 
         Assert.Null(employee);
