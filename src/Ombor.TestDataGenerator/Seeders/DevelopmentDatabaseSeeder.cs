@@ -25,6 +25,7 @@ internal sealed class DevelopmentDatabaseSeeder(
         await AddProductImagesAsync(context);
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
+        await AddEmployeesAsync(context);
         await AddInventoriesAsync(context);
         await AddSalesAsync(context);
         await AddSuppliesAsync(context);
@@ -155,6 +156,21 @@ internal sealed class DevelopmentDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task AddEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = EmployeeGenerator.Generate(seedSettings.NumberOfEmployees, seedSettings.Locale)
+            .DistinctBy(x => x.FullName)
+            .ToArray();
+
+        context.Employees.AddRange(employees);
+        await context.SaveChangesAsync();
+    }
+
     private async Task AddInventoriesAsync(IApplicationDbContext context)
     {
         if (context.Inventories.Any())
@@ -163,8 +179,9 @@ internal sealed class DevelopmentDatabaseSeeder(
         }
 
         var products = context.Products
-            .Select(x => x.Id)
-            .ToArray();
+                .Select(x => x.Id)
+                .ToArray();
+
         var inventories = InventoryGenerator.Generate(
             products,
             seedSettings.NumberOfItemsPerInventory,
@@ -177,7 +194,6 @@ internal sealed class DevelopmentDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    //private async Task<Dictionary<string, string>> EnsureImagesCopiedAsync()
     private async Task AddSalesAsync(IApplicationDbContext context)
     {
         if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale))
