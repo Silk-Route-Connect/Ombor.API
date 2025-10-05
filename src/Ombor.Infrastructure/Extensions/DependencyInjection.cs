@@ -1,56 +1,85 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Infrastructure.Persistence;
 using Ombor.Infrastructure.Services;
 using Ombor.Infrastructure.Storage;
-using StackExchange.Redis;
 
 namespace Ombor.Infrastructure.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) =>
+        services
+        .AddDatabase(configuration)
+        .AddAuthentication(configuration)
+        .AddInMemoryCache()
+        .AddServices();
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-        services.AddSingleton(x => x.GetRequiredService<IOptions<JwtSettings>>().Value);
-
-        services.Configure<SmsSettings>(configuration.GetSection(SmsSettings.SectionName));
-        services.AddSingleton(x => x.GetRequiredService<IOptions<SmsSettings>>().Value);
-
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        return services;
+    }
 
-        services.AddSingleton<IConnectionMultiplexer>(provider =>
-        {
-            var connectionString = configuration.GetConnectionString("Redis");
+    private static IServiceCollection AddInMemoryCache(this IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddSingleton<IRedisService, MemoryCache>();
 
-            if (string.IsNullOrEmpty(connectionString))
-                throw new InvalidOperationException("Redis connection string is missing");
+        return services;
+    }
 
-            var cfg = ConfigurationOptions.Parse(connectionString);
-            cfg.AbortOnConnectFail = false;
-            cfg.ConnectRetry = 3;
-            cfg.ConnectTimeout = 5000;
+    private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
+            ?? throw new InvalidOperationException("Unable to resolve JWT settings.");
 
-            return ConnectionMultiplexer.Connect(cfg);
-        });
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = true;
 
-        services.AddScoped<IRedisService, RedisService>();
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = jwtSettings.SecurityKey
+                };
+            });
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
+
         services.AddTransient<IFileStorage, LocalFileStorage>();
+
         services.AddTransient<IFilePathProvider, LocalFilePathProvider>();
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<IRedisService, RedisService>();
 
         services.AddHttpClient<ISmsService, SmsService>();
 
