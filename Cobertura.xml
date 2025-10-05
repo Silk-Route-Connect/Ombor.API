@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.8675662168915542" branch-rate="0.6237113402061856" lines-covered="1736" lines-valid="2001" branches-covered="242" branches-valid="388" complexity="681" version="0" timestamp="1759665737">
+<coverage line-rate="0.868224763799105" branch-rate="0.6201923076923077" lines-covered="1746" lines-valid="2011" branches-covered="258" branches-valid="416" complexity="703" version="0" timestamp="1759674354">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -557,7 +557,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.8542805100182149" branch-rate="0.64375" complexity="456">
+    <package name="Ombor.Application" line-rate="0.8553345388788427" branch-rate="0.6379310344827587" complexity="478">
       <classes>
         <class name="Ombor.Application.Configurations.JwtSettings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Configurations/JwtSettings.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
@@ -1163,46 +1163,48 @@
             <line number="35" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.EmployeeMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/EmployeeMappings.cs" line-rate="1" branch-rate="1" complexity="10">
+        <class name="Ombor.Application.Mappings.EmployeeMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/EmployeeMappings.cs" line-rate="1" branch-rate="0.5714285714285714" complexity="28">
           <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="11" hits="2" branch="false" />
-                <line number="12" hits="2" branch="false" />
-                <line number="13" hits="2" branch="false" />
-                <line number="14" hits="2" branch="false" />
-                <line number="15" hits="2" branch="false" />
-                <line number="16" hits="2" branch="false" />
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="2" branch="false" />
-                <line number="19" hits="2" branch="false" />
-                <line number="20" hits="2" branch="false" />
-                <line number="21" hits="2" branch="false" />
-                <line number="22" hits="2" branch="false" />
+                <line number="11" hits="150" branch="true" condition-coverage="100% (4/4)" />
+                <line number="12" hits="150" branch="false" />
+                <line number="13" hits="150" branch="false" />
+                <line number="14" hits="150" branch="false" />
+                <line number="15" hits="150" branch="false" />
+                <line number="16" hits="150" branch="false" />
+                <line number="17" hits="150" branch="false" />
+                <line number="18" hits="150" branch="false" />
               </lines>
             </method>
-            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
+                <line number="21" hits="2" branch="true" condition-coverage="50% (2/4)" />
+                <line number="22" hits="2" branch="false" />
+                <line number="23" hits="2" branch="false" />
+                <line number="24" hits="2" branch="false" />
                 <line number="25" hits="2" branch="false" />
                 <line number="26" hits="2" branch="false" />
                 <line number="27" hits="2" branch="false" />
                 <line number="28" hits="2" branch="false" />
                 <line number="29" hits="2" branch="false" />
-                <line number="30" hits="2" branch="false" />
-                <line number="31" hits="2" branch="false" />
-                <line number="32" hits="2" branch="false" />
+              </lines>
+            </method>
+            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="32" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="33" hits="2" branch="false" />
                 <line number="34" hits="2" branch="false" />
                 <line number="35" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
+                <line number="36" hits="2" branch="false" />
+                <line number="37" hits="2" branch="false" />
                 <line number="38" hits="2" branch="false" />
                 <line number="39" hits="2" branch="false" />
-                <line number="40" hits="2" branch="false" />
-                <line number="41" hits="2" branch="false" />
-                <line number="42" hits="2" branch="false" />
+              </lines>
+            </method>
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="42" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="43" hits="2" branch="false" />
                 <line number="44" hits="2" branch="false" />
                 <line number="45" hits="2" branch="false" />
@@ -1212,74 +1214,81 @@
                 <line number="49" hits="2" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="52" hits="2" branch="false" />
                 <line number="53" hits="2" branch="false" />
                 <line number="54" hits="2" branch="false" />
                 <line number="55" hits="2" branch="false" />
                 <line number="56" hits="2" branch="false" />
                 <line number="57" hits="2" branch="false" />
-                <line number="58" hits="2" branch="false" />
+                <line number="58" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="59" hits="2" branch="false" />
-                <line number="60" hits="2" branch="false" />
-                <line number="61" hits="2" branch="false" />
-                <line number="62" hits="2" branch="false" />
-                <line number="63" hits="2" branch="false" />
               </lines>
             </method>
-            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ToEntity" signature="(Ombor.Contracts.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="67" hits="2" branch="false" />
-                <line number="68" hits="2" branch="false" />
-                <line number="69" hits="2" branch="false" />
-                <line number="70" hits="2" branch="false" />
-                <line number="71" hits="2" branch="false" />
-                <line number="72" hits="2" branch="false" />
-                <line number="73" hits="2" branch="false" />
-                <line number="74" hits="2" branch="false" />
-                <line number="75" hits="2" branch="false" />
-                <line number="76" hits="2" branch="false" />
+                <line number="62" hits="4" branch="true" condition-coverage="50% (2/4)" />
+                <line number="63" hits="4" branch="false" />
+                <line number="64" hits="4" branch="false" />
+                <line number="65" hits="4" branch="false" />
+                <line number="66" hits="4" branch="false" />
+                <line number="67" hits="4" branch="false" />
+                <line number="68" hits="4" branch="false" />
+                <line number="69" hits="4" branch="false" />
+                <line number="70" hits="4" branch="false" />
               </lines>
             </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ToDto" signature="(Ombor.Domain.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="2" branch="false" />
-                <line number="12" hits="2" branch="false" />
-                <line number="13" hits="2" branch="false" />
-                <line number="14" hits="2" branch="false" />
-                <line number="15" hits="2" branch="false" />
-                <line number="16" hits="2" branch="false" />
-                <line number="17" hits="2" branch="false" />
-                <line number="18" hits="2" branch="false" />
-                <line number="19" hits="2" branch="false" />
-                <line number="20" hits="2" branch="false" />
-                <line number="21" hits="2" branch="false" />
+                <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
+                <line number="74" hits="60" branch="false" />
+                <line number="75" hits="60" branch="false" />
+                <line number="76" hits="60" branch="false" />
+                <line number="77" hits="60" branch="false" />
+                <line number="78" hits="60" branch="false" />
+                <line number="79" hits="60" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="11" hits="150" branch="true" condition-coverage="100% (4/4)" />
+                <line number="12" hits="150" branch="false" />
+                <line number="13" hits="150" branch="false" />
+                <line number="14" hits="150" branch="false" />
+                <line number="15" hits="150" branch="false" />
+                <line number="16" hits="150" branch="false" />
+                <line number="17" hits="150" branch="false" />
+                <line number="18" hits="150" branch="false" />
+              </lines>
+            </method>
+            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="21" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="22" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToEntity" signature="(Ombor.Contracts.Requests.Employee.CreateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
+                <line number="23" hits="2" branch="false" />
+                <line number="24" hits="2" branch="false" />
                 <line number="25" hits="2" branch="false" />
                 <line number="26" hits="2" branch="false" />
                 <line number="27" hits="2" branch="false" />
                 <line number="28" hits="2" branch="false" />
                 <line number="29" hits="2" branch="false" />
-                <line number="30" hits="2" branch="false" />
-                <line number="31" hits="2" branch="false" />
-                <line number="32" hits="2" branch="false" />
+              </lines>
+            </method>
+            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="32" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="33" hits="2" branch="false" />
                 <line number="34" hits="2" branch="false" />
                 <line number="35" hits="2" branch="false" />
-              </lines>
-            </method>
-            <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
-              <lines>
+                <line number="36" hits="2" branch="false" />
+                <line number="37" hits="2" branch="false" />
                 <line number="38" hits="2" branch="false" />
                 <line number="39" hits="2" branch="false" />
-                <line number="40" hits="2" branch="false" />
-                <line number="41" hits="2" branch="false" />
-                <line number="42" hits="2" branch="false" />
+              </lines>
+            </method>
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="42" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="43" hits="2" branch="false" />
                 <line number="44" hits="2" branch="false" />
                 <line number="45" hits="2" branch="false" />
@@ -1289,66 +1298,69 @@
                 <line number="49" hits="2" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Employee)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="52" hits="2" branch="false" />
                 <line number="53" hits="2" branch="false" />
                 <line number="54" hits="2" branch="false" />
                 <line number="55" hits="2" branch="false" />
                 <line number="56" hits="2" branch="false" />
                 <line number="57" hits="2" branch="false" />
-                <line number="58" hits="2" branch="false" />
+                <line number="58" hits="2" branch="true" condition-coverage="50% (2/4)" />
                 <line number="59" hits="2" branch="false" />
-                <line number="60" hits="2" branch="false" />
-                <line number="61" hits="2" branch="false" />
-                <line number="62" hits="2" branch="false" />
-                <line number="63" hits="2" branch="false" />
               </lines>
             </method>
-            <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Employee,Ombor.Contracts.Requests.Employee.UpdateEmployeeRequest)" line-rate="1" branch-rate="1" complexity="1">
+            <method name="ToEntity" signature="(Ombor.Contracts.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="67" hits="2" branch="false" />
-                <line number="68" hits="2" branch="false" />
-                <line number="69" hits="2" branch="false" />
-                <line number="70" hits="2" branch="false" />
-                <line number="71" hits="2" branch="false" />
-                <line number="72" hits="2" branch="false" />
-                <line number="73" hits="2" branch="false" />
-                <line number="74" hits="2" branch="false" />
-                <line number="75" hits="2" branch="false" />
-                <line number="76" hits="2" branch="false" />
+                <line number="62" hits="4" branch="true" condition-coverage="50% (2/4)" />
+                <line number="63" hits="4" branch="false" />
+                <line number="64" hits="4" branch="false" />
+                <line number="65" hits="4" branch="false" />
+                <line number="66" hits="4" branch="false" />
+                <line number="67" hits="4" branch="false" />
+                <line number="68" hits="4" branch="false" />
+                <line number="69" hits="4" branch="false" />
+                <line number="70" hits="4" branch="false" />
+              </lines>
+            </method>
+            <method name="ToDto" signature="(Ombor.Domain.Common.ContactInfo)" line-rate="1" branch-rate="0.5" complexity="2">
+              <lines>
+                <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
+                <line number="74" hits="60" branch="false" />
+                <line number="75" hits="60" branch="false" />
+                <line number="76" hits="60" branch="false" />
+                <line number="77" hits="60" branch="false" />
+                <line number="78" hits="60" branch="false" />
+                <line number="79" hits="60" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="11" hits="2" branch="false" />
-            <line number="12" hits="2" branch="false" />
-            <line number="13" hits="2" branch="false" />
-            <line number="14" hits="2" branch="false" />
-            <line number="15" hits="2" branch="false" />
-            <line number="16" hits="2" branch="false" />
-            <line number="17" hits="2" branch="false" />
-            <line number="18" hits="2" branch="false" />
-            <line number="19" hits="2" branch="false" />
-            <line number="20" hits="2" branch="false" />
-            <line number="21" hits="2" branch="false" />
+            <line number="11" hits="150" branch="true" condition-coverage="100% (4/4)" />
+            <line number="12" hits="150" branch="false" />
+            <line number="13" hits="150" branch="false" />
+            <line number="14" hits="150" branch="false" />
+            <line number="15" hits="150" branch="false" />
+            <line number="16" hits="150" branch="false" />
+            <line number="17" hits="150" branch="false" />
+            <line number="18" hits="150" branch="false" />
+            <line number="21" hits="2" branch="true" condition-coverage="50% (2/4)" />
             <line number="22" hits="2" branch="false" />
+            <line number="23" hits="2" branch="false" />
+            <line number="24" hits="2" branch="false" />
             <line number="25" hits="2" branch="false" />
             <line number="26" hits="2" branch="false" />
             <line number="27" hits="2" branch="false" />
             <line number="28" hits="2" branch="false" />
             <line number="29" hits="2" branch="false" />
-            <line number="30" hits="2" branch="false" />
-            <line number="31" hits="2" branch="false" />
-            <line number="32" hits="2" branch="false" />
+            <line number="32" hits="2" branch="true" condition-coverage="50% (2/4)" />
             <line number="33" hits="2" branch="false" />
             <line number="34" hits="2" branch="false" />
             <line number="35" hits="2" branch="false" />
+            <line number="36" hits="2" branch="false" />
+            <line number="37" hits="2" branch="false" />
             <line number="38" hits="2" branch="false" />
             <line number="39" hits="2" branch="false" />
-            <line number="40" hits="2" branch="false" />
-            <line number="41" hits="2" branch="false" />
-            <line number="42" hits="2" branch="false" />
+            <line number="42" hits="2" branch="true" condition-coverage="50% (2/4)" />
             <line number="43" hits="2" branch="false" />
             <line number="44" hits="2" branch="false" />
             <line number="45" hits="2" branch="false" />
@@ -1356,28 +1368,29 @@
             <line number="47" hits="2" branch="false" />
             <line number="48" hits="2" branch="false" />
             <line number="49" hits="2" branch="false" />
-            <line number="52" hits="2" branch="false" />
             <line number="53" hits="2" branch="false" />
             <line number="54" hits="2" branch="false" />
             <line number="55" hits="2" branch="false" />
             <line number="56" hits="2" branch="false" />
             <line number="57" hits="2" branch="false" />
-            <line number="58" hits="2" branch="false" />
+            <line number="58" hits="2" branch="true" condition-coverage="50% (2/4)" />
             <line number="59" hits="2" branch="false" />
-            <line number="60" hits="2" branch="false" />
-            <line number="61" hits="2" branch="false" />
-            <line number="62" hits="2" branch="false" />
-            <line number="63" hits="2" branch="false" />
-            <line number="67" hits="2" branch="false" />
-            <line number="68" hits="2" branch="false" />
-            <line number="69" hits="2" branch="false" />
-            <line number="70" hits="2" branch="false" />
-            <line number="71" hits="2" branch="false" />
-            <line number="72" hits="2" branch="false" />
-            <line number="73" hits="2" branch="false" />
-            <line number="74" hits="2" branch="false" />
-            <line number="75" hits="2" branch="false" />
-            <line number="76" hits="2" branch="false" />
+            <line number="62" hits="4" branch="true" condition-coverage="50% (2/4)" />
+            <line number="63" hits="4" branch="false" />
+            <line number="64" hits="4" branch="false" />
+            <line number="65" hits="4" branch="false" />
+            <line number="66" hits="4" branch="false" />
+            <line number="67" hits="4" branch="false" />
+            <line number="68" hits="4" branch="false" />
+            <line number="69" hits="4" branch="false" />
+            <line number="70" hits="4" branch="false" />
+            <line number="73" hits="60" branch="true" condition-coverage="50% (2/4)" />
+            <line number="74" hits="60" branch="false" />
+            <line number="75" hits="60" branch="false" />
+            <line number="76" hits="60" branch="false" />
+            <line number="77" hits="60" branch="false" />
+            <line number="78" hits="60" branch="false" />
+            <line number="79" hits="60" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
@@ -2754,6 +2767,41 @@
             <line number="29" hits="14" branch="false" />
           </lines>
         </class>
+        <class name="Ombor.Application.Services.EmployeeService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/EmployeeService.cs" line-rate="1" branch-rate="1" complexity="4">
+          <methods>
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Employee.GetEmployeesRequest)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="75" hits="8" branch="false" />
+                <line number="76" hits="8" branch="false" />
+                <line number="78" hits="8" branch="true" condition-coverage="100% (4/4)" />
+                <line number="80" hits="2" branch="false" />
+                <line number="81" hits="2" branch="false" />
+                <line number="82" hits="2" branch="false" />
+                <line number="85" hits="8" branch="false" />
+              </lines>
+            </method>
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Employee.GetEmployeesRequest)" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="75" hits="8" branch="false" />
+                <line number="76" hits="8" branch="false" />
+                <line number="78" hits="8" branch="true" condition-coverage="100% (4/4)" />
+                <line number="80" hits="2" branch="false" />
+                <line number="81" hits="2" branch="false" />
+                <line number="82" hits="2" branch="false" />
+                <line number="85" hits="8" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="75" hits="8" branch="false" />
+            <line number="76" hits="8" branch="false" />
+            <line number="78" hits="8" branch="true" condition-coverage="100% (4/4)" />
+            <line number="80" hits="2" branch="false" />
+            <line number="81" hits="2" branch="false" />
+            <line number="82" hits="2" branch="false" />
+            <line number="85" hits="8" branch="false" />
+          </lines>
+        </class>
         <class name="Ombor.Application.Services.FileService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/FileService.cs" line-rate="1" branch-rate="1" complexity="30">
           <methods>
             <method name="DeleteAsync" signature="(System.Collections.Generic.IEnumerable`1&lt;System.String&gt;,System.String,System.Threading.CancellationToken)" line-rate="1" branch-rate="1" complexity="1">
@@ -3611,120 +3659,167 @@
             <line number="23" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Validators.Employee.CreateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/CreateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="4">
+        <class name="Ombor.Application.Validators.Common.ContactInfoValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Common/ContactInfoValidator.cs" line-rate="1" branch-rate="1" complexity="4">
           <methods>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="4" branch="false" />
-                <line number="16" hits="4" branch="false" />
-                <line number="17" hits="4" branch="false" />
-                <line number="18" hits="4" branch="false" />
-                <line number="20" hits="4" branch="false" />
-                <line number="21" hits="4" branch="false" />
-                <line number="22" hits="4" branch="false" />
-                <line number="23" hits="4" branch="false" />
-                <line number="24" hits="4" branch="false" />
-                <line number="26" hits="4" branch="true" condition-coverage="100% (4/4)" />
-                <line number="27" hits="4" branch="false" />
-                <line number="28" hits="4" branch="false" />
-                <line number="29" hits="4" branch="false" />
-                <line number="30" hits="4" branch="false" />
-                <line number="32" hits="4" branch="false" />
-                <line number="33" hits="4" branch="false" />
-                <line number="34" hits="4" branch="false" />
-                <line number="36" hits="4" branch="false" />
-                <line number="37" hits="4" branch="false" />
-                <line number="38" hits="4" branch="false" />
-                <line number="40" hits="4" branch="false" />
-                <line number="41" hits="4" branch="false" />
-                <line number="42" hits="4" branch="false" />
-                <line number="44" hits="4" branch="false" />
-                <line number="45" hits="4" branch="false" />
-                <line number="46" hits="4" branch="false" />
-                <line number="47" hits="4" branch="false" />
-                <line number="48" hits="4" branch="false" />
-                <line number="49" hits="4" branch="false" />
+                <line number="8" hits="10" branch="false" />
+                <line number="10" hits="10" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="10" branch="false" />
+                <line number="12" hits="10" branch="false" />
+                <line number="13" hits="10" branch="false" />
+                <line number="14" hits="10" branch="false" />
+                <line number="15" hits="10" branch="false" />
+                <line number="16" hits="10" branch="false" />
+                <line number="17" hits="10" branch="false" />
+                <line number="19" hits="10" branch="false" />
+                <line number="20" hits="10" branch="false" />
+                <line number="21" hits="10" branch="false" />
+                <line number="23" hits="10" branch="false" />
+                <line number="24" hits="10" branch="false" />
+                <line number="25" hits="10" branch="false" />
+                <line number="27" hits="10" branch="false" />
+                <line number="28" hits="10" branch="false" />
+                <line number="29" hits="10" branch="false" />
+                <line number="30" hits="10" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="8" hits="4" branch="false" />
-                <line number="10" hits="4" branch="false" />
-                <line number="11" hits="4" branch="false" />
-                <line number="12" hits="4" branch="false" />
-                <line number="13" hits="4" branch="false" />
-                <line number="14" hits="4" branch="false" />
-                <line number="16" hits="4" branch="false" />
-                <line number="17" hits="4" branch="false" />
-                <line number="18" hits="4" branch="false" />
-                <line number="20" hits="4" branch="false" />
-                <line number="21" hits="4" branch="false" />
-                <line number="22" hits="4" branch="false" />
-                <line number="23" hits="4" branch="false" />
-                <line number="24" hits="4" branch="false" />
-                <line number="26" hits="4" branch="true" condition-coverage="100% (4/4)" />
-                <line number="27" hits="4" branch="false" />
-                <line number="28" hits="4" branch="false" />
-                <line number="29" hits="4" branch="false" />
-                <line number="30" hits="4" branch="false" />
-                <line number="32" hits="4" branch="false" />
-                <line number="33" hits="4" branch="false" />
-                <line number="34" hits="4" branch="false" />
-                <line number="36" hits="4" branch="false" />
-                <line number="37" hits="4" branch="false" />
-                <line number="38" hits="4" branch="false" />
-                <line number="40" hits="4" branch="false" />
-                <line number="41" hits="4" branch="false" />
-                <line number="42" hits="4" branch="false" />
-                <line number="44" hits="4" branch="false" />
-                <line number="45" hits="4" branch="false" />
-                <line number="46" hits="4" branch="false" />
-                <line number="47" hits="4" branch="false" />
-                <line number="48" hits="4" branch="false" />
-                <line number="49" hits="4" branch="false" />
+                <line number="8" hits="10" branch="false" />
+                <line number="10" hits="10" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="10" branch="false" />
+                <line number="12" hits="10" branch="false" />
+                <line number="13" hits="10" branch="false" />
+                <line number="14" hits="10" branch="false" />
+                <line number="15" hits="10" branch="false" />
+                <line number="16" hits="10" branch="false" />
+                <line number="17" hits="10" branch="false" />
+                <line number="19" hits="10" branch="false" />
+                <line number="20" hits="10" branch="false" />
+                <line number="21" hits="10" branch="false" />
+                <line number="23" hits="10" branch="false" />
+                <line number="24" hits="10" branch="false" />
+                <line number="25" hits="10" branch="false" />
+                <line number="27" hits="10" branch="false" />
+                <line number="28" hits="10" branch="false" />
+                <line number="29" hits="10" branch="false" />
+                <line number="30" hits="10" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="8" hits="4" branch="false" />
-            <line number="10" hits="4" branch="false" />
+            <line number="8" hits="10" branch="false" />
+            <line number="10" hits="10" branch="true" condition-coverage="100% (4/4)" />
+            <line number="11" hits="10" branch="false" />
+            <line number="12" hits="10" branch="false" />
+            <line number="13" hits="10" branch="false" />
+            <line number="14" hits="10" branch="false" />
+            <line number="15" hits="10" branch="false" />
+            <line number="16" hits="10" branch="false" />
+            <line number="17" hits="10" branch="false" />
+            <line number="19" hits="10" branch="false" />
+            <line number="20" hits="10" branch="false" />
+            <line number="21" hits="10" branch="false" />
+            <line number="23" hits="10" branch="false" />
+            <line number="24" hits="10" branch="false" />
+            <line number="25" hits="10" branch="false" />
+            <line number="27" hits="10" branch="false" />
+            <line number="28" hits="10" branch="false" />
+            <line number="29" hits="10" branch="false" />
+            <line number="30" hits="10" branch="false" />
+          </lines>
+        </class>
+        <class name="Ombor.Application.Validators.Employee.CreateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/CreateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
+          <methods>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="4" branch="false" />
+                <line number="11" hits="4" branch="false" />
+                <line number="12" hits="4" branch="false" />
+                <line number="13" hits="4" branch="false" />
+                <line number="14" hits="4" branch="false" />
+                <line number="15" hits="4" branch="false" />
+                <line number="17" hits="4" branch="false" />
+                <line number="18" hits="4" branch="false" />
+                <line number="19" hits="4" branch="false" />
+                <line number="20" hits="4" branch="false" />
+                <line number="21" hits="4" branch="false" />
+                <line number="23" hits="4" branch="false" />
+                <line number="24" hits="4" branch="false" />
+                <line number="25" hits="4" branch="false" />
+                <line number="27" hits="4" branch="false" />
+                <line number="28" hits="4" branch="false" />
+                <line number="29" hits="4" branch="false" />
+                <line number="31" hits="4" branch="false" />
+                <line number="32" hits="4" branch="false" />
+                <line number="33" hits="4" branch="false" />
+                <line number="34" hits="4" branch="false" />
+                <line number="35" hits="4" branch="false" />
+                <line number="37" hits="4" branch="false" />
+                <line number="38" hits="4" branch="false" />
+                <line number="39" hits="4" branch="false" />
+                <line number="40" hits="4" branch="false" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="4" branch="false" />
+                <line number="11" hits="4" branch="false" />
+                <line number="12" hits="4" branch="false" />
+                <line number="13" hits="4" branch="false" />
+                <line number="14" hits="4" branch="false" />
+                <line number="15" hits="4" branch="false" />
+                <line number="17" hits="4" branch="false" />
+                <line number="18" hits="4" branch="false" />
+                <line number="19" hits="4" branch="false" />
+                <line number="20" hits="4" branch="false" />
+                <line number="21" hits="4" branch="false" />
+                <line number="23" hits="4" branch="false" />
+                <line number="24" hits="4" branch="false" />
+                <line number="25" hits="4" branch="false" />
+                <line number="27" hits="4" branch="false" />
+                <line number="28" hits="4" branch="false" />
+                <line number="29" hits="4" branch="false" />
+                <line number="31" hits="4" branch="false" />
+                <line number="32" hits="4" branch="false" />
+                <line number="33" hits="4" branch="false" />
+                <line number="34" hits="4" branch="false" />
+                <line number="35" hits="4" branch="false" />
+                <line number="37" hits="4" branch="false" />
+                <line number="38" hits="4" branch="false" />
+                <line number="39" hits="4" branch="false" />
+                <line number="40" hits="4" branch="false" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="9" hits="4" branch="false" />
             <line number="11" hits="4" branch="false" />
             <line number="12" hits="4" branch="false" />
             <line number="13" hits="4" branch="false" />
             <line number="14" hits="4" branch="false" />
-            <line number="16" hits="4" branch="false" />
+            <line number="15" hits="4" branch="false" />
             <line number="17" hits="4" branch="false" />
             <line number="18" hits="4" branch="false" />
+            <line number="19" hits="4" branch="false" />
             <line number="20" hits="4" branch="false" />
             <line number="21" hits="4" branch="false" />
-            <line number="22" hits="4" branch="false" />
             <line number="23" hits="4" branch="false" />
             <line number="24" hits="4" branch="false" />
-            <line number="26" hits="4" branch="true" condition-coverage="100% (4/4)" />
+            <line number="25" hits="4" branch="false" />
             <line number="27" hits="4" branch="false" />
             <line number="28" hits="4" branch="false" />
             <line number="29" hits="4" branch="false" />
-            <line number="30" hits="4" branch="false" />
+            <line number="31" hits="4" branch="false" />
             <line number="32" hits="4" branch="false" />
             <line number="33" hits="4" branch="false" />
             <line number="34" hits="4" branch="false" />
-            <line number="36" hits="4" branch="false" />
+            <line number="35" hits="4" branch="false" />
             <line number="37" hits="4" branch="false" />
             <line number="38" hits="4" branch="false" />
+            <line number="39" hits="4" branch="false" />
             <line number="40" hits="4" branch="false" />
-            <line number="41" hits="4" branch="false" />
-            <line number="42" hits="4" branch="false" />
-            <line number="44" hits="4" branch="false" />
-            <line number="45" hits="4" branch="false" />
-            <line number="46" hits="4" branch="false" />
-            <line number="47" hits="4" branch="false" />
-            <line number="48" hits="4" branch="false" />
-            <line number="49" hits="4" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Employee.DeleteEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/DeleteEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -3785,138 +3880,111 @@
             <line number="13" hits="4" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Validators.Employee.UpdateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/UpdateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="4">
+        <class name="Ombor.Application.Validators.Employee.UpdateEmployeeRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Employee/UpdateEmployeeRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
           <methods>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="6" branch="false" />
-                <line number="10" hits="6" branch="false" />
+                <line number="9" hits="6" branch="false" />
                 <line number="11" hits="6" branch="false" />
                 <line number="12" hits="6" branch="false" />
-                <line number="14" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
                 <line number="15" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
                 <line number="24" hits="6" branch="false" />
-                <line number="26" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
                 <line number="27" hits="6" branch="false" />
                 <line number="28" hits="6" branch="false" />
-                <line number="30" hits="6" branch="true" condition-coverage="100% (4/4)" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
                 <line number="31" hits="6" branch="false" />
-                <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
-                <line number="36" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
                 <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
-                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
-                <line number="48" hits="6" branch="false" />
-                <line number="49" hits="6" branch="false" />
-                <line number="50" hits="6" branch="false" />
-                <line number="52" hits="6" branch="false" />
-                <line number="53" hits="6" branch="false" />
-                <line number="54" hits="6" branch="false" />
-                <line number="55" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
-                <line number="57" hits="6" branch="false" />
               </lines>
             </method>
-            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="2">
+            <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="6" branch="false" />
-                <line number="10" hits="6" branch="false" />
+                <line number="9" hits="6" branch="false" />
                 <line number="11" hits="6" branch="false" />
                 <line number="12" hits="6" branch="false" />
-                <line number="14" hits="6" branch="false" />
+                <line number="13" hits="6" branch="false" />
                 <line number="15" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
                 <line number="24" hits="6" branch="false" />
-                <line number="26" hits="6" branch="false" />
+                <line number="25" hits="6" branch="false" />
                 <line number="27" hits="6" branch="false" />
                 <line number="28" hits="6" branch="false" />
-                <line number="30" hits="6" branch="true" condition-coverage="100% (4/4)" />
+                <line number="29" hits="6" branch="false" />
+                <line number="30" hits="6" branch="false" />
                 <line number="31" hits="6" branch="false" />
-                <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
-                <line number="36" hits="6" branch="false" />
+                <line number="35" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
+                <line number="39" hits="6" branch="false" />
                 <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
-                <line number="42" hits="6" branch="false" />
+                <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
-                <line number="48" hits="6" branch="false" />
-                <line number="49" hits="6" branch="false" />
-                <line number="50" hits="6" branch="false" />
-                <line number="52" hits="6" branch="false" />
-                <line number="53" hits="6" branch="false" />
-                <line number="54" hits="6" branch="false" />
-                <line number="55" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
-                <line number="57" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="8" hits="6" branch="false" />
-            <line number="10" hits="6" branch="false" />
+            <line number="9" hits="6" branch="false" />
             <line number="11" hits="6" branch="false" />
             <line number="12" hits="6" branch="false" />
-            <line number="14" hits="6" branch="false" />
+            <line number="13" hits="6" branch="false" />
             <line number="15" hits="6" branch="false" />
             <line number="16" hits="6" branch="false" />
             <line number="17" hits="6" branch="false" />
             <line number="18" hits="6" branch="false" />
-            <line number="20" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
             <line number="21" hits="6" branch="false" />
             <line number="22" hits="6" branch="false" />
             <line number="23" hits="6" branch="false" />
             <line number="24" hits="6" branch="false" />
-            <line number="26" hits="6" branch="false" />
+            <line number="25" hits="6" branch="false" />
             <line number="27" hits="6" branch="false" />
             <line number="28" hits="6" branch="false" />
-            <line number="30" hits="6" branch="true" condition-coverage="100% (4/4)" />
+            <line number="29" hits="6" branch="false" />
+            <line number="30" hits="6" branch="false" />
             <line number="31" hits="6" branch="false" />
-            <line number="32" hits="6" branch="false" />
             <line number="33" hits="6" branch="false" />
             <line number="34" hits="6" branch="false" />
-            <line number="36" hits="6" branch="false" />
+            <line number="35" hits="6" branch="false" />
             <line number="37" hits="6" branch="false" />
             <line number="38" hits="6" branch="false" />
+            <line number="39" hits="6" branch="false" />
             <line number="40" hits="6" branch="false" />
             <line number="41" hits="6" branch="false" />
-            <line number="42" hits="6" branch="false" />
+            <line number="43" hits="6" branch="false" />
             <line number="44" hits="6" branch="false" />
             <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
-            <line number="48" hits="6" branch="false" />
-            <line number="49" hits="6" branch="false" />
-            <line number="50" hits="6" branch="false" />
-            <line number="52" hits="6" branch="false" />
-            <line number="53" hits="6" branch="false" />
-            <line number="54" hits="6" branch="false" />
-            <line number="55" hits="6" branch="false" />
-            <line number="56" hits="6" branch="false" />
-            <line number="57" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Inventory.CreateInventoryRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Inventory/CreateInventoryRequestValidator.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -5453,7 +5521,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Infrastructure" line-rate="0.9103078982597055" branch-rate="0.5769230769230769" complexity="140">
+    <package name="Ombor.Infrastructure" line-rate="0.910547396528705" branch-rate="0.5769230769230769" complexity="140">
       <classes>
         <class name="Ombor.Infrastructure.Extensions.DependencyInjection" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/DependencyInjection.cs" line-rate="1" branch-rate="0.5" complexity="12">
           <methods>
@@ -5637,17 +5705,17 @@
           <methods>
             <method name="HasCurrencyPrecision" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1&lt;System.Decimal&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="108" branch="false" />
+                <line number="8" hits="114" branch="false" />
               </lines>
             </method>
             <method name="HasCurrencyPrecision" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder`1&lt;System.Decimal&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="8" hits="108" branch="false" />
+                <line number="8" hits="114" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="8" hits="108" branch="false" />
+            <line number="8" hits="114" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Infrastructure.Extensions.StringExtensions" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Infrastructure/Extensions/StringExtensions.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -5888,13 +5956,12 @@
           <methods>
             <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Employee&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="11" hits="6" branch="false" />
-                <line number="13" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
@@ -5910,19 +5977,22 @@
                 <line number="36" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
-                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
                 <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
                 <line number="51" hits="6" branch="false" />
                 <line number="52" hits="6" branch="false" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
                 <line number="58" hits="6" branch="false" />
@@ -5931,13 +6001,12 @@
             </method>
             <method name="Configure" signature="(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder`1&lt;Ombor.Domain.Entities.Employee&gt;)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="11" hits="6" branch="false" />
-                <line number="13" hits="6" branch="false" />
-                <line number="15" hits="6" branch="false" />
+                <line number="12" hits="6" branch="false" />
+                <line number="14" hits="6" branch="false" />
                 <line number="16" hits="6" branch="false" />
                 <line number="17" hits="6" branch="false" />
                 <line number="18" hits="6" branch="false" />
-                <line number="20" hits="6" branch="false" />
+                <line number="19" hits="6" branch="false" />
                 <line number="21" hits="6" branch="false" />
                 <line number="22" hits="6" branch="false" />
                 <line number="23" hits="6" branch="false" />
@@ -5953,19 +6022,22 @@
                 <line number="36" hits="6" branch="false" />
                 <line number="37" hits="6" branch="false" />
                 <line number="38" hits="6" branch="false" />
-                <line number="39" hits="6" branch="false" />
+                <line number="40" hits="6" branch="false" />
                 <line number="41" hits="6" branch="false" />
                 <line number="42" hits="6" branch="false" />
                 <line number="43" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
+                <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
                 <line number="48" hits="6" branch="false" />
                 <line number="49" hits="6" branch="false" />
+                <line number="50" hits="6" branch="false" />
                 <line number="51" hits="6" branch="false" />
                 <line number="52" hits="6" branch="false" />
                 <line number="53" hits="6" branch="false" />
                 <line number="54" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="56" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
                 <line number="58" hits="6" branch="false" />
@@ -5974,13 +6046,12 @@
             </method>
           </methods>
           <lines>
-            <line number="11" hits="6" branch="false" />
-            <line number="13" hits="6" branch="false" />
-            <line number="15" hits="6" branch="false" />
+            <line number="12" hits="6" branch="false" />
+            <line number="14" hits="6" branch="false" />
             <line number="16" hits="6" branch="false" />
             <line number="17" hits="6" branch="false" />
             <line number="18" hits="6" branch="false" />
-            <line number="20" hits="6" branch="false" />
+            <line number="19" hits="6" branch="false" />
             <line number="21" hits="6" branch="false" />
             <line number="22" hits="6" branch="false" />
             <line number="23" hits="6" branch="false" />
@@ -5996,19 +6067,22 @@
             <line number="36" hits="6" branch="false" />
             <line number="37" hits="6" branch="false" />
             <line number="38" hits="6" branch="false" />
-            <line number="39" hits="6" branch="false" />
+            <line number="40" hits="6" branch="false" />
             <line number="41" hits="6" branch="false" />
             <line number="42" hits="6" branch="false" />
             <line number="43" hits="6" branch="false" />
             <line number="44" hits="6" branch="false" />
+            <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
             <line number="48" hits="6" branch="false" />
             <line number="49" hits="6" branch="false" />
+            <line number="50" hits="6" branch="false" />
             <line number="51" hits="6" branch="false" />
             <line number="52" hits="6" branch="false" />
             <line number="53" hits="6" branch="false" />
             <line number="54" hits="6" branch="false" />
+            <line number="55" hits="6" branch="false" />
             <line number="56" hits="6" branch="false" />
             <line number="57" hits="6" branch="false" />
             <line number="58" hits="6" branch="false" />
