@@ -17,15 +17,14 @@ internal sealed class MemoryCache(IMemoryCache cache) : IRedisService
 
     public Task<bool> SetAsync<T>(string key, T value, TimeSpan? expiry = null)
     {
-        cache.GetOrCreateAsync(key, entry =>
+        if (expiry.HasValue)
         {
-            if (expiry.HasValue)
-            {
-                entry.SetAbsoluteExpiration(expiry.Value);
-            }
-
-            return Task.FromResult(value);
-        });
+            cache.Set(key, value, expiry.Value);
+        }
+        else
+        {
+            cache.Set(key, value);
+        }
 
         return Task.FromResult(true);
     }
