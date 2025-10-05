@@ -27,6 +27,7 @@ internal sealed class TestingDatabaseSeeder(
         await CreateProductsAsync(context);
         await CreateProductImagesAsync(context);
         await CreatePartners(context);
+        await AppEmployeesAsync(context);
         await CreateInventoriesAsync(context);
         await CreateInventoryItemsAsync(context);
     }
@@ -143,6 +144,27 @@ internal sealed class TestingDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task AppEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = Enumerable.Range(1, seedSettings.NumberOfEmployees)
+            .Select(i => new Employee
+            {
+                FullName = $"test employee {i}",
+                Position = $"Test employee position {i}",
+                Salary = 1000 + i,
+                DateOfEmployment = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i)),
+                Status = EmployeeStatus.Active,
+            });
+
+        context.Employees.AddRange(employees);
+        await context.SaveChangesAsync();
+    }
+
     private async Task CreateInventoriesAsync(IApplicationDbContext context)
     {
         if (context.Inventories.Any())
@@ -210,10 +232,10 @@ internal sealed class TestingDatabaseSeeder(
         Directory.CreateDirectory(originalsDir);
         Directory.CreateDirectory(thumbsDir);
 
-        if (Directory.EnumerateFiles(originalsDir).Any())
-        {
-            return [];
-        }
+        //if (Directory.EnumerateFiles(originalsDir).Any())
+        //{
+        //    return [];
+        //}
 
         return await ExtractAndSaveSeedImagesAsync(originalsDir, thumbsDir);
     }

@@ -72,6 +72,7 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         public const string Product = "products";
         public const string Partner = "partners";
         public const string Template = "templates";
+        public const string Employee = "employees";
         public const string Inventory = "inventories";
         public const string Transaction = "transactions";
     }

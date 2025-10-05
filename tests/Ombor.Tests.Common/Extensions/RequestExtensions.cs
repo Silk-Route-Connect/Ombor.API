@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
+using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Requests.Inventory;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
@@ -29,8 +30,11 @@ public static class RequestExtensions
         string.IsNullOrWhiteSpace(request.SearchTerm) &&
         request.Type.HasValue;
 
+    public static bool IsEmpty(this GetEmployeesRequest request) =>
+        string.IsNullOrWhiteSpace(request.SearchTerm);
+
     public static bool IsEmpty(this GetInventoriesRequest request) =>
-    string.IsNullOrWhiteSpace(request.SearchTerm);
+        string.IsNullOrWhiteSpace(request.SearchTerm);
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
         !string.IsNullOrWhiteSpace(request.SearchTerm) &&

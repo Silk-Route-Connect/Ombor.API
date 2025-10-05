@@ -17,6 +17,9 @@ public sealed class ResponseValidator(IApplicationDbContext context, FileSetting
     private TemplateValidator? _template;
     public TemplateValidator Template => _template ??= new(context);
 
+    private EmployeeValidator? _employee;
+    public EmployeeValidator Employee => _employee ??= new(context);
+
     private InventoryValidator? _inventory;
     public InventoryValidator Inventory => _inventory ??= new(context);
 }

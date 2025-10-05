@@ -64,6 +64,10 @@ public interface IApplicationDbContext
     DbSet<RefreshToken> RefreshTokens { get; set; }
 
     /// <summary>
+    /// Gets or sets the Employees set.
+    /// </summary>
+    DbSet<Employee> Employees { get; set; }
+
     /// Gets or sets the Inventories set.
     /// </summary>
     DbSet<Inventory> Inventories { get; set; }

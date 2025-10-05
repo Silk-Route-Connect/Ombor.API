@@ -22,6 +22,7 @@ internal sealed class ProductionDatabaseSeeder(
     {
         await AddCategoriesAsync(context);
         await AddProductsAsync(context);
+        await AddEmployeesAsync(context);
         await AddProductImagesAsync(context);
         await AddPartnersAsync(context);
         await AddTemplatesAsync(context);
@@ -63,6 +64,21 @@ internal sealed class ProductionDatabaseSeeder(
             .ToArray();
 
         context.Products.AddRange(products);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task AddEmployeesAsync(IApplicationDbContext context)
+    {
+        if (context.Employees.Any())
+        {
+            return;
+        }
+
+        var employees = EmployeeGenerator.Generate(seedSettings.NumberOfEmployees, seedSettings.Locale)
+            .DistinctBy(x => x.FullName)
+            .ToArray();
+
+        context.Employees.AddRange(employees);
         await context.SaveChangesAsync();
     }
 

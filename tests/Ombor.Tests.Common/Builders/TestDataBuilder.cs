@@ -15,5 +15,7 @@ public sealed class TestDataBuilder : ITestDataBuilder
 
     public IPartnerBuilder PartnerBuilder => new PartnerBuilder(_faker);
 
+    public IEmployeeBuilder EmployeeBuilder => new EmployeeBuilder(_faker);
+
     public IInventoryBuilder InventoryBuilder => new InventoryBuilder(_faker);
 }
