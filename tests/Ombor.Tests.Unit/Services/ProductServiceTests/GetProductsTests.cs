@@ -16,18 +16,18 @@ public sealed class GetProductsTests : ProductTestsBase
         new()
         {
             new GetProductsRequest(),
-            new GetProductsRequest(SearchTerm:string.Empty),
-            new GetProductsRequest(SearchTerm:" "),
-            new GetProductsRequest(SearchTerm : "   "),
-            new GetProductsRequest(SearchTerm : MatchingSearchTerm),
-            new GetProductsRequest(CategoryId: MatchingCategoryId),
-            new GetProductsRequest(MinPrice: MatchingMinPrice, MaxPrice: MatchingMaxPrice),
+            new GetProductsRequest(searchTerm:string.Empty),
+            new GetProductsRequest(searchTerm:" "),
+            new GetProductsRequest(searchTerm : "   "),
+            new GetProductsRequest(searchTerm : MatchingSearchTerm),
+            new GetProductsRequest(categoryId: MatchingCategoryId),
+            new GetProductsRequest(minPrice: MatchingMinPrice, maxPrice: MatchingMaxPrice),
             new GetProductsRequest(
-                SearchTerm:MatchingSearchTerm,
-                CategoryId: MatchingCategoryId,
-                MinPrice: MatchingMinPrice,
-                MaxPrice: MatchingMaxPrice,
-                Type: Contracts.Enums.ProductType.All)
+                searchTerm:MatchingSearchTerm,
+                categoryId: MatchingCategoryId,
+                minPrice: MatchingMinPrice,
+                maxPrice: MatchingMaxPrice,
+                type: Contracts.Enums.ProductType.All)
         };
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class GetProductsTests : ProductTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = new GetProductsRequest(SearchTerm: string.Empty);
+        var request = new GetProductsRequest(searchTerm: string.Empty);
         SetupProducts([]);
 
         // Act

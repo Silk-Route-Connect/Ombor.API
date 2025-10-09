@@ -12,25 +12,32 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="CategoryId">Optional category filter (must be &gt; 0).</param>
 /// <param name="MinPrice">Optional minimum sale price filter.</param>
 /// <param name="MaxPrice">Optional maximum sale price filter.</param>
-public sealed record GetProductsRequest(
-    int? CategoryId = null,
-    decimal? MinPrice = null,
-    decimal? MaxPrice = null,
-    ProductType? Type = null,
-    string? SearchTerm = null,
-    string? SortBy = "name_asc") : PagedRequest
+public sealed class GetProductsRequest : PagedRequest
 {
+    public int? CategoryId { get; set; }
+    public decimal? MinPrice { get; set; }
+    public decimal? MaxPrice { get; set; }
+    public ProductType? Type { get; set; }
+    public string? SearchTerm { get; set; }
+    public string? SortBy { get; set; } = "name_asc";
+
+    public GetProductsRequest() { }
+
     public GetProductsRequest(
-        int? categoryId,
-        decimal? minPrice,
-        decimal? maxPrice,
-        ProductType? type,
-        string? searchTerm,
-        string? sortBy,
-        int pageNumber,
-        int pageSize) : this(categoryId, minPrice, maxPrice, type, searchTerm, sortBy)
+        int? categoryId = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        ProductType? type = null,
+        string? searchTerm = null,
+        string? sortBy = "name_asc",
+        int pageNumber = 1,
+        int pageSize = 10) : base(pageNumber, pageSize)
     {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
+        CategoryId = categoryId;
+        MinPrice = minPrice;
+        MaxPrice = maxPrice;
+        Type = type;
+        SearchTerm = searchTerm;
+        SortBy = sortBy;
     }
 }

@@ -19,10 +19,10 @@ public sealed class GetTemplatesTests(
         new()
         {
             new GetTemplatesRequest(),
-            new GetTemplatesRequest(SearchTerm:"   "),
-            new GetTemplatesRequest(SearchTerm : "Test Template"),
-            new GetTemplatesRequest(Type:TemplateType.Sale),
-            new GetTemplatesRequest(SearchTerm : "Test Template",Type: TemplateType.Supply)
+            new GetTemplatesRequest(searchTerm:"   "),
+            new GetTemplatesRequest(searchTerm : "Test Template"),
+            new GetTemplatesRequest(type:TemplateType.Sale),
+            new GetTemplatesRequest(searchTerm : "Test Template",type: TemplateType.Supply)
         };
 
     [Theory]

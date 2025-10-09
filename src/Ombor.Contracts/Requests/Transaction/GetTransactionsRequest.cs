@@ -3,27 +3,35 @@ using Ombor.Contracts.Requests.Common;
 
 namespace Ombor.Contracts.Requests.Transaction;
 
-public sealed record GetTransactionsRequest(
-    int? PartnerId = null,
-    TransactionStatus? Status = null,
-    TransactionType? Type = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
-    string? SearchTerm = null,
-    string? SortBy = "date_desc") : PagedRequest
+public sealed class GetTransactionsRequest : PagedRequest
 {
+    public int? PartnerId { get; set; }
+    public TransactionStatus? Status { get; set; }
+    public TransactionType? Type { get; set; }
+    public DateTime? FromDate { get; set; }
+    public DateTime? ToDate { get; set; }
+    public string? SearchTerm { get; set; }
+    public string? SortBy { get; set; } = "date_desc";
+
+    public GetTransactionsRequest() { }
+
     public GetTransactionsRequest(
-        int? partnerId,
-        TransactionStatus? status,
-        TransactionType type,
-        DateTime? fromDate,
-        DateTime? toDate,
-        string? searchTerm,
-        string? sortBy,
-        int pageNumber,
-        int pageSize) : this(partnerId, status, type, fromDate, toDate, searchTerm, sortBy)
+        int? partnerId = null,
+        TransactionStatus? status = null,
+        TransactionType? type = null,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        string? searchTerm = null,
+        string? sortBy = "date_desc",
+        int pageNumber = 1,
+        int pageSize = 10) : base(pageNumber, pageSize)
     {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
+        PartnerId = partnerId;
+        Status = status;
+        Type = type;
+        FromDate = fromDate;
+        ToDate = toDate;
+        SearchTerm = searchTerm;
+        SortBy = sortBy;
     }
 }

@@ -16,7 +16,7 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
     public async Task GetAsync_ShouldReturnFilteredPartners_WhenSearchIsProvided()
     {
         // Arrange
-        var request = new GetPartnersRequest(SearchTerm: _searchTerm);
+        var request = new GetPartnersRequest(searchTerm: _searchTerm);
         await Createpartners(request);
         var url = GetUrl(request);
 

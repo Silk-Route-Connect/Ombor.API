@@ -3,34 +3,44 @@ using Ombor.Contracts.Requests.Common;
 
 namespace Ombor.Contracts.Requests.Payment;
 
-public sealed record GetPaymentsRequest(
-    int? PartnerId = null,
-    int? TransactionId = null,
-    decimal? MinAmount = null,
-    decimal? MaxAmount = null,
-    DateTime? FromDate = null,
-    DateTime? ToDate = null,
-    PaymentType? Type = null,
-    PaymentDirection? Direction = null,
-    string? SearchTerm = null,
-    string? SortBy = "date_desc") : PagedRequest
+public sealed class GetPaymentsRequest : PagedRequest
 {
+    public int? PartnerId { get; set; }
+    public int? TransactionId { get; set; }
+    public decimal? MinAmount { get; set; }
+    public decimal? MaxAmount { get; set; }
+    public DateTime? FromDate { get; set; }
+    public DateTime? ToDate { get; set; }
+    public PaymentType? Type { get; set; }
+    public PaymentDirection? Direction { get; set; }
+    public string? SearchTerm { get; set; }
+    public string? SortBy { get; set; } = "date_desc";
+
+    public GetPaymentsRequest() { }
+
     public GetPaymentsRequest(
-        int? partnerId,
-        int? transactionId,
-        decimal? minAmount,
-        decimal? maxAmount,
-        DateTime? fromDate,
-        DateTime? toDate,
-        PaymentType? type,
-        PaymentDirection? direction,
-        string? searchTerm,
-        string? sortBy,
-        int pageNumber,
-        int pageSize) : this(partnerId, transactionId, minAmount, maxAmount, fromDate, toDate, type, direction, searchTerm, sortBy
-        )
+        int? partnerId = null,
+        int? transactionId = null,
+        decimal? minAmount = null,
+        decimal? maxAmount = null,
+        DateTime? fromDate = null,
+        DateTime? toDate = null,
+        PaymentType? type = null,
+        PaymentDirection? direction = null,
+        string? searchTerm = null,
+        string? sortBy = "date_desc",
+        int pageNumber = 1,
+        int pageSize = 10) : base(pageNumber, pageSize)
     {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
+        PartnerId = partnerId;
+        TransactionId = transactionId;
+        MinAmount = minAmount;
+        MaxAmount = maxAmount;
+        FromDate = fromDate;
+        ToDate = toDate;
+        Type = type;
+        Direction = direction;
+        SearchTerm = searchTerm;
+        SortBy = sortBy;
     }
 }

@@ -58,7 +58,7 @@ public sealed class PartnersController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PagedList<PaymentDto>>> GetPartnerPaymentsAsync([FromRoute] int id)
     {
-        var request = new GetPaymentsRequest(PartnerId: id);
+        var request = new GetPaymentsRequest(partnerId: id);
         var response = await paymentService.GetAsync(request);
 
         return Ok(response);

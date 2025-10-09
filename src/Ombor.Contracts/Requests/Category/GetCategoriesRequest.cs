@@ -8,19 +8,20 @@ namespace Ombor.Contracts.Requests.Category;
 /// <param name="SearchTerm">
 /// Optional case‐insensitive term to filter by name or description.
 /// </param>
-public sealed record GetCategoriesRequest(
-    string? SearchTerm = null,
-    string? SortBy = "name_asc"
-) : PagedRequest
+public sealed class GetCategoriesRequest : PagedRequest
 {
+    public string? SearchTerm { get; set; }
+    public string? SortBy { get; set; } = "name_asc";
+
+    public GetCategoriesRequest() { }
+
     public GetCategoriesRequest(
-        string? searchTerm,
-        string? sortBy,
-        int pageNumber,
-        int pageSize)
-        : this(searchTerm, sortBy)
+        string? searchTerm = null,
+        string? sortBy = "name_asc",
+        int pageNumber = 1,
+        int pageSize = 10) : base(pageNumber, pageSize)
     {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
+        SearchTerm = searchTerm;
+        SortBy = sortBy;
     }
 }
