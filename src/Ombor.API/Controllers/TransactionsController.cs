@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Payment;
@@ -14,10 +16,12 @@ public class TransactionsController(
     IPaymentService paymentService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<TransactionDto[]>> GetAsync(
+    public async Task<ActionResult<PagedList<TransactionDto>>> GetAsync(
         [FromQuery] GetTransactionsRequest request)
     {
         var response = await transactionService.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

@@ -15,14 +15,19 @@ public sealed class GetProductsTests : ProductTestsBase
     public static TheoryData<GetProductsRequest> GetRequests =>
         new()
         {
-            new GetProductsRequest(null, null, null, null, null),
-            new GetProductsRequest(string.Empty, null, null, null, null),
-            new GetProductsRequest(" ", null, null, null, null),
-            new GetProductsRequest("   ", null, null, null, null),
-            new GetProductsRequest(MatchingSearchTerm, null, null, null, null),
-            new GetProductsRequest(null, MatchingCategoryId, null, null, null),
-            new GetProductsRequest(null, null, MatchingMinPrice, MatchingMaxPrice, null),
-            new GetProductsRequest(MatchingSearchTerm, MatchingCategoryId, MatchingMinPrice, MatchingMaxPrice, Contracts.Enums.ProductType.All)
+            new GetProductsRequest(),
+            new GetProductsRequest(searchTerm:string.Empty),
+            new GetProductsRequest(searchTerm:" "),
+            new GetProductsRequest(searchTerm : "   "),
+            new GetProductsRequest(searchTerm : MatchingSearchTerm),
+            new GetProductsRequest(categoryId: MatchingCategoryId),
+            new GetProductsRequest(minPrice: MatchingMinPrice, maxPrice: MatchingMaxPrice),
+            new GetProductsRequest(
+                searchTerm:MatchingSearchTerm,
+                categoryId: MatchingCategoryId,
+                minPrice: MatchingMinPrice,
+                maxPrice: MatchingMaxPrice,
+                type: Contracts.Enums.ProductType.All)
         };
 
     [Fact]
@@ -41,7 +46,7 @@ public sealed class GetProductsTests : ProductTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = new GetProductsRequest(string.Empty, null, null, null, null);
+        var request = new GetProductsRequest(searchTerm: string.Empty);
         SetupProducts([]);
 
         // Act
@@ -68,7 +73,7 @@ public sealed class GetProductsTests : ProductTestsBase
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedProducts.Length, response.Length);
+        Assert.Equal(expectedProducts.Length, response.Count);
         Assert.All(response, actual =>
         {
             var expected = expectedProducts.SingleOrDefault(x => x.Id == actual.Id);

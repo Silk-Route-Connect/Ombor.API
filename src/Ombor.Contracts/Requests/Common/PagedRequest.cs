@@ -1,14 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Ombor.Contracts.Requests.Common;
 
-namespace Ombor.Contracts.Requests.Common;
+public abstract class PagedRequest
+{
+    private int _pageNumber = 1;
+    public int PageNumber
+    {
+        get => _pageNumber;
+        set => _pageNumber = value < 1 ? 1 : value;
+    }
 
-public sealed record PagedRequest(
-    [Range(1,int.MaxValue)]
-    int PageNumber = 1,
-    [Range(1,100)]
-    int PageSize = 10,
-    string? SearchTerm = null,
-    [MaxLength(255)]
-    string? SortBy = null,
-    bool SortByDescending = false,
-    int? OrganizationId = null);
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get => _pageSize;
+        set => _pageSize = value switch
+        {
+            < 1 => 10,
+            > 100 => 100,
+            _ => value
+        };
+    }
+
+    protected PagedRequest() { }
+
+    protected PagedRequest(int pageNumber, int pageSize)
+    {
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+    }
+}
