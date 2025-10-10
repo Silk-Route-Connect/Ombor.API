@@ -24,7 +24,7 @@ public sealed class PartnersController(
     /// <param name="request">Filtering and paging parameters.</param>
     /// <returns>Paged list of <see cref="PartnerDto"/>.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(PartnerDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedList<PartnerDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedList<PartnerDto>>> GetAsync(
         [FromQuery] GetPartnersRequest request)
     {
@@ -44,7 +44,7 @@ public sealed class PartnersController(
     /// <param name="request">Request containing the partner ID.</param>
     /// <returns>The matching <see cref="PartnerDto"/>.</returns>
     [HttpGet("{id:int:min(1)}")]
-    [ProducesResponseType(typeof(PartnerDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedList<PartnerDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PartnerDto>> GetPartnerByIdAsync([FromRoute] GetPartnerByIdRequest request)
     {
