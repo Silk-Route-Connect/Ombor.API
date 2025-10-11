@@ -21,7 +21,13 @@ internal sealed class OrderService(
         context.Orders.Add(entity);
         await context.SaveChangesAsync();
 
-        return entity.ToDto();
+        var createdOrder = await context.Orders
+            .Include(x => x.Customer)
+            .Include(x => x.Lines)
+            .ThenInclude(x => x.Product)
+            .FirstAsync(x => x.Id == entity.Id);
+
+        return createdOrder.ToDto();
     }
 
     public async Task<OrderDto[]> GetAsync(GetOrdersRequest request)

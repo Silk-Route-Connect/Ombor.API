@@ -45,7 +45,7 @@ internal static class OrderMappings
             OrderNumber: order.OrderNumber,
             Notes: order.Notes,
             TotalAmount: order.TotalAmount,
-            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc, TashkentTimeZone),
+            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.DateTime, TashkentTimeZone),
             Status: order.Status.ToString(),
             Source: order.Source.ToString(),
             DeliveryAddress: order.DeliveryAddress.ToDto(),

@@ -8,7 +8,7 @@ public class Order : AuditableEntity
     public required string OrderNumber { get; set; }
     public string? Notes { get; set; }
     public required decimal TotalAmount { get; set; }
-    public required DateTime DateUtc { get; set; }
+    public required DateTimeOffset DateUtc { get; set; }
     public OrderStatus Status { get; set; }
     public OrderSource Source { get; set; }
 

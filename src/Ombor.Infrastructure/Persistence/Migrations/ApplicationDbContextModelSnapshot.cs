@@ -181,8 +181,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateUtc")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("DateUtc")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

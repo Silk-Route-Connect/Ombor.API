@@ -19,7 +19,7 @@ public partial class Add_Order : Migration
                 OrderNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 TotalAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                DateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                DateUtc = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                 Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 Source = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                 CustomerId = table.Column<int>(type: "int", nullable: false),

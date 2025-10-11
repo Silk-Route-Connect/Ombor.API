@@ -13,7 +13,7 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251011171807_Add_Order")]
+    [Migration("20251011184657_Add_Order")]
     partial class Add_Order
     {
         /// <inheritdoc />
@@ -184,8 +184,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateUtc")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("DateUtc")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
