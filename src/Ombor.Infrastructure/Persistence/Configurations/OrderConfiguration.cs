@@ -26,6 +26,10 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .IsRequired();
 
         builder
+            .ComplexProperty(o => o.DeliveryAddress)
+            .IsRequired();
+
+        builder
             .Property(o => o.OrderNumber)
             .HasMaxLength(ConfigurationConstants.EnumLength)
             .IsRequired();

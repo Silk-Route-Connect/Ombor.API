@@ -13,7 +13,7 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251011153553_Add_Order")]
+    [Migration("20251011171807_Add_Order")]
     partial class Add_Order
     {
         /// <inheritdoc />
@@ -190,6 +190,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -214,6 +217,17 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.ComplexProperty<Dictionary<string, object>>("DeliveryAddress", "Ombor.Domain.Entities.Order.DeliveryAddress#Address", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<decimal>("Latitude")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<decimal>("Longtitude")
+                                .HasColumnType("decimal(18,2)");
+                        });
 
                     b.HasKey("Id");
 
