@@ -2,6 +2,6 @@
 
 public sealed record GetOrdersRequest(
     string? SearchTerm,
-    int? PartnerId,
+    int? CustomerId,
     DateTime? FromDate,
     DateTime? ToDate);

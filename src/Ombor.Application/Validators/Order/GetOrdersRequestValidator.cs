@@ -11,10 +11,10 @@ public sealed class GetOrdersRequestValidator : AbstractValidator<GetOrdersReque
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Search term must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
-        RuleFor(x => x.PartnerId)
+        RuleFor(x => x.CustomerId)
             .GreaterThan(0)
-            .When(x => x.PartnerId.HasValue)
-            .WithMessage(x => $"Invalid partner ID: {x.PartnerId}.");
+            .When(x => x.CustomerId.HasValue)
+            .WithMessage(x => $"Invalid partner ID: {x.CustomerId}.");
 
         RuleFor(x => x.FromDate)
             .LessThanOrEqualTo(x => x.ToDate)

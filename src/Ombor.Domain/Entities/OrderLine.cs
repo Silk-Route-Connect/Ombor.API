@@ -10,9 +10,9 @@ public class OrderLine : AuditableEntity
 
     public decimal TotalPrice => (UnitPrice * Quantity) - (Discount ?? 0);
 
-    public required int OrderId { get; set; }
+    public int OrderId { get; set; }
     public required virtual Order Order { get; set; }
 
-    public required int ProductId { get; set; }
+    public int ProductId { get; set; }
     public required virtual Product Product { get; set; }
 }

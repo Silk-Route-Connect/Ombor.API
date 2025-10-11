@@ -4,6 +4,8 @@ using Ombor.Contracts.Enums;
 namespace Ombor.Contracts.Requests.Order;
 
 public sealed record CreateOrderRequest(
+    int CustomerId,
+    string? Notes,
     OrderSource Source,
     AddressDto DeliveryAddress,
     IEnumerable<CreateOrderLineRequest> Lines);

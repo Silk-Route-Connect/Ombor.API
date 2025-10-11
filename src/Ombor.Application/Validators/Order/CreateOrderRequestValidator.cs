@@ -7,6 +7,10 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
 {
     public CreateOrderRequestValidator()
     {
+        RuleFor(x => x.CustomerId)
+            .GreaterThan(0)
+            .WithMessage(x => $"Invalid customer ID: {x.CustomerId}.");
+
         RuleFor(x => x.Source)
             .IsInEnum()
             .WithMessage("Invalid order source.");
@@ -24,5 +28,9 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .WithMessage("All order lines must have a unit price greater than zero.")
             .Must(lines => lines.All(lines => lines.UnitPrice >= lines.Discount))
             .WithMessage("All order lines must have a unit price greater than discount.");
+
+        RuleFor(x => x.Notes)
+            .MaximumLength(ValidationConstants.MaxStringLength)
+            .When(x => x.Notes is not null);
     }
 }
