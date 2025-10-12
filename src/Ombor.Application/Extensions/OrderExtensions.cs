@@ -11,6 +11,7 @@ internal static class OrderExtensions
         [OrderStatus.Pending] = [OrderStatus.Processing, OrderStatus.Cancelled, OrderStatus.Rejected],
         [OrderStatus.Processing] = [OrderStatus.Shipping, OrderStatus.Cancelled],
         [OrderStatus.Shipping] = [OrderStatus.Delivered, OrderStatus.Returned],
+        [OrderStatus.Delivered] = [],  // Terminal state
         [OrderStatus.Cancelled] = [],  // Terminal state
         [OrderStatus.Returned] = [],   // Terminal state
         [OrderStatus.Rejected] = []    // Terminal state
