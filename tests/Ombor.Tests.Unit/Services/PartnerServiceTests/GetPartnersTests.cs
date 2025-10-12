@@ -14,10 +14,10 @@ public sealed class GetPartnersTests : PartnerTestsBase
     public static TheoryData<GetPartnersRequest> GetRequests => new()
     {
         {new GetPartnersRequest()},
-        {new GetPartnersRequest(searchTerm:string.Empty)},
-        {new GetPartnersRequest(searchTerm:" ")},
-        {new GetPartnersRequest(searchTerm : "     ")},
-        {new GetPartnersRequest(searchTerm:MatchingSearchTerm)},
+        {new GetPartnersRequest(SearchTerm:string.Empty)},
+        {new GetPartnersRequest(SearchTerm:" ")},
+        {new GetPartnersRequest(SearchTerm : "     ")},
+        {new GetPartnersRequest(SearchTerm:MatchingSearchTerm)},
     };
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNopartners()
     {
         // Arrange
-        var request = new GetPartnersRequest(searchTerm: string.Empty);
+        var request = new GetPartnersRequest(SearchTerm: string.Empty);
         SetupPartners([]);
         SetupPartnerBalances([]);
 

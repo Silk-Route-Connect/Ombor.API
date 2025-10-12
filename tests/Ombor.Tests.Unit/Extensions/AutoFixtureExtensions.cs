@@ -15,9 +15,6 @@ internal static class AutoFixtureExtensions
         return new PagedList<T>(items, totalCount, pageNumber, pageSize);
     }
 
-    public static T[] CreateArray<T>(this IFixture fixture, int itemsCount = 5)
-        => fixture.CreateMany<T>(itemsCount).ToArray();
-
     public static PagedList<T> CreateEmptyPagedList<T>(this IFixture fixture)
       => new(Enumerable.Empty<T>(), 0, 1, 10);
 

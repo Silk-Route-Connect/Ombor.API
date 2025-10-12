@@ -9,23 +9,9 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="SearchTerm">
 ///  Optional case-insensitive term to filter by Name, Address, Email, CompanyName
 /// </param>
-public sealed class GetPartnersRequest : PagedRequest
-{
-    public PartnerType? Type { get; set; }
-    public string? SearchTerm { get; set; }
-    public string? SortBy { get; set; } = "name_asc";
-
-    public GetPartnersRequest() { }
-
-    public GetPartnersRequest(
-        PartnerType? type = null,
-        string? searchTerm = null,
-        string? sortBy = "name_asc",
-        int pageNumber = 1,
-        int pageSize = 10) : base(pageNumber, pageSize)
-    {
-        Type = type;
-        SearchTerm = searchTerm;
-        SortBy = sortBy;
-    }
-}
+public sealed record GetPartnersRequest(
+    PartnerType? Type = null,
+    string? SearchTerm = null,
+    string? SortBy = "name_asc",
+    int PageNumber = 1,
+    int PageSize = 10) : PagedRequest(PageNumber, PageSize);

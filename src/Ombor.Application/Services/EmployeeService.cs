@@ -1,27 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Responses.Employee;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
 internal sealed class EmployeeService(IApplicationDbContext context, IRequestValidator validator) : IEmployeeService
 {
-    public async Task<EmployeeDto[]> GetAsync(GetEmployeesRequest request)
+    public async Task<PagedList<EmployeeDto>> GetAsync(GetEmployeesRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var query = GetQuery(request);
+        query = ApplySort(query, request.SortBy);
+
+        var totalCount = await query.CountAsync();
 
         var employees = await query
-            .AsNoTracking()
-            .OrderBy(x => x.FullName)
-            .ToArrayAsync();
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
 
-        return [.. employees.Select(x => x.ToDto())];
+        var employeesDto = employees.Select(x => x.ToDto());
+
+        return PagedList<EmployeeDto>.ToPagedList(employeesDto, totalCount, request.PageNumber, request.PageSize);
     }
 
     public async Task<EmployeeDto> GetByIdAsync(GetEmployeeByIdRequest request)
@@ -72,8 +79,10 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 
     private IQueryable<Employee> GetQuery(GetEmployeesRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var query = context.Employees.AsNoTracking();
         var searchTerm = request.SearchTerm;
-        var query = context.Employees.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
@@ -82,6 +91,26 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
                 (x.ContactInfo != null && x.ContactInfo.PhoneNumbers.Contains(searchTerm)));
         }
 
+        if (request.Status.HasValue)
+        {
+            query = query.Where(x => x.Status == Enum.Parse<EmployeeStatus>(request.Status.Value.ToString()));
+        }
+
         return query;
     }
+
+    private IQueryable<Employee> ApplySort(IQueryable<Employee> query, string? sortBy)
+        => sortBy?.ToLower() switch
+        {
+            "name_asc" => query.OrderBy(x => x.FullName),
+            "name_desc" => query.OrderByDescending(x => x.FullName),
+            "position_asc" => query.OrderBy(x => x.Position),
+            "position_desc" => query.OrderByDescending(x => x.Position),
+            "salary_asc" => query.OrderBy(x => x.Salary),
+            "salary_desc" => query.OrderByDescending(x => x.Salary),
+            "status_asc" => query.OrderBy(x => x.Status),
+            "status_desc" => query.OrderByDescending(x => x.Status),
+            "hiredate_asc" => query.OrderBy(x => x.DateOfEmployment),
+            _ => query.OrderByDescending(x => x.DateOfEmployment),
+        };
 }

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using FluentValidation;
 
 namespace Ombor.Application.Validators;
 
@@ -8,4 +9,14 @@ internal static class ValidationHelpers
 
     public static bool IsValidPhoneNumber(string phoneNumber) =>
         Regex.IsMatch(phoneNumber, UzPhonePattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+    public static IRuleBuilderOptions<T, string?> MustBeValidSortOption<T>(
+       this IRuleBuilder<T, string?> ruleBuilder,
+       params string[] validOptions)
+    {
+        return ruleBuilder
+            .Must(sortBy => string.IsNullOrWhiteSpace(sortBy) ||
+                           validOptions.Contains(sortBy.ToLower()))
+            .WithMessage($"Invalid sort option. Valid options: {string.Join(", ", validOptions)}.");
+    }
 }

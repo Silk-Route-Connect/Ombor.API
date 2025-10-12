@@ -82,6 +82,8 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         return await query
             .OrderBy(x => x.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
     }
 }

@@ -12,6 +12,7 @@ namespace Ombor.API.Controllers;
 public class PaymentsController(IPaymentService paymentService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(PagedList<PaymentDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedList<PaymentDto>>> GetAsync(
         [FromQuery] GetPaymentsRequest request)
     {

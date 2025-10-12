@@ -267,8 +267,8 @@ internal sealed class TransactionService(
     private IQueryable<TransactionRecord> ApplySort(IQueryable<TransactionRecord> query, string? sortBy)
         => sortBy?.ToLower() switch
         {
-            "partner_name_asc" => query.OrderBy(x => x.Partner.Name),
-            "partner_name_desc" => query.OrderByDescending(x => x.Partner.Name),
+            "partnername_asc" => query.OrderBy(x => x.Partner.Name),
+            "partnername_desc" => query.OrderByDescending(x => x.Partner.Name),
             "type_asc" => query.OrderBy(x => x.Type),
             "type_desc" => query.OrderByDescending(x => x.Type),
             "status_asc" => query.OrderBy(x => x.Status),
@@ -277,7 +277,7 @@ internal sealed class TransactionService(
             "totaldue_desc" => query.OrderByDescending(x => x.TotalDue),
             "totalpaid_asc" => query.OrderBy(x => x.TotalPaid),
             "totalpaid_desc" => query.OrderByDescending(x => x.TotalPaid),
-            "date" => query.OrderBy(x => x.DateUtc),
+            "date_asc" => query.OrderBy(x => x.DateUtc),
             _ => query.OrderByDescending(x => x.DateUtc),
         };
 }

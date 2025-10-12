@@ -16,14 +16,13 @@ public sealed class GetTemplatesTests(
     // Keep search terms longer than 4 characters
     // to create templates matching only part of the search.
     public static TheoryData<GetTemplatesRequest> Requests =>
-        new()
-        {
+        [
             new GetTemplatesRequest(),
-            new GetTemplatesRequest(searchTerm:"   "),
-            new GetTemplatesRequest(searchTerm : "Test Template"),
-            new GetTemplatesRequest(type:TemplateType.Sale),
-            new GetTemplatesRequest(searchTerm : "Test Template",type: TemplateType.Supply)
-        };
+            new GetTemplatesRequest(SearchTerm:"   "),
+            new GetTemplatesRequest(SearchTerm : "Test Template"),
+            new GetTemplatesRequest(Type:TemplateType.Sale),
+            new GetTemplatesRequest(SearchTerm : "Test Template",Type: TemplateType.Supply)
+        ];
 
     [Theory]
     [MemberData(nameof(Requests))]
@@ -109,13 +108,12 @@ public sealed class GetTemplatesTests(
     }
 
     private static Template[] CreateNonMatchingTemplates(Partner partner) =>
-        Enumerable.Range(0, 5)
+        [.. Enumerable.Range(0, 5)
         .Select(i => new Template
         {
             PartnerId = partner.Id,
             Partner = partner,
             Name = $"Template-{i.ToString()}",
             Type = Domain.Enums.TemplateType.Supply
-        })
-        .ToArray();
+        })];
 }
