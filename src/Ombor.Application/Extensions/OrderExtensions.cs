@@ -9,8 +9,8 @@ internal static class OrderExtensions
     private static readonly Dictionary<OrderStatus, OrderStatus[]> ValidTransitions = new()
     {
         [OrderStatus.Pending] = [OrderStatus.Processing, OrderStatus.Cancelled, OrderStatus.Rejected],
-        [OrderStatus.Processing] = [OrderStatus.Shipped, OrderStatus.Cancelled],
-        [OrderStatus.Shipped] = [OrderStatus.Returned],
+        [OrderStatus.Processing] = [OrderStatus.Shipping, OrderStatus.Cancelled],
+        [OrderStatus.Shipping] = [OrderStatus.Delivered, OrderStatus.Returned],
         [OrderStatus.Cancelled] = [],  // Terminal state
         [OrderStatus.Returned] = [],   // Terminal state
         [OrderStatus.Rejected] = []    // Terminal state

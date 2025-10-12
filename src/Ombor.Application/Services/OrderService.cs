@@ -6,7 +6,6 @@ using Ombor.Contracts.Abstractions;
 using Ombor.Contracts.Requests.Order;
 using Ombor.Contracts.Responses.Order;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
@@ -75,13 +74,13 @@ internal sealed class OrderService(
         await validator.ValidateAndThrowAsync(request);
 
         var order = await GetOrThrowAsync(request.OrderId);
+        var targetStatus = request.TargetStatus.ToDomainStatus();
 
-        if (order.Status == OrderStatus.Processing)
+        if (order.Status == targetStatus)
         {
             return;
         }
 
-        var targetStatus = request.TargetStatus.ToDomainStatus();
         order.ValidateTransition(targetStatus);
         order.Status = targetStatus;
 

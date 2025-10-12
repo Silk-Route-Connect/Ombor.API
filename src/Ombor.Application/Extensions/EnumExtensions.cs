@@ -98,6 +98,6 @@ internal static class EnumExtensions
             return result;
         }
 
-        throw new InvalidCastException($"Could not cast contract order stats: '{status}' to domain order status.");
+        throw new InvalidCastException($"Could not cast contract order status: '{status}' to domain order status.");
     }
 }
