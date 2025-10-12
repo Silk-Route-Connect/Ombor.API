@@ -40,6 +40,9 @@ public sealed class DataSeedSettings
     [Range(1, int.MaxValue, ErrorMessage = "Invalid number of transactions per partner.")]
     public int NumberOfMaxTransactionsPerPartner { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of orders per customer.")]
+    public int NumberOfOrdersPerCustomer { get; set; }
+
     public PaymentSeedSettings PaymentSettings { get; init; } = new PaymentSeedSettings();
 
 }

@@ -31,6 +31,7 @@ internal sealed class ProductionDatabaseSeeder(
         await AddSaleRefundsAsync(context);
         await AddSupplyRefundsAsync(context);
         await AddPaymentsAsync(context);
+        await AddOrdersAsync(context);
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -314,5 +315,35 @@ internal sealed class ProductionDatabaseSeeder(
 
             await context.SaveChangesAsync();
         }
+    }
+
+    private async Task AddOrdersAsync(IApplicationDbContext context)
+    {
+        if (context.Orders.Any())
+        {
+            return;
+        }
+
+        var allOrders = new List<Order>();
+        var customerIds = context.Partners
+            .Where(x => x.Type == Domain.Enums.PartnerType.Customer)
+            .Select(x => x.Id)
+            .ToArray();
+        var products = context.Products
+            .Where(x => x.Type != Domain.Enums.ProductType.Supply)
+            .ToArray();
+
+        foreach (var customerId in customerIds)
+        {
+            var orders = OrderGenerator.Generate(
+                customerId: customerId,
+                products: products,
+                seedSettings.NumberOfOrdersPerCustomer);
+
+            allOrders.AddRange(orders);
+        }
+
+        context.Orders.AddRange(allOrders);
+        await context.SaveChangesAsync();
     }
 }

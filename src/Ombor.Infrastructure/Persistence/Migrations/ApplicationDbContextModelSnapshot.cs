@@ -874,7 +874,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("RolesId");
 
-                    b.ToTable("PermissionRole");
+                    b.ToTable("PermissionRole", (string)null);
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -889,12 +889,12 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("RoleUser");
+                    b.ToTable("RoleUser", (string)null);
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Employee", b =>
                 {
-                    b.OwnsOne("Ombor.Domain.Common.ContactInfo", "ContactInfo", b1 =>
+                    b.OwnsOne("Ombor.Domain.Entities.Employee.ContactInfo#Ombor.Domain.Common.ContactInfo", "ContactInfo", b1 =>
                         {
                             b1.Property<int>("EmployeeId")
                                 .HasColumnType("int");
@@ -918,7 +918,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("EmployeeId");
 
-                            b1.ToTable("Employee");
+                            b1.ToTable("Employee", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("EmployeeId");

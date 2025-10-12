@@ -78,6 +78,16 @@ public interface IApplicationDbContext
     DbSet<InventoryItem> InventoryItems { get; set; }
 
     /// <summary>
+    /// Gets or sets the Orders.
+    /// </summary>
+    DbSet<Order> Orders { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Order lines.
+    /// </summary>
+    DbSet<OrderLine> OrderLines { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>
