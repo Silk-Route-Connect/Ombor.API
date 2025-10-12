@@ -78,7 +78,7 @@ public interface IApplicationDbContext
     DbSet<InventoryItem> InventoryItems { get; set; }
 
     /// <summary>
-    /// Gets  or sets the Orders.
+    /// Gets or sets the Orders.
     /// </summary>
     DbSet<Order> Orders { get; set; }
 

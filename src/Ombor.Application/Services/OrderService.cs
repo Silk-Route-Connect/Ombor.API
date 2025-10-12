@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Abstractions;
 using Ombor.Contracts.Requests.Order;
 using Ombor.Contracts.Responses.Order;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
@@ -55,6 +58,36 @@ internal sealed class OrderService(
         return order.ToDto();
     }
 
+    public async Task ProcessAsync(ProcessOrderRequest request) => await UpdateOrderStatus(request);
+
+    public async Task ShipAsync(ShipOrderRequest request) => await UpdateOrderStatus(request);
+
+    public async Task RejectAsync(RejectOrderRequest request) => await UpdateOrderStatus(request);
+
+    public async Task CancelAsync(CancelOrderRequest request) => await UpdateOrderStatus(request);
+
+    public async Task ReturnAsync(ReturnOrderRequest request) => await UpdateOrderStatus(request);
+
+    public async Task DeliverAsync(DeliverOrderRequest request) => await UpdateOrderStatus(request);
+
+    private async Task UpdateOrderStatus(IOrderStateUpdateRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var order = await GetOrThrowAsync(request.OrderId);
+
+        if (order.Status == OrderStatus.Processing)
+        {
+            return;
+        }
+
+        var targetStatus = request.TargetStatus.ToDomainStatus();
+        order.ValidateTransition(targetStatus);
+        order.Status = targetStatus;
+
+        await context.SaveChangesAsync();
+    }
+
     private IQueryable<Order> GetQuery(GetOrdersRequest request)
     {
         var query = context.Orders
@@ -85,5 +118,19 @@ internal sealed class OrderService(
         }
 
         return query;
+    }
+
+    private async Task<Order> GetOrThrowAsync(int orderId, bool eagerLoad = false)
+    {
+        var order = eagerLoad
+            ? await context.Orders
+                .Include(x => x.Customer)
+                .Include(x => x.Lines)
+                .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.Id == orderId)
+            : await context.Orders
+                .FirstOrDefaultAsync(x => x.Id == orderId);
+
+        return order ?? throw new EntityNotFoundException<Order>(orderId);
     }
 }

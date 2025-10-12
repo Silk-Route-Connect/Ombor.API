@@ -1,4 +1,4 @@
-﻿namespace Ombor.Domain.Enums;
+﻿namespace Ombor.Contracts.Enums;
 
 public enum OrderStatus
 {
@@ -8,5 +8,5 @@ public enum OrderStatus
     Cancelled = 3,
     Returned = 4,
     Rejected = 5,
-    Delivered = 6,
+    Delivered = 6
 }

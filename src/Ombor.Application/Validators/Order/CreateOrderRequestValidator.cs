@@ -20,6 +20,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .WithMessage("Delivery address is required.");
 
         RuleFor(x => x.Lines)
+            .NotNull()
             .NotEmpty()
             .WithMessage("At least one order line is required.")
             .Must(lines => lines.All(line => line.Quantity > 0))

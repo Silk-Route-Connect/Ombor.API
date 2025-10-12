@@ -90,4 +90,14 @@ internal static class EnumExtensions
 
         throw new InvalidCastException($"Could not cast between domain payment direction and contract payment direction: {direction}.");
     }
+
+    public static Domain.Enums.OrderStatus ToDomainStatus(this Contracts.Enums.OrderStatus status)
+    {
+        if (Enum.TryParse<Domain.Enums.OrderStatus>(status.ToString(), ignoreCase: true, out var result))
+        {
+            return result;
+        }
+
+        throw new InvalidCastException($"Could not cast contract order stats: '{status}' to domain order status.");
+    }
 }
