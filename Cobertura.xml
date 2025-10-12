@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.8259479214253084" branch-rate="0.5803571428571429" lines-covered="1808" lines-valid="2189" branches-covered="260" branches-valid="448" complexity="762" version="0" timestamp="1760210165">
+<coverage line-rate="0.8255707762557077" branch-rate="0.5707964601769911" lines-covered="1808" lines-valid="2190" branches-covered="258" branches-valid="452" complexity="764" version="0" timestamp="1760285314">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -574,7 +574,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.7755937755937756" branch-rate="0.5894736842105263" complexity="526">
+    <package name="Ombor.Application" line-rate="0.7749590834697218" branch-rate="0.578125" complexity="528">
       <classes>
         <class name="Ombor.Application.Configurations.JwtSettings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Configurations/JwtSettings.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
@@ -1413,11 +1413,11 @@
             <line number="79" hits="62" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
+        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
           <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1478,9 +1478,9 @@
                 <line number="68" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1543,7 +1543,7 @@
             </method>
           </methods>
           <lines>
-            <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+            <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
             <line number="12" hits="232" branch="false" />
             <line number="13" hits="232" branch="false" />
             <line number="15" hits="232" branch="false" />
@@ -1584,13 +1584,12 @@
             <line number="68" hits="6" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.OrderMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/OrderMappings.cs" line-rate="0" branch-rate="0" complexity="26">
+        <class name="Ombor.Application.Mappings.OrderMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/OrderMappings.cs" line-rate="0" branch-rate="0" complexity="28">
           <methods>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Order.CreateOrderRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="16" hits="0" branch="false" />
                 <line number="17" hits="0" branch="false" />
-                <line number="19" hits="0" branch="false" />
+                <line number="18" hits="0" branch="false" />
                 <line number="20" hits="0" branch="false" />
                 <line number="21" hits="0" branch="false" />
                 <line number="22" hits="0" branch="false" />
@@ -1603,13 +1602,13 @@
                 <line number="29" hits="0" branch="false" />
                 <line number="30" hits="0" branch="false" />
                 <line number="31" hits="0" branch="false" />
+                <line number="32" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Order)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="36" hits="0" branch="true" condition-coverage="0% (0/4)" />
-                <line number="38" hits="0" branch="false" />
-                <line number="41" hits="0" branch="false" />
+                <line number="37" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="39" hits="0" branch="false" />
                 <line number="42" hits="0" branch="false" />
                 <line number="43" hits="0" branch="false" />
                 <line number="44" hits="0" branch="false" />
@@ -1621,34 +1620,34 @@
                 <line number="50" hits="0" branch="false" />
                 <line number="51" hits="0" branch="false" />
                 <line number="52" hits="0" branch="false" />
+                <line number="53" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(System.Collections.Generic.IEnumerable`1&lt;Ombor.Domain.Entities.OrderLine&gt;)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="56" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="57" hits="0" branch="true" condition-coverage="0% (0/4)" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.OrderLine)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="60" hits="0" branch="true" condition-coverage="0% (0/4)" />
-                <line number="62" hits="0" branch="false" />
-                <line number="65" hits="0" branch="false" />
+                <line number="61" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="63" hits="0" branch="false" />
                 <line number="66" hits="0" branch="false" />
                 <line number="67" hits="0" branch="false" />
                 <line number="68" hits="0" branch="false" />
                 <line number="69" hits="0" branch="false" />
                 <line number="70" hits="0" branch="false" />
                 <line number="71" hits="0" branch="false" />
+                <line number="72" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(System.Collections.Generic.IEnumerable`1&lt;Ombor.Contracts.Requests.Order.CreateOrderLineRequest&gt;)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="75" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="76" hits="0" branch="true" condition-coverage="0% (0/4)" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Order.CreateOrderLineRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="78" hits="0" branch="false" />
                 <line number="79" hits="0" branch="false" />
                 <line number="80" hits="0" branch="false" />
                 <line number="81" hits="0" branch="false" />
@@ -1657,35 +1656,36 @@
                 <line number="84" hits="0" branch="false" />
                 <line number="85" hits="0" branch="false" />
                 <line number="86" hits="0" branch="false" />
+                <line number="87" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Common.AddressDto)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="89" hits="0" branch="false" />
                 <line number="90" hits="0" branch="false" />
                 <line number="91" hits="0" branch="false" />
                 <line number="92" hits="0" branch="false" />
                 <line number="93" hits="0" branch="false" />
+                <line number="94" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Common.Address)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="96" hits="0" branch="false" />
                 <line number="97" hits="0" branch="false" />
                 <line number="98" hits="0" branch="false" />
+                <line number="99" hits="0" branch="false" />
               </lines>
             </method>
-            <method name=".cctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+            <method name=".cctor" signature="()" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="11" hits="0" branch="false" />
+                <line number="11" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="12" hits="0" branch="false" />
+                <line number="13" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Order.CreateOrderRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="16" hits="0" branch="false" />
                 <line number="17" hits="0" branch="false" />
-                <line number="19" hits="0" branch="false" />
+                <line number="18" hits="0" branch="false" />
                 <line number="20" hits="0" branch="false" />
                 <line number="21" hits="0" branch="false" />
                 <line number="22" hits="0" branch="false" />
@@ -1698,13 +1698,13 @@
                 <line number="29" hits="0" branch="false" />
                 <line number="30" hits="0" branch="false" />
                 <line number="31" hits="0" branch="false" />
+                <line number="32" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Order)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="36" hits="0" branch="true" condition-coverage="0% (0/4)" />
-                <line number="38" hits="0" branch="false" />
-                <line number="41" hits="0" branch="false" />
+                <line number="37" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="39" hits="0" branch="false" />
                 <line number="42" hits="0" branch="false" />
                 <line number="43" hits="0" branch="false" />
                 <line number="44" hits="0" branch="false" />
@@ -1716,34 +1716,34 @@
                 <line number="50" hits="0" branch="false" />
                 <line number="51" hits="0" branch="false" />
                 <line number="52" hits="0" branch="false" />
+                <line number="53" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(System.Collections.Generic.IEnumerable`1&lt;Ombor.Domain.Entities.OrderLine&gt;)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="56" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="57" hits="0" branch="true" condition-coverage="0% (0/4)" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.OrderLine)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="60" hits="0" branch="true" condition-coverage="0% (0/4)" />
-                <line number="62" hits="0" branch="false" />
-                <line number="65" hits="0" branch="false" />
+                <line number="61" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="63" hits="0" branch="false" />
                 <line number="66" hits="0" branch="false" />
                 <line number="67" hits="0" branch="false" />
                 <line number="68" hits="0" branch="false" />
                 <line number="69" hits="0" branch="false" />
                 <line number="70" hits="0" branch="false" />
                 <line number="71" hits="0" branch="false" />
+                <line number="72" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(System.Collections.Generic.IEnumerable`1&lt;Ombor.Contracts.Requests.Order.CreateOrderLineRequest&gt;)" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="75" hits="0" branch="true" condition-coverage="0% (0/4)" />
+                <line number="76" hits="0" branch="true" condition-coverage="0% (0/4)" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Order.CreateOrderLineRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="78" hits="0" branch="false" />
                 <line number="79" hits="0" branch="false" />
                 <line number="80" hits="0" branch="false" />
                 <line number="81" hits="0" branch="false" />
@@ -1752,37 +1752,39 @@
                 <line number="84" hits="0" branch="false" />
                 <line number="85" hits="0" branch="false" />
                 <line number="86" hits="0" branch="false" />
+                <line number="87" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Common.AddressDto)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="89" hits="0" branch="false" />
                 <line number="90" hits="0" branch="false" />
                 <line number="91" hits="0" branch="false" />
                 <line number="92" hits="0" branch="false" />
                 <line number="93" hits="0" branch="false" />
+                <line number="94" hits="0" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Common.Address)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="96" hits="0" branch="false" />
                 <line number="97" hits="0" branch="false" />
                 <line number="98" hits="0" branch="false" />
+                <line number="99" hits="0" branch="false" />
               </lines>
             </method>
-            <method name=".cctor" signature="()" line-rate="0" branch-rate="1" complexity="1">
+            <method name=".cctor" signature="()" line-rate="0" branch-rate="0" complexity="2">
               <lines>
-                <line number="11" hits="0" branch="false" />
+                <line number="11" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="12" hits="0" branch="false" />
+                <line number="13" hits="0" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="11" hits="0" branch="false" />
+            <line number="11" hits="0" branch="true" condition-coverage="0% (0/4)" />
             <line number="12" hits="0" branch="false" />
-            <line number="16" hits="0" branch="false" />
+            <line number="13" hits="0" branch="false" />
             <line number="17" hits="0" branch="false" />
-            <line number="19" hits="0" branch="false" />
+            <line number="18" hits="0" branch="false" />
             <line number="20" hits="0" branch="false" />
             <line number="21" hits="0" branch="false" />
             <line number="22" hits="0" branch="false" />
@@ -1795,9 +1797,9 @@
             <line number="29" hits="0" branch="false" />
             <line number="30" hits="0" branch="false" />
             <line number="31" hits="0" branch="false" />
-            <line number="36" hits="0" branch="true" condition-coverage="0% (0/4)" />
-            <line number="38" hits="0" branch="false" />
-            <line number="41" hits="0" branch="false" />
+            <line number="32" hits="0" branch="false" />
+            <line number="37" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="39" hits="0" branch="false" />
             <line number="42" hits="0" branch="false" />
             <line number="43" hits="0" branch="false" />
             <line number="44" hits="0" branch="false" />
@@ -1809,18 +1811,18 @@
             <line number="50" hits="0" branch="false" />
             <line number="51" hits="0" branch="false" />
             <line number="52" hits="0" branch="false" />
-            <line number="56" hits="0" branch="true" condition-coverage="0% (0/4)" />
-            <line number="60" hits="0" branch="true" condition-coverage="0% (0/4)" />
-            <line number="62" hits="0" branch="false" />
-            <line number="65" hits="0" branch="false" />
+            <line number="53" hits="0" branch="false" />
+            <line number="57" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="61" hits="0" branch="true" condition-coverage="0% (0/4)" />
+            <line number="63" hits="0" branch="false" />
             <line number="66" hits="0" branch="false" />
             <line number="67" hits="0" branch="false" />
             <line number="68" hits="0" branch="false" />
             <line number="69" hits="0" branch="false" />
             <line number="70" hits="0" branch="false" />
             <line number="71" hits="0" branch="false" />
-            <line number="75" hits="0" branch="true" condition-coverage="0% (0/4)" />
-            <line number="78" hits="0" branch="false" />
+            <line number="72" hits="0" branch="false" />
+            <line number="76" hits="0" branch="true" condition-coverage="0% (0/4)" />
             <line number="79" hits="0" branch="false" />
             <line number="80" hits="0" branch="false" />
             <line number="81" hits="0" branch="false" />
@@ -1829,14 +1831,15 @@
             <line number="84" hits="0" branch="false" />
             <line number="85" hits="0" branch="false" />
             <line number="86" hits="0" branch="false" />
-            <line number="89" hits="0" branch="false" />
+            <line number="87" hits="0" branch="false" />
             <line number="90" hits="0" branch="false" />
             <line number="91" hits="0" branch="false" />
             <line number="92" hits="0" branch="false" />
             <line number="93" hits="0" branch="false" />
-            <line number="96" hits="0" branch="false" />
+            <line number="94" hits="0" branch="false" />
             <line number="97" hits="0" branch="false" />
             <line number="98" hits="0" branch="false" />
+            <line number="99" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.PartnerMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/SupplierMappings.cs" line-rate="1" branch-rate="1" complexity="10">
