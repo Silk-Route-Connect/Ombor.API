@@ -18,7 +18,8 @@ internal static class OrderGenerator
         .RuleFor(x => x.Status, f => f.Random.Enum<Domain.Enums.OrderStatus>())
         .RuleFor(x => x.OrderNumber, f => f.Random.Guid().ToString("N").ToUpperInvariant()[..10])
         .RuleFor(x => x.Notes, f => f.Lorem.Sentence())
-        .RuleFor(x => x.Lines, _ => GetLines(products));
+        .RuleFor(x => x.Lines, _ => GetLines(products))
+        .RuleFor(x => x.TotalAmount, (_, order) => order.Lines.Sum(line => line.TotalPrice));
 
     private static List<OrderLine> GetLines(Product[] products) => new Faker<OrderLine>()
         .RuleFor(x => x.Product, f => f.PickRandom(products))
@@ -31,7 +32,7 @@ internal static class OrderGenerator
 
     private static Domain.Common.Address GetAddress() => new Faker<Domain.Common.Address>()
         .RuleFor(x => x.Latitude, f => (decimal)f.Address.Latitude())
-        .RuleFor(x => x.Longtitude, f => (decimal)f.Address.Longitude())
+        .RuleFor(x => x.Longitude, f => (decimal)f.Address.Longitude())
         .Generate();
 
     private static decimal GetDiscount(decimal productPrice)
@@ -43,6 +44,7 @@ internal static class OrderGenerator
             return 0;
         }
 
-        return random.Next(0, (int)productPrice);
+        var fraction = random.NextDouble();
+        return Math.Round((decimal)fraction * productPrice, 2);
     }
 }

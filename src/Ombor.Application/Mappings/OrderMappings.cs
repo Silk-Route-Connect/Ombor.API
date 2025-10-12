@@ -9,7 +9,8 @@ namespace Ombor.Application.Mappings;
 internal static class OrderMappings
 {
     private static readonly TimeZoneInfo TashkentTimeZone =
-        TimeZoneInfo.FindSystemTimeZoneById("Asia/Tashkent");
+        TimeZoneInfo.FindSystemTimeZoneById(
+            OperatingSystem.IsWindows() ? "Central Asia Standard Time" : "Asia/Tashkent");
 
     public static Order ToEntity(this CreateOrderRequest request)
     {
@@ -45,7 +46,7 @@ internal static class OrderMappings
             OrderNumber: order.OrderNumber,
             Notes: order.Notes,
             TotalAmount: order.TotalAmount,
-            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.DateTime, TashkentTimeZone),
+            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),
             Status: order.Status.ToString(),
             Source: order.Source.ToString(),
             DeliveryAddress: order.DeliveryAddress.ToDto(),
@@ -89,11 +90,11 @@ internal static class OrderMappings
         => new()
         {
             Latitude = dto.Latitude,
-            Longtitude = dto.Longtitude
+            Longitude = dto.Longitude
         };
 
     private static AddressDto ToDto(this Address address)
         => new(
             Latitude: address.Latitude,
-            Longtitude: address.Longtitude);
+            Longitude: address.Longitude);
 }

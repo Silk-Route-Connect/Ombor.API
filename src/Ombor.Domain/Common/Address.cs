@@ -3,7 +3,7 @@
 public sealed class Address
 {
     public required decimal Latitude { get; set; }
-    public required decimal Longtitude { get; set; }
+    public required decimal Longitude { get; set; }
 
     public Address()
     {
@@ -12,6 +12,6 @@ public sealed class Address
     public Address(decimal latitude, decimal longitude)
     {
         Latitude = latitude;
-        Longtitude = longitude;
+        Longitude = longitude;
     }
 }

@@ -14,7 +14,7 @@ public sealed class GetOrdersRequestValidator : AbstractValidator<GetOrdersReque
         RuleFor(x => x.CustomerId)
             .GreaterThan(0)
             .When(x => x.CustomerId.HasValue)
-            .WithMessage(x => $"Invalid partner ID: {x.CustomerId}.");
+            .WithMessage(x => $"Invalid customer ID: {x.CustomerId}.");
 
         RuleFor(x => x.FromDate)
             .LessThanOrEqualTo(x => x.ToDate)

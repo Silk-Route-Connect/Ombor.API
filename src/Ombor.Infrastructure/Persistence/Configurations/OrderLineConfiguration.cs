@@ -22,7 +22,7 @@ internal sealed class OrderLineConfiguration : IEntityTypeConfiguration<OrderLin
         builder.HasOne(ol => ol.Product)
             .WithMany(p => p.OrderLines)
             .HasForeignKey(ol => ol.ProductId)
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
         builder

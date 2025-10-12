@@ -26,7 +26,7 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .WithMessage("All order lines must have a quantity greater than zero.")
             .Must(lines => lines.All(line => line.UnitPrice > 0))
             .WithMessage("All order lines must have a unit price greater than zero.")
-            .Must(lines => lines.All(lines => lines.UnitPrice >= lines.Discount))
+            .Must(lines => lines.All(line => line.UnitPrice >= line.Discount))
             .WithMessage("All order lines must have a unit price greater than discount.");
 
         RuleFor(x => x.Notes)

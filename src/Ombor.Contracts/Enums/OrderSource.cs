@@ -2,6 +2,6 @@
 
 public enum OrderSource
 {
-    Telegram,
-    OmborWeb,
+    Telegram = 1,
+    OmborWeb = 2,
 }
