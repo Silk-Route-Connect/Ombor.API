@@ -1,4 +1,5 @@
 using AutoFixture;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Ombor.API.Controllers;
@@ -18,6 +19,11 @@ public class InventoriesControllerTests : ControllerTestsBase
     {
         _mockService = new Mock<IInventoryService>(MockBehavior.Strict);
         _controller = new InventoriesController(_mockService.Object);
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
     }
 
     [Fact]
@@ -25,7 +31,7 @@ public class InventoriesControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetInventoriesRequest>();
-        var expected = _fixture.CreateArray<InventoryDto>();
+        var expected = _fixture.CreatePagedList<InventoryDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -46,7 +52,7 @@ public class InventoriesControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetInventoriesRequest>();
-        var expected = Array.Empty<InventoryDto>();
+        var expected = _fixture.CreateEmptyPagedList<InventoryDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);

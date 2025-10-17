@@ -1,4 +1,5 @@
 ﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Requests.Common;
 
 namespace Ombor.Contracts.Requests.Product;
 
@@ -12,8 +13,11 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="MinPrice">Optional minimum sale price filter.</param>
 /// <param name="MaxPrice">Optional maximum sale price filter.</param>
 public sealed record GetProductsRequest(
-    string? SearchTerm,
-    int? CategoryId,
-    decimal? MinPrice,
-    decimal? MaxPrice,
-    ProductType? Type);
+    int? CategoryId = null,
+    decimal? MinPrice = null,
+    decimal? MaxPrice = null,
+    ProductType? Type = null,
+    string? SearchTerm = null,
+    string? SortBy = "name_asc",
+    int PageNumber = 1,
+    int PageSize = 10) : PagedRequest(PageNumber, PageSize);

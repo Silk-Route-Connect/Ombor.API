@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Ombor.API.Controllers;
@@ -18,6 +19,11 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
     {
         _mockService = new Mock<ICategoryService>(MockBehavior.Strict);
         _controller = new CategoriesController(_mockService.Object);
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
     }
 
     [Fact]
@@ -25,7 +31,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetCategoriesRequest>();
-        var expected = _fixture.CreateArray<CategoryDto>();
+        var expected = _fixture.CreatePagedList<CategoryDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -46,7 +52,7 @@ public sealed class CategoriesControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetCategoriesRequest>();
-        var expected = Array.Empty<CategoryDto>();
+        var expected = _fixture.CreateEmptyPagedList<CategoryDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);

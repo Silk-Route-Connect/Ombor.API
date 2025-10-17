@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Requests.Template;
+﻿using Ombor.Contracts.Requests.Common;
+using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
 using Xunit;
@@ -7,9 +8,9 @@ namespace Ombor.Tests.Common.Helpers;
 
 public static class TemplateAssertionHelpers
 {
-    public static void AssertEquivalent(Template[] expected, TemplateDto[] actual)
+    public static void AssertEquivalent(Template[] expected, PagedList<TemplateDto> actual)
     {
-        Assert.Equal(expected.Length, actual.Length);
+        Assert.Equal(expected.Length, actual.Count);
 
         for (int i = 0; i < expected.Length; i++)
         {

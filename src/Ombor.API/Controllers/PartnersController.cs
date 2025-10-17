@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Partner;
@@ -20,13 +22,18 @@ public sealed class PartnersController(
     /// Retrieves a list of partners, with optional filtering by search term.
     /// </summary>
     /// <param name="request">Filtering and paging parameters.</param>
-    /// <returns>Array of <see cref="PartnerDto"/>.</returns>
+    /// <returns>Paged list of <see cref="PartnerDto"/>.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(PartnerDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PartnerDto[]>> GetAsync(
+    [ProducesResponseType(typeof(PagedList<PartnerDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedList<PartnerDto>>> GetAsync(
         [FromQuery] GetPartnersRequest request)
     {
         var response = await partnerService.GetAsync(request);
+
+        if (response is not null)
+        {
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
+        }
 
         return Ok(response);
     }
@@ -37,7 +44,7 @@ public sealed class PartnersController(
     /// <param name="request">Request containing the partner ID.</param>
     /// <returns>The matching <see cref="PartnerDto"/>.</returns>
     [HttpGet("{id:int:min(1)}")]
-    [ProducesResponseType(typeof(PartnerDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedList<PartnerDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PartnerDto>> GetPartnerByIdAsync([FromRoute] GetPartnerByIdRequest request)
     {
@@ -49,9 +56,9 @@ public sealed class PartnersController(
     [HttpGet("{id:int:min(1)}/payments")]
     [ProducesResponseType(typeof(PaymentDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PaymentDto[]>> GetPartnerPaymentsAsync([FromRoute] int id)
+    public async Task<ActionResult<PagedList<PaymentDto>>> GetPartnerPaymentsAsync([FromRoute] int id)
     {
-        var request = new GetPaymentsRequest { PartnerId = id };
+        var request = new GetPaymentsRequest(PartnerId: id);
         var response = await paymentService.GetAsync(request);
 
         return Ok(response);

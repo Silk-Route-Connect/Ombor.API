@@ -2,6 +2,7 @@
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Common;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Inventory;
 using Ombor.Contracts.Responses.Product;
@@ -12,13 +13,13 @@ namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 public class ProductValidator(IApplicationDbContext context, FileSettings fileSettings, string webRootPath)
     : ValidatorBase(context, fileSettings, webRootPath)
 {
-    public async Task ValidateGetAsync(GetProductsRequest request, ProductDto[] response)
+    public async Task ValidateGetAsync(GetProductsRequest request, PagedList<ProductDto> response)
     {
         var expectedProducts = await GetProductsAsync(request);
 
-        Assert.Equal(expectedProducts.Length, response.Length);
+        Assert.Equal(expectedProducts.Count, response.Count);
 
-        for (int i = 0; i < expectedProducts.Length; i++)
+        for (int i = 0; i < expectedProducts.Count; i++)
         {
             var expected = expectedProducts[i];
             var actual = response[i];
@@ -95,7 +96,7 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         }
     }
 
-    private async Task<ProductDto[]> GetProductsAsync(GetProductsRequest request)
+    private async Task<PagedList<ProductDto>> GetProductsAsync(GetProductsRequest request)
     {
         var query = context.Products.AsNoTracking();
 
@@ -120,14 +121,18 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
         }
 
+        var totalCount = await query.CountAsync();
+
         var products = await query
             .Include(x => x.Category)
             .Include(x => x.Images)
             .Include(x => x.InventoryItems)
             .OrderBy(x => x.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
 
-        return products
+        var dtos = products
             .Select(x => new ProductDto(
                 x.Id,
                 x.CategoryId,
@@ -144,10 +149,11 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                 x.QuantityInStock <= x.LowStockThreshold,
                 x.Measurement.ToString(),
                 x.Type.ToString(),
-                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
-                x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.InventoryId, item.ProductId)).ToArray(),
-                x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode)))
-            .ToArray();
+                [.. x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl))],
+                [.. x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.InventoryId, item.ProductId))],
+                x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode)));
+
+        return new PagedList<ProductDto>(dtos, totalCount, request.PageNumber, request.PageSize);
     }
 
     private void ValidateFileExists(string fileName)

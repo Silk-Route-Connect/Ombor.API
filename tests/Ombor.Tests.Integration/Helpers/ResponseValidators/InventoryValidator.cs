@@ -71,6 +71,8 @@ public sealed class InventoryValidator(IApplicationDbContext context)
         return await query
             .AsNoTracking()
             .OrderBy(x => x.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
     }
 }

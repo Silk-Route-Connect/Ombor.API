@@ -13,17 +13,21 @@ public sealed class GetProductsTests : ProductTestsBase
     private const decimal MatchingMaxPrice = 1_000m;
 
     public static TheoryData<GetProductsRequest> GetRequests =>
-        new()
-        {
-            new GetProductsRequest(null, null, null, null, null),
-            new GetProductsRequest(string.Empty, null, null, null, null),
-            new GetProductsRequest(" ", null, null, null, null),
-            new GetProductsRequest("   ", null, null, null, null),
-            new GetProductsRequest(MatchingSearchTerm, null, null, null, null),
-            new GetProductsRequest(null, MatchingCategoryId, null, null, null),
-            new GetProductsRequest(null, null, MatchingMinPrice, MatchingMaxPrice, null),
-            new GetProductsRequest(MatchingSearchTerm, MatchingCategoryId, MatchingMinPrice, MatchingMaxPrice, Contracts.Enums.ProductType.All)
-        };
+        [
+            new GetProductsRequest(),
+            new GetProductsRequest(SearchTerm:string.Empty),
+            new GetProductsRequest(SearchTerm:" "),
+            new GetProductsRequest(SearchTerm : "   "),
+            new GetProductsRequest(SearchTerm : MatchingSearchTerm),
+            new GetProductsRequest(CategoryId: MatchingCategoryId),
+            new GetProductsRequest(MinPrice: MatchingMinPrice, MaxPrice: MatchingMaxPrice),
+            new GetProductsRequest(
+                SearchTerm:MatchingSearchTerm,
+                CategoryId: MatchingCategoryId,
+                MinPrice: MatchingMinPrice,
+                MaxPrice: MatchingMaxPrice,
+                Type: Contracts.Enums.ProductType.All)
+        ];
 
     [Fact]
     public async Task GetAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
@@ -41,7 +45,7 @@ public sealed class GetProductsTests : ProductTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNoProducts()
     {
         // Arrange
-        var request = new GetProductsRequest(string.Empty, null, null, null, null);
+        var request = new GetProductsRequest(SearchTerm: string.Empty);
         SetupProducts([]);
 
         // Act
@@ -68,7 +72,7 @@ public sealed class GetProductsTests : ProductTestsBase
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedProducts.Length, response.Length);
+        Assert.Equal(expectedProducts.Length, response.Count);
         Assert.All(response, actual =>
         {
             var expected = expectedProducts.SingleOrDefault(x => x.Id == actual.Id);

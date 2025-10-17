@@ -14,13 +14,12 @@ public class GetEmployeesTests(
     private static readonly CultureInfo _culture = new("uz-UZ");
 
     public static TheoryData<GetEmployeesRequest> Requests =>
-        new()
-        {
+        [
             new GetEmployeesRequest(),
-            new GetEmployeesRequest("   "),
-            new GetEmployeesRequest("Test Template"),
+            new GetEmployeesRequest(SearchTerm:"   "),
+            new GetEmployeesRequest(SearchTerm : "Test Template"),
             new GetEmployeesRequest(null),
-        };
+        ];
 
     [Theory]
     [MemberData(nameof(Requests))]

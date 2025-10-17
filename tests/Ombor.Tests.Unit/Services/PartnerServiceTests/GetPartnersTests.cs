@@ -13,11 +13,11 @@ public sealed class GetPartnersTests : PartnerTestsBase
 
     public static TheoryData<GetPartnersRequest> GetRequests => new()
     {
-        {new GetPartnersRequest(null)},
-        {new GetPartnersRequest(string.Empty)},
-        {new GetPartnersRequest(" ")},
-        {new GetPartnersRequest("     ")},
-        {new GetPartnersRequest(MatchingSearchTerm)},
+        {new GetPartnersRequest()},
+        {new GetPartnersRequest(SearchTerm:string.Empty)},
+        {new GetPartnersRequest(SearchTerm:" ")},
+        {new GetPartnersRequest(SearchTerm : "     ")},
+        {new GetPartnersRequest(SearchTerm:MatchingSearchTerm)},
     };
 
     [Fact]
@@ -38,7 +38,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
     public async Task GetAsync_ShouldReturnEmpty_WhenNopartners()
     {
         // Arrange
-        var request = new GetPartnersRequest(string.Empty);
+        var request = new GetPartnersRequest(SearchTerm: string.Empty);
         SetupPartners([]);
         SetupPartnerBalances([]);
 
@@ -79,7 +79,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedPartners.Length, response.Length);
+        Assert.Equal(expectedPartners.Length, response.Count);
         Assert.All(response, actual =>
         {
             var expected = expectedPartners.SingleOrDefault(x => x.Id == actual.Id);

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Inventory;
 using Ombor.Contracts.Responses.Inventory;
 using Ombor.Domain.Exceptions;
@@ -14,8 +15,8 @@ public interface IInventoryService
     /// Retrieves all inventories, optionally filtered by a search term.
     /// </summary>
     /// <param name="request">Filtering parameter for fetching inventories.</param>
-    /// <returns>An array of <see cref="InventoryDto"/> Matching the filter.</returns>
-    Task<InventoryDto[]> GetAsync(GetInventoriesRequest request);
+    /// <returns>Paged list of <see cref="InventoryDto"/> Matching the filter.</returns>
+    Task<PagedList<InventoryDto>> GetAsync(GetInventoriesRequest request);
 
     /// <summary>
     /// Retrieves a single inventory by its identifier.

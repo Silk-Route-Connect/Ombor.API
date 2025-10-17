@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Responses.Employee;
 
@@ -10,11 +12,13 @@ namespace Ombor.API.Controllers;
 public sealed class EmployeesController(IEmployeeService service) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(EmployeeDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<EmployeeDto[]>> GetAsync(
+    [ProducesResponseType(typeof(PagedList<EmployeeDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedList<EmployeeDto>>> GetAsync(
         [FromQuery] GetEmployeesRequest request)
     {
         var response = await service.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

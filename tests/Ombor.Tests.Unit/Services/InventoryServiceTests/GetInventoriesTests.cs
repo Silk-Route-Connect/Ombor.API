@@ -67,7 +67,7 @@ public sealed class GetInventoriesTests : InventoryTestsBase
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedInventories.Length, response.Length);
+        Assert.Equal(expectedInventories.Length, response.Count);
         Assert.All(response, actual =>
         {
             var expected = expectedInventories.SingleOrDefault(x => x.Id == actual.Id);
