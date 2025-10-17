@@ -116,7 +116,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 
         if (request.Type.HasValue)
         {
-            query = query.Where(x => x.Type == Enum.Parse<PartnerType>(request.Type.Value.ToString()));
+            var type = Enum.Parse<PartnerType>(request.Type.Value.ToString());
+            query = query.Where(x => x.Type == type);
         }
 
         return query;

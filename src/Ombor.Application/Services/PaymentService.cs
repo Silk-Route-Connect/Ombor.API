@@ -182,15 +182,18 @@ internal sealed class PaymentService(
             })
             .ToArrayAsync();
 
-        return [.. payments
-            .Select(x => new TransactionPaymentDto(
+        return [.. payments.Select(x =>
+        {
+            var first=x.Components.FirstOrDefault();
+            return new TransactionPaymentDto(
                 x.Id,
                 request.TransactionId,
                 x.Allocations.Sum(a => a.Amount),
                 x.Components.First().Currency,
                 x.Components.First().Method,
                 x.Notes,
-                x.DateUtc))];
+                x.DateUtc);
+        })];
     }
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request, TransactionRecord transaction)

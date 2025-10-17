@@ -23,6 +23,7 @@ internal sealed class InventoryService(
         var totalCount = await query.CountAsync();
 
         var inventories = await query
+            .Include(x => x.InventoryItems)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync();

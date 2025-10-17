@@ -93,7 +93,8 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 
         if (request.Status.HasValue)
         {
-            query = query.Where(x => x.Status == Enum.Parse<EmployeeStatus>(request.Status.Value.ToString()));
+            var status = Enum.Parse<EmployeeStatus>(request.Status.Value.ToString());
+            query = query.Where(x => x.Status == status);
         }
 
         return query;
