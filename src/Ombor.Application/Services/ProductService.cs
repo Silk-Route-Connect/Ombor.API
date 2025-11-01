@@ -129,7 +129,11 @@ internal sealed class ProductService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Products.AsNoTracking();
+        var query = context.Products
+            .Include(x => x.Category)
+            .Include(x => x.Images)
+            .Include(x => x.InventoryItems)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
