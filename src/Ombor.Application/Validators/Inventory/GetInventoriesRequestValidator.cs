@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Ombor.Application.Validators.Common;
 using Ombor.Contracts.Requests.Inventory;
 
@@ -19,5 +20,13 @@ public sealed class GetInventoriesRequestValidator : PagedRequestValidator<GetIn
                 "name_desc",
                 "location_asc",
                 "location_desc");
+    }
+
+    protected override bool PreValidate(ValidationContext<GetInventoriesRequest> context, ValidationResult result)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.InstanceToValidate);
+
+        return base.PreValidate(context, result);
     }
 }

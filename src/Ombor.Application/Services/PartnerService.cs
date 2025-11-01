@@ -14,7 +14,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 {
     public async Task<PagedList<PartnerDto>> GetAsync(GetPartnersRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);

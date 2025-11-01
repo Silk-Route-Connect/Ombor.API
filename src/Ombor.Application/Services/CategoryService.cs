@@ -13,7 +13,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
 {
     public async Task<PagedList<CategoryDto>> GetAsync(GetCategoriesRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);

@@ -18,7 +18,7 @@ internal sealed class PaymentService(
 {
     public async Task<PagedList<PaymentDto>> GetAsync(GetPaymentsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);
@@ -53,6 +53,8 @@ internal sealed class PaymentService(
 
     public async Task<PaymentDto?> CreateAsync(CreateTransactionPaymentRequest request)
     {
+        await validator.ValidateAndThrowAsync(request);
+
         var transaction = await context.Transactions
             .FirstOrDefaultAsync(x => x.Id == request.TransactionId)
             ?? throw new EntityNotFoundException<TransactionRecord>($"Transaction with id: {request.TransactionId} does not exist.");
@@ -162,7 +164,7 @@ internal sealed class PaymentService(
 
     public async Task<TransactionPaymentDto[]> GetTransactionPaymentsAsync(GetTransactionPaymentsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var payments = await context.Payments
             .Include(x => x.Components)
@@ -198,8 +200,7 @@ internal sealed class PaymentService(
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request, TransactionRecord transaction)
     {
-        ArgumentNullException.ThrowIfNull(request);
-        // await validator.ValidateAndThrowAsync(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var partner = await context.Partners
             .FirstOrDefaultAsync(x => x.Id == request.PartnerId)

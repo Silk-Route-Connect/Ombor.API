@@ -14,7 +14,7 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 {
     public async Task<PagedList<EmployeeDto>> GetAsync(GetEmployeesRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);

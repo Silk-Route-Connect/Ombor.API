@@ -15,7 +15,7 @@ internal sealed class InventoryService(
 {
     public async Task<PagedList<InventoryDto>> GetAsync(GetInventoriesRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);

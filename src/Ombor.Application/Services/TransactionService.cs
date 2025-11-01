@@ -20,6 +20,8 @@ internal sealed class TransactionService(
 {
     public async Task<PagedList<TransactionDto>> GetAsync(GetTransactionsRequest request)
     {
+        await validator.ValidateAndThrowAsync(request);
+
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);
 
@@ -56,7 +58,8 @@ internal sealed class TransactionService(
 
     public async Task<TransactionDto> GetByIdAsync(GetTransactionByIdRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
+
         var transaction = await context.Transactions
             .Include(x => x.Partner)
             .Include(x => x.Lines)
@@ -116,7 +119,6 @@ internal sealed class TransactionService(
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
         await validator.ValidateAndThrowAsync(request);
 
         var partner = await context.Partners
@@ -179,7 +181,7 @@ internal sealed class TransactionService(
     // TODO: Add logic for refunds
     private async Task UpdateProducts(CreateTransactionRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var lineProducts = request.Lines
             .ToDictionary(x => x.ProductId);

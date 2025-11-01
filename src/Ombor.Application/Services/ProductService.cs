@@ -24,7 +24,7 @@ internal sealed class ProductService(
 
     public async Task<PagedList<ProductDto>> GetAsync(GetProductsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);

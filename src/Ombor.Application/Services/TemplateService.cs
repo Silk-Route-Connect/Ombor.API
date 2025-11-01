@@ -9,11 +9,13 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class TemplateService(IApplicationDbContext context, IRequestValidator validator) : ITemplateService
+internal sealed class TemplateService(
+    IApplicationDbContext context,
+    IRequestValidator validator) : ITemplateService
 {
     public async Task<PagedList<TemplateDto>> GetAsync(GetTemplatesRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
         query = ApplySort(query, request.SortBy);
