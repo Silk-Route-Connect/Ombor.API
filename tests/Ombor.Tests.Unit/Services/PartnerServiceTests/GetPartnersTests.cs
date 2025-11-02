@@ -31,6 +31,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
             nameof(request),
             () => _service.GetAsync(request));
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         VerifyNoOtherCalls();
     }
 
@@ -48,6 +49,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
         // Assert
         Assert.Empty(response);
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Partners, Times.Once);
         _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
@@ -87,6 +89,7 @@ public sealed class GetPartnersTests : PartnerTestsBase
             PartnerAssertionHelper.AssertEquivalent(expected, actual);
         });
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Partners, Times.Once);
         _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
