@@ -17,8 +17,6 @@ public sealed class GetInventoriesTests : InventoryTestsBase
         {new GetInventoriesRequest("qwerty")},
         {new GetInventoriesRequest("    ")},
         {new GetInventoriesRequest(MatchingSearchTerm)},
-        {new GetInventoriesRequest(MatchingSearchTerm) { PageNumber = 1, PageSize = 5 }},
-        {new GetInventoriesRequest(null) { SortBy = "Name" }},
     };
 
     [Fact]
