@@ -189,8 +189,8 @@ internal sealed class PaymentService(
                 x.Id,
                 request.TransactionId,
                 x.Allocations.Sum(a => a.Amount),
-                x.Components.First().Currency,
-                x.Components.First().Method,
+                first?.Currency ?? string.Empty,
+                first?.Method ?? string.Empty,
                 x.Notes,
                 x.DateUtc);
         })];
@@ -282,12 +282,12 @@ internal sealed class PaymentService(
 
         if (request.MinAmount.HasValue)
         {
-            query = query.Where(x => x.Allocations.Sum(a => a.Amount) >= request.MinAmount.Value);
+            query = query.Where(x => (x.Allocations.Select(a => (decimal?)a.Amount).Sum() ?? 0m) >= request.MinAmount.Value);
         }
 
         if (request.MaxAmount.HasValue)
         {
-            query = query.Where(x => x.Allocations.Sum(a => a.Amount) <= request.MaxAmount.Value);
+            query = query.Where(x => (x.Allocations.Select(a => (decimal?)a.Amount).Sum() ?? 0m) <= request.MaxAmount.Value);
         }
 
         if (request.FromDate.HasValue)
