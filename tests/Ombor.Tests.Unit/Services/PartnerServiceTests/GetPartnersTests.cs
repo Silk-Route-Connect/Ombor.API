@@ -18,6 +18,11 @@ public sealed class GetPartnersTests : PartnerTestsBase
         {new GetPartnersRequest(SearchTerm:" ")},
         {new GetPartnersRequest(SearchTerm : "     ")},
         {new GetPartnersRequest(SearchTerm:MatchingSearchTerm)},
+        {new GetPartnersRequest(PageNumber: 1, PageSize: 10)},
+        {new GetPartnersRequest(SearchTerm: MatchingSearchTerm, PageNumber: 1, PageSize: 20)},
+        {new GetPartnersRequest(SortBy: "name")},
+        {new GetPartnersRequest(SortBy: "email")},
+        {new GetPartnersRequest(SearchTerm: MatchingSearchTerm, SortBy: "name")},
     };
 
     [Fact]
