@@ -20,6 +20,7 @@ internal sealed class JwtTokenService(IOptions<JwtSettings> settings) : IJwtToke
         {
             new (ClaimTypes.NameIdentifier, user.Id.ToString()),
             new (ClaimTypes.Name, user.FirstName),
+            new ("organizationId", user.OrganizationId.ToString()),
         };
 
         if (!string.IsNullOrWhiteSpace(user.PhoneNumber))

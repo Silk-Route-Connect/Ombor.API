@@ -13,7 +13,6 @@ public class User : AuditableEntity
     public string? Email { get; set; }
     public bool IsPhoneNumberConfirmed { get; set; }
 
-    public int OrganizationId { get; set; }
     public required virtual Organization Organization { get; set; }
 
     public virtual ICollection<Role> Roles { get; set; }
