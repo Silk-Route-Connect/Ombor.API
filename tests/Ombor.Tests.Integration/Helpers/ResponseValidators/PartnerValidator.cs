@@ -79,6 +79,8 @@ public sealed class PartnerValidator(IApplicationDbContext context)
         return await query
             .AsNoTracking()
             .OrderBy(s => s.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
     }
 }

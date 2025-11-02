@@ -1,11 +1,11 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Contracts.Responses.Transaction;
@@ -22,16 +22,23 @@ internal sealed class ProductService(
 {
     private readonly FileSettings fileSettings = fileSettings.Value;
 
-    public async Task<ProductDto[]> GetAsync(GetProductsRequest request)
+    public async Task<PagedList<ProductDto>> GetAsync(GetProductsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var query = GetQuery(request);
-        var products = await query
-            .OrderBy(x => x.Name)
-            .ToArrayAsync();
+        query = ApplySort(query, request.SortBy);
 
-        return [.. products.Select(x => x.ToDto())];
+        var totalCount = await query.CountAsync();
+
+        var products = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        var productsDto = products.Select(x => x.ToDto()).ToList();
+
+        return PagedList<ProductDto>.ToPagedList(productsDto, totalCount, request.PageNumber, request.PageSize);
     }
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
@@ -122,15 +129,21 @@ internal sealed class ProductService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Products.AsNoTracking();
+        var query = context.Products
+            .Include(x => x.Category)
+            .Include(x => x.Images)
+            .Include(x => x.InventoryItems)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
+            var searchTerm = request.SearchTerm.Trim();
+
             query = query.Where(
-                x => x.Name.Contains(request.SearchTerm) ||
-                (x.Description != null && x.Description.Contains(request.SearchTerm)) ||
-                (x.SKU != null && x.SKU.Contains(request.SearchTerm)) ||
-                (x.Barcode != null && x.Barcode.Contains(request.SearchTerm)));
+                x => x.Name.Contains(searchTerm) ||
+                (x.Description != null && x.Description.Contains(searchTerm)) ||
+                (x.SKU != null && x.SKU.Contains(searchTerm)) ||
+                (x.Barcode != null && x.Barcode.Contains(searchTerm)));
         }
 
         if (request.MaxPrice.HasValue)
@@ -156,6 +169,29 @@ internal sealed class ProductService(
 
         return query;
     }
+
+    private IQueryable<Product> ApplySort(IQueryable<Product> query, string? sortBy)
+        => sortBy?.ToLower() switch
+        {
+            "sku_asc" => query.OrderBy(x => x.SKU),
+            "sku_desc" => query.OrderByDescending(x => x.SKU),
+            "barcode_asc" => query.OrderBy(x => x.Barcode),
+            "barcode_desc" => query.OrderByDescending(x => x.Barcode),
+            "saleprice_asc" => query.OrderBy(x => x.SalePrice),
+            "saleprice_desc" => query.OrderByDescending(x => x.SalePrice),
+            "supplyprice_asc" => query.OrderBy(x => x.SupplyPrice),
+            "supplyprice_desc" => query.OrderByDescending(x => x.SupplyPrice),
+            "retailprice_asc" => query.OrderBy(x => x.RetailPrice),
+            "retailprice_desc" => query.OrderByDescending(x => x.RetailPrice),
+            "quantitystock_asc" => query.OrderBy(x => x.QuantityInStock),
+            "quantitystock_desc" => query.OrderByDescending(x => x.QuantityInStock),
+            "lowstock_asc" => query.OrderBy(x => x.LowStockThreshold),
+            "lowstock_desc" => query.OrderByDescending(x => x.LowStockThreshold),
+            "type_asc" => query.OrderBy(x => x.Type),
+            "type_desc" => query.OrderByDescending(x => x.Type),
+            "name_desc" => query.OrderByDescending(x => x.Name),
+            _ => query.OrderBy(x => x.Name)
+        };
 
     private async Task UpdateImagesAsync(
         Product entity,

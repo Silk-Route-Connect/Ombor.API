@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Ombor.API.Controllers;
@@ -18,6 +19,11 @@ public sealed class ProductsControllerTests : ControllerTestsBase
     {
         _mockService = new Mock<IProductService>(MockBehavior.Strict);
         _controller = new ProductsController(_mockService.Object);
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
     }
 
     [Fact]
@@ -25,7 +31,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetProductsRequest>();
-        var expected = _fixture.CreateArray<ProductDto>();
+        var expected = _fixture.CreatePagedList<ProductDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -46,7 +52,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetProductsRequest>();
-        var expected = Array.Empty<ProductDto>();
+        var expected = _fixture.CreatePagedList<ProductDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);

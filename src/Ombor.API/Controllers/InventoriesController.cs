@@ -1,5 +1,7 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Inventory;
 using Ombor.Contracts.Responses.Inventory;
 
@@ -16,13 +18,15 @@ public sealed class InventoriesController(IInventoryService inventoryService) : 
     /// Retrieves a list of inventories, with optional filtering by search term.
     /// </summary>
     /// <param name="request">Filtering and paging parameters.</param>
-    /// <returns>Array of <see cref="InventoryDto"/>.</returns>
+    /// <returns>Paged list of <see cref="InventoryDto"/>.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(InventoryDto[]), StatusCodes.Status200OK)]
-    public async Task<ActionResult<InventoryDto[]>> GetAsync(
+    [ProducesResponseType(typeof(PagedList<InventoryDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedList<InventoryDto>>> GetAsync(
         [FromQuery] GetInventoriesRequest request)
     {
         var response = await inventoryService.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

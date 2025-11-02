@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
@@ -17,12 +18,21 @@ internal sealed class TransactionService(
     IPaymentService paymentService,
     IRequestValidator validator) : ITransactionService
 {
-    public Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
+    public async Task<PagedList<TransactionDto>> GetAsync(GetTransactionsRequest request)
     {
-        var query = GetQuery(request);
+        await validator.ValidateAndThrowAsync(request);
 
-        return query
-            .OrderByDescending(x => x.DateUtc)
+        var query = GetQuery(request);
+        query = ApplySort(query, request.SortBy);
+
+        var totalCount = await query.CountAsync();
+
+        var transaction = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        var transactionsDto = transaction
             .Select(x => new TransactionDto(
                 x.Id,
                 x.PartnerId,
@@ -32,13 +42,24 @@ internal sealed class TransactionService(
                 x.Status.ToString(),
                 x.TotalDue,
                 x.TotalPaid,
-                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.Quantity, l.Total))))
-            .ToArrayAsync();
+                x.Lines.Select(l =>
+                new TransactionLineDto(
+                    l.Id,
+                    l.ProductId,
+                    l.Product.Name,
+                    l.TransactionId,
+                    l.UnitPrice,
+                    l.Discount,
+                    l.Quantity,
+                    l.Total))));
+
+        return PagedList<TransactionDto>.ToPagedList(transactionsDto, totalCount, request.PageNumber, request.PageSize);
     }
 
     public async Task<TransactionDto> GetByIdAsync(GetTransactionByIdRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
+
         var transaction = await context.Transactions
             .Include(x => x.Partner)
             .Include(x => x.Lines)
@@ -98,7 +119,6 @@ internal sealed class TransactionService(
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
         await validator.ValidateAndThrowAsync(request);
 
         var partner = await context.Partners
@@ -161,7 +181,7 @@ internal sealed class TransactionService(
     // TODO: Add logic for refunds
     private async Task UpdateProducts(CreateTransactionRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var lineProducts = request.Lines
             .ToDictionary(x => x.ProductId);
@@ -204,6 +224,16 @@ internal sealed class TransactionService(
             .IgnoreAutoIncludes()
             .AsNoTracking();
 
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.Trim();
+
+            query = query.Where(x => x.Partner.Name.Contains(searchTerm) ||
+            (x.Partner.Email != null && x.Partner.Email.Contains(searchTerm)) ||
+            (x.Partner.CompanyName != null && x.Partner.CompanyName.Contains(searchTerm)) ||
+            (x.Partner.Address != null && x.Partner.Address.Contains(searchTerm)));
+        }
+
         if (request.PartnerId.HasValue)
         {
             query = query.Where(x => x.PartnerId == request.PartnerId.Value);
@@ -221,6 +251,35 @@ internal sealed class TransactionService(
             query = query.Where(x => x.Type == domainTye);
         }
 
+        if (request.FromDate.HasValue)
+        {
+            var fromDate = DateOnly.FromDateTime(request.FromDate.Value);
+            query = query.Where(x => x.DueDate >= fromDate);
+        }
+
+        if (request.ToDate.HasValue)
+        {
+            var toDate = DateOnly.FromDateTime(request.ToDate.Value);
+            query = query.Where(x => x.DueDate <= toDate);
+        }
+
         return query;
     }
+
+    private IQueryable<TransactionRecord> ApplySort(IQueryable<TransactionRecord> query, string? sortBy)
+        => sortBy?.ToLower() switch
+        {
+            "partnername_asc" => query.OrderBy(x => x.Partner.Name),
+            "partnername_desc" => query.OrderByDescending(x => x.Partner.Name),
+            "type_asc" => query.OrderBy(x => x.Type),
+            "type_desc" => query.OrderByDescending(x => x.Type),
+            "status_asc" => query.OrderBy(x => x.Status),
+            "status_desc" => query.OrderByDescending(x => x.Status),
+            "totaldue_asc" => query.OrderBy(x => x.TotalDue),
+            "totaldue_desc" => query.OrderByDescending(x => x.TotalDue),
+            "totalpaid_asc" => query.OrderBy(x => x.TotalPaid),
+            "totalpaid_desc" => query.OrderByDescending(x => x.TotalPaid),
+            "date_asc" => query.OrderBy(x => x.DateUtc),
+            _ => query.OrderByDescending(x => x.DateUtc),
+        };
 }

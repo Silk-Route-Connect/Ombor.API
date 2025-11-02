@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Payment;
@@ -15,6 +16,36 @@ internal sealed class PaymentService(
     IApplicationDbContext context,
     IRequestValidator validator) : IPaymentService
 {
+    public async Task<PagedList<PaymentDto>> GetAsync(GetPaymentsRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var query = GetQuery(request);
+        query = ApplySort(query, request.SortBy);
+
+        var totalCount = await query.CountAsync();
+
+        var payments = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
+
+        var dtos = payments
+            .Select(x => new PaymentDto(
+                x.Id,
+                x.PartnerId,
+                x.Partner?.Name,
+                x.Notes,
+                x.Allocations.Sum(a => a.Amount),
+                x.DateUtc,
+                x.Direction.ToString(),
+                x.Type.ToString(),
+                [.. x.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
+                [.. x.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]));
+
+        return PagedList<PaymentDto>.ToPagedList(dtos, totalCount, request.PageNumber, request.PageSize);
+    }
+
     public Task<PaymentDto> CreateAsync(CreatePaymentRequest request)
     {
         throw new NotImplementedException();
@@ -129,33 +160,9 @@ internal sealed class PaymentService(
                 [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
     }
 
-    public async Task<PaymentDto[]> GetAsync(GetPaymentsRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var query = GetQuery(request);
-        var payments = await query
-            .OrderByDescending(x => x.DateUtc)
-            .ToArrayAsync();
-
-        return payments
-            .Select(x => new PaymentDto(
-                x.Id,
-                x.PartnerId,
-                x.Partner?.Name,
-                x.Notes,
-                x.Allocations.Sum(a => a.Amount),
-                x.DateUtc,
-                x.Direction.ToString(),
-                x.Type.ToString(),
-                [.. x.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
-                [.. x.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]))
-            .ToArray();
-    }
-
     public async Task<TransactionPaymentDto[]> GetTransactionPaymentsAsync(GetTransactionPaymentsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var payments = await context.Payments
             .Include(x => x.Components)
@@ -175,22 +182,23 @@ internal sealed class PaymentService(
             })
             .ToArrayAsync();
 
-        return payments
-            .Select(x => new TransactionPaymentDto(
+        return [.. payments.Select(x =>
+        {
+            var first=x.Components.FirstOrDefault();
+            return new TransactionPaymentDto(
                 x.Id,
                 request.TransactionId,
                 x.Allocations.Sum(a => a.Amount),
-                x.Components.First().Currency,
-                x.Components.First().Method,
+                first?.Currency ?? string.Empty,
+                first?.Method ?? string.Empty,
                 x.Notes,
-                x.DateUtc))
-            .ToArray();
+                x.DateUtc);
+        })];
     }
 
     private async Task ValidateOrThrowAsync(CreateTransactionRequest request, TransactionRecord transaction)
     {
-        ArgumentNullException.ThrowIfNull(request);
-        // await validator.ValidateAndThrowAsync(request);
+        await validator.ValidateAndThrowAsync(request);
 
         var partner = await context.Partners
             .FirstOrDefaultAsync(x => x.Id == request.PartnerId)
@@ -256,12 +264,30 @@ internal sealed class PaymentService(
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(x => (x.Notes != null && x.Notes.Contains(request.SearchTerm)) || (x.Partner != null && x.Partner.Name.Contains(request.SearchTerm)));
+            var searchTerm = request.SearchTerm.Trim();
+
+            query = query.Where(x => (x.Notes != null && x.Notes.Contains(searchTerm)) ||
+            (x.Partner != null && x.Partner.Name.Contains(searchTerm)));
         }
 
         if (request.PartnerId.HasValue)
         {
             query = query.Where(x => x.PartnerId == request.PartnerId.Value);
+        }
+
+        if (request.TransactionId.HasValue)
+        {
+            query = query.Where(x => x.Allocations.Any(a => a.TransactionId == request.TransactionId.Value));
+        }
+
+        if (request.MinAmount.HasValue)
+        {
+            query = query.Where(x => (x.Allocations.Select(a => (decimal?)a.Amount).Sum() ?? 0m) >= request.MinAmount.Value);
+        }
+
+        if (request.MaxAmount.HasValue)
+        {
+            query = query.Where(x => (x.Allocations.Select(a => (decimal?)a.Amount).Sum() ?? 0m) <= request.MaxAmount.Value);
         }
 
         if (request.FromDate.HasValue)
@@ -288,4 +314,15 @@ internal sealed class PaymentService(
 
         return query;
     }
+
+    private IQueryable<Payment> ApplySort(IQueryable<Payment> query, string? sortBy)
+        => sortBy?.ToLower() switch
+        {
+            "direction_asc" => query.OrderBy(x => x.Direction),
+            "direction_desc" => query.OrderByDescending(x => x.Direction),
+            "type_asc" => query.OrderBy(x => x.Type),
+            "type_desc" => query.OrderByDescending(x => x.Type),
+            "date_asc" => query.OrderBy(x => x.DateUtc),
+            _ => query.OrderByDescending(x => x.DateUtc)
+        };
 }

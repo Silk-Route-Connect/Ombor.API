@@ -30,6 +30,8 @@ public sealed class GetCategoriesTests : CategoryTestsBase
             nameof(request),
             () => _service.GetAsync(request));
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+
         VerifyNoOtherCalls();
     }
 
@@ -46,6 +48,7 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         // Assert
         Assert.Empty(response);
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();
@@ -67,7 +70,7 @@ public sealed class GetCategoriesTests : CategoryTestsBase
         var response = await _service.GetAsync(request);
 
         // Assert
-        Assert.Equal(expectedCategories.Length, response.Length);
+        Assert.Equal(expectedCategories.Length, response.Count);
         Assert.All(response, actual =>
         {
             var expected = expectedCategories.SingleOrDefault(x => x.Id == actual.Id);
@@ -75,6 +78,7 @@ public sealed class GetCategoriesTests : CategoryTestsBase
             CategoryAssertionHelper.AssertEquivalent(expected, actual);
         });
 
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Once);
 
         VerifyNoOtherCalls();

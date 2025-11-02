@@ -1,4 +1,5 @@
 ﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
@@ -15,14 +16,13 @@ public sealed class GetTemplatesTests(
     // Keep search terms longer than 4 characters
     // to create templates matching only part of the search.
     public static TheoryData<GetTemplatesRequest> Requests =>
-        new()
-        {
+        [
             new GetTemplatesRequest(),
-            new GetTemplatesRequest("   "),
-            new GetTemplatesRequest("Test Template"),
-            new GetTemplatesRequest(null, TemplateType.Sale),
-            new GetTemplatesRequest("Test Template", TemplateType.Supply)
-        };
+            new GetTemplatesRequest(SearchTerm:"   "),
+            new GetTemplatesRequest(SearchTerm : "Test Template"),
+            new GetTemplatesRequest(Type:TemplateType.Sale),
+            new GetTemplatesRequest(SearchTerm : "Test Template",Type: TemplateType.Supply)
+        ];
 
     [Theory]
     [MemberData(nameof(Requests))]
@@ -33,7 +33,7 @@ public sealed class GetTemplatesTests(
         var url = GetUrl(request);
 
         // Act
-        var response = await _client.GetAsync<TemplateDto[]>(url);
+        var response = await _client.GetAsync<PagedList<TemplateDto>>(url);
 
         // Assert
         await _responseValidator.Template.ValidateGetAsync(request, response);
@@ -108,13 +108,12 @@ public sealed class GetTemplatesTests(
     }
 
     private static Template[] CreateNonMatchingTemplates(Partner partner) =>
-        Enumerable.Range(0, 5)
+        [.. Enumerable.Range(0, 5)
         .Select(i => new Template
         {
             PartnerId = partner.Id,
             Partner = partner,
             Name = $"Template-{i.ToString()}",
             Type = Domain.Enums.TemplateType.Supply
-        })
-        .ToArray();
+        })];
 }
