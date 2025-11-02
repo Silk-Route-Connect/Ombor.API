@@ -53,8 +53,6 @@ internal sealed class PaymentService(
 
     public async Task<PaymentDto?> CreateAsync(CreateTransactionPaymentRequest request)
     {
-        await validator.ValidateAndThrowAsync(request);
-
         var transaction = await context.Transactions
             .FirstOrDefaultAsync(x => x.Id == request.TransactionId)
             ?? throw new EntityNotFoundException<TransactionRecord>($"Transaction with id: {request.TransactionId} does not exist.");
