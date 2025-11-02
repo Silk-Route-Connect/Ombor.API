@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.8370212765957447" branch-rate="0.45188284518828453" lines-covered="1967" lines-valid="2350" branches-covered="432" branches-valid="956" complexity="1247" version="0" timestamp="1762071587">
+<coverage line-rate="0.8370212765957447" branch-rate="0.45188284518828453" lines-covered="1967" lines-valid="2350" branches-covered="432" branches-valid="956" complexity="1247" version="0" timestamp="1762072763">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -1397,23 +1397,23 @@
           <methods>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="1">
               <lines>
-                <line number="11" hits="138" branch="true" condition-coverage="50% (2/4)" />
-                <line number="12" hits="138" branch="false" />
-                <line number="13" hits="138" branch="false" />
-                <line number="15" hits="138" branch="false" />
-                <line number="16" hits="138" branch="false" />
-                <line number="17" hits="138" branch="false" />
-                <line number="18" hits="138" branch="false" />
-                <line number="19" hits="138" branch="false" />
+                <line number="11" hits="124" branch="true" condition-coverage="50% (2/4)" />
+                <line number="12" hits="124" branch="false" />
+                <line number="13" hits="124" branch="false" />
+                <line number="15" hits="124" branch="false" />
+                <line number="16" hits="124" branch="false" />
+                <line number="17" hits="124" branch="false" />
+                <line number="18" hits="124" branch="false" />
+                <line number="19" hits="124" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.InventoryItem)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="23" hits="670" branch="false" />
-                <line number="24" hits="670" branch="false" />
-                <line number="25" hits="670" branch="false" />
-                <line number="26" hits="670" branch="false" />
-                <line number="27" hits="670" branch="false" />
+                <line number="23" hits="530" branch="false" />
+                <line number="24" hits="530" branch="false" />
+                <line number="25" hits="530" branch="false" />
+                <line number="26" hits="530" branch="false" />
+                <line number="27" hits="530" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
@@ -1460,23 +1460,23 @@
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="1">
               <lines>
-                <line number="11" hits="138" branch="true" condition-coverage="50% (2/4)" />
-                <line number="12" hits="138" branch="false" />
-                <line number="13" hits="138" branch="false" />
-                <line number="15" hits="138" branch="false" />
-                <line number="16" hits="138" branch="false" />
-                <line number="17" hits="138" branch="false" />
-                <line number="18" hits="138" branch="false" />
-                <line number="19" hits="138" branch="false" />
+                <line number="11" hits="124" branch="true" condition-coverage="50% (2/4)" />
+                <line number="12" hits="124" branch="false" />
+                <line number="13" hits="124" branch="false" />
+                <line number="15" hits="124" branch="false" />
+                <line number="16" hits="124" branch="false" />
+                <line number="17" hits="124" branch="false" />
+                <line number="18" hits="124" branch="false" />
+                <line number="19" hits="124" branch="false" />
               </lines>
             </method>
             <method name="ToDto" signature="(Ombor.Domain.Entities.InventoryItem)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="23" hits="670" branch="false" />
-                <line number="24" hits="670" branch="false" />
-                <line number="25" hits="670" branch="false" />
-                <line number="26" hits="670" branch="false" />
-                <line number="27" hits="670" branch="false" />
+                <line number="23" hits="530" branch="false" />
+                <line number="24" hits="530" branch="false" />
+                <line number="25" hits="530" branch="false" />
+                <line number="26" hits="530" branch="false" />
+                <line number="27" hits="530" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
@@ -1523,19 +1523,19 @@
             </method>
           </methods>
           <lines>
-            <line number="11" hits="138" branch="true" condition-coverage="50% (2/4)" />
-            <line number="12" hits="138" branch="false" />
-            <line number="13" hits="138" branch="false" />
-            <line number="15" hits="138" branch="false" />
-            <line number="16" hits="138" branch="false" />
-            <line number="17" hits="138" branch="false" />
-            <line number="18" hits="138" branch="false" />
-            <line number="19" hits="138" branch="false" />
-            <line number="23" hits="670" branch="false" />
-            <line number="24" hits="670" branch="false" />
-            <line number="25" hits="670" branch="false" />
-            <line number="26" hits="670" branch="false" />
-            <line number="27" hits="670" branch="false" />
+            <line number="11" hits="124" branch="true" condition-coverage="50% (2/4)" />
+            <line number="12" hits="124" branch="false" />
+            <line number="13" hits="124" branch="false" />
+            <line number="15" hits="124" branch="false" />
+            <line number="16" hits="124" branch="false" />
+            <line number="17" hits="124" branch="false" />
+            <line number="18" hits="124" branch="false" />
+            <line number="19" hits="124" branch="false" />
+            <line number="23" hits="530" branch="false" />
+            <line number="24" hits="530" branch="false" />
+            <line number="25" hits="530" branch="false" />
+            <line number="26" hits="530" branch="false" />
+            <line number="27" hits="530" branch="false" />
             <line number="30" hits="6" branch="false" />
             <line number="31" hits="6" branch="false" />
             <line number="32" hits="6" branch="false" />
@@ -2997,64 +2997,64 @@
           <methods>
             <method name="GetQuery" signature="(Ombor.Contracts.Requests.Inventory.GetInventoriesRequest)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="80" hits="26" branch="false" />
-                <line number="82" hits="24" branch="false" />
-                <line number="83" hits="24" branch="false" />
-                <line number="85" hits="24" branch="true" condition-coverage="100% (4/4)" />
-                <line number="87" hits="8" branch="false" />
-                <line number="88" hits="8" branch="false" />
-                <line number="91" hits="24" branch="false" />
+                <line number="80" hits="22" branch="false" />
+                <line number="82" hits="20" branch="false" />
+                <line number="83" hits="20" branch="false" />
+                <line number="85" hits="20" branch="true" condition-coverage="100% (4/4)" />
+                <line number="87" hits="6" branch="false" />
+                <line number="88" hits="6" branch="false" />
+                <line number="91" hits="20" branch="false" />
               </lines>
             </method>
             <method name="ApplySort" signature="(System.Linq.IQueryable`1&lt;Ombor.Domain.Entities.Inventory&gt;,System.String)" line-rate="0.5714285714285714" branch-rate="0.5" complexity="8">
               <lines>
-                <line number="95" hits="24" branch="true" condition-coverage="50% (8/16)" />
-                <line number="96" hits="24" branch="false" />
+                <line number="95" hits="20" branch="true" condition-coverage="50% (8/16)" />
+                <line number="96" hits="20" branch="false" />
                 <line number="97" hits="0" branch="false" />
                 <line number="98" hits="0" branch="false" />
                 <line number="99" hits="0" branch="false" />
-                <line number="100" hits="24" branch="false" />
-                <line number="101" hits="24" branch="false" />
+                <line number="100" hits="20" branch="false" />
+                <line number="101" hits="20" branch="false" />
               </lines>
             </method>
             <method name="GetQuery" signature="(Ombor.Contracts.Requests.Inventory.GetInventoriesRequest)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="80" hits="26" branch="false" />
-                <line number="82" hits="24" branch="false" />
-                <line number="83" hits="24" branch="false" />
-                <line number="85" hits="24" branch="true" condition-coverage="100% (4/4)" />
-                <line number="87" hits="8" branch="false" />
-                <line number="88" hits="8" branch="false" />
-                <line number="91" hits="24" branch="false" />
+                <line number="80" hits="22" branch="false" />
+                <line number="82" hits="20" branch="false" />
+                <line number="83" hits="20" branch="false" />
+                <line number="85" hits="20" branch="true" condition-coverage="100% (4/4)" />
+                <line number="87" hits="6" branch="false" />
+                <line number="88" hits="6" branch="false" />
+                <line number="91" hits="20" branch="false" />
               </lines>
             </method>
             <method name="ApplySort" signature="(System.Linq.IQueryable`1&lt;Ombor.Domain.Entities.Inventory&gt;,System.String)" line-rate="0.5714285714285714" branch-rate="0.5" complexity="8">
               <lines>
-                <line number="95" hits="24" branch="true" condition-coverage="50% (8/16)" />
-                <line number="96" hits="24" branch="false" />
+                <line number="95" hits="20" branch="true" condition-coverage="50% (8/16)" />
+                <line number="96" hits="20" branch="false" />
                 <line number="97" hits="0" branch="false" />
                 <line number="98" hits="0" branch="false" />
                 <line number="99" hits="0" branch="false" />
-                <line number="100" hits="24" branch="false" />
-                <line number="101" hits="24" branch="false" />
+                <line number="100" hits="20" branch="false" />
+                <line number="101" hits="20" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="80" hits="26" branch="false" />
-            <line number="82" hits="24" branch="false" />
-            <line number="83" hits="24" branch="false" />
-            <line number="85" hits="24" branch="true" condition-coverage="100% (4/4)" />
-            <line number="87" hits="8" branch="false" />
-            <line number="88" hits="8" branch="false" />
-            <line number="91" hits="24" branch="false" />
-            <line number="95" hits="24" branch="true" condition-coverage="50% (8/16)" />
-            <line number="96" hits="24" branch="false" />
+            <line number="80" hits="22" branch="false" />
+            <line number="82" hits="20" branch="false" />
+            <line number="83" hits="20" branch="false" />
+            <line number="85" hits="20" branch="true" condition-coverage="100% (4/4)" />
+            <line number="87" hits="6" branch="false" />
+            <line number="88" hits="6" branch="false" />
+            <line number="91" hits="20" branch="false" />
+            <line number="95" hits="20" branch="true" condition-coverage="50% (8/16)" />
+            <line number="96" hits="20" branch="false" />
             <line number="97" hits="0" branch="false" />
             <line number="98" hits="0" branch="false" />
             <line number="99" hits="0" branch="false" />
-            <line number="100" hits="24" branch="false" />
-            <line number="101" hits="24" branch="false" />
+            <line number="100" hits="20" branch="false" />
+            <line number="101" hits="20" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Services.OtpCodeProvider" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/OtpCodeProvider.cs" line-rate="0" branch-rate="1" complexity="10">
@@ -6376,8 +6376,8 @@
           <methods>
             <method name="ToPagedList" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Int32,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="24" hits="100" branch="false" />
-                <line number="26" hits="100" branch="false" />
+                <line number="24" hits="96" branch="false" />
+                <line number="26" hits="96" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -6387,22 +6387,22 @@
             </method>
             <method name=".ctor" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Int32,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="9" hits="118" branch="false" />
-                <line number="11" hits="118" branch="false" />
-                <line number="12" hits="118" branch="false" />
-                <line number="13" hits="118" branch="false" />
-                <line number="14" hits="118" branch="false" />
-                <line number="15" hits="118" branch="false" />
-                <line number="16" hits="118" branch="false" />
-                <line number="17" hits="118" branch="false" />
-                <line number="19" hits="118" branch="false" />
-                <line number="20" hits="118" branch="false" />
+                <line number="9" hits="114" branch="false" />
+                <line number="11" hits="114" branch="false" />
+                <line number="12" hits="114" branch="false" />
+                <line number="13" hits="114" branch="false" />
+                <line number="14" hits="114" branch="false" />
+                <line number="15" hits="114" branch="false" />
+                <line number="16" hits="114" branch="false" />
+                <line number="17" hits="114" branch="false" />
+                <line number="19" hits="114" branch="false" />
+                <line number="20" hits="114" branch="false" />
               </lines>
             </method>
             <method name="ToPagedList" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Int32,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="24" hits="100" branch="false" />
-                <line number="26" hits="100" branch="false" />
+                <line number="24" hits="96" branch="false" />
+                <line number="26" hits="96" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -6412,33 +6412,33 @@
             </method>
             <method name=".ctor" signature="(System.Collections.Generic.IEnumerable`1&lt;T&gt;,System.Int32,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="9" hits="118" branch="false" />
-                <line number="11" hits="118" branch="false" />
-                <line number="12" hits="118" branch="false" />
-                <line number="13" hits="118" branch="false" />
-                <line number="14" hits="118" branch="false" />
-                <line number="15" hits="118" branch="false" />
-                <line number="16" hits="118" branch="false" />
-                <line number="17" hits="118" branch="false" />
-                <line number="19" hits="118" branch="false" />
-                <line number="20" hits="118" branch="false" />
+                <line number="9" hits="114" branch="false" />
+                <line number="11" hits="114" branch="false" />
+                <line number="12" hits="114" branch="false" />
+                <line number="13" hits="114" branch="false" />
+                <line number="14" hits="114" branch="false" />
+                <line number="15" hits="114" branch="false" />
+                <line number="16" hits="114" branch="false" />
+                <line number="17" hits="114" branch="false" />
+                <line number="19" hits="114" branch="false" />
+                <line number="20" hits="114" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
             <line number="7" hits="24" branch="false" />
-            <line number="9" hits="118" branch="false" />
-            <line number="11" hits="118" branch="false" />
-            <line number="12" hits="118" branch="false" />
-            <line number="13" hits="118" branch="false" />
-            <line number="14" hits="118" branch="false" />
-            <line number="15" hits="118" branch="false" />
-            <line number="16" hits="118" branch="false" />
-            <line number="17" hits="118" branch="false" />
-            <line number="19" hits="118" branch="false" />
-            <line number="20" hits="118" branch="false" />
-            <line number="24" hits="100" branch="false" />
-            <line number="26" hits="100" branch="false" />
+            <line number="9" hits="114" branch="false" />
+            <line number="11" hits="114" branch="false" />
+            <line number="12" hits="114" branch="false" />
+            <line number="13" hits="114" branch="false" />
+            <line number="14" hits="114" branch="false" />
+            <line number="15" hits="114" branch="false" />
+            <line number="16" hits="114" branch="false" />
+            <line number="17" hits="114" branch="false" />
+            <line number="19" hits="114" branch="false" />
+            <line number="20" hits="114" branch="false" />
+            <line number="24" hits="96" branch="false" />
+            <line number="26" hits="96" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Contracts.Requests.Employee.GetEmployeesRequest" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Contracts/Requests/Employee/GetEmployeesRequest.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -6462,17 +6462,17 @@
           <methods>
             <method name=".ctor" signature="(System.String,System.String,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="15" hits="60" branch="false" />
+                <line number="15" hits="52" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(System.String,System.String,System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="15" hits="60" branch="false" />
+                <line number="15" hits="52" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="15" hits="60" branch="false" />
+            <line number="15" hits="52" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Contracts.Requests.Partner.GetPartnersRequest" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Contracts/Requests/Partner/GetPartnersRequest.cs" line-rate="1" branch-rate="1" complexity="2">
