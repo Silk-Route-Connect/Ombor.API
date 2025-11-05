@@ -6,7 +6,7 @@ namespace Ombor.Contracts.Responses.Employee;
 /// A response containing details of an updated employee.
 /// </summary>
 /// <param name="Id">The unique identifier of the employee.</param>
-/// <param name="FullName">Full name of the employee.</param>
+/// <param name="Name">Full name of the employee.</param>
 /// <param name="Position">Position of the employee.</param>
 /// <param name="Status">Current status of the employee.</param>
 /// <param name="Salary">Salary amount of the employee.</param>
@@ -14,7 +14,7 @@ namespace Ombor.Contracts.Responses.Employee;
 /// <param name="ContactInfo">Contact info of the employee.</param>
 public sealed record UpdateEmployeeResponse(
     int Id,
-    string FullName,
+    string Name,
     string Position,
     string Status,
     decimal Salary,

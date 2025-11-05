@@ -10,7 +10,7 @@ internal static class EmployeeMappings
     public static EmployeeDto ToDto(this Employee employee) =>
         new(
             Id: employee.Id,
-            FullName: employee.FullName,
+            Name: employee.FullName,
             Position: employee.Position,
             Status: employee.Status.ToString(),
             Salary: employee.Salary,
@@ -31,7 +31,7 @@ internal static class EmployeeMappings
     public static CreateEmployeeResponse ToCreateResponse(this Employee employee) =>
         new(
             Id: employee.Id,
-            FullName: employee.FullName,
+            Name: employee.FullName,
             Position: employee.Position,
             Status: employee.Status.ToString(),
             Salary: employee.Salary,
@@ -41,7 +41,7 @@ internal static class EmployeeMappings
     public static UpdateEmployeeResponse ToUpdateResponse(this Employee employee) =>
        new(
            Id: employee.Id,
-           FullName: employee.FullName,
+           Name: employee.FullName,
            Position: employee.Position,
            Status: employee.Status.ToString(),
            Salary: employee.Salary,

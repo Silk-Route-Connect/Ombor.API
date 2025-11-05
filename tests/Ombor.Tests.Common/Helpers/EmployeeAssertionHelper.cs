@@ -13,7 +13,7 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.FullName, actual.Name);
         Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
         Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
@@ -26,7 +26,7 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(actual);
         Assert.NotNull(expected);
 
-        Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.FullName, actual.Name);
         Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Salary, actual.Salary);
         Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status));
@@ -51,7 +51,7 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.FullName, actual.Name);
         Assert.Equal(expected.Salary, actual.Salary);
         Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
         Assert.Equal(expected.DateOfEmployment, actual.DateOfEmployment);
@@ -63,7 +63,7 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.FullName, actual.Name);
         Assert.Equal(expected.Salary, actual.Salary);
         Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Status, Enum.Parse<Contracts.Enums.EmployeeStatus>(actual.Status));
@@ -89,7 +89,7 @@ public static class EmployeeAssertionHelper
         Assert.NotNull(expected);
 
         Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.FullName, actual.FullName);
+        Assert.Equal(expected.FullName, actual.Name);
         Assert.Equal(expected.Salary, actual.Salary);
         Assert.Equal(expected.Position, actual.Position);
         Assert.Equal(expected.Status, Enum.Parse<Domain.Enums.EmployeeStatus>(actual.Status));
