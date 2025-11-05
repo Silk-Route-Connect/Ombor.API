@@ -29,7 +29,7 @@ try
 
     app.UseForwardedHeaders();
 
-    // app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 
     app.UseRouting();
 
