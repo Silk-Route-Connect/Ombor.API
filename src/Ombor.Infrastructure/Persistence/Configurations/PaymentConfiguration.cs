@@ -17,7 +17,7 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .WithMany(partner => partner.Payments)
             .HasForeignKey(payment => payment.PartnerId)
             .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .HasMany(p => p.Components)
@@ -32,6 +32,13 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasForeignKey(p => p.PaymentId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
+
+        builder
+            .HasOne(p => p.Employee)
+            .WithMany(e => e.Payrolls)
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         builder
             .Property(p => p.Notes)
