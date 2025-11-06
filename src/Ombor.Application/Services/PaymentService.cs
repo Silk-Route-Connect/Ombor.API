@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Payment;
+using Ombor.Contracts.Requests.Payroll;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Domain.Entities;
@@ -120,6 +122,8 @@ internal sealed class PaymentService(
                 payment.Id,
                 payment.PartnerId,
                 payment.Partner?.Name,
+                payment.EmployeeId,
+                payment.Employee?.FullName,
                 payment.Notes,
                 payment.Allocations.Sum(a => a.Amount),
                 payment.DateUtc,
@@ -127,6 +131,72 @@ internal sealed class PaymentService(
                 payment.Type.ToString(),
                 [.. payment.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
                 [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
+    }
+
+    public async Task<PaymentDto?> CreateAsync(CreatePayrollRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var entity = request.ToPaymentEntity();
+
+        context.Payments.Add(entity);
+        await context.SaveChangesAsync();
+
+        entity.Employee = await context.Employees
+            .FirstOrDefaultAsync(e => e.Id == entity.EmployeeId);
+
+        return new PaymentDto(
+            entity.Id,
+            entity.PartnerId,
+            entity.Partner?.Name,
+            entity.EmployeeId,
+            entity.Employee?.FullName,
+            entity.Notes,
+            entity.Allocations.Sum(a => a.Amount),
+            entity.DateUtc,
+            entity.Direction.ToString(),
+            entity.Type.ToString(),
+            [.. entity.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
+            [.. entity.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
+    }
+
+    public async Task<PaymentDto> UpdateAsync(UpdatePayrollRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+        var payment = await context.Payments
+            .Include(x => x.Components)
+            .Include(x => x.Allocations)
+            .FirstOrDefaultAsync(x => x.Id == request.PaymentId && x.Type == PaymentType.Payroll)
+            ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
+
+        payment.ApplyUpdate(request);
+        context.Payments.Update(payment);
+        await context.SaveChangesAsync();
+
+        return new PaymentDto(
+            payment.Id,
+            payment.PartnerId,
+            payment.Partner?.Name,
+            payment.EmployeeId,
+            payment.Employee?.FullName,
+            payment.Notes,
+            payment.Allocations.Sum(a => a.Amount),
+            payment.DateUtc,
+            payment.Direction.ToString(),
+            payment.Type.ToString(),
+            [.. payment.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
+            [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
+    }
+
+    public async Task DeleteAsync(DeletePayrollRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        var payment = await context.Payments
+            .FirstOrDefaultAsync(x => x.Id == request.PaymentId && x.Type == PaymentType.Payroll)
+            ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
+
+        context.Payments.Remove(payment);
+        await context.SaveChangesAsync();
     }
 
     public async Task<PaymentDto[]> GetAsync(GetPaymentsRequest request)
@@ -143,6 +213,8 @@ internal sealed class PaymentService(
                 x.Id,
                 x.PartnerId,
                 x.Partner?.Name,
+                x.EmployeeId,
+                x.Employee?.FullName,
                 x.Notes,
                 x.Allocations.Sum(a => a.Amount),
                 x.DateUtc,
@@ -250,6 +322,7 @@ internal sealed class PaymentService(
     {
         var query = context.Payments
             .Include(x => x.Partner)
+            .Include(x => x.Employee)
             .Include(x => x.Components)
             .Include(x => x.Allocations)
             .AsQueryable();
@@ -262,6 +335,11 @@ internal sealed class PaymentService(
         if (request.PartnerId.HasValue)
         {
             query = query.Where(x => x.PartnerId == request.PartnerId.Value);
+        }
+
+        if (request.EmployeeId.HasValue)
+        {
+            query = query.Where(x => x.EmployeeId == request.EmployeeId.Value);
         }
 
         if (request.FromDate.HasValue)
