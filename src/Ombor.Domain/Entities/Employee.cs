@@ -37,4 +37,6 @@ public class Employee : AuditableEntity
     /// Gets or sets the contact info of the employee.
     /// </summary>
     public ContactInfo? ContactInfo { get; set; }
+
+    public virtual ICollection<Payment> Payrolls { get; set; } = [];
 }

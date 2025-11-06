@@ -13,6 +13,9 @@ public class Payment : EntityBase
     public int? PartnerId { get; set; }
     public virtual Partner? Partner { get; set; }
 
+    public int? EmployeeId { get; set; }
+    public virtual Employee? Employee { get; set; }
+
     public virtual ICollection<PaymentComponent> Components { get; set; } = [];
     public virtual ICollection<PaymentAllocation> Allocations { get; set; } = [];
     public virtual ICollection<PaymentAttachment> Attachments { get; set; } = [];
