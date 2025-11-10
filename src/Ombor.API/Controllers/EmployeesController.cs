@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Employee;
+using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Payroll;
 using Ombor.Contracts.Responses.Employee;
 using Ombor.Contracts.Responses.Payment;
@@ -28,6 +29,18 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
         [FromRoute] GetEmployeeByIdRequest request)
     {
         var response = await service.GetByIdAsync(request);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{employeeId:int:min(1)}/payrolls")]
+    [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PaymentDto[]>> GetEmployeePayrollsAsync(
+        [FromRoute] int employeeId)
+    {
+        var request = new GetPaymentsRequest(EmployeeId: employeeId, Type: Contracts.Enums.PaymentType.Payroll);
+        var response = await paymentService.GetAsync(request);
 
         return Ok(response);
     }
