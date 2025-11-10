@@ -29,15 +29,14 @@ internal static class PaymentMappings
     public static void ApplyUpdate(this Payment payment, UpdatePayrollRequest request)
     {
         payment.Notes = request.Notes;
-        payment.Components =
-        [
-            new() {
-                Amount = request.Amount,
-                Currency = request.Currency,
-                ExchangeRate = request.ExchangeRate,
-                Method = Enum.Parse<Domain.Enums.PaymentMethod>(request.Method.ToString(), ignoreCase: true),
-                Payment = null! // Will be set by EF
-            }
-        ];
+        payment.Components.Clear();
+        payment.Components.Add(new()
+        {
+            Amount = request.Amount,
+            Currency = request.Currency,
+            ExchangeRate = request.ExchangeRate,
+            Method = Enum.Parse<Domain.Enums.PaymentMethod>(request.Method.ToString(), ignoreCase: true),
+            Payment = null! // Will be set by EF
+        });
     }
 }

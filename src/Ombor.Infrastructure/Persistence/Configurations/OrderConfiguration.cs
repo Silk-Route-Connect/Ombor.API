@@ -27,6 +27,7 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder
             .ComplexProperty(o => o.DeliveryAddress)
+            .Property(da => da.Latitude)
             .IsRequired();
 
         builder

@@ -166,6 +166,7 @@ internal sealed class PaymentService(
         var payment = await context.Payments
             .Include(x => x.Components)
             .Include(x => x.Allocations)
+            .Include(x => x.Employee)
             .FirstOrDefaultAsync(x => x.Id == request.PaymentId && x.Type == PaymentType.Payroll)
             ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
 
@@ -192,7 +193,9 @@ internal sealed class PaymentService(
     {
         ArgumentNullException.ThrowIfNull(request);
         var payment = await context.Payments
-            .FirstOrDefaultAsync(x => x.Id == request.PaymentId && x.Type == PaymentType.Payroll)
+            .FirstOrDefaultAsync(x => x.Id == request.PaymentId &&
+                x.Type == PaymentType.Payroll &&
+                x.EmployeeId == request.EmployeeId)
             ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
 
         context.Payments.Remove(payment);
