@@ -223,6 +223,7 @@ var assemblies = [
     "classes": [
       { "name": "Ombor.API.Controllers.AuthController", "rp": "Ombor.API_AuthController.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 58, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.CategoriesController", "rp": "Ombor.API_CategoriesController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 111, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.API.Controllers.DashboardController", "rp": "Ombor.API_DashboardController.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 27, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.EmployeesController", "rp": "Ombor.API_EmployeesController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 84, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.InventoriesController", "rp": "Ombor.API_InventoriesController.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 112, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.API.Controllers.PartnersController", "rp": "Ombor.API_PartnersController.html", "cl": 3, "ucl": 0, "cal": 3, "tl": 130, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -238,7 +239,7 @@ var assemblies = [
     "name": "Ombor.Application",
     "classes": [
       { "name": "Ombor.Application.Configurations.JwtSettings", "rp": "Ombor.Application_JwtSettings.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 28, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Extensions.DependencyInjection", "rp": "Ombor.Application_DependencyInjection.html", "cl": 32, "ucl": 0, "cal": 32, "tl": 70, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Extensions.DependencyInjection", "rp": "Ombor.Application_DependencyInjection.html", "cl": 33, "ucl": 0, "cal": 33, "tl": 71, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Extensions.EnumExtensions", "rp": "Ombor.Application_EnumExtensions.html", "cl": 20, "ucl": 17, "cal": 37, "tl": 93, "cb": 22, "tb": 48, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Extensions.FormFileExtensions", "rp": "Ombor.Application_FormFileExtensions.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Extensions.PartnerExtensions", "rp": "Ombor.Application_PartnerExtensions.html", "cl": 3, "ucl": 2, "cal": 5, "tl": 22, "cb": 4, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -255,43 +256,44 @@ var assemblies = [
       { "name": "Ombor.Application.Mappings.TransactionMapper", "rp": "Ombor.Application_TransactionMapper.html", "cl": 31, "ucl": 0, "cal": 31, "tl": 56, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.AuthService", "rp": "Ombor.Application_AuthService.html", "cl": 0, "ucl": 15, "cal": 15, "tl": 196, "cb": 0, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.CategoryService", "rp": "Ombor.Application_CategoryService.html", "cl": 12, "ucl": 3, "cal": 15, "tl": 104, "cb": 12, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.DashboardService", "rp": "Ombor.Application_DashboardService.html", "cl": 0, "ucl": 4, "cal": 4, "tl": 67, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.EmployeeService", "rp": "Ombor.Application_EmployeeService.html", "cl": 13, "ucl": 11, "cal": 24, "tl": 117, "cb": 40, "tb": 90, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.FileService", "rp": "Ombor.Application_FileService.html", "cl": 21, "ucl": 0, "cal": 21, "tl": 197, "cb": 24, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.InventoryService", "rp": "Ombor.Application_InventoryService.html", "cl": 11, "ucl": 3, "cal": 14, "tl": 106, "cb": 12, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.OtpCodeProvider", "rp": "Ombor.Application_OtpCodeProvider.html", "cl": 0, "ucl": 5, "cal": 5, "tl": 45, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Services.PartnerService", "rp": "Ombor.Application_PartnerService.html", "cl": 15, "ucl": 13, "cal": 28, "tl": 142, "cb": 48, "tb": 108, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.PaymentService", "rp": "Ombor.Application_PaymentService.html", "cl": 0, "ucl": 38, "cal": 38, "tl": 328, "cb": 0, "tb": 60, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.ProductService", "rp": "Ombor.Application_ProductService.html", "cl": 32, "ucl": 17, "cal": 49, "tl": 273, "cb": 84, "tb": 174, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.TemplateService", "rp": "Ombor.Application_TemplateService.html", "cl": 13, "ucl": 3, "cal": 16, "tl": 116, "cb": 16, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Services.TransactionService", "rp": "Ombor.Application_TransactionService.html", "cl": 1, "ucl": 43, "cal": 44, "tl": 285, "cb": 0, "tb": 112, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.PaymentService", "rp": "Ombor.Application_PaymentService.html", "cl": 0, "ucl": 38, "cal": 38, "tl": 329, "cb": 0, "tb": 60, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.ProductService", "rp": "Ombor.Application_ProductService.html", "cl": 28, "ucl": 17, "cal": 45, "tl": 269, "cb": 84, "tb": 174, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.TemplateService", "rp": "Ombor.Application_TemplateService.html", "cl": 13, "ucl": 3, "cal": 16, "tl": 114, "cb": 16, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Services.TransactionService", "rp": "Ombor.Application_TransactionService.html", "cl": 1, "ucl": 43, "cal": 44, "tl": 283, "cb": 0, "tb": 112, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Auth.RefreshTokenRequestValidator", "rp": "Ombor.Application_RefreshTokenRequestValidator.html", "cl": 0, "ucl": 7, "cal": 7, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Auth.RegisterRequestValidator", "rp": "Ombor.Application_RegisterRequestValidator.html", "cl": 0, "ucl": 45, "cal": 45, "tl": 61, "cb": 0, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.CreateCategoryRequestValidator", "rp": "Ombor.Application_CreateCategoryRequestValidator.html", "cl": 10, "ucl": 0, "cal": 10, "tl": 20, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.DeleteCategoryRequestValidator", "rp": "Ombor.Application_DeleteCategoryRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Category.GetCategoriesRequestValidator", "rp": "Ombor.Application_GetCategoriesRequestValidator.html", "cl": 14, "ucl": 0, "cal": 14, "tl": 26, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Category.GetCategoriesRequestValidator", "rp": "Ombor.Application_GetCategoriesRequestValidator.html", "cl": 0, "ucl": 14, "cal": 14, "tl": 26, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.GetCategoryByIdRequestValidator", "rp": "Ombor.Application_GetCategoryByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Category.UpdateCategoryRequestValidator", "rp": "Ombor.Application_UpdateCategoryRequestValidator.html", "cl": 13, "ucl": 0, "cal": 13, "tl": 24, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Common.ContactInfoValidator", "rp": "Ombor.Application_ContactInfoValidator.html", "cl": 19, "ucl": 0, "cal": 19, "tl": 31, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Common.PagedRequestValidator<T>", "rp": "Ombor.Application_PagedRequestValidator_1.html", "cl": 10, "ucl": 2, "cal": 12, "tl": 30, "cb": 4, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Common.PagedRequestValidator<T>", "rp": "Ombor.Application_PagedRequestValidator_1.html", "cl": 0, "ucl": 8, "cal": 8, "tl": 18, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Employee.CreateEmployeeRequestValidator", "rp": "Ombor.Application_CreateEmployeeRequestValidator.html", "cl": 26, "ucl": 0, "cal": 26, "tl": 41, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Employee.DeleteEmployeeRequestValidator", "rp": "Ombor.Application_DeleteEmployeeRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Employee.GetEmployeeByIdRequestValidator", "rp": "Ombor.Application_GetEmployeeByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Employee.GetEmployeesRequestValidator", "rp": "Ombor.Application_GetEmployeesRequestValidator.html", "cl": 24, "ucl": 0, "cal": 24, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Employee.GetEmployeesRequestValidator", "rp": "Ombor.Application_GetEmployeesRequestValidator.html", "cl": 0, "ucl": 24, "cal": 24, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Employee.UpdateEmployeeRequestValidator", "rp": "Ombor.Application_UpdateEmployeeRequestValidator.html", "cl": 31, "ucl": 0, "cal": 31, "tl": 47, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Inventory.CreateInventoryRequestValidator", "rp": "Ombor.Application_CreateInventoryRequestValidator.html", "cl": 10, "ucl": 0, "cal": 10, "tl": 20, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Inventory.DeleteInventoryRequestValidator", "rp": "Ombor.Application_DeleteInventoryRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Inventory.GetInventoriesRequestValidator", "rp": "Ombor.Application_GetInventoriesRequestValidator.html", "cl": 12, "ucl": 0, "cal": 12, "tl": 23, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Inventory.GetInventoriesRequestValidator", "rp": "Ombor.Application_GetInventoriesRequestValidator.html", "cl": 0, "ucl": 12, "cal": 12, "tl": 23, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Inventory.GetInventoryByIdRequestValidator", "rp": "Ombor.Application_GetInventoryByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Inventory.UpdateInventoryRequestValidator", "rp": "Ombor.Application_UpdateInventoryRequestValidator.html", "cl": 13, "ucl": 0, "cal": 13, "tl": 24, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Partner.CreatePartnerRequestValidator", "rp": "Ombor.Application_CreatePartnerRequestValidator.html", "cl": 22, "ucl": 0, "cal": 22, "tl": 35, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Partner.DeletePartnerRequestValidator", "rp": "Ombor.Application_DeletePartnerRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Partner.GetPartnerByIdRequestValidator", "rp": "Ombor.Application_GetPartnerByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Partner.GetPartnersRequestValidator", "rp": "Ombor.Application_GetPartnersRequestValidator.html", "cl": 24, "ucl": 0, "cal": 24, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Partner.GetPartnersRequestValidator", "rp": "Ombor.Application_GetPartnersRequestValidator.html", "cl": 0, "ucl": 24, "cal": 24, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Partner.UpdatePartnerRequestValidator", "rp": "Ombor.Application_UpdatePartnerRequestValidator.html", "cl": 24, "ucl": 0, "cal": 24, "tl": 38, "cb": 4, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.CreateProductRequestValidator", "rp": "Ombor.Application_CreateProductRequestValidator.html", "cl": 53, "ucl": 0, "cal": 53, "tl": 76, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.DeleteProductRequestValidator", "rp": "Ombor.Application_DeleteProductRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.GetProductByIdRequestValidator", "rp": "Ombor.Application_GetProductByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 13, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Product.GetProductsRequestValidator", "rp": "Ombor.Application_GetProductsRequestValidator.html", "cl": 49, "ucl": 0, "cal": 49, "tl": 66, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Product.GetProductsRequestValidator", "rp": "Ombor.Application_GetProductsRequestValidator.html", "cl": 0, "ucl": 49, "cal": 49, "tl": 66, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.GetProductTransactionsValidator", "rp": "Ombor.Application_GetProductTransactionsValidator.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 15, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.ProductPackagingValidator", "rp": "Ombor.Application_ProductPackagingValidator.html", "cl": 13, "ucl": 0, "cal": 13, "tl": 24, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Product.UpdateProductRequestValidator", "rp": "Ombor.Application_UpdateProductRequestValidator.html", "cl": 56, "ucl": 0, "cal": 56, "tl": 79, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -299,11 +301,11 @@ var assemblies = [
       { "name": "Ombor.Application.Validators.Template.CreateTemplateRequestValidator", "rp": "Ombor.Application_CreateTemplateRequestValidator.html", "cl": 10, "ucl": 0, "cal": 10, "tl": 20, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Template.DeleteTemplateRequestValidator", "rp": "Ombor.Application_DeleteTemplateRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Template.GetTemplateByIdRequestValidator", "rp": "Ombor.Application_GetTemplateByIdRequestValidator.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.Template.GetTemplatesRequestValidator", "rp": "Ombor.Application_GetTemplatesRequestValidator.html", "cl": 16, "ucl": 0, "cal": 16, "tl": 28, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.Template.GetTemplatesRequestValidator", "rp": "Ombor.Application_GetTemplatesRequestValidator.html", "cl": 0, "ucl": 16, "cal": 16, "tl": 28, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Template.UpdateTemplateRequestValidator", "rp": "Ombor.Application_UpdateTemplateRequestValidator.html", "cl": 13, "ucl": 0, "cal": 13, "tl": 24, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Transaction.CreateTransactionValidator", "rp": "Ombor.Application_CreateTransactionValidator.html", "cl": 23, "ucl": 0, "cal": 23, "tl": 36, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Application.Validators.Transaction.GetTransactionsRequestValidator", "rp": "Ombor.Application_GetTransactionsRequestValidator.html", "cl": 0, "ucl": 34, "cal": 34, "tl": 48, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Application.Validators.ValidationHelpers", "rp": "Ombor.Application_ValidationHelpers.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 22, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Application.Validators.ValidationHelpers", "rp": "Ombor.Application_ValidationHelpers.html", "cl": 1, "ucl": 4, "cal": 5, "tl": 22, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
   {
     "name": "Ombor.Contracts",
@@ -334,7 +336,7 @@ var assemblies = [
   {
     "name": "Ombor.Infrastructure",
     "classes": [
-      { "name": "Ombor.Infrastructure.Extensions.DependencyInjection", "rp": "Ombor.Infrastructure_DependencyInjection.html", "cl": 44, "ucl": 0, "cal": 44, "tl": 88, "cb": 2, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Infrastructure.Extensions.DependencyInjection", "rp": "Ombor.Infrastructure_DependencyInjection.html", "cl": 46, "ucl": 0, "cal": 46, "tl": 92, "cb": 2, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Extensions.PropertyBuilderExtensions", "rp": "Ombor.Infrastructure_PropertyBuilderExtensions.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 9, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Extensions.StringExtensions", "rp": "Ombor.Infrastructure_StringExtensions.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 7, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Helpers.PathHelpers", "rp": "Ombor.Infrastructure_PathHelpers.html", "cl": 25, "ucl": 0, "cal": 25, "tl": 62, "cb": 20, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
@@ -360,13 +362,15 @@ var assemblies = [
       { "name": "Ombor.Infrastructure.Persistence.Configurations.TransactionConfiguration", "rp": "Ombor.Infrastructure_TransactionConfiguration.html", "cl": 41, "ucl": 0, "cal": 41, "tl": 64, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Persistence.Configurations.TransactionLineConfiguration", "rp": "Ombor.Infrastructure_TransactionLineConfiguration.html", "cl": 28, "ucl": 0, "cal": 28, "tl": 47, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Persistence.Configurations.UserConfiguration", "rp": "Ombor.Infrastructure_UserConfiguration.html", "cl": 47, "ucl": 0, "cal": 47, "tl": 70, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Infrastructure.Persistence.Interceptors.AuditInterceptor", "rp": "Ombor.Infrastructure_AuditInterceptor.html", "cl": 0, "ucl": 17, "cal": 17, "tl": 55, "cb": 0, "tb": 24, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.ImageSharpThumbnailer", "rp": "Ombor.Infrastructure_ImageSharpThumbnailer.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 56, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "Ombor.Infrastructure.Services.JwtTokenService", "rp": "Ombor.Infrastructure_JwtTokenService.html", "cl": 0, "ucl": 38, "cal": 38, "tl": 86, "cb": 0, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Infrastructure.Services.JwtTokenService", "rp": "Ombor.Infrastructure_JwtTokenService.html", "cl": 0, "ucl": 39, "cal": 39, "tl": 87, "cb": 0, "tb": 16, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.LocalFilePathProvider", "rp": "Ombor.Infrastructure_LocalFilePathProvider.html", "cl": 9, "ucl": 0, "cal": 9, "tl": 29, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.MemoryCache", "rp": "Ombor.Infrastructure_MemoryCache.html", "cl": 0, "ucl": 7, "cal": 7, "tl": 31, "cb": 0, "tb": 4, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.PasswordHasher", "rp": "Ombor.Infrastructure_PasswordHasher.html", "cl": 0, "ucl": 20, "cal": 20, "tl": 41, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.RedisService", "rp": "Ombor.Infrastructure_RedisService.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 30, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Services.SmsService", "rp": "Ombor.Infrastructure_SmsService.html", "cl": 0, "ucl": 1, "cal": 1, "tl": 63, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "Ombor.Infrastructure.Services.TenantProvider", "rp": "Ombor.Infrastructure_TenantProvider.html", "cl": 0, "ucl": 9, "cal": 9, "tl": 24, "cb": 0, "tb": 20, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "Ombor.Infrastructure.Storage.LocalFileStorage", "rp": "Ombor.Infrastructure_LocalFileStorage.html", "cl": 7, "ucl": 0, "cal": 7, "tl": 52, "cb": 8, "tb": 8, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
   {
@@ -386,13 +390,13 @@ var riskHotspotMetrics = [
 
 var riskHotspots = [
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.ProductService", "reportPath": "Ombor.Application_ProductService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Product>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 174,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.ProductService", "reportPath": "Ombor.Application_ProductService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Product>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 170,
     "metrics": [
       { "value": 3059.93, "exceeded": true },
       { "value": 75, "exceeded": true },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 270,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 268,
     "metrics": [
       { "value": 1980, "exceeded": true },
       { "value": 44, "exceeded": true },
@@ -410,28 +414,40 @@ var riskHotspots = [
       { "value": 41, "exceeded": true },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.PaymentService", "reportPath": "Ombor.Application_PaymentService.html", "methodName": "GetQuery(Ombor.Contracts.Requests.Payment.GetPaymentsRequest)", "methodShortName": "GetQuery(...)", "fileIndex": 0, "line": 259,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.PaymentService", "reportPath": "Ombor.Application_PaymentService.html", "methodName": "GetQuery(Ombor.Contracts.Requests.Payment.GetPaymentsRequest)", "methodShortName": "GetQuery(...)", "fileIndex": 0, "line": 260,
     "metrics": [
       { "value": 342, "exceeded": true },
       { "value": 18, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.PaymentService", "reportPath": "Ombor.Application_PaymentService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Payment>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 319,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.PaymentService", "reportPath": "Ombor.Application_PaymentService.html", "methodName": "ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Payment>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 320,
     "metrics": [
       { "value": 156, "exceeded": true },
       { "value": 12, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "GetQuery(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)", "methodShortName": "GetQuery(...)", "fileIndex": 0, "line": 218,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "GetQuery(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)", "methodShortName": "GetQuery(...)", "fileIndex": 0, "line": 216,
     "metrics": [
       { "value": 156, "exceeded": true },
       { "value": 12, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.ProductService", "reportPath": "Ombor.Application_ProductService.html", "methodName": "System.Linq.IQueryable`1<Ombor.Domain.Entities.Product> Ombor.Application.Services.ProductService::ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Product>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 174,
+    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.TenantProvider", "reportPath": "Ombor.Infrastructure_TenantProvider.html", "methodName": "GetCurrentTenantId()", "methodShortName": "GetCurrentTenantId()", "fileIndex": 0, "line": 10,
+    "metrics": [
+      { "value": 110, "exceeded": true },
+      { "value": 10, "exceeded": false },
+    ]},
+  {
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.ProductService", "reportPath": "Ombor.Application_ProductService.html", "methodName": "System.Linq.IQueryable`1<Ombor.Domain.Entities.Product> Ombor.Application.Services.ProductService::ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Product>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 170,
     "metrics": [
       { "value": 75, "exceeded": true },
       { "value": 75, "exceeded": false },
+    ]},
+  {
+    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Persistence.Interceptors.AuditInterceptor", "reportPath": "Ombor.Infrastructure_AuditInterceptor.html", "methodName": "UpdateEntities(Microsoft.EntityFrameworkCore.DbContext)", "methodShortName": "UpdateEntities(...)", "fileIndex": 0, "line": 33,
+    "metrics": [
+      { "value": 72, "exceeded": true },
+      { "value": 8, "exceeded": false },
     ]},
   {
     "assembly": "Ombor.Application", "class": "Ombor.Application.Services.PartnerService", "reportPath": "Ombor.Application_PartnerService.html", "methodName": "System.Linq.IQueryable`1<Ombor.Domain.Entities.Partner> Ombor.Application.Services.PartnerService::ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.Partner>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 127,
@@ -440,7 +456,7 @@ var riskHotspots = [
       { "value": 50, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord> Ombor.Application.Services.TransactionService::ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 270,
+    "assembly": "Ombor.Application", "class": "Ombor.Application.Services.TransactionService", "reportPath": "Ombor.Application_TransactionService.html", "methodName": "System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord> Ombor.Application.Services.TransactionService::ApplySort(System.Linq.IQueryable`1<Ombor.Domain.Entities.TransactionRecord>,System.String)", "methodShortName": "ApplySort(...)", "fileIndex": 0, "line": 268,
     "metrics": [
       { "value": 44, "exceeded": true },
       { "value": 44, "exceeded": false },
@@ -470,7 +486,7 @@ var riskHotspots = [
       { "value": 4, "exceeded": false },
     ]},
   {
-    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.JwtTokenService", "reportPath": "Ombor.Infrastructure_JwtTokenService.html", "methodName": "GetCredentials()", "methodShortName": "GetCredentials()", "fileIndex": 0, "line": 67,
+    "assembly": "Ombor.Infrastructure", "class": "Ombor.Infrastructure.Services.JwtTokenService", "reportPath": "Ombor.Infrastructure_JwtTokenService.html", "methodName": "GetCredentials()", "methodShortName": "GetCredentials()", "fileIndex": 0, "line": 68,
     "metrics": [
       { "value": 20, "exceeded": true },
       { "value": 4, "exceeded": false },
