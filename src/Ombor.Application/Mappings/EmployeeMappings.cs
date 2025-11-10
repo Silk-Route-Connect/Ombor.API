@@ -20,7 +20,7 @@ internal static class EmployeeMappings
     public static Employee ToEntity(this CreateEmployeeRequest request) =>
         new()
         {
-            FullName = request.FullName,
+            FullName = request.Name,
             Salary = request.Salary,
             Position = request.Position,
             DateOfEmployment = request.DateOfEmployment,
@@ -50,7 +50,7 @@ internal static class EmployeeMappings
 
     public static void ApplyUpdate(this Employee employee, UpdateEmployeeRequest request)
     {
-        employee.FullName = request.FullName;
+        employee.FullName = request.Name;
         employee.Position = request.Position;
         employee.Status = Enum.Parse<EmployeeStatus>(request.Status.ToString());
         employee.Salary = request.Salary;

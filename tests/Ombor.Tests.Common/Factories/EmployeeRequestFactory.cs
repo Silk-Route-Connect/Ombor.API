@@ -12,7 +12,7 @@ public static class EmployeeRequestFactory
 
     public static CreateEmployeeRequest GenerateValidCreateRequest()
         => new(
-            FullName: "Test Employee Name",
+            Name: "Test Employee Name",
             Position: "Test Employee Position",
             Salary: 1_000,
             Status: EmployeeStatus.Active,
@@ -21,7 +21,7 @@ public static class EmployeeRequestFactory
 
     public static CreateEmployeeRequest GenerateInvalidCreateRequest()
         => new(
-            FullName: "",
+            Name: "",
             Position: "",
             Salary: -5_000,
             Status: EmployeeStatus.Active,
@@ -31,7 +31,7 @@ public static class EmployeeRequestFactory
     public static UpdateEmployeeRequest GenerateValidUpdateRequest(int? employeeId = null)
         => new(
             Id: employeeId ?? DefaultEmployeeId,
-            FullName: "Updated Employee Name",
+            Name: "Updated Employee Name",
             Position: "Updated Emplloyee Position",
             Salary: 50_000,
             Status: EmployeeStatus.OnVacation,
@@ -41,7 +41,7 @@ public static class EmployeeRequestFactory
     public static UpdateEmployeeRequest GenerateInvalidUpdateRequest(int? employeeId = null)
         => new(
             Id: employeeId ?? DefaultEmployeeId,
-            FullName: "",
+            Name: "",
             Position: "",
             Salary: -5_000,
             Status: EmployeeStatus.Active,
