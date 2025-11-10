@@ -75,8 +75,10 @@ public class AuthController(
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            logger.LogWarning("No refresh token found. Cookies: [{Cookies}]",
-                string.Join(", ", Request.Cookies.Select(c => $"{c.Key}={c.Value?.Substring(0, Math.Min(10, c.Value.Length))}...")));
+            logger.LogWarning(
+                "No refresh token found. Cookie keys present: [{Cookies}]",
+                string.Join(", ", Request.Cookies.Keys));
+
             return Unauthorized(new { message = "Refresh token is required" });
         }
 
