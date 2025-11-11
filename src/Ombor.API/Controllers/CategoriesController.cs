@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Responses.Category;
@@ -9,6 +10,7 @@ namespace Ombor.API.Controllers;
 /// Endpoints to maanage product categories.
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/categories")]
 public sealed class CategoriesController(ICategoryService categoryService) : ControllerBase
 {

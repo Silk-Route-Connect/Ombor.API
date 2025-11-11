@@ -43,7 +43,8 @@ internal sealed class AuthService(
             "Inventory Management"
         );
 
-        await smsService.SendMessageAsync(message);
+        // disable for testing
+        // await smsService.SendMessageAsync(message);
 
         return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
     }
@@ -54,7 +55,7 @@ internal sealed class AuthService(
 
         var otpCode = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
 
-        if (!TryVerifyOtp(request, otpCode!, out var response))
+        if (!TryVerifyOtp(request, otpCode, out var response))
         {
             return response;
         }
@@ -63,7 +64,7 @@ internal sealed class AuthService(
 
         if (registerRequest is null)
         {
-            return new VerifyOtpResponse(false, "Registration request not found or has expired");
+            return new VerifyOtpResponse();
         }
 
         var organization = await organizationService.CreateAsync(registerRequest.OrganizationName);
@@ -90,7 +91,12 @@ internal sealed class AuthService(
         await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
         await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
 
-        return new VerifyOtpResponse(true, "Phone number successfully verified");
+        var accessToken = tokenService.GenerateAccessToken(newUser);
+        var refreshToken = tokenService.GenerateRefreshToken();
+
+        await SaveRefreshTokenAsync(newUser, refreshToken);
+
+        return new VerifyOtpResponse(refreshToken, accessToken);
     }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
@@ -178,16 +184,35 @@ internal sealed class AuthService(
         }
     }
 
-    private static bool TryVerifyOtp(SmsVerificationRequest request, OtpCode otpData,
+    public async Task RevokeRefreshTokenAsync(RevokeRefreshTokenRequest request)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(request.RefreshToken);
+
+        var entity = await context.RefreshTokens
+            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken);
+
+        if (entity is null)
+        {
+            return;
+        }
+
+        if (!entity.IsRevoked)
+        {
+            entity.IsRevoked = true;
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private static bool TryVerifyOtp(
+        SmsVerificationRequest request,
+        OtpCode? otpData,
         [NotNullWhen(false)] out VerifyOtpResponse? failResponse)
     {
         failResponse = otpData switch
         {
-            null => new VerifyOtpResponse(false, "OTP expired or not found"),
-            { ExpiredAt: var exp } when DateTime.UtcNow > exp
-                => new VerifyOtpResponse(false, "OTP expired"),
-            { Code: var code } when code != request.Code
-                => new VerifyOtpResponse(false, "The code is incorrect."),
+            null => new VerifyOtpResponse(),
+            { ExpiredAt: var exp } when DateTime.UtcNow > exp => new VerifyOtpResponse(),
+            { Code: var code } when code != request.Code => new VerifyOtpResponse(),
             _ => null
         };
 

@@ -40,7 +40,7 @@ public class UpdateEmployeeTests(
 
         // Assert
         Assert.NotNull(response);
-        Assert.Contains(nameof(request.FullName), response.Errors.Keys);
+        Assert.Contains(nameof(request.Name), response.Errors.Keys);
     }
 
     [Fact]

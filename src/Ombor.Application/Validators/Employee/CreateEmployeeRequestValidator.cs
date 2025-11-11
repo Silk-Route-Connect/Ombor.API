@@ -8,7 +8,7 @@ public sealed class CreateEmployeeRequestValidator : AbstractValidator<CreateEmp
 {
     public CreateEmployeeRequestValidator()
     {
-        RuleFor(x => x.FullName)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Full name is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
