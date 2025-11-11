@@ -29,13 +29,9 @@ try
 
     app.UseForwardedHeaders();
 
-    app.UseHttpsRedirection();
-
     app.UseRouting();
 
     app.UseCors(Ombor.API.Extensions.DependencyInjection.CorsPolicyName);
-
-    // app.UseHttpsRedirection();
 
     app.UseAuthentication();
     app.UseAuthorization();
