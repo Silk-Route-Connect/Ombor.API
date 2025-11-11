@@ -19,7 +19,7 @@ public class PaymentsController(IPaymentService paymentService) : ControllerBase
     }
 
     [HttpGet("{id:int:min(1)}")]
-    public async Task<ActionResult<PaymentDto>> GetAsync(int id)
+    public async Task<ActionResult<PaymentDto>> GetPaymentByIdAsync(int id)
     {
         throw new NotImplementedException();
     }

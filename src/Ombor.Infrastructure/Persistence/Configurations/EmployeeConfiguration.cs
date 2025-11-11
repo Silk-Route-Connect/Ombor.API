@@ -14,6 +14,13 @@ internal sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         builder.HasKey(e => e.Id);
 
         builder
+            .HasMany(e => e.Payrolls)
+            .WithOne(p => p.Employee)
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
             .Property(e => e.FullName)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();

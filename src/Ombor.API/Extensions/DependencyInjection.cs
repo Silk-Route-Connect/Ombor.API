@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
@@ -116,10 +117,19 @@ internal static class DependencyInjection
             options.AddPolicy(CorsPolicyName, builder =>
             {
                 builder
+                    //.AllowAnyOrigin()
                     .WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithExposedHeaders("Set-Cookie")
+                    .SetPreflightMaxAge(TimeSpan.FromHours(1));
             });
+        });
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         });
 
         return services;

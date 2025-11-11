@@ -43,4 +43,9 @@ public class Partner : EntityBase
     /// Gets or sets the payments of the partner.
     /// </summary>
     public virtual ICollection<Payment> Payments { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the orders of the partner.
+    /// </summary>
+    public virtual ICollection<Order> Orders { get; set; } = [];
 }

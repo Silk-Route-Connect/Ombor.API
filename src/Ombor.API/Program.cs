@@ -27,6 +27,8 @@ try
 
     app.UseExceptionHandler(_ => { });
 
+    app.UseForwardedHeaders();
+
     app.UseHttpsRedirection();
 
     app.UseRouting();

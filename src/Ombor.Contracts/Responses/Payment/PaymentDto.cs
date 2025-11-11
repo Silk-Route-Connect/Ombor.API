@@ -4,6 +4,8 @@ public sealed record PaymentDto(
     int Id,
     int? PartnerId,
     string? PartnerName,
+    int? EmployeeId,
+    string? EmployeeName,
     string? Notes,
     decimal Amount,
     DateTimeOffset Date,

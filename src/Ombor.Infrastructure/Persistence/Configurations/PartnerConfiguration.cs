@@ -21,6 +21,13 @@ internal sealed class PartnerConfiguration : IEntityTypeConfiguration<Partner>
             .IsRequired();
 
         builder
+            .HasMany(partner => partner.Payments)
+            .WithOne(payment => payment.Partner)
+            .HasForeignKey(payment => payment.PartnerId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
             .HasIndex(p => p.Name)
             .IsUnique();
 
