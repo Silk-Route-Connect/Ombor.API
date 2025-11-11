@@ -15,24 +15,31 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.HasMany(o => o.Lines)
             .WithOne(ol => ol.Order)
-            .HasForeignKey(o => o.OrderId)
+            .HasForeignKey(ol => ol.OrderId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.HasOne(o => o.Customer)
             .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
         builder
-            .ComplexProperty(o => o.DeliveryAddress)
-            .Property(da => da.Latitude)
-            .IsRequired();
+            .ComplexProperty(o => o.DeliveryAddress, addressBuilder =>
+            {
+                addressBuilder.Property(da => da.Latitude)
+                    .HasPrecision(9, 6)
+                    .IsRequired();
+
+                addressBuilder.Property(da => da.Longitude)
+                    .HasPrecision(9, 6)
+                    .IsRequired();
+            });
 
         builder
             .Property(o => o.OrderNumber)
-            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasMaxLength(ConfigurationConstants.OrderNumberLength)
             .IsRequired();
 
         builder

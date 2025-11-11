@@ -142,8 +142,9 @@ internal sealed class PaymentService(
         context.Payments.Add(entity);
         await context.SaveChangesAsync();
 
-        entity.Employee = await context.Employees
-            .FirstOrDefaultAsync(e => e.Id == entity.EmployeeId);
+        entity = await context.Payments
+            .Include(x => x.Employee)
+            .FirstAsync(x => x.Id == entity.Id);
 
         return new PaymentDto(
             entity.Id,
@@ -167,7 +168,10 @@ internal sealed class PaymentService(
             .Include(x => x.Components)
             .Include(x => x.Allocations)
             .Include(x => x.Employee)
-            .FirstOrDefaultAsync(x => x.Id == request.PaymentId && x.Type == PaymentType.Payroll)
+            .FirstOrDefaultAsync(
+                x => x.Id == request.PaymentId &&
+                x.EmployeeId == request.EmployeeId &&
+                x.Type == PaymentType.Payroll)
             ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
 
         payment.ApplyUpdate(request);
@@ -193,7 +197,8 @@ internal sealed class PaymentService(
     {
         ArgumentNullException.ThrowIfNull(request);
         var payment = await context.Payments
-            .FirstOrDefaultAsync(x => x.Id == request.PaymentId &&
+            .FirstOrDefaultAsync(
+                x => x.Id == request.PaymentId &&
                 x.Type == PaymentType.Payroll &&
                 x.EmployeeId == request.EmployeeId)
             ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
