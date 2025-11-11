@@ -185,7 +185,7 @@ internal sealed class PaymentService(
             payment.EmployeeId,
             payment.Employee?.FullName,
             payment.Notes,
-            payment.Allocations.Sum(a => a.Amount),
+            payment.Components.Sum(a => a.Amount * a.ExchangeRate),
             payment.DateUtc,
             payment.Direction.ToString(),
             payment.Type.ToString(),
