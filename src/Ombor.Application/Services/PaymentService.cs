@@ -133,7 +133,7 @@ internal sealed class PaymentService(
                 [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
     }
 
-    public async Task<PaymentDto?> CreateAsync(CreatePayrollRequest request)
+    public async Task<PaymentDto> CreateAsync(CreatePayrollRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
