@@ -175,6 +175,128 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.ToTable("InventoryItem", (string)null);
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("DateUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ComplexProperty<Dictionary<string, object>>("DeliveryAddress", "Ombor.Domain.Entities.Order.DeliveryAddress#Address", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<decimal>("Latitude")
+                                .HasPrecision(9, 6)
+                                .HasColumnType("decimal(9,6)");
+
+                            b1.Property<decimal>("Longitude")
+                                .HasPrecision(9, 6)
+                                .HasColumnType("decimal(9,6)");
+                        });
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Order", (string)null);
+                });
+
+            modelBuilder.Entity("Ombor.Domain.Entities.OrderLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderLine", (string)null);
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.Organization", b =>
                 {
                     b.Property<int>("Id")
@@ -305,6 +427,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -313,7 +438,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("PartnerId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
@@ -322,6 +446,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("PartnerId");
 
@@ -1000,13 +1126,49 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.Order", b =>
+                {
+                    b.HasOne("Ombor.Domain.Entities.Partner", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Ombor.Domain.Entities.OrderLine", b =>
+                {
+                    b.HasOne("Ombor.Domain.Entities.Order", "Order")
+                        .WithMany("Lines")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ombor.Domain.Entities.Product", "Product")
+                        .WithMany("OrderLines")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.Payment", b =>
                 {
+                    b.HasOne("Ombor.Domain.Entities.Employee", "Employee")
+                        .WithMany("Payrolls")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Ombor.Domain.Entities.Partner", "Partner")
                         .WithMany("Payments")
                         .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Partner");
                 });
@@ -1201,9 +1363,19 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("Ombor.Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("Payrolls");
+                });
+
             modelBuilder.Entity("Ombor.Domain.Entities.Inventory", b =>
                 {
                     b.Navigation("InventoryItems");
+                });
+
+            modelBuilder.Entity("Ombor.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("Lines");
                 });
 
             modelBuilder.Entity("Ombor.Domain.Entities.Organization", b =>
@@ -1215,6 +1387,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Ombor.Domain.Entities.Partner", b =>
                 {
+                    b.Navigation("Orders");
+
                     b.Navigation("Payments");
 
                     b.Navigation("Templates");
@@ -1238,6 +1412,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Navigation("InventoryItems");
 
                     b.Navigation("Lines");
+
+                    b.Navigation("OrderLines");
 
                     b.Navigation("TemplateItems");
                 });

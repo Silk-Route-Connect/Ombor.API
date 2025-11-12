@@ -5,6 +5,7 @@ namespace Ombor.Contracts.Requests.Payment;
 
 public sealed record GetPaymentsRequest(
     int? PartnerId = null,
+    int? EmployeeId = null,
     int? TransactionId = null,
     decimal? MinAmount = null,
     decimal? MaxAmount = null,

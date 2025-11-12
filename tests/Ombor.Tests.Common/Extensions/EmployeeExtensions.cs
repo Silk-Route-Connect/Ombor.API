@@ -6,7 +6,7 @@ namespace Ombor.Tests.Common.Extensions;
 public static class EmployeeExtensions
 {
     public static bool IsEquivalent(this Employee employee, CreateEmployeeRequest request) =>
-        employee.FullName == request.FullName &&
+        employee.FullName == request.Name &&
         employee.Position == request.Position &&
         employee.Salary == request.Salary &&
         employee.DateOfEmployment == request.DateOfEmployment &&

@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();
@@ -63,6 +64,11 @@ public static class DependencyInjection
 
         services.AddOptions<SmsSettings>()
             .Bind(configuration.GetSection(SmsSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<CookieSettings>()
+            .Bind(configuration.GetSection(CookieSettings.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

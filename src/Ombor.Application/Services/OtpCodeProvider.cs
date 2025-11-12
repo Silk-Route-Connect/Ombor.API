@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Ombor.Application.Interfaces;
+﻿using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Domain.Enums;
@@ -13,7 +12,8 @@ internal class OtpCodeProvider(IRedisService redisService) : IOtpCodeProvider
 
     public async Task<string> GenerateOtpAsync(string phoneNumber, OtpPurpose purpose, int lifetimeInMinutes)
     {
-        var code = RandomNumberGenerator.GetInt32(1000, 9999).ToString();
+        // TODO: Uncomment the logic for code generation when released to production!
+        var code = "1234"; // RandomNumberGenerator.GetInt32(1000, 9999).ToString();
 
         var ttl = TimeSpan.FromMinutes(lifetimeInMinutes);
         var otpData = new OtpCode(

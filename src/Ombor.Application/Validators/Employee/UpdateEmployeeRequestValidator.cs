@@ -12,7 +12,7 @@ public sealed class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmp
             .GreaterThan(0)
             .WithMessage("Invalid employee ID.");
 
-        RuleFor(x => x.FullName)
+        RuleFor(x => x.Name)
             .NotEmpty()
             .WithMessage("Full name is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
