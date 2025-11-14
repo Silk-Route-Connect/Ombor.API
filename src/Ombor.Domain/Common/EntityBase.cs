@@ -9,4 +9,5 @@ public abstract class EntityBase
     /// Gets or sets the unique identifier for the entity.
     /// </summary>
     public int Id { get; set; }
+    public int OrganizationId { get; set; }
 }
