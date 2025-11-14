@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Contracts.Responses.Transaction;
@@ -20,8 +21,8 @@ public interface IProductService
     /// <see cref="GetProductsRequest.MinPrice"/>,
     /// <see cref="GetProductsRequest.MaxPrice"/>.
     /// </param>
-    /// <returns>An array of <see cref="ProductDto"/> matching the criteria.</returns>
-    Task<ProductDto[]> GetAsync(GetProductsRequest request);
+    /// <returns>A paged list of <see cref="ProductDto"/> matching the criteria.</returns>
+    Task<PagedList<ProductDto>> GetAsync(GetProductsRequest request);
 
     /// <summary>
     /// Retrieves a single product by its identifier.

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
@@ -9,7 +10,7 @@ namespace Ombor.Tests.Integration.Helpers.ResponseValidators;
 
 public sealed class TemplateValidator(IApplicationDbContext context)
 {
-    public async Task ValidateGetAsync(GetTemplatesRequest request, TemplateDto[] response)
+    public async Task ValidateGetAsync(GetTemplatesRequest request, PagedList<TemplateDto> response)
     {
         var expectedTemplates = await GetTemplatesAsync(request);
 
@@ -81,6 +82,8 @@ public sealed class TemplateValidator(IApplicationDbContext context)
 
         return await query
             .OrderBy(x => x.Name)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
     }
 }

@@ -83,6 +83,10 @@ public static class DependencyInjection
 
         services.AddHttpClient<ISmsService, SmsService>();
 
+        services.AddScoped<ITenantProvider, TenantProvider>();
+
+        services.AddHttpContextAccessor();
+
         return services;
     }
 }

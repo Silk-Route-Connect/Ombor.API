@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
+using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 
@@ -10,10 +12,12 @@ namespace Ombor.API.Controllers;
 public class TemplatesController(ITemplateService templateService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<TemplateDto[]>> GetAsync(
+    public async Task<ActionResult<PagedList<TemplateDto>>> GetAsync(
         [FromQuery] GetTemplatesRequest request)
     {
         var response = await templateService.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

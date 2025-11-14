@@ -1,3 +1,4 @@
+﻿using System.Text.Json;
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
@@ -18,13 +19,15 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
     /// Returns a list of categories, optionally filtered by a search term.
     /// </summary>
     /// <param name="request">Paging, filtering and sorting parameters.</param>
-    /// <returns>Array of <see cref="CategoryDto"/>.</returns>
+    /// <returns>Paged list of <see cref="CategoryDto"/>.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(CategoryDto[]), StatusCodes.Status200OK)]
     public async Task<ActionResult<CategoryDto[]>> GetAsync(
         [FromQuery] GetCategoriesRequest request)
     {
         var response = await categoryService.GetAsync(request);
+
+        Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(response.MetaData));
 
         return Ok(response);
     }

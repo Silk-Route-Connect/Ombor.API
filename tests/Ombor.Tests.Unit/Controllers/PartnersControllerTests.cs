@@ -1,4 +1,5 @@
 using AutoFixture;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Ombor.API.Controllers;
@@ -12,20 +13,26 @@ namespace Ombor.Tests.Unit.Controllers;
 public sealed class PartnersControllerTests : ControllerTestsBase
 {
     private readonly Mock<IPartnerService> _mockService;
+    private readonly Mock<IPaymentService> _mockPaymentService;
     private readonly PartnersController _controller;
 
     public PartnersControllerTests()
     {
         _mockService = new Mock<IPartnerService>(MockBehavior.Strict);
-        _controller = new PartnersController(_mockService.Object, null);
+        _mockPaymentService = new Mock<IPaymentService>(MockBehavior.Strict);
+        _controller = new PartnersController(_mockService.Object, _mockPaymentService.Object);
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext()
+        };
     }
 
     [Fact]
-    public async Task GetAsync_ShouldReturnOkResult_WhenpartnersExist()
+    public async Task GetAsync_ShouldReturnOkResult_WhenPartnersExist()
     {
         // Arrange
         var request = _fixture.Create<GetPartnersRequest>();
-        var expected = _fixture.CreateArray<PartnerDto>();
+        var expected = _fixture.CreatePagedList<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);
@@ -46,7 +53,7 @@ public sealed class PartnersControllerTests : ControllerTestsBase
     {
         // Arrange
         var request = _fixture.Create<GetPartnersRequest>();
-        var expected = Array.Empty<PartnerDto>();
+        var expected = _fixture.CreateEmptyPagedList<PartnerDto>();
 
         _mockService.Setup(mock => mock.GetAsync(request))
             .ReturnsAsync(expected);

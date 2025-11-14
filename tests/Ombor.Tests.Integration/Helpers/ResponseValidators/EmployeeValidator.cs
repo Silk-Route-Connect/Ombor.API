@@ -75,7 +75,9 @@ public sealed class EmployeeValidator(IApplicationDbContext context)
         }
 
         return await query
-            .OrderBy(x => x.FullName)
+            .OrderByDescending(x => x.DateOfEmployment)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToArrayAsync();
     }
 }
