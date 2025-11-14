@@ -14,13 +14,15 @@ internal class DashboardService(
     public async Task<List<DailySalesDto>> GetDailyReportsAsync()
     {
         var today = DateTimeOffset.UtcNow;
+        var startOfDay = new DateTimeOffset(today.UtcDateTime.Date, TimeSpan.Zero);
+        var endOfDay = startOfDay.AddDays(1);
 
         var query = GetQuery();
         var transactions = query
             .Include(t => t.Partner)
-            .Where(t => t.DateUtc == today);
+            .Where(t => t.DateUtc >= startOfDay && t.DateUtc < endOfDay);
 
-        var salesdto = await transactions
+        var salesDto = await transactions
             .Select(t => new DailySalesDto
             (
                 t.Id,
@@ -30,17 +32,17 @@ internal class DashboardService(
                 t.DateUtc.DateTime))
             .ToListAsync();
 
-        return salesdto;
+        return salesDto;
     }
 
     public async Task<List<WeeklySalesDto>> GetWeeklyReportsAsync()
     {
-        var endDate = DateTimeOffset.UtcNow;
-        var startDate = endDate.AddDays(-6);
+        var endDate = new DateTimeOffset(DateTime.UtcNow.Date.AddDays(1), TimeSpan.Zero);
+        var startDate = endDate.AddDays(-7);
 
         var query = GetQuery();
         var transactions = await query
-            .Where(t => t.DateUtc >= startDate && t.DateUtc <= endDate)
+            .Where(t => t.DateUtc >= startDate && t.DateUtc < endDate)
             .AsNoTracking()
             .ToListAsync();
 
@@ -50,7 +52,7 @@ internal class DashboardService(
                  x.Count(),
                  x.Sum(t => t.TotalDue),
                  x.Key))
-             .OrderBy(r => r.DateTime)
+             .OrderBy(r => r.Date)
              .ToList();
 
         return weeklySales;

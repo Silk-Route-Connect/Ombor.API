@@ -3,4 +3,4 @@
 public sealed record WeeklySalesDto(
     int SalesCount,
     decimal Total,
-    DateTime DateTime);
+    DateTime Date);
