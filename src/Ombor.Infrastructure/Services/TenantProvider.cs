@@ -11,13 +11,13 @@ internal class TenantProvider(IHttpContextAccessor httpContext) : ITenantProvide
             .FirstOrDefault(c => c.Type == "organizationId")?.Value;
 
         if (string.IsNullOrEmpty(claim))
-            throw new Exception("Tenant (organizationId) claim not found in current user context.");
+            throw new InvalidOperationException("Tenant (organizationId) claim not found in current user context.");
 
         if (!int.TryParse(claim, out var organizationId))
-            throw new Exception("Invalid tenant (organizationId) format.");
+            throw new FormatException("Invalid tenant (organizationId) format.");
 
         if (organizationId == 0)
-            throw new Exception("Tenant (organizationId) cannot be 0.");
+            throw new InvalidOperationException("Tenant (organizationId) cannot be 0.");
 
         return organizationId;
     }

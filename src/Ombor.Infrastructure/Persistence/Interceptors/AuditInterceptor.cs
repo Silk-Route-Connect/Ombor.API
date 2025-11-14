@@ -48,6 +48,7 @@ internal class AuditInterceptor(ITenantProvider tenantProvider) : SaveChangesInt
             if (entry.State == EntityState.Modified)
             {
                 entry.Property(x => x.CreatedAt).IsModified = false;
+                entry.Property(x => x.OrganizationId).IsModified = false;
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
             }
         }
