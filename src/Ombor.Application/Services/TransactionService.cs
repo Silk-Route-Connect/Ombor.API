@@ -215,10 +215,13 @@ internal sealed class TransactionService(
             query = query.Where(x => x.Status == domainStatus);
         }
 
-        if (request.Type.HasValue)
+        if (request.Types is { Count: > 0 })
         {
-            var domainTye = request.Type.Value.ToDomainType();
-            query = query.Where(x => x.Type == domainTye);
+            var domainTypes = request.Types
+                .Select(x => x.ToDomainType())
+                .ToList();
+
+            query = query.Where(x => domainTypes.Contains(x.Type));
         }
 
         return query;
