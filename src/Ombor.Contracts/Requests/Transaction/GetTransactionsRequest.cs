@@ -6,4 +6,4 @@ public sealed record GetTransactionsRequest(
     string? SearchTerm,
     int? PartnerId,
     TransactionStatus? Status,
-    TransactionType? Type);
+    List<TransactionType>? Types);
