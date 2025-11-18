@@ -23,6 +23,7 @@ public static class InventoryMappings
         new(
             Id: inventoryItem.Id,
             Quantity: inventoryItem.Quantity,
+            ProductName: inventoryItem.Product.Name,
             InventoryId: inventoryItem.InventoryId,
             ProductId: inventoryItem.ProductId);
 
