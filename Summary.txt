@@ -1,22 +1,22 @@
 Summary
-  Generated on: 11/16/2025 - 13:14:40
-  Coverage date: 11/16/2025 - 13:13:43 - 11/16/2025 - 13:14:38
+  Generated on: 11/18/2025 - 07:37:40
+  Coverage date: 11/18/2025 - 07:36:49 - 11/18/2025 - 07:37:38
   Parser: MultiReport (2x Cobertura, 2x OpenCover)
   Assemblies: 6
   Classes: 141
   Files: 140
-  Line coverage: 75.9%
-  Covered lines: 1851
-  Uncovered lines: 586
-  Coverable lines: 2437
-  Total lines: 7217
-  Branch coverage: 50.7% (260 of 512)
+  Line coverage: 76.0%
+  Covered lines: 1852
+  Uncovered lines: 584
+  Coverable lines: 2436
+  Total lines: 7234
+  Branch coverage: 51.1% (260 of 508)
   Covered branches: 260
-  Total branches: 512
+  Total branches: 508
   Method coverage: 63.7% (330 of 518)
   Covered methods: 330
   Total methods: 518
-  Tag: 278_19406129837
+  Tag: 279_19457960243
 
 Ombor.API                                                                          63.9%
   Ombor.API.Controllers.AuthController                                              0.0%
@@ -34,7 +34,7 @@ Ombor.API                                                                       
   Ombor.API.Extensions.StartupExtensions                                           90.9%
   Ombor.API.Filters.EnumSchemaFilter                                                0.0%
 
-Ombor.Application                                                                  70.0%
+Ombor.Application                                                                  70.2%
   Ombor.Application.Configurations.JwtSettings                                    100.0%
   Ombor.Application.Extensions.DependencyInjection                                100.0%
   Ombor.Application.Extensions.EnumExtensions                                      50.0%
@@ -63,7 +63,7 @@ Ombor.Application                                                               
   Ombor.Application.Services.PaymentService                                         0.0%
   Ombor.Application.Services.ProductService                                       100.0%
   Ombor.Application.Services.TemplateService                                      100.0%
-  Ombor.Application.Services.TransactionService                                     3.0%
+  Ombor.Application.Services.TransactionService                                     3.2%
   Ombor.Application.Validators.Auth.RefreshTokenRequestValidator                    0.0%
   Ombor.Application.Validators.Auth.RegisterRequestValidator                        0.0%
   Ombor.Application.Validators.Category.CreateCategoryRequestValidator            100.0%

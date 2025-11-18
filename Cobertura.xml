@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.7595404185473943" branch-rate="0.5078125" lines-covered="1851" lines-valid="2437" branches-covered="260" branches-valid="512" complexity="868" version="0" timestamp="1763298880">
+<coverage line-rate="0.7602627257799671" branch-rate="0.5118110236220472" lines-covered="1852" lines-valid="2436" branches-covered="260" branches-valid="508" complexity="864" version="0" timestamp="1763451460">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -234,17 +234,17 @@
           <methods>
             <method name=".ctor" signature="(Ombor.Application.Interfaces.IInventoryService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="13" hits="50" branch="false" />
+                <line number="15" hits="50" branch="false" />
               </lines>
             </method>
             <method name=".ctor" signature="(Ombor.Application.Interfaces.IInventoryService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="13" hits="50" branch="false" />
+                <line number="15" hits="50" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="13" hits="50" branch="false" />
+            <line number="15" hits="50" branch="false" />
           </lines>
         </class>
         <class name="Ombor.API.Controllers.OrdersController" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.API/Controllers/OrdersController.cs" line-rate="0" branch-rate="1" complexity="2">
@@ -802,7 +802,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.7008106116433309" branch-rate="0.5490196078431373" complexity="576">
+    <package name="Ombor.Application" line-rate="0.7020648967551623" branch-rate="0.5544554455445545" complexity="572">
       <classes>
         <class name="Ombor.Application.Configurations.JwtSettings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Configurations/JwtSettings.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
@@ -1750,9 +1750,9 @@
         </class>
         <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
           <methods>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1769,53 +1769,54 @@
                 <line number="25" hits="1020" branch="false" />
                 <line number="26" hits="1020" branch="false" />
                 <line number="27" hits="1020" branch="false" />
+                <line number="28" hits="1020" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="30" hits="6" branch="false" />
                 <line number="31" hits="6" branch="false" />
                 <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
                 <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="39" hits="6" branch="true" condition-coverage="100% (4/4)" />
-                <line number="40" hits="6" branch="false" />
+                <line number="40" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="41" hits="6" branch="false" />
-                <line number="43" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
-                <line number="53" hits="6" branch="false" />
+                <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="54" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
                 <line number="58" hits="6" branch="false" />
                 <line number="59" hits="6" branch="false" />
                 <line number="60" hits="6" branch="false" />
+                <line number="61" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Inventory,Ombor.Contracts.Requests.Inventory.UpdateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="65" hits="6" branch="false" />
                 <line number="66" hits="6" branch="false" />
                 <line number="67" hits="6" branch="false" />
                 <line number="68" hits="6" branch="false" />
+                <line number="69" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+                <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
                 <line number="12" hits="232" branch="false" />
                 <line number="13" hits="232" branch="false" />
                 <line number="15" hits="232" branch="false" />
@@ -1832,53 +1833,54 @@
                 <line number="25" hits="1020" branch="false" />
                 <line number="26" hits="1020" branch="false" />
                 <line number="27" hits="1020" branch="false" />
+                <line number="28" hits="1020" branch="false" />
               </lines>
             </method>
             <method name="ToEntity" signature="(Ombor.Contracts.Requests.Inventory.CreateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="30" hits="6" branch="false" />
                 <line number="31" hits="6" branch="false" />
                 <line number="32" hits="6" branch="false" />
                 <line number="33" hits="6" branch="false" />
                 <line number="34" hits="6" branch="false" />
                 <line number="35" hits="6" branch="false" />
+                <line number="36" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ToCreateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="39" hits="6" branch="true" condition-coverage="100% (4/4)" />
-                <line number="40" hits="6" branch="false" />
+                <line number="40" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="41" hits="6" branch="false" />
-                <line number="43" hits="6" branch="false" />
+                <line number="42" hits="6" branch="false" />
                 <line number="44" hits="6" branch="false" />
                 <line number="45" hits="6" branch="false" />
                 <line number="46" hits="6" branch="false" />
                 <line number="47" hits="6" branch="false" />
+                <line number="48" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
               <lines>
-                <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
-                <line number="53" hits="6" branch="false" />
+                <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
                 <line number="54" hits="6" branch="false" />
-                <line number="56" hits="6" branch="false" />
+                <line number="55" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
                 <line number="58" hits="6" branch="false" />
                 <line number="59" hits="6" branch="false" />
                 <line number="60" hits="6" branch="false" />
+                <line number="61" hits="6" branch="false" />
               </lines>
             </method>
             <method name="ApplyUpdate" signature="(Ombor.Domain.Entities.Inventory,Ombor.Contracts.Requests.Inventory.UpdateInventoryRequest)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="65" hits="6" branch="false" />
                 <line number="66" hits="6" branch="false" />
                 <line number="67" hits="6" branch="false" />
                 <line number="68" hits="6" branch="false" />
+                <line number="69" hits="6" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="11" hits="232" branch="true" condition-coverage="100% (4/4)" />
+            <line number="11" hits="232" branch="true" condition-coverage="50% (2/4)" />
             <line number="12" hits="232" branch="false" />
             <line number="13" hits="232" branch="false" />
             <line number="15" hits="232" branch="false" />
@@ -1891,32 +1893,33 @@
             <line number="25" hits="1020" branch="false" />
             <line number="26" hits="1020" branch="false" />
             <line number="27" hits="1020" branch="false" />
-            <line number="30" hits="6" branch="false" />
+            <line number="28" hits="1020" branch="false" />
             <line number="31" hits="6" branch="false" />
             <line number="32" hits="6" branch="false" />
             <line number="33" hits="6" branch="false" />
             <line number="34" hits="6" branch="false" />
             <line number="35" hits="6" branch="false" />
-            <line number="39" hits="6" branch="true" condition-coverage="100% (4/4)" />
-            <line number="40" hits="6" branch="false" />
+            <line number="36" hits="6" branch="false" />
+            <line number="40" hits="6" branch="true" condition-coverage="100% (4/4)" />
             <line number="41" hits="6" branch="false" />
-            <line number="43" hits="6" branch="false" />
+            <line number="42" hits="6" branch="false" />
             <line number="44" hits="6" branch="false" />
             <line number="45" hits="6" branch="false" />
             <line number="46" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
-            <line number="52" hits="6" branch="true" condition-coverage="50% (2/4)" />
-            <line number="53" hits="6" branch="false" />
+            <line number="48" hits="6" branch="false" />
+            <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
             <line number="54" hits="6" branch="false" />
-            <line number="56" hits="6" branch="false" />
+            <line number="55" hits="6" branch="false" />
             <line number="57" hits="6" branch="false" />
             <line number="58" hits="6" branch="false" />
             <line number="59" hits="6" branch="false" />
             <line number="60" hits="6" branch="false" />
-            <line number="65" hits="6" branch="false" />
+            <line number="61" hits="6" branch="false" />
             <line number="66" hits="6" branch="false" />
             <line number="67" hits="6" branch="false" />
             <line number="68" hits="6" branch="false" />
+            <line number="69" hits="6" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Mappings.OrderMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/OrderMappings.cs" line-rate="0" branch-rate="0" complexity="28">
@@ -3981,7 +3984,7 @@
             <line number="89" hits="10" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Services.TransactionService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/TransactionService.cs" line-rate="0.030303030303030304" branch-rate="0" complexity="20">
+        <class name="Ombor.Application.Services.TransactionService" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Services/TransactionService.cs" line-rate="0.03225806451612903" branch-rate="0" complexity="16">
           <methods>
             <method name="GetAsync" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="1" complexity="1">
               <lines>
@@ -4006,7 +4009,7 @@
                 <line number="159" hits="40" branch="false" />
               </lines>
             </method>
-            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="8">
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="6">
               <lines>
                 <line number="198" hits="0" branch="false" />
                 <line number="200" hits="0" branch="false" />
@@ -4020,12 +4023,10 @@
                 <line number="212" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="214" hits="0" branch="false" />
                 <line number="215" hits="0" branch="false" />
-                <line number="218" hits="0" branch="true" condition-coverage="0% (0/8)" />
+                <line number="218" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="220" hits="0" branch="false" />
                 <line number="221" hits="0" branch="false" />
-                <line number="222" hits="0" branch="false" />
                 <line number="224" hits="0" branch="false" />
-                <line number="227" hits="0" branch="false" />
               </lines>
             </method>
             <method name="GetAsync" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="1" complexity="1">
@@ -4051,7 +4052,7 @@
                 <line number="159" hits="40" branch="false" />
               </lines>
             </method>
-            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="8">
+            <method name="GetQuery" signature="(Ombor.Contracts.Requests.Transaction.GetTransactionsRequest)" line-rate="0" branch-rate="0" complexity="6">
               <lines>
                 <line number="198" hits="0" branch="false" />
                 <line number="200" hits="0" branch="false" />
@@ -4065,12 +4066,10 @@
                 <line number="212" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="214" hits="0" branch="false" />
                 <line number="215" hits="0" branch="false" />
-                <line number="218" hits="0" branch="true" condition-coverage="0% (0/8)" />
+                <line number="218" hits="0" branch="true" condition-coverage="0% (0/4)" />
                 <line number="220" hits="0" branch="false" />
                 <line number="221" hits="0" branch="false" />
-                <line number="222" hits="0" branch="false" />
                 <line number="224" hits="0" branch="false" />
-                <line number="227" hits="0" branch="false" />
               </lines>
             </method>
           </methods>
@@ -4102,12 +4101,10 @@
             <line number="212" hits="0" branch="true" condition-coverage="0% (0/4)" />
             <line number="214" hits="0" branch="false" />
             <line number="215" hits="0" branch="false" />
-            <line number="218" hits="0" branch="true" condition-coverage="0% (0/8)" />
+            <line number="218" hits="0" branch="true" condition-coverage="0% (0/4)" />
             <line number="220" hits="0" branch="false" />
             <line number="221" hits="0" branch="false" />
-            <line number="222" hits="0" branch="false" />
             <line number="224" hits="0" branch="false" />
-            <line number="227" hits="0" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Application.Validators.Auth.RefreshTokenRequestValidator" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Validators/Auth/RefreshTokenRequestValidator.cs" line-rate="0" branch-rate="1" complexity="2">
