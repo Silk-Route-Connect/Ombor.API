@@ -27,6 +27,17 @@ public interface IInventoryService
     Task<InventoryDto> GetByIdAsync(GetInventoryByIdRequest request);
 
     /// <summary>
+    /// Retrieves all inventory items associated with a specific inventory.
+    /// </summary>
+    /// <param name="request">
+    /// Contains the <see cref="GetInventoryByIdRequest"/> identifying the inventory whose items should be fetched.
+    /// </param>
+    /// <returns>
+    /// An array of <see cref="InventoryItemDto"/> representing the items belonging to the specified inventory.
+    /// </returns>
+    Task<InventoryItemDto[]> GetItemsByInventoryIdAsync(GetInventoryByIdRequest request);
+
+    /// <summary>
     /// Creates a new inventory.
     /// </summary>
     /// <param name="request">The properties of the inventory to create.</param>
