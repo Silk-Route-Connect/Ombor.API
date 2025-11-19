@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Inventory;
@@ -10,6 +11,7 @@ namespace Ombor.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/inventories")]
+[AllowAnonymous]
 public sealed class InventoriesController(IInventoryService inventoryService) : ControllerBase
 {
     /// <summary>
@@ -32,7 +34,7 @@ public sealed class InventoriesController(IInventoryService inventoryService) : 
     /// </summary>
     /// <param name="request">Request containing the inventory ID.</param>
     /// <returns>The matching <see cref="InventoryDto"/>.</returns>
-    [HttpGet("{id:int:min(1)}")]
+    [HttpGet("{Id:int:min(1)}")]
     [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<InventoryDto>> GetInventoryByIdAsync(
@@ -40,6 +42,23 @@ public sealed class InventoriesController(IInventoryService inventoryService) : 
     {
         var response = await inventoryService.GetByIdAsync(request);
 
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves the inventory items associated with the specified inventory ID.
+    /// </summary>
+    /// <param name="request">The request containing the inventory ID for which to retrieve items. The inventory ID must be specified in the
+    /// route.</param>
+    /// <returns>An <see cref="ActionResult{T}"/> containing an array of <see cref="InventoryItemDto"/> objects  representing the
+    /// items in the specified inventory. Returns an empty array if no items are found.</returns>
+    [HttpGet("{Id}/items")]
+    [ProducesResponseType(typeof(InventoryItemDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InventoryItemDto[]>> GetInventoryItemsByIdAsync(
+        [FromRoute] GetInventoryByIdRequest request)
+    {
+        var response = await inventoryService.GetItemsByInventoryIdAsync(request);
         return Ok(response);
     }
 

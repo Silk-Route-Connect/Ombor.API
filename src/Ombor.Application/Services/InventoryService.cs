@@ -16,7 +16,10 @@ internal sealed class InventoryService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Inventories.AsQueryable();
+        var query = context.Inventories
+            .Include(x => x.InventoryItems)
+            .ThenInclude(ii => ii.Product)
+            .AsQueryable();
 
         var searchTerm = request.SearchTerm;
         if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -40,6 +43,29 @@ internal sealed class InventoryService(
         var entity = await GetOrThrowAsync(request.Id);
 
         return entity.ToDto();
+    }
+
+    public async Task<InventoryItemDto[]> GetItemsByInventoryIdAsync(GetInventoryByIdRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var inventoryExists = await context.Inventories
+            .AsNoTracking()
+            .AnyAsync(x => x.Id == request.Id);
+
+        if (!inventoryExists)
+        {
+            throw new EntityNotFoundException<Inventory>(request.Id);
+        }
+
+        var items = await context.InventoryItems
+            .Include(x => x.Product)
+            .AsNoTracking()
+            .Where(x => x.InventoryId == request.Id)
+            .Select(x => x.ToDto())
+            .ToArrayAsync();
+
+        return items;
     }
 
     public async Task<CreateInventoryResponse> CreateAsync(CreateInventoryRequest request)

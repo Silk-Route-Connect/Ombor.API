@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Moq;
 using Ombor.Contracts.Requests.Inventory;
-using Ombor.Contracts.Responses.Inventory;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 using Ombor.Tests.Common.Helpers;
