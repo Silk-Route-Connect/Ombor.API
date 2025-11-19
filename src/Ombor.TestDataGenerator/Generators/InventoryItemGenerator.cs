@@ -19,23 +19,26 @@ public static class InventoryItemGenerator
     {
         var products = ProductGenerator.Generate(10, productIds.Length);
 
-        products = EnsureProductsMatch(productIds, products);
+        EnsureProductsMatch(productIds, products);
 
         return new Faker<InventoryItem>(locale)
             .RuleFor(x => x.Quantity, f => f.Random.Number(1, 100))
-            .RuleFor(x => x.ProductId, f => f.PickRandom(productIds))
             .RuleFor(x => x.Product, f => f.PickRandom(products))
+            .RuleFor(x => x.ProductId, (_, item) => item.Product.Id)
             .RuleFor(x => x.InventoryId, f => f.PickRandom(inventoryIds));
     }
 
-    private static List<Product> EnsureProductsMatch(int[] productIds, List<Product> products)
+    private static void EnsureProductsMatch(int[] productIds, List<Product> products)
     {
+        if (products.Count != productIds.Length)
+        {
+            throw new ArgumentException("productIds length must match products count.");
+        }
+
         for (int i = 0; i < products.Count; i++)
         {
             products[i].Id = productIds[i];
         }
-
-        return products;
     }
 
 }

@@ -49,11 +49,17 @@ internal sealed class InventoryService(
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var query = context.InventoryItems
-            .Include(x => x.Product)
-            .AsQueryable();
+        var inventortyExists = await context.Inventories
+            .AsNoTracking()
+            .AnyAsync(x => x.Id == request.Id);
 
-        var items = await query
+        if (!inventortyExists)
+        {
+            throw new EntityNotFoundException<Inventory>(request.Id);
+        }
+
+        var items = await context.InventoryItems
+            .Include(x => x.Product)
             .AsNoTracking()
             .Where(x => x.InventoryId == request.Id)
             .Select(x => x.ToDto())
