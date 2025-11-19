@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.7602627257799671" branch-rate="0.5118110236220472" lines-covered="1852" lines-valid="2436" branches-covered="260" branches-valid="508" complexity="864" version="0" timestamp="1763451460">
+<coverage line-rate="0.7602627257799671" branch-rate="0.5078740157480315" lines-covered="1852" lines-valid="2436" branches-covered="258" branches-valid="508" complexity="864" version="0" timestamp="1763569709">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -802,7 +802,7 @@
         </class>
       </classes>
     </package>
-    <package name="Ombor.Application" line-rate="0.7020648967551623" branch-rate="0.5544554455445545" complexity="572">
+    <package name="Ombor.Application" line-rate="0.7020648967551623" branch-rate="0.5495049504950495" complexity="572">
       <classes>
         <class name="Ombor.Application.Configurations.JwtSettings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Configurations/JwtSettings.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
@@ -1748,7 +1748,7 @@
             <line number="79" hits="62" branch="false" />
           </lines>
         </class>
-        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.8333333333333334" complexity="18">
+        <class name="Ombor.Application.Mappings.InventoryMappings" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Application/Mappings/InventoryMappings.cs" line-rate="1" branch-rate="0.6666666666666666" complexity="18">
           <methods>
             <method name="ToDto" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
@@ -1794,9 +1794,9 @@
                 <line number="48" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
+                <line number="53" hits="6" branch="true" condition-coverage="50% (2/4)" />
                 <line number="54" hits="6" branch="false" />
                 <line number="55" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
@@ -1858,9 +1858,9 @@
                 <line number="48" hits="6" branch="false" />
               </lines>
             </method>
-            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="1" complexity="2">
+            <method name="ToUpdateResponse" signature="(Ombor.Domain.Entities.Inventory)" line-rate="1" branch-rate="0.5" complexity="2">
               <lines>
-                <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
+                <line number="53" hits="6" branch="true" condition-coverage="50% (2/4)" />
                 <line number="54" hits="6" branch="false" />
                 <line number="55" hits="6" branch="false" />
                 <line number="57" hits="6" branch="false" />
@@ -1908,7 +1908,7 @@
             <line number="46" hits="6" branch="false" />
             <line number="47" hits="6" branch="false" />
             <line number="48" hits="6" branch="false" />
-            <line number="53" hits="6" branch="true" condition-coverage="100% (4/4)" />
+            <line number="53" hits="6" branch="true" condition-coverage="50% (2/4)" />
             <line number="54" hits="6" branch="false" />
             <line number="55" hits="6" branch="false" />
             <line number="57" hits="6" branch="false" />
