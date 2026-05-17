@@ -10,5 +10,4 @@ public sealed record PagedRequest(
     string? SearchTerm = null,
     [MaxLength(255)]
     string? SortBy = null,
-    bool SortByDescending = false,
-    int? OrganizationId = null);
+    bool SortByDescending = false);

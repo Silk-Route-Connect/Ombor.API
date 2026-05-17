@@ -6,8 +6,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a product with pricing, stock, and categorization information.
 /// </summary>
-public class Product : EntityBase
+public class Product : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     /// <summary>Gets or sets the product's name.</summary>
     public required string Name { get; set; }
 

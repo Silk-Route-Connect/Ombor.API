@@ -55,7 +55,7 @@ public interface IApplicationDbContext
 
     DbSet<User> Users { get; set; }
 
-    DbSet<Organization> Organizations { get; set; }
+    DbSet<Tenant> Tenants { get; set; }
 
     DbSet<Role> Roles { get; set; }
 

@@ -1,8 +1,8 @@
-﻿using Ombor.Domain.Common;
+using Ombor.Domain.Common;
 
 namespace Ombor.Domain.Entities;
 
-public class Organization : AuditableEntity
+public class Tenant : AuditableEntity
 {
     public required string Name { get; set; }
     public bool IsActive { get; set; }
@@ -10,7 +10,7 @@ public class Organization : AuditableEntity
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Role> Roles { get; set; }
 
-    public Organization()
+    public Tenant()
     {
         Users = new HashSet<User>();
         Roles = new HashSet<Role>();

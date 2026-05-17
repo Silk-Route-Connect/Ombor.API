@@ -18,7 +18,7 @@ These rules must never be violated. If implementation requires breaking one, sto
 
 ## Multi-tenancy
 
-7. **Every tenant-scoped entity query must filter by OrganizationId.** Tenant-scoped entities: Product, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, Template, TemplateItem, Employee, Order, OrderLine, audit log entries.
+7. **Every tenant-scoped entity query must filter by TenantId.** Enforced automatically via an EF Core global query filter on every entity implementing `ITenantScoped`; `TenantId` is stamped on insert by the DbContext — application code must never set or filter on it manually. Tenant-scoped entities: Product, ProductImage, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, PaymentAttachment, Template, TemplateItem, Employee, Order, OrderLine, audit log entries.
 
 8. New endpoints must follow the established tenant filter pattern (to be confirmed in Phase 1 audit).
 

@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class PaymentAllocation : EntityBase
+public class PaymentAllocation : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     public decimal Amount { get; set; }
     public PaymentAllocationType Type { get; set; }
 

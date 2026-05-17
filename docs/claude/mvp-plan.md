@@ -154,7 +154,7 @@ This is capture, not true multi-currency. A partner's balance is stored in UZS. 
 
 ### 11. Multi-tenancy
 
-Every tenant-scoped entity (Product, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, Template, TemplateItem, Employee, Order, OrderLine) is filtered by OrganizationId at the query layer. Users cannot see or affect data belonging to other organizations.
+Every tenant-scoped entity (Product, ProductImage, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, PaymentAttachment, Template, TemplateItem, Employee, Order, OrderLine) is filtered by TenantId at the query layer. Users cannot see or affect data belonging to other tenants.
 
 **Acceptance:** with two test organizations and two test users, each user sees only their organization's data across every endpoint.
 

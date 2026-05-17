@@ -12,9 +12,9 @@ internal sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasKey(r => r.Id);
 
-        builder.HasOne(r => r.Organization)
+        builder.HasOne(r => r.Tenant)
             .WithMany(o => o.Roles)
-            .HasForeignKey(r => r.OrganizationId)
+            .HasForeignKey(r => r.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder

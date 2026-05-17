@@ -6,7 +6,7 @@ Live document. Updated as phases progress. Master "where are we" reference.
 
 ## Current phase
 
-**Phase 1 — Audit complete.** Codebase audited against `rules.md` and `claude-context.md`; confirmed gaps recorded in `tech-change-list.md`. Ready to begin Phase 3 (Build).
+**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build item #1 (multi-tenancy enforcement) landed 2026-05-17. Next: build item #2 (schema changes for locked decisions).
 
 ---
 
@@ -63,11 +63,11 @@ Not started. Separate workstream, can run partly in parallel with Phase 3.
 
 ### Phase 3 — Build
 
-Not started.
+In progress.
 
 **Dependency order:**
 
-1. Multi-tenancy enforcement across all tenant-scoped entities
+1. ~~Multi-tenancy enforcement across all tenant-scoped entities~~ — **done 2026-05-17.** `Organization` renamed to `Tenant`; `ITenantScoped` + `TenantId` on every tenant-scoped entity; EF Core global query filters + insert stamping; `ITenantAccessor` reads the `tenant_id` JWT claim. Migration `Add_Multi_Tenancy`.
 2. Schema changes for locked decisions: archive flags, audit log table, OriginalTransactionId, AverageCost, WriteOff enum, Transfer entity, InventoryId on TransactionRecord
 3. Fix existing feature divergences from Phase 1 audit
 4. Warehouses module
@@ -102,6 +102,7 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Decisions log
 
+- 2026-05-17 — Multi-tenancy concept renamed `Organization` → `Tenant` end-to-end (entity, service, DbSet, FK `OrganizationId` → `TenantId`, contracts). Tenant scoping enforced via `ITenantScoped` + EF Core global query filters; `TenantId` stamped on insert; tenant resolved from a `tenant_id` JWT claim by `ITenantAccessor`. Phase 3 build item #1 complete. → `rules.md` #7-8, `claude-context.md`, `tech-change-list.md`
 - 2026-05-17 — Phase 1 audit completed in Claude Code. Every predicted gap confirmed against current code; module detail and code locations added to `tech-change-list.md`. New "Pre-production hardening" section added for leftover testing shortcuts (debug `Task.Delay`, disabled password verification, disabled SMS). → `tech-change-list.md`, `planning-doc.md`
 - 2026-05-17 — Refunds require `OriginalTransactionId`; type must match; refund cannot be refunded; multiple refunds per original allowed but total quantity cannot exceed original. → `rules.md` #2-6, `claude-context.md`
 - 2026-05-17 — Audit narrow scope (money/stock events only); single table; EF Core interceptor. → `rules.md` #12-14
@@ -123,6 +124,6 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Next action
 
-Begin Phase 3 (Build), starting with item #1 in the dependency order: **multi-tenancy enforcement across all tenant-scoped entities**. This is the largest blocker and everything downstream (schema changes, feature fixes) depends on the tenant filter pattern being settled first.
+Phase 3 item #1 (multi-tenancy) is done. Next is **item #2 — schema changes for locked decisions**: archive flags (`IsDeleted` on Product/Partner), audit log table + EF Core interceptor, `OriginalTransactionId` on TransactionRecord, `AverageCost` on InventoryItem, `WriteOff` enum value, Transfer entity, `InventoryId` on TransactionRecord.
 
-Recommended next session: load CLAUDE.md, claude-context.md, rules.md, tech-change-list.md, and plan the multi-tenancy implementation — `OrganizationId` on all 16 tenant-scoped entities, a current-tenant resolution service fed from the JWT, and EF Core global query filters. Confirm the pattern, then extend it.
+Note for the next session: integration tests could not be executed in the multi-tenancy session because Docker (Testcontainers/SQL Server) was unavailable — the integration project compiles but the suite still needs a run on a Docker-capable machine. Unit tests (288) pass.

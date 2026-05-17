@@ -25,7 +25,7 @@ Load these before non-trivial work:
 Full list in `rules.md`. Highlights:
 
 1. Transactions and payments are immutable. No PUT/DELETE.
-2. Every tenant-scoped entity query filters by OrganizationId.
+2. Every tenant-scoped entity query filters by TenantId (enforced via EF Core global query filter).
 3. InventoryItem is sole source of truth for stock. `Product.QuantityInStock` is deprecated; do not read or write it.
 4. Refund transactions require `OriginalTransactionId`. Type must match: SaleRefund→Sale, SupplyRefund→Supply.
 5. Audit only money/stock events. Single audit table, EF Core interceptor.

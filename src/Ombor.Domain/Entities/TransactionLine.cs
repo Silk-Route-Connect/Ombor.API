@@ -2,8 +2,10 @@
 
 namespace Ombor.Domain.Entities;
 
-public class TransactionLine : EntityBase
+public class TransactionLine : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     public decimal UnitPrice { get; set; }
     public decimal Discount { get; set; }
     public decimal Quantity { get; set; }

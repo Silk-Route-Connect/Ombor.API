@@ -2,8 +2,10 @@
 
 namespace Ombor.Domain.Entities;
 
-public class ProductImage : EntityBase
+public class ProductImage : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     /// <summary>
     /// Gets or sets the unique name for the product image file.
     /// </summary>

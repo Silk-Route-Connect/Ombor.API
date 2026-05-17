@@ -27,7 +27,7 @@ public class DatabaseFixture : IAsyncLifetime
                     .EnableSensitiveDataLogging()
                     .Options;
 
-                _context = new ApplicationDbContext(options);
+                _context = new ApplicationDbContext(options, new FakeTenantAccessor());
             }
 
             return _context;
@@ -84,7 +84,7 @@ public class DatabaseFixture : IAsyncLifetime
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
 
-        return new ApplicationDbContext(options);
+        return new ApplicationDbContext(options, new FakeTenantAccessor());
     }
 }
 

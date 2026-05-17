@@ -35,7 +35,7 @@ Small businesses that buy and resell, with 1-3 warehouses, operating partly on c
 Scope locked, execution pending. Backend has most CRUD for products, partners, transactions, payments, inventory, orders, templates, employees/payroll, auth. Frontend has core pages. Mobile is read-only.
 
 **Known gaps before MVP can ship** (tracked separately in tech change list):
-- Multi-tenancy enforcement not implemented (OrganizationId only on User/Role, not on tenant-scoped entities)
+- Multi-tenancy enforcement — done (2026-05-17): `TenantId` on all tenant-scoped entities, JWT-fed tenant accessor, EF Core global query filters
 - Weighted-average cost not implemented
 - WriteOff transaction type missing
 - Inter-warehouse transfers missing
@@ -52,7 +52,7 @@ Scope locked, execution pending. Backend has most CRUD for products, partners, t
 
 ## Locked design decisions
 
-**Multi-tenancy** — every tenant-scoped entity must filter by OrganizationId. Currently not enforced on: Product, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, Template, TemplateItem, Employee, Order, OrderLine.
+**Multi-tenancy** — every tenant-scoped entity carries `TenantId` and implements `ITenantScoped`. Enforced (since 2026-05-17) via an EF Core global query filter; the DbContext stamps `TenantId` on insert. The tenant is resolved from a `tenant_id` JWT claim by `ITenantAccessor`. The tenant entity itself is `Tenant` (formerly `Organization`).
 
 **Transactions and payments are immutable.** Corrections via reverse events only. Payroll follows the same rule — no PUT/DELETE.
 
@@ -110,7 +110,7 @@ Scope locked, execution pending. Backend has most CRUD for products, partners, t
 
 **Employee** — staff of the business, not system user. Has salary, status, contact info. Receives Payroll-type payments.
 
-**Organization** — single tenant. Every user and every piece of data belongs to exactly one.
+**Tenant** — single tenant (entity named `Tenant`). Every user and every piece of data belongs to exactly one.
 
 ---
 

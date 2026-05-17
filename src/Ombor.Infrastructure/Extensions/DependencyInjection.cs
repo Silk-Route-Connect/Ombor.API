@@ -71,6 +71,10 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
+
+        services.AddScoped<ITenantAccessor, HttpContextTenantAccessor>();
+
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
 
         services.AddTransient<IFileStorage, LocalFileStorage>();

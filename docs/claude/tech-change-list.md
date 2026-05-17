@@ -11,12 +11,16 @@ Phase 1 audit will confirm and extend this list. Items below are from initial sc
 
 ## Multi-tenancy enforcement
 
-**Status:** not started (confirmed by Phase 1 audit — see "Multi-tenancy" below)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Current: OrganizationId on User/Role only; confirmed by audit, no enforcement anywhere.
-Target: OrganizationId on all tenant-scoped entities (rules.md #7); all queries filtered.
-Approach: confirm existing pattern in Phase 1 audit before extending. Likely EF Core global query filters.
+Done: the `Organization` concept was renamed to `Tenant` end-to-end (entity, service,
+DbSet, FK columns — `OrganizationId` → `TenantId`). Every tenant-scoped entity now
+implements `ITenantScoped` and carries a `TenantId` column + index. `ApplicationDbContext`
+applies an EF Core global query filter to every `ITenantScoped` type and stamps
+`TenantId` on insert. The tenant is resolved from a `tenant_id` JWT claim via
+`ITenantAccessor` (`HttpContextTenantAccessor`); `JwtTokenService` emits the claim.
+Migration: `Add_Multi_Tenancy`. Seeding pins a tenant through `ITenantAccessor.SetTenant`.
 
 ## Weighted-average cost on InventoryItem
 
@@ -157,17 +161,17 @@ findings below add module-level detail, exact code locations, and a few items th
 initial review did not capture. Format: entity/endpoint → current state → target
 state → severity → notes.
 
-### Multi-tenancy — confirmed
+### Multi-tenancy — confirmed (RESOLVED 2026-05-17)
 
-- **All tenant-scoped entities** → `OrganizationId` exists only on `User` and `Role`
-  (`src/Ombor.Domain/Entities/User.cs`, `Role.cs`). The 16 tenant-scoped entities have
-  no `OrganizationId`. → Target per rules.md #7. → **Blocker.**
-- **ApplicationDbContext** → no `HasQueryFilter`, no tenant resolution service, no
-  current-user accessor. All services query unscoped (`context.Products`,
-  `context.Partners`, etc.). → Target: global query filters + tenant accessor. →
-  **Blocker.** Notes: tenancy *is* correct at registration — `AuthService` creates an
-  `Organization`, sets `User.OrganizationId`, issues a JWT. The gap is purely
-  downstream enforcement.
+This gap was confirmed by the audit and then fixed the same day — see the
+"Multi-tenancy enforcement" section above for the implemented solution.
+
+- **All tenant-scoped entities** → audit found `OrganizationId` only on `User`/`Role`.
+  → Resolved: renamed to `TenantId`; all tenant-scoped entities now implement
+  `ITenantScoped` with a `TenantId` column + index.
+- **ApplicationDbContext** → audit found no query filter and no tenant accessor.
+  → Resolved: EF Core global query filters + insert-time `TenantId` stamping;
+  `ITenantAccessor` resolves the tenant from the `tenant_id` JWT claim.
 
 ### Audit log — confirmed
 
@@ -257,9 +261,10 @@ state → severity → notes.
 
 ### Auth & Users
 
-- **AuthService** → registration/tenancy flow is correct: creates `Organization`, sets
-  `User.OrganizationId`, issues JWT + refresh token. → No structural change. → Note. See
-  Pre-production hardening below for the disabled checks.
+- **AuthService** → registration/tenancy flow is correct: creates a `Tenant` (renamed
+  from `Organization` on 2026-05-17), sets `User.TenantId`, issues JWT + refresh token.
+  The access token now also carries the `tenant_id` claim. → No structural change. →
+  Note. See Pre-production hardening below for the disabled checks.
 
 ---
 

@@ -5,8 +5,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a single item of a <see cref="Template"/>.
 /// </summary>
-public class TemplateItem : AuditableEntity
+public class TemplateItem : AuditableEntity, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     /// <summary>
     /// Gets or sets quantity of the <see cref="TemplateItem"/>.
     /// </summary>

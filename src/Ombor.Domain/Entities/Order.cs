@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class Order : AuditableEntity
+public class Order : AuditableEntity, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     public required string OrderNumber { get; set; }
     public string? Notes { get; set; }
     public required decimal TotalAmount { get; set; }

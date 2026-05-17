@@ -167,7 +167,7 @@ Products and partners can be archived but not hard-deleted once referenced by an
 
 **Order** — a pending transaction. Customer has requested goods but nothing has been delivered or paid. Promotes to a Sale transaction when delivered.
 
-**Organization** — a single tenant in the system. Every user and every piece of data belongs to exactly one organization.
+**Tenant** — a single tenant in the system (entity named `Tenant`). Every user and every piece of data belongs to exactly one tenant.
 
 ---
 
