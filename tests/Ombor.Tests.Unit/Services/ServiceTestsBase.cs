@@ -86,4 +86,52 @@ public abstract class ServiceTestsBase : UnitTestsBase
 
         return mockSet;
     }
+
+    protected Mock<DbSet<TransactionLine>> SetupTransactionLines(IEnumerable<TransactionLine> lines)
+    {
+        var mockSet = lines.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.TransactionLines).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<OrderLine>> SetupOrderLines(IEnumerable<OrderLine> lines)
+    {
+        var mockSet = lines.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.OrderLines).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<TransactionRecord>> SetupTransactions(IEnumerable<TransactionRecord> transactions)
+    {
+        var mockSet = transactions.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Transactions).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<Payment>> SetupPayments(IEnumerable<Payment> payments)
+    {
+        var mockSet = payments.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Payments).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<Order>> SetupOrders(IEnumerable<Order> orders)
+    {
+        var mockSet = orders.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Orders).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<Template>> SetupTemplates(IEnumerable<Template> templates)
+    {
+        var mockSet = templates.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.Templates).Returns(mockSet.Object);
+
+        return mockSet;
+    }
 }

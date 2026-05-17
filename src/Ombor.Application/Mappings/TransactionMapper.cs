@@ -18,6 +18,8 @@ internal sealed class TransactionMapper : ITransactionMapper
         return new TransactionRecord
         {
             PartnerId = request.PartnerId,
+            InventoryId = request.InventoryId,
+            OriginalTransactionId = request.OriginalTransactionId,
             DateUtc = DateTimeOffset.UtcNow,
             Type = request.Type.ToDomainType(),
             Partner = null!,

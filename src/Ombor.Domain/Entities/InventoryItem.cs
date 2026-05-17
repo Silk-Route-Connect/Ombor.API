@@ -5,7 +5,7 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a single item of a <see cref="Inventory"/>.
 /// </summary>
-public class InventoryItem : EntityBase, ITenantScoped
+public class InventoryItem : EntityBase, ITenantScoped, IAuditable
 {
     public int TenantId { get; set; }
 

@@ -47,18 +47,19 @@ public sealed class DeleteProductTests : ProductTestsBase
     }
 
     [Fact]
-    public async Task DeleteAsync_ShouldRemoveProduct_WhenProductExists()
+    public async Task DeleteAsync_ShouldHardDeleteProduct_WhenNotReferenced()
     {
         // Arrange
         var productToDelete = _builder.ProductBuilder
             .WithId(999)
-            .WithImages([]) // Without images
+            .WithImages([])
             .WithCategory(_defaultCategory)
             .BuildAndPopulate();
         var request = new DeleteProductRequest(productToDelete.Id);
 
         var mockSet = SetupProducts([.. _defaultProducts, productToDelete]);
-        mockSet.Setup(mock => mock.Remove(It.Is<Product>(e => e.Id == productToDelete.Id)));
+        SetupTransactionLines([]);
+        SetupOrderLines([]);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
@@ -66,44 +67,85 @@ public sealed class DeleteProductTests : ProductTestsBase
         // Act
         await _service.DeleteAsync(request);
 
-        // Assert
-        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        // Assert — an unreferenced product is hard-deleted.
         mockSet.Verify(mock => mock.Remove(It.Is<Product>(e => e.Id == productToDelete.Id)), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(mock => mock.Products, Times.Exactly(2));
-        _mockFileService.Verify(mock => mock.DeleteAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
-
-        VerifyNoOtherCalls();
     }
 
     [Fact]
-    public async Task DeleteAsync_ShouldRemoveFiles_WhenProductHasImages()
+    public async Task DeleteAsync_ShouldThrow_WhenProductReferencedByTransaction()
     {
         // Arrange
         var productToDelete = _builder.ProductBuilder
             .WithId(999)
+            .WithImages([])
             .WithCategory(_defaultCategory)
             .BuildAndPopulate();
-        var imagesToDelete = productToDelete.Images.Select(x => x.FileName).ToArray();
         var request = new DeleteProductRequest(productToDelete.Id);
 
         var mockSet = SetupProducts([.. _defaultProducts, productToDelete]);
-        mockSet.Setup(mock => mock.Remove(It.Is<Product>(e => e.Id == productToDelete.Id)));
+        SetupTransactionLines([new TransactionLine
+        {
+            Id = 1,
+            ProductId = productToDelete.Id,
+            Quantity = 1,
+            UnitPrice = 10m,
+            Discount = 0m,
+            Product = null!,
+            Transaction = null!,
+        }]);
+        SetupOrderLines([]);
+
+        // Act & Assert — a referenced product cannot be hard-deleted.
+        await Assert.ThrowsAsync<FluentValidation.ValidationException>(
+            () => _service.DeleteAsync(request));
+
+        mockSet.Verify(mock => mock.Remove(It.IsAny<Product>()), Times.Never);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ArchiveAsync_ShouldSetIsArchived_WhenProductExists()
+    {
+        // Arrange
+        var product = _builder.ProductBuilder
+            .WithId(999)
+            .WithImages([])
+            .WithCategory(_defaultCategory)
+            .BuildAndPopulate();
+        SetupProducts([.. _defaultProducts, product]);
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        _mockFileService.Setup(mock => mock.DeleteAsync(imagesToDelete, _fileSettings.ProductUploadsSection, It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
         // Act
-        await _service.DeleteAsync(request);
+        await _service.ArchiveAsync(product.Id);
 
         // Assert
-        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
-        mockSet.Verify(mock => mock.Remove(It.Is<Product>(e => e.Id == productToDelete.Id)), Times.Once);
+        Assert.True(product.IsArchived);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(mock => mock.Products, Times.Exactly(2));
-        _mockFileService.Verify(mock => mock.DeleteAsync(imagesToDelete, _fileSettings.ProductUploadsSection, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RestoreAsync_ShouldClearIsArchived_WhenProductExists()
+    {
+        // Arrange
+        var product = _builder.ProductBuilder
+            .WithId(999)
+            .WithImages([])
+            .WithCategory(_defaultCategory)
+            .BuildAndPopulate();
+        product.IsArchived = true;
+        SetupProducts([.. _defaultProducts, product]);
+
+        _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        await _service.RestoreAsync(product.Id);
+
+        // Assert
+        Assert.False(product.IsArchived);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

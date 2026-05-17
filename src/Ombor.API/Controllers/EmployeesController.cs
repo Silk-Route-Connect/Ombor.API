@@ -108,40 +108,6 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
         return Ok(response);
     }
 
-    [HttpPut("{employeeId:int:min(1)}/payrolls/{paymentId}")]
-    [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PaymentDto>> PutPayrollAsync(
-        [FromRoute] int employeeId,
-        [FromRoute] int paymentId,
-        [FromBody] UpdatePayrollRequest request)
-    {
-        if (paymentId != request.PaymentId)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "ID mismatch",
-                Detail = $"Route payment ID {paymentId} does not match body payment ID {request.PaymentId}.",
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
-
-        if (employeeId != request.EmployeeId)
-        {
-            return BadRequest(new ProblemDetails
-            {
-                Title = "ID mismatch",
-                Detail = $"Route employee ID {employeeId} does not match with body employee ID {request.EmployeeId}.",
-                Status = StatusCodes.Status400BadRequest
-            });
-        }
-
-        var response = await paymentService.UpdateAsync(request);
-
-        return Ok(response);
-    }
-
     [HttpDelete("{id:int:min(1)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -154,16 +120,4 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
         return NoContent();
     }
 
-    [HttpDelete("{employeeId:int:min(1)}/payrolls/{paymentId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeletePayrollAsync(
-        [FromRoute] int employeeId,
-        [FromRoute] int paymentId)
-    {
-        var request = new DeletePayrollRequest(employeeId, paymentId);
-        await paymentService.DeleteAsync(request);
-
-        return NoContent();
-    }
 }

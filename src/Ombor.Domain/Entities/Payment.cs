@@ -3,7 +3,7 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class Payment : EntityBase, ITenantScoped
+public class Payment : EntityBase, ITenantScoped, IAuditable
 {
     public int TenantId { get; set; }
 

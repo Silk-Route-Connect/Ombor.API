@@ -40,9 +40,9 @@ These rules must never be violated. If implementation requires breaking one, sto
 
 ## Archive
 
-15. **Archive (soft-delete via IsDeleted flag) is allowed for Product and Partner only.** No other entities support archive in MVP.
+15. **Archive (via the `IsArchived` flag) is allowed for Product and Partner only.** No other entities support archive in MVP. Archive is a *distinct* operation from deletion — it hides the entity from default lists and is reversible (restore). Each of Product and Partner exposes `DELETE /{id}` (hard delete), `POST /{id}/archive`, and `POST /{id}/restore`.
 
-16. **Never hard-delete entities that have referential history.**
+16. **Never hard-delete entities that have referential history.** The hard-delete endpoints must refuse (with a clear error) when the entity is referenced by transactions, orders or payments — direct the caller to archive instead.
 
 ## Currency
 

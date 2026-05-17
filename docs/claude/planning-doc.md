@@ -6,7 +6,7 @@ Live document. Updated as phases progress. Master "where are we" reference.
 
 ## Current phase
 
-**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build items #1 (multi-tenancy enforcement) and #2 (schema changes for locked decisions) landed 2026-05-17. Next: build item #3 (fix existing feature divergences from the Phase 1 audit).
+**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build items #1 (multi-tenancy), #2 (schema changes), and #3 (feature-divergence fixes) landed 2026-05-17. Next: build item #4 (Warehouses module) — and the deferred items from #3 (WriteOff create path, `QuantityInStock` removal).
 
 ---
 
@@ -69,7 +69,7 @@ In progress.
 
 1. ~~Multi-tenancy enforcement across all tenant-scoped entities~~ — **done 2026-05-17.** `Organization` renamed to `Tenant`; `ITenantScoped` + `TenantId` on every tenant-scoped entity; EF Core global query filters + insert stamping; `ITenantAccessor` reads the `tenant_id` JWT claim. Migration `Add_Multi_Tenancy`.
 2. ~~Schema changes for locked decisions~~ — **done 2026-05-17.** `IsDeleted` on Product/Partner; `AuditEntry` table; `OriginalTransactionId` + `InventoryId` on TransactionRecord; `AverageCost` on InventoryItem; `WriteOff` enum value; `Transfer`/`TransferLine` entities. Migration `Add_Audit_Transfer_And_Transaction_Schema`. Behavior for these lands in item #3.
-3. Fix existing feature divergences from Phase 1 audit
+3. ~~Fix existing feature divergences from Phase 1 audit~~ — **done 2026-05-17.** Audit interceptor (`AuditSaveChangesInterceptor` → `AuditEntry`); refund validation (rules.md #2-6); `InventoryId` required + weighted-average cost recompute on stock-in with `InventoryItem` as the live stock source; soft-delete for Product/Partner; payroll PUT/DELETE removed; `Task.Delay` debug code removed. **Deferred:** WriteOff create path (needs nullable `PartnerId` — schema migration), full `Product.QuantityInStock` field removal, re-enabling SMS. See `tech-change-list.md`.
 4. Warehouses module
 5. Inter-warehouse transfers
 6. Settings
@@ -102,6 +102,8 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Decisions log
 
+- 2026-05-17 — Archive reworked: it is a *distinct* operation from deletion, not a replacement. Product and Partner each expose hard `DELETE` (refused when referenced by history, rules.md #16), `POST /{id}/archive`, and `POST /{id}/restore`; list endpoints take an `isArchived` flag. The flag was renamed `IsDeleted` → `IsArchived`. Migration `Rename_IsDeleted_To_IsArchived`. → `rules.md` #15-16, `tech-change-list.md`
+- 2026-05-17 — Phase 3 item #3 (feature-divergence fixes) landed: audit interceptor, refund validation (rules.md #2-6), weighted-average cost + `InventoryItem` as live stock source, hard delete + archive/restore for Product/Partner, payroll PUT/DELETE removed. Decisions made along the way: archived rows are filtered only from list endpoints (not a global filter) so transaction/order history can still resolve them; SaleRefund re-enters stock at carrying cost (weighted-average unchanged); WriteOff create path deferred because it needs a nullable `PartnerId` schema change. → `tech-change-list.md`
 - 2026-05-17 — Multi-tenancy concept renamed `Organization` → `Tenant` end-to-end (entity, service, DbSet, FK `OrganizationId` → `TenantId`, contracts). Tenant scoping enforced via `ITenantScoped` + EF Core global query filters; `TenantId` stamped on insert; tenant resolved from a `tenant_id` JWT claim by `ITenantAccessor`. Phase 3 build item #1 complete. → `rules.md` #7-8, `claude-context.md`, `tech-change-list.md`
 - 2026-05-17 — Phase 1 audit completed in Claude Code. Every predicted gap confirmed against current code; module detail and code locations added to `tech-change-list.md`. New "Pre-production hardening" section added for leftover testing shortcuts (debug `Task.Delay`, disabled password verification, disabled SMS). → `tech-change-list.md`, `planning-doc.md`
 - 2026-05-17 — Refunds require `OriginalTransactionId`; type must match; refund cannot be refunded; multiple refunds per original allowed but total quantity cannot exceed original. → `rules.md` #2-6, `claude-context.md`

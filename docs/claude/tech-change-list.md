@@ -24,19 +24,23 @@ Migration: `Add_Multi_Tenancy`. Seeding pins a tenant through `ITenantAccessor.S
 
 ## Weighted-average cost on InventoryItem
 
-**Status:** schema done (2026-05-17); update logic pending (Phase 3 item #3)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: `AverageCost` (decimal, currency precision) field added to InventoryItem.
-Pending: atomic recompute on every stock-in event. Formula in rules.md #10.
+Done: `AverageCost` field on InventoryItem; `TransactionService.UpdateProducts` recomputes
+it on every Supply stock-in per the rules.md #10 formula. SaleRefund re-enters stock at
+the existing carrying cost (no change).
 
 ## WriteOff transaction type
 
-**Status:** enum done (2026-05-17); behavior pending (Phase 3 item #3)
+**Status:** enum + stock handling done (2026-05-17); write path deferred
 **Severity:** blocker
 
-Done: `WriteOff` value added to the TransactionType enum.
-Pending: write path — no partner; decrements inventory only.
+Done: `WriteOff` enum value; `TransactionService.UpdateProducts` treats it as a stock-out.
+Deferred: the create path still requires a partner. WriteOff has no partner, so
+`TransactionRecord.PartnerId` / `CreateTransactionRequest.PartnerId` must become nullable
+(schema migration + mapper/query null-handling) before WriteOff is reachable. Pairs well
+with the Warehouses/transfers work (Phase 3 items #4-5).
 
 ## Inter-warehouse transfers
 
@@ -48,35 +52,49 @@ Pending: service, endpoint, atomic both-inventory update, audit.
 
 ## Transaction-to-warehouse linkage
 
-**Status:** schema done (2026-05-17); required-validation pending (Phase 3 item #3)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: nullable `InventoryId` FK added to TransactionRecord + migration.
-Pending: enforce required for stock-affecting transaction types at write time.
+Done: `InventoryId` FK on TransactionRecord; `TransactionService` requires it at write
+time, validates the warehouse exists, and applies stock movement to that warehouse's
+`InventoryItem` rows.
 
 ## Refund linking
 
-**Status:** schema done (2026-05-17); validation pending (Phase 3 item #3)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: nullable self-referencing `OriginalTransactionId` FK added to TransactionRecord + migration.
-Pending: validation per rules.md #2-6 (required for refund types, type-match, no refund-of-refund, quantity cap).
+Done: `OriginalTransactionId` FK on TransactionRecord; `TransactionService.ValidateRefundOrThrowAsync`
+enforces rules.md #2-6 — required for refund types, type must match the original, no
+refund-of-refund, and total refunded quantity per product capped to the original.
 
 ## Archive mechanism
 
-**Status:** flag done (2026-05-17); soft-delete behavior pending (Phase 3 item #3)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: `IsDeleted` flag added to Product and Partner + migration.
-Pending: switch DELETE endpoints to soft-delete; filter archived rows from default queries; never hard-delete.
+Done: archive is a distinct operation from deletion — the consumer chooses. Product and
+Partner each expose three operations:
+- `DELETE /{id}` — hard delete; refused with a clear error if the entity is referenced by
+  transaction/order/payment history (rules.md #16).
+- `POST /{id}/archive` — sets the `IsArchived` flag.
+- `POST /{id}/restore` — clears it.
+
+List endpoints take an `isArchived` query flag (default lists active; `true` lists archived
+so the frontend can offer a restore view). Archived rows are filtered only from list
+endpoints, not globally — transaction/order history must still resolve the entity.
+The flag is named `IsArchived` (not `IsDeleted`).
 
 ## Audit log
 
-**Status:** table done (2026-05-17); interceptor pending (Phase 3 item #3)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: `AuditEntry` entity/table (EntityType, EntityId, Action, OldValues, NewValues, UserId, TimestampUtc; tenant-scoped) + EF config + migration.
-Pending: EF Core SaveChanges interceptor that populates it for money/stock events per rules.md #12-14.
+Done: `AuditEntry` table + `AuditSaveChangesInterceptor` (registered on the DbContext)
+records every insert/update/delete of an `IAuditable` entity — TransactionRecord, Payment,
+PaymentComponent, PaymentAllocation, InventoryItem, Transfer, TransferLine — with actor
+(`ICurrentUserAccessor`), timestamp, before/after JSON, entity type and id. Insert ids are
+back-filled after the row is written.
 
 ## Opening balance and opening stock as events
 
@@ -104,19 +122,24 @@ Target: list endpoints support paging, filtering, search; client doesn't load fu
 
 ## Product.QuantityInStock removal
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** in progress (2026-05-17)
 **Severity:** important
 
-Current: field exists and is writable; dual source of truth bug.
-Target: removed; InventoryItem is sole source.
+Done: `TransactionService` no longer reads or writes `Product.QuantityInStock` — stock now
+flows entirely through `InventoryItem`. The dual-source-of-truth bug is closed.
+Pending: the `QuantityInStock` field/column still exists and is surfaced in product DTOs,
+validators and the test data generators. Full removal (DTO/contract/migration cleanup) is
+the remaining step.
 
 ## Payroll immutability
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** complete (2026-05-17)
 **Severity:** important
 
-Current: PUT/DELETE endpoints on `/employees/{id}/payrolls`.
-Target: endpoints removed; corrections via reverse payroll payments.
+Done: the `PUT` and `DELETE` endpoints on `/employees/{employeeId}/payrolls/{paymentId}`
+were removed from `EmployeesController`. Corrections are via reverse payroll payments.
+Note: `IPaymentService.UpdateAsync`/`DeleteAsync` are now unreachable dead code — a small
+follow-up cleanup.
 
 ## TransactionLine fixed-amount discount
 
@@ -274,27 +297,25 @@ real deployment.
 
 ### Debug delay in ProductsController
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** complete (2026-05-17)
 **Severity:** blocker (pre-production)
 
-Current: `ProductsController` POST and PUT both call `await Task.Delay(4000)` (lines
-75, 98).
-Target: remove both calls.
+Done: the `await Task.Delay(4000)` calls were removed from `ProductsController` POST and PUT.
 
 ### Disabled password verification
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** complete (2026-05-17)
 **Severity:** blocker (pre-production)
 
-Current: `AuthService.LoginAsync` has `VerifyPassword(user, request.Password)` commented
-out (line 108) — login currently succeeds with any password.
-Target: restore the call.
+Done: `AuthService.LoginAsync` calls `VerifyPassword(user, request.Password)` — login now
+validates the password.
 
 ### Disabled SMS sending
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** not started — intentionally deferred
 **Severity:** important (pre-production)
 
 Current: `AuthService.RegisterAsync` has `smsService.SendMessageAsync(message)` commented
-out (line 47) — registration OTP is never delivered.
-Target: restore the call before onboarding real users.
+out — registration OTP is never delivered. Left disabled on purpose: re-enabling it now
+would break local development/registration if no SMS provider is reachable.
+Target: restore the call just before onboarding real users.

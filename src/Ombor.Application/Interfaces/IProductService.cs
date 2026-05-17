@@ -66,5 +66,14 @@ public interface IProductService
     /// <returns>A completed <see cref="Task"/>.</returns>
     /// <exception cref="ValidationException">If <paramref name="request"/> fails validation.</exception>
     /// <exception cref="EntityNotFoundException{Product}">If no product with the given ID exists.</exception>
+    /// <exception cref="ValidationException">If the product is referenced by transaction or order history.</exception>
     Task DeleteAsync(DeleteProductRequest request);
+
+    /// <summary>Archives a product — hides it from default lists; reversible via <see cref="RestoreAsync"/>.</summary>
+    /// <exception cref="EntityNotFoundException{Product}">If no product with the given ID exists.</exception>
+    Task ArchiveAsync(int id);
+
+    /// <summary>Restores a previously archived product.</summary>
+    /// <exception cref="EntityNotFoundException{Product}">If no product with the given ID exists.</exception>
+    Task RestoreAsync(int id);
 }

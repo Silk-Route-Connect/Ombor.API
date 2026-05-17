@@ -52,5 +52,14 @@ public interface IPartnerService
     /// <returns>A completed <see cref="Task"/>.</returns>
     /// <exception cref="ValidationException">If <paramref name="request"/> fails validation.</exception>
     /// <exception cref="EntityNotFoundException{partner}">If no partner with the given ID exists.</exception>
+    /// <exception cref="ValidationException">If the partner is referenced by transaction, payment or order history.</exception>
     Task DeleteAsync(DeletePartnerRequest request);
+
+    /// <summary>Archives a partner — hides it from default lists; reversible via <see cref="RestoreAsync"/>.</summary>
+    /// <exception cref="EntityNotFoundException{partner}">If no partner with the given ID exists.</exception>
+    Task ArchiveAsync(int id);
+
+    /// <summary>Restores a previously archived partner.</summary>
+    /// <exception cref="EntityNotFoundException{partner}">If no partner with the given ID exists.</exception>
+    Task RestoreAsync(int id);
 }
