@@ -10,6 +10,11 @@ public class InventoryItem : EntityBase, ITenantScoped
     public int TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the weighted-average unit cost, updated atomically on every stock-in event.
+    /// </summary>
+    public decimal AverageCost { get; set; }
+
+    /// <summary>
     /// Gets or sets quantity of the <see cref="InventoryItem"/>.
     /// </summary>
     public required int Quantity { get; set; }

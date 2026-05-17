@@ -10,6 +10,9 @@ public class Partner : EntityBase, ITenantScoped
 {
     public int TenantId { get; set; }
 
+    /// <summary>Gets or sets whether the partner is archived (soft-deleted).</summary>
+    public bool IsDeleted { get; set; }
+
     /// <summary>Gets or sets the name of the partner.</summary>
     public required string Name { get; set; }
 

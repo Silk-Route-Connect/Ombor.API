@@ -24,60 +24,59 @@ Migration: `Add_Multi_Tenancy`. Seeding pins a tenant through `ITenantAccessor.S
 
 ## Weighted-average cost on InventoryItem
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** schema done (2026-05-17); update logic pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: not implemented.
-Target: `AverageCost` (decimal) field on InventoryItem; atomic update on every stock-in event.
-Formula in rules.md #10.
+Done: `AverageCost` (decimal, currency precision) field added to InventoryItem.
+Pending: atomic recompute on every stock-in event. Formula in rules.md #10.
 
 ## WriteOff transaction type
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** enum done (2026-05-17); behavior pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: TransactionType enum missing WriteOff.
-Target: WriteOff value added; transaction has no partner; decrements inventory only.
+Done: `WriteOff` value added to the TransactionType enum.
+Pending: write path — no partner; decrements inventory only.
 
 ## Inter-warehouse transfers
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** entities done (2026-05-17); endpoint + logic pending (Phase 3 item #5)
 **Severity:** blocker
 
-Current: no transfer entity or endpoint.
-Target: Transfer entity with FromInventoryId, ToInventoryId, lines, status, audit-logged; updates both inventories atomically.
+Done: `Transfer` (FromInventoryId, ToInventoryId, Status, Notes, lines) and `TransferLine` entities + EF config + migration.
+Pending: service, endpoint, atomic both-inventory update, audit.
 
 ## Transaction-to-warehouse linkage
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** schema done (2026-05-17); required-validation pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: TransactionRecord has no InventoryId.
-Target: InventoryId on TransactionRecord; required for transaction types that affect stock.
+Done: nullable `InventoryId` FK added to TransactionRecord + migration.
+Pending: enforce required for stock-affecting transaction types at write time.
 
 ## Refund linking
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** schema done (2026-05-17); validation pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: TransactionRecord has no OriginalTransactionId.
-Target: OriginalTransactionId on TransactionRecord; required for refund types; validation per rules.md #2-6.
+Done: nullable self-referencing `OriginalTransactionId` FK added to TransactionRecord + migration.
+Pending: validation per rules.md #2-6 (required for refund types, type-match, no refund-of-refund, quantity cap).
 
 ## Archive mechanism
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** flag done (2026-05-17); soft-delete behavior pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: DELETE endpoints hard-delete.
-Target: IsDeleted flag on Product and Partner; soft-delete; filter from default queries; never hard-delete.
+Done: `IsDeleted` flag added to Product and Partner + migration.
+Pending: switch DELETE endpoints to soft-delete; filter archived rows from default queries; never hard-delete.
 
 ## Audit log
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** table done (2026-05-17); interceptor pending (Phase 3 item #3)
 **Severity:** blocker
 
-Current: no audit log.
-Target: per rules.md #12-14. Single table, EF Core interceptor, narrow scope.
+Done: `AuditEntry` entity/table (EntityType, EntityId, Action, OldValues, NewValues, UserId, TimestampUtc; tenant-scoped) + EF config + migration.
+Pending: EF Core SaveChanges interceptor that populates it for money/stock events per rules.md #12-14.
 
 ## Opening balance and opening stock as events
 

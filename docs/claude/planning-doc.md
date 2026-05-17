@@ -6,7 +6,7 @@ Live document. Updated as phases progress. Master "where are we" reference.
 
 ## Current phase
 
-**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build item #1 (multi-tenancy enforcement) landed 2026-05-17. Next: build item #2 (schema changes for locked decisions).
+**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build items #1 (multi-tenancy enforcement) and #2 (schema changes for locked decisions) landed 2026-05-17. Next: build item #3 (fix existing feature divergences from the Phase 1 audit).
 
 ---
 
@@ -68,7 +68,7 @@ In progress.
 **Dependency order:**
 
 1. ~~Multi-tenancy enforcement across all tenant-scoped entities~~ — **done 2026-05-17.** `Organization` renamed to `Tenant`; `ITenantScoped` + `TenantId` on every tenant-scoped entity; EF Core global query filters + insert stamping; `ITenantAccessor` reads the `tenant_id` JWT claim. Migration `Add_Multi_Tenancy`.
-2. Schema changes for locked decisions: archive flags, audit log table, OriginalTransactionId, AverageCost, WriteOff enum, Transfer entity, InventoryId on TransactionRecord
+2. ~~Schema changes for locked decisions~~ — **done 2026-05-17.** `IsDeleted` on Product/Partner; `AuditEntry` table; `OriginalTransactionId` + `InventoryId` on TransactionRecord; `AverageCost` on InventoryItem; `WriteOff` enum value; `Transfer`/`TransferLine` entities. Migration `Add_Audit_Transfer_And_Transaction_Schema`. Behavior for these lands in item #3.
 3. Fix existing feature divergences from Phase 1 audit
 4. Warehouses module
 5. Inter-warehouse transfers
@@ -124,6 +124,14 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Next action
 
-Phase 3 item #1 (multi-tenancy) is done. Next is **item #2 — schema changes for locked decisions**: archive flags (`IsDeleted` on Product/Partner), audit log table + EF Core interceptor, `OriginalTransactionId` on TransactionRecord, `AverageCost` on InventoryItem, `WriteOff` enum value, Transfer entity, `InventoryId` on TransactionRecord.
+Phase 3 items #1 (multi-tenancy) and #2 (schema changes) are done. Next is **item #3 — fix existing feature divergences from the Phase 1 audit**, which is where the schema added in #2 gets its behavior:
 
-Note for the next session: integration tests could not be executed in the multi-tenancy session because Docker (Testcontainers/SQL Server) was unavailable — the integration project compiles but the suite still needs a run on a Docker-capable machine. Unit tests (288) pass.
+- Audit interceptor populating `AuditEntry` for money/stock events
+- Refund validation (rules.md #2-6) using `OriginalTransactionId`
+- `WriteOff` write path; `InventoryId` made required for stock-affecting types
+- Weighted-average `AverageCost` recompute on stock-in; stop writing `Product.QuantityInStock`; make `InventoryItem` the live stock source
+- Soft-delete: DELETE endpoints for Product/Partner switch to `IsDeleted`; archived rows filtered out
+- Remove payroll PUT/DELETE endpoints
+- Pre-production hardening items
+
+Note: integration tests still need a run on a Docker-capable machine — Docker (Testcontainers/SQL Server) was unavailable in the #1/#2 sessions. The integration project compiles; unit tests (288) pass.

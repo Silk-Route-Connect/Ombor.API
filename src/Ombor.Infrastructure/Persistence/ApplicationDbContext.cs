@@ -34,6 +34,9 @@ internal class ApplicationDbContext(
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     public virtual DbSet<Order> Orders { get; set; }
     public virtual DbSet<OrderLine> OrderLines { get; set; }
+    public virtual DbSet<Transfer> Transfers { get; set; }
+    public virtual DbSet<TransferLine> TransferLines { get; set; }
+    public virtual DbSet<AuditEntry> AuditEntries { get; set; }
 
     /// <summary>
     /// Tenant every <see cref="ITenantScoped"/> query is filtered by. Zero means

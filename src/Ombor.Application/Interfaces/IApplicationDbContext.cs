@@ -88,6 +88,21 @@ public interface IApplicationDbContext
     DbSet<OrderLine> OrderLines { get; set; }
 
     /// <summary>
+    /// Gets or sets the inter-warehouse transfers.
+    /// </summary>
+    DbSet<Transfer> Transfers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the transfer lines.
+    /// </summary>
+    DbSet<TransferLine> TransferLines { get; set; }
+
+    /// <summary>
+    /// Gets or sets the audit log entries.
+    /// </summary>
+    DbSet<AuditEntry> AuditEntries { get; set; }
+
+    /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the save operation.</param>

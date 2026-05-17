@@ -10,6 +10,9 @@ public class Product : EntityBase, ITenantScoped
 {
     public int TenantId { get; set; }
 
+    /// <summary>Gets or sets whether the product is archived (soft-deleted).</summary>
+    public bool IsDeleted { get; set; }
+
     /// <summary>Gets or sets the product's name.</summary>
     public required string Name { get; set; }
 
