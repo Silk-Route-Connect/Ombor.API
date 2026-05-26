@@ -44,11 +44,14 @@ with the Warehouses/transfers work (Phase 3 items #4-5).
 
 ## Inter-warehouse transfers
 
-**Status:** entities done (2026-05-17); endpoint + logic pending (Phase 3 item #5)
+**Status:** complete (2026-05-17)
 **Severity:** blocker
 
-Done: `Transfer` (FromInventoryId, ToInventoryId, Status, Notes, lines) and `TransferLine` entities + EF config + migration.
-Pending: service, endpoint, atomic both-inventory update, audit.
+Done: `TransferService` + `TransfersController` (`GET`, `GET /{id}`, `POST /api/transfers`).
+`CreateAsync` moves stock atomically (single SaveChanges) — decrements the source
+`InventoryItem`, increments the destination, hard-blocks negative source stock, and carries
+the weighted-average cost with the goods. Transfers, transfer lines and the inventory-item
+changes are all audited via the audit interceptor.
 
 ## Transaction-to-warehouse linkage
 
@@ -98,11 +101,14 @@ back-filled after the row is written.
 
 ## Opening balance and opening stock as events
 
-**Status:** not started (confirmed by Phase 1 audit)
+**Status:** opening stock done (2026-05-17); opening balance pending
 **Severity:** important
 
-Current: opening balance/stock as raw number fields.
-Target: ledger events with actor and timestamp; balance/stock derived from event chain.
+Done: opening stock — `POST /api/inventories/{id}/opening-stock` creates `InventoryItem`
+rows with their initial weighted-average cost; the inserts are recorded by the audit
+interceptor (actor + timestamp), so opening stock is an auditable event.
+Pending: partner opening balance is still a raw field on partner creation — it needs the
+same auditable-event treatment.
 
 ## Cyrillic↔Latin search
 

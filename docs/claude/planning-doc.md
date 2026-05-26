@@ -6,7 +6,7 @@ Live document. Updated as phases progress. Master "where are we" reference.
 
 ## Current phase
 
-**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build items #1 (multi-tenancy), #2 (schema changes), and #3 (feature-divergence fixes) landed 2026-05-17. Next: build item #4 (Warehouses module) — and the deferred items from #3 (WriteOff create path, `QuantityInStock` removal).
+**Phase 3 — Build, in progress.** Phase 1 audit complete; gaps recorded in `tech-change-list.md`. Build items #1 (multi-tenancy), #2 (schema changes), #3 (feature-divergence fixes), #4 (Warehouses module) and #5 (inter-warehouse transfers) landed 2026-05-17. Next: build item #6 (Settings) — plus the deferred items (WriteOff create path, `QuantityInStock` removal, partner opening balance as an event).
 
 ---
 
@@ -70,8 +70,8 @@ In progress.
 1. ~~Multi-tenancy enforcement across all tenant-scoped entities~~ — **done 2026-05-17.** `Organization` renamed to `Tenant`; `ITenantScoped` + `TenantId` on every tenant-scoped entity; EF Core global query filters + insert stamping; `ITenantAccessor` reads the `tenant_id` JWT claim. Migration `Add_Multi_Tenancy`.
 2. ~~Schema changes for locked decisions~~ — **done 2026-05-17.** `IsDeleted` on Product/Partner; `AuditEntry` table; `OriginalTransactionId` + `InventoryId` on TransactionRecord; `AverageCost` on InventoryItem; `WriteOff` enum value; `Transfer`/`TransferLine` entities. Migration `Add_Audit_Transfer_And_Transaction_Schema`. Behavior for these lands in item #3.
 3. ~~Fix existing feature divergences from Phase 1 audit~~ — **done 2026-05-17.** Audit interceptor (`AuditSaveChangesInterceptor` → `AuditEntry`); refund validation (rules.md #2-6); `InventoryId` required + weighted-average cost recompute on stock-in with `InventoryItem` as the live stock source; soft-delete for Product/Partner; payroll PUT/DELETE removed; `Task.Delay` debug code removed. **Deferred:** WriteOff create path (needs nullable `PartnerId` — schema migration), full `Product.QuantityInStock` field removal, re-enabling SMS. See `tech-change-list.md`.
-4. Warehouses module
-5. Inter-warehouse transfers
+4. ~~Warehouses module~~ — **done 2026-05-17.** Opening stock — `POST /api/inventories/{id}/opening-stock` creates `InventoryItem` rows with their initial weighted-average cost (audited via the interceptor). `InventoryItemDto` now exposes `AverageCost`. Warehouse CRUD already existed.
+5. ~~Inter-warehouse transfers~~ — **done 2026-05-17.** `TransferService` + `TransfersController`; `POST /api/transfers` moves stock atomically (decrement source, increment destination, negative-stock blocked, weighted-average cost carried), audited. No migration — `Transfer`/`TransferLine` schema came from item #2.
 6. Settings
 7. Transaction POS view review and improvements
 8. Product details view review and improvements
@@ -102,6 +102,7 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Decisions log
 
+- 2026-05-17 — Phase 3 items #4-#5 landed: opening-stock endpoint (auditable `InventoryItem` creation) and inter-warehouse transfers (`TransferService`/`TransfersController`). Decisions: a transfer is a single atomic `SaveChanges` (no explicit DB transaction needed); stock moves at its carrying cost — weighted-average into the destination warehouse; opening stock is rejected for products already stocked (further stock comes via Supply); `InventoryItemDto` gained `AverageCost` but not `ProductName` (avoids navigation-load ripple — frontend resolves names). → `tech-change-list.md`
 - 2026-05-17 — Archive reworked: it is a *distinct* operation from deletion, not a replacement. Product and Partner each expose hard `DELETE` (refused when referenced by history, rules.md #16), `POST /{id}/archive`, and `POST /{id}/restore`; list endpoints take an `isArchived` flag. The flag was renamed `IsDeleted` → `IsArchived`. Migration `Rename_IsDeleted_To_IsArchived`. → `rules.md` #15-16, `tech-change-list.md`
 - 2026-05-17 — Phase 3 item #3 (feature-divergence fixes) landed: audit interceptor, refund validation (rules.md #2-6), weighted-average cost + `InventoryItem` as live stock source, hard delete + archive/restore for Product/Partner, payroll PUT/DELETE removed. Decisions made along the way: archived rows are filtered only from list endpoints (not a global filter) so transaction/order history can still resolve them; SaleRefund re-enters stock at carrying cost (weighted-average unchanged); WriteOff create path deferred because it needs a nullable `PartnerId` schema change. → `tech-change-list.md`
 - 2026-05-17 — Multi-tenancy concept renamed `Organization` → `Tenant` end-to-end (entity, service, DbSet, FK `OrganizationId` → `TenantId`, contracts). Tenant scoping enforced via `ITenantScoped` + EF Core global query filters; `TenantId` stamped on insert; tenant resolved from a `tenant_id` JWT claim by `ITenantAccessor`. Phase 3 build item #1 complete. → `rules.md` #7-8, `claude-context.md`, `tech-change-list.md`

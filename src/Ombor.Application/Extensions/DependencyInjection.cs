@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<ITransferService, TransferService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();

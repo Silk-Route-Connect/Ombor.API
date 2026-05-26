@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
@@ -73,6 +74,44 @@ internal sealed class InventoryService(
 
         context.Inventories.Remove(entity);
         await context.SaveChangesAsync();
+    }
+
+    public async Task<InventoryDto> AddOpeningStockAsync(AddOpeningStockRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var inventory = await GetOrThrowAsync(request.InventoryId);
+
+        var productIds = request.Items.Select(x => x.ProductId).ToArray();
+
+        var alreadyStocked = await context.InventoryItems
+            .Where(x => x.InventoryId == request.InventoryId && productIds.Contains(x.ProductId))
+            .Select(x => x.ProductId)
+            .ToArrayAsync();
+
+        if (alreadyStocked.Length > 0)
+        {
+            throw new ValidationException(
+                $"Products [{string.Join(", ", alreadyStocked)}] are already stocked in this warehouse. " +
+                "Use a Supply transaction to add more stock.");
+        }
+
+        foreach (var item in request.Items)
+        {
+            inventory.InventoryItems.Add(new InventoryItem
+            {
+                InventoryId = request.InventoryId,
+                ProductId = item.ProductId,
+                Quantity = item.Quantity,
+                AverageCost = item.UnitCost,
+                Inventory = null!,
+                Product = null!,
+            });
+        }
+
+        await context.SaveChangesAsync();
+
+        return inventory.ToDto();
     }
 
     private async Task<Inventory> GetOrThrowAsync(int id) =>

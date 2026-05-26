@@ -51,4 +51,14 @@ public interface IInventoryService
     /// <exception cref="ValidationException">If <paramref name="request"/> fails validation.</exception>
     /// <exception cref="EntityNotFoundException{partner}">If no inventory with the given ID exists.</exception>
     Task DeleteAsync(DeleteInventoryRequest request);
+
+    /// <summary>
+    /// Records the opening (initial) stock of a warehouse as an auditable stock-in event,
+    /// creating an inventory item per product with its initial weighted-average cost.
+    /// </summary>
+    /// <param name="request">The warehouse and the products/quantities/costs to stock in.</param>
+    /// <returns>The warehouse with its inventory items.</returns>
+    /// <exception cref="ValidationException">If validation fails or a product is already stocked.</exception>
+    /// <exception cref="EntityNotFoundException{Inventory}">If no warehouse with the given ID exists.</exception>
+    Task<InventoryDto> AddOpeningStockAsync(AddOpeningStockRequest request);
 }

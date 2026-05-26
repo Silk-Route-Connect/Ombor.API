@@ -15,7 +15,7 @@ public static class StartupExtensions
         var seeder = seederFactory.CreateSeeder();
         var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 
-        // await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
         // Seeding runs outside any HTTP request, so there is no tenant on the JWT.
