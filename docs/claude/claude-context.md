@@ -118,7 +118,7 @@ Scope locked, execution pending. Backend has most CRUD for products, partners, t
 
 - `PartnerType`: Customer, Supplier, Both
 - `ProductType`: Sale, Supply, All
-- `TransactionType`: Sale, Supply, SaleRefund, SupplyRefund — **needs WriteOff**
+- `TransactionType`: Sale, Supply, SaleRefund, SupplyRefund, WriteOff
 - `TransactionStatus`: Open, Closed, PartiallyPaid, Overdue
 - `PaymentType`: Transaction, Deposit, Withdrawal, Payroll, General
 - `PaymentDirection`: Income, Expense

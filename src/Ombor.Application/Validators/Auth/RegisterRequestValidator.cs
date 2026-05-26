@@ -55,7 +55,6 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .NotEmpty()
             .WithMessage("TenantName is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"TenantName must not exceed {ValidationConstants.DefaultStringLength} characters.")
-            .When(x => !string.IsNullOrWhiteSpace(x.TenantName));
+            .WithMessage($"TenantName must not exceed {ValidationConstants.DefaultStringLength} characters.");
     }
 }
