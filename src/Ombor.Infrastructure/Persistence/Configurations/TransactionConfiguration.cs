@@ -27,6 +27,20 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
+        builder
+            .HasOne(t => t.Inventory)
+            .WithMany()
+            .HasForeignKey(t => t.InventoryId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
+            .HasOne(t => t.OriginalTransaction)
+            .WithMany()
+            .HasForeignKey(t => t.OriginalTransactionId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
         builder.Ignore(t => t.UnpaidAmount);
 
         builder

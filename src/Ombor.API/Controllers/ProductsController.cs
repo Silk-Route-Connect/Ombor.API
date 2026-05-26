@@ -72,7 +72,6 @@ public sealed class ProductsController(IProductService productService) : Control
     public async Task<ActionResult<CreateProductResponse>> PostAsync(
         [FromForm] CreateProductRequest request)
     {
-        await Task.Delay(4000);
         var response = await productService.CreateAsync(request);
 
         return CreatedAtAction(
@@ -95,7 +94,6 @@ public sealed class ProductsController(IProductService productService) : Control
         [FromRoute] int id,
         [FromForm] UpdateProductRequest request)
     {
-        await Task.Delay(4000);
         if (id != request.Id)
         {
             return BadRequest(new ProblemDetails
@@ -122,6 +120,34 @@ public sealed class ProductsController(IProductService productService) : Control
         [FromRoute] DeleteProductRequest request)
     {
         await productService.DeleteAsync(request);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Archives a product. Archived products are hidden from default listings but can be restored.
+    /// </summary>
+    /// <param name="id">The ID of the product to archive.</param>
+    [HttpPost("{id:int:min(1)}/archive")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ArchiveAsync([FromRoute] int id)
+    {
+        await productService.ArchiveAsync(id);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Restores a previously archived product.
+    /// </summary>
+    /// <param name="id">The ID of the product to restore.</param>
+    [HttpPost("{id:int:min(1)}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RestoreAsync([FromRoute] int id)
+    {
+        await productService.RestoreAsync(id);
 
         return NoContent();
     }

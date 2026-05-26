@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
@@ -14,7 +15,9 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Partners.AsQueryable();
+        var query = context.Partners
+            .Where(x => x.IsArchived == (request.IsArchived ?? false))
+            .AsQueryable();
 
         var searchTerm = request.SearchTerm;
 
@@ -95,7 +98,35 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 
         var entity = await GetOrThrowAsync(request.Id);
 
+        var isReferenced =
+            await context.Transactions.AnyAsync(x => x.PartnerId == entity.Id) ||
+            await context.Payments.AnyAsync(x => x.PartnerId == entity.Id) ||
+            await context.Orders.AnyAsync(x => x.CustomerId == entity.Id) ||
+            await context.Templates.AnyAsync(x => x.PartnerId == entity.Id);
+
+        if (isReferenced)
+        {
+            throw new ValidationException(
+                "Partner cannot be deleted because it is referenced by transaction, payment, order or template records. Archive it instead.");
+        }
+
         context.Partners.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task ArchiveAsync(int id)
+    {
+        var entity = await GetOrThrowAsync(id);
+        entity.IsArchived = true;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        var entity = await GetOrThrowAsync(id);
+        entity.IsArchived = false;
+
         await context.SaveChangesAsync();
     }
 

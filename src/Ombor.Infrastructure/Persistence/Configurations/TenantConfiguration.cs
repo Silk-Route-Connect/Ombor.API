@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
-internal sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
+internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {
-    public void Configure(EntityTypeBuilder<Organization> builder)
+    public void Configure(EntityTypeBuilder<Tenant> builder)
     {
-        builder.ToTable(nameof(Organization));
+        builder.ToTable(nameof(Tenant));
 
         builder.HasKey(o => o.Id);
 

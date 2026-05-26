@@ -12,7 +12,9 @@ public sealed record CreateTransactionRequest(
     CreatePaymentRequest[] Payments,
     CreateDebtPaymentRequest[] DebtPayments,
     bool ShouldReturnChange,
-    IFormFile[] Attachments);
+    IFormFile[] Attachments,
+    int? InventoryId = null,
+    int? OriginalTransactionId = null);
 
 public sealed record CreateTransactionLine(
     int ProductId,

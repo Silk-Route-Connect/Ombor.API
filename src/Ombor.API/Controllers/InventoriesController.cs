@@ -105,4 +105,33 @@ public sealed class InventoriesController(IInventoryService inventoryService) : 
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Records the opening (initial) stock of a warehouse.
+    /// </summary>
+    /// <param name="id">The ID of the warehouse.</param>
+    /// <param name="request">The products, quantities and unit costs to stock in.</param>
+    /// <returns>The warehouse with its inventory items.</returns>
+    [HttpPost("{id:int:min(1)}/opening-stock")]
+    [ProducesResponseType(typeof(InventoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InventoryDto>> AddOpeningStockAsync(
+        [FromRoute] int id,
+        [FromBody] AddOpeningStockRequest request)
+    {
+        if (id != request.InventoryId)
+        {
+            return BadRequest(new ValidationProblemDetails
+            {
+                Title = "Id mismatch",
+                Detail = $"Route Id ({id}) does not match body InventoryId ({request.InventoryId}).",
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        var response = await inventoryService.AddOpeningStockAsync(request);
+
+        return Ok(response);
+    }
 }

@@ -103,13 +103,40 @@ internal sealed class ProductService(
         await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
-        context.Products.Remove(entity);
+
+        var isReferenced =
+            await context.TransactionLines.AnyAsync(x => x.ProductId == entity.Id) ||
+            await context.OrderLines.AnyAsync(x => x.ProductId == entity.Id);
+
+        if (isReferenced)
+        {
+            throw new ValidationException(
+                "Product cannot be deleted because it is referenced by transaction or order history. Archive it instead.");
+        }
+
         var imagesToDelete = entity.Images.Select(x => x.FileName).ToArray();
+
+        context.Products.Remove(entity);
+        await context.SaveChangesAsync();
 
         if (imagesToDelete.Length > 0)
         {
             await fileService.DeleteAsync(imagesToDelete, fileSettings.ProductUploadsSection);
         }
+    }
+
+    public async Task ArchiveAsync(int id)
+    {
+        var entity = await GetOrThrowAsync(id);
+        entity.IsArchived = true;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        var entity = await GetOrThrowAsync(id);
+        entity.IsArchived = false;
 
         await context.SaveChangesAsync();
     }
@@ -122,7 +149,9 @@ internal sealed class ProductService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.Products.AsNoTracking();
+        var query = context.Products
+            .AsNoTracking()
+            .Where(x => x.IsArchived == (request.IsArchived ?? false));
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {

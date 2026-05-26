@@ -55,7 +55,7 @@ public interface IApplicationDbContext
 
     DbSet<User> Users { get; set; }
 
-    DbSet<Organization> Organizations { get; set; }
+    DbSet<Tenant> Tenants { get; set; }
 
     DbSet<Role> Roles { get; set; }
 
@@ -86,6 +86,21 @@ public interface IApplicationDbContext
     /// Gets or sets the Order lines.
     /// </summary>
     DbSet<OrderLine> OrderLines { get; set; }
+
+    /// <summary>
+    /// Gets or sets the inter-warehouse transfers.
+    /// </summary>
+    DbSet<Transfer> Transfers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the transfer lines.
+    /// </summary>
+    DbSet<TransferLine> TransferLines { get; set; }
+
+    /// <summary>
+    /// Gets or sets the audit log entries.
+    /// </summary>
+    DbSet<AuditEntry> AuditEntries { get; set; }
 
     /// <summary>
     /// Saves all changes made in this context to the database.

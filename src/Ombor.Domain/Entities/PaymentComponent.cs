@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class PaymentComponent : EntityBase
+public class PaymentComponent : EntityBase, ITenantScoped, IAuditable
 {
+    public int TenantId { get; set; }
+
     public required decimal Amount { get; set; }
     public required decimal ExchangeRate { get; set; }
     public required string Currency { get; set; }

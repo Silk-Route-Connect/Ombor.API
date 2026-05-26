@@ -5,8 +5,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a product category containing zero or more products.
 /// </summary>
-public class Category : EntityBase
+public class Category : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     /// <summary>
     /// Gets or sets the name of the category.
     /// </summary>

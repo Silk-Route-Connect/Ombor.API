@@ -120,4 +120,32 @@ public sealed class PartnersController(
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Archives a partner. Archived partners are hidden from default listings but can be restored.
+    /// </summary>
+    /// <param name="id">The ID of the partner to archive.</param>
+    [HttpPost("{id:int:min(1)}/archive")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ArchiveAsync([FromRoute] int id)
+    {
+        await partnerService.ArchiveAsync(id);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Restores a previously archived partner.
+    /// </summary>
+    /// <param name="id">The ID of the partner to restore.</param>
+    [HttpPost("{id:int:min(1)}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RestoreAsync([FromRoute] int id)
+    {
+        await partnerService.RestoreAsync(id);
+
+        return NoContent();
+    }
 }

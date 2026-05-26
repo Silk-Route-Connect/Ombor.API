@@ -101,6 +101,18 @@ internal sealed class TransactionService(
         ArgumentNullException.ThrowIfNull(request);
         await validator.ValidateAndThrowAsync(request);
 
+        if (!request.InventoryId.HasValue)
+        {
+            throw new ValidationException("A warehouse (InventoryId) is required for the transaction.");
+        }
+
+        if (!await context.Inventories.AnyAsync(i => i.Id == request.InventoryId.Value))
+        {
+            throw new ValidationException($"Warehouse {request.InventoryId} does not exist.");
+        }
+
+        await ValidateRefundOrThrowAsync(request);
+
         var partner = await context.Partners
             .FirstOrDefaultAsync(x => x.Id == request.PartnerId)
             ?? throw new InvalidOperationException("Partner does not exist");
@@ -158,38 +170,154 @@ internal sealed class TransactionService(
     private static decimal CalculateLineTotal(CreateTransactionLine l)
         => l.UnitPrice * l.Quantity * (1 - (l.Discount / 100m));
 
-    // TODO: Add logic for refunds
+    /// <summary>
+    /// Applies the transaction's stock movement to <see cref="InventoryItem"/> rows of the
+    /// selected warehouse. InventoryItem is the sole source of truth for stock; weighted-average
+    /// cost is recomputed on every Supply stock-in. Negative stock is hard-blocked.
+    /// </summary>
     private async Task UpdateProducts(CreateTransactionRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var lineProducts = request.Lines
-            .ToDictionary(x => x.ProductId);
-        var productIds = lineProducts.Keys.ToArray();
-        var productsToUpdate = await context.Products
-            .Where(x => productIds.Contains(x.Id))
-            .ToArrayAsync();
+        var inventoryId = request.InventoryId!.Value;
+        var domainType = request.Type.ToDomainType();
+        var isStockIn = domainType is TransactionType.Supply or TransactionType.SaleRefund;
 
-        if (request.Type == Contracts.Enums.TransactionType.Supply)
-        {
-            foreach (var productToUpdate in productsToUpdate)
+        var lines = request.Lines
+            .GroupBy(x => x.ProductId)
+            .Select(g => new
             {
-                var lineProduct = lineProducts[productToUpdate.Id];
-                productToUpdate.QuantityInStock += lineProduct.Quantity;
+                ProductId = g.Key,
+                Quantity = g.Sum(l => l.Quantity),
+                IncomingValue = g.Sum(l => l.Quantity * l.UnitPrice),
+            })
+            .ToArray();
+        var productIds = lines.Select(x => x.ProductId).ToArray();
+
+        var items = await context.InventoryItems
+            .Where(x => x.InventoryId == inventoryId && productIds.Contains(x.ProductId))
+            .ToDictionaryAsync(x => x.ProductId);
+
+        foreach (var line in lines)
+        {
+            items.TryGetValue(line.ProductId, out var item);
+
+            if (isStockIn)
+            {
+                if (item is null)
+                {
+                    item = new InventoryItem
+                    {
+                        InventoryId = inventoryId,
+                        ProductId = line.ProductId,
+                        Quantity = 0,
+                        AverageCost = 0m,
+                        Inventory = null!,
+                        Product = null!,
+                    };
+                    context.InventoryItems.Add(item);
+                }
+
+                if (domainType == TransactionType.Supply)
+                {
+                    // Weighted-average cost recompute on stock-in (rules.md #10).
+                    var newQuantity = item.Quantity + line.Quantity;
+                    item.AverageCost = newQuantity == 0
+                        ? 0m
+                        : ((item.Quantity * item.AverageCost) + line.IncomingValue) / newQuantity;
+                    item.Quantity = newQuantity;
+                }
+                else
+                {
+                    // SaleRefund: returned goods re-enter at their existing carrying cost.
+                    item.Quantity += line.Quantity;
+                }
+            }
+            else
+            {
+                // Stock-out: Sale, SupplyRefund, WriteOff. Negative stock is hard-blocked.
+                if (item is null || item.Quantity < line.Quantity)
+                {
+                    throw new ValidationException(
+                        $"Insufficient stock for product {line.ProductId} in the selected warehouse.");
+                }
+
+                item.Quantity -= line.Quantity;
+            }
+        }
+    }
+
+    /// <summary>Validates refund-specific rules (rules.md #2-6).</summary>
+    private async Task ValidateRefundOrThrowAsync(CreateTransactionRequest request)
+    {
+        var domainType = request.Type.ToDomainType();
+        var isRefund = domainType is TransactionType.SaleRefund or TransactionType.SupplyRefund;
+
+        if (!isRefund)
+        {
+            if (request.OriginalTransactionId.HasValue)
+            {
+                throw new ValidationException("OriginalTransactionId is only valid for refund transactions.");
             }
 
             return;
         }
 
-        foreach (var productToUpdate in productsToUpdate)
+        if (!request.OriginalTransactionId.HasValue)
         {
-            var lineProduct = lineProducts[productToUpdate.Id];
-            if (productToUpdate.QuantityInStock < lineProduct.Quantity)
+            throw new ValidationException("Refund transactions require an OriginalTransactionId.");
+        }
+
+        var original = await context.Transactions
+            .Include(t => t.Lines)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == request.OriginalTransactionId.Value)
+            ?? throw new ValidationException($"Original transaction {request.OriginalTransactionId} not found.");
+
+        // Rule 4: a refund cannot itself be refunded.
+        if (original.Type is TransactionType.SaleRefund or TransactionType.SupplyRefund)
+        {
+            throw new ValidationException("A refund transaction cannot itself be refunded.");
+        }
+
+        // Rule 3: refund type must match the original type.
+        var expectedOriginalType = domainType == TransactionType.SaleRefund
+            ? TransactionType.Sale
+            : TransactionType.Supply;
+
+        if (original.Type != expectedOriginalType)
+        {
+            throw new ValidationException(
+                $"{domainType} must reference a {expectedOriginalType} transaction.");
+        }
+
+        // Rules 5-6: total refunded quantity per product must not exceed the original quantity.
+        var originalQuantities = original.Lines
+            .GroupBy(l => l.ProductId)
+            .ToDictionary(g => g.Key, g => g.Sum(l => l.Quantity));
+
+        var alreadyRefunded = await context.Transactions
+            .Where(t => t.OriginalTransactionId == original.Id)
+            .SelectMany(t => t.Lines)
+            .GroupBy(l => l.ProductId)
+            .Select(g => new { ProductId = g.Key, Quantity = g.Sum(l => l.Quantity) })
+            .ToDictionaryAsync(x => x.ProductId, x => x.Quantity);
+
+        foreach (var line in request.Lines)
+        {
+            if (!originalQuantities.TryGetValue(line.ProductId, out var originalQuantity))
             {
-                throw new ValidationException($"Product stock is not enough for sale."); // TODO: replace with domain exception
+                throw new ValidationException(
+                    $"Product {line.ProductId} is not part of the original transaction.");
             }
 
-            productToUpdate.QuantityInStock -= lineProduct.Quantity;
+            alreadyRefunded.TryGetValue(line.ProductId, out var refundedQuantity);
+
+            if (refundedQuantity + line.Quantity > originalQuantity)
+            {
+                throw new ValidationException(
+                    $"Refund quantity for product {line.ProductId} exceeds the original transaction quantity.");
+            }
         }
     }
 

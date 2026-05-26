@@ -6,4 +6,5 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="SearchTerm">
 ///  Optional case-insensitive term to filter by Name, Address, Email, CompanyName
 /// </param>
-public sealed record GetPartnersRequest(string? SearchTerm);
+/// <param name="IsArchived">When true, returns archived partners only; otherwise active partners only.</param>
+public sealed record GetPartnersRequest(string? SearchTerm, bool? IsArchived = null);

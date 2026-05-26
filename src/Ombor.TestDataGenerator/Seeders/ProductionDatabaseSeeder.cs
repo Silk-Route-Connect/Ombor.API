@@ -106,6 +106,8 @@ internal sealed class ProductionDatabaseSeeder(
         {
             int imagesCount = _random.Next(1, seedSettings.NumberOfMaxImagesPerProduct + 1);
 
+            _random.Shuffle(fileNames);
+
             foreach (var fileName in fileNames.Take(imagesCount))
             {
                 images.Add(new ProductImage

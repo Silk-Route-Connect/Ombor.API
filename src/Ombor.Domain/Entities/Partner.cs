@@ -6,8 +6,13 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a partner entity.
 /// </summary>
-public class Partner : EntityBase
+public class Partner : EntityBase, ITenantScoped
 {
+    public int TenantId { get; set; }
+
+    /// <summary>Gets or sets whether the partner is archived (hidden from default lists, restorable).</summary>
+    public bool IsArchived { get; set; }
+
     /// <summary>Gets or sets the name of the partner.</summary>
     public required string Name { get; set; }
 

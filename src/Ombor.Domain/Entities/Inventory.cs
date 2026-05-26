@@ -5,8 +5,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents an Inventory entity.
 /// </summary>
-public class Inventory : AuditableEntity
+public class Inventory : AuditableEntity, ITenantScoped
 {
+    public int TenantId { get; set; }
+
     /// <summary>Gets or sets the name of the inventory.</summary>
     public required string Name { get; set; }
 

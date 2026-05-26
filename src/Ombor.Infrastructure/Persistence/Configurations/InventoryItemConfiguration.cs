@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
@@ -28,6 +29,11 @@ internal sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Inve
 
         builder
             .Property(x => x.Quantity)
+            .IsRequired();
+
+        builder
+            .Property(x => x.AverageCost)
+            .HasCurrencyPrecision()
             .IsRequired();
 
         builder

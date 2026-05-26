@@ -7,6 +7,7 @@ using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Infrastructure.Persistence;
+using Ombor.Infrastructure.Persistence.Interceptors;
 using Ombor.Infrastructure.Services;
 using Ombor.Infrastructure.Storage;
 
@@ -23,8 +24,12 @@ public static class DependencyInjection
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<AuditSaveChangesInterceptor>();
+
+        services.AddDbContext<IApplicationDbContext, ApplicationDbContext>((serviceProvider, options) =>
+            options
+                .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                .AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>()));
 
         return services;
     }
@@ -71,6 +76,12 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
+        services.AddHttpContextAccessor();
+
+        services.AddScoped<ITenantAccessor, HttpContextTenantAccessor>();
+
+        services.AddScoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>();
+
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
 
         services.AddTransient<IFileStorage, LocalFileStorage>();
