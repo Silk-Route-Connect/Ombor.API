@@ -2,7 +2,7 @@
 
 namespace Ombor.Domain.Entities;
 
-public class User : AuditableEntity
+public class User : AuditableEntity, ITenantScoped
 {
     public required string FirstName { get; set; }
     public required string LastName { get; set; }

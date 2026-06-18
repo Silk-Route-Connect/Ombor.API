@@ -93,7 +93,6 @@ Early customers onboard: ice-cream reseller, vitamin importer, furniture reselle
 
 ## Open questions
 
-- Multi-tenancy implementation pattern in existing code (Phase 1 audit)
 - Data import scope and approach (revisit before first customer onboarding)
 - SQL Server backup strategy (before first customer)
 - Design system foundations: color palette, typography, MUI customization extent (Phase 2)

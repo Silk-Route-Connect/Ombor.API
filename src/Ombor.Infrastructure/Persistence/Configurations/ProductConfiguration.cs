@@ -57,7 +57,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .AutoInclude();
 
         builder
-            .HasIndex(x => x.SKU)
+            .HasIndex(x => new { x.TenantId, x.SKU })
             .IsUnique();
 
         #region Properties

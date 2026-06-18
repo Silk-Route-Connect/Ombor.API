@@ -88,16 +88,18 @@ internal class ApplicationDbContext(
 
     private void StampTenant()
     {
-        if (tenantAccessor.TenantId is not { } tenantId)
+        var tenantId = tenantAccessor.TenantId;
+
+        if (tenantId is null)
         {
             return;
         }
 
         foreach (var entry in ChangeTracker.Entries<ITenantScoped>())
         {
-            if (entry.State == EntityState.Added && entry.Entity.TenantId == 0)
+            if (entry.State == EntityState.Added)
             {
-                entry.Entity.TenantId = tenantId;
+                entry.Entity.TenantId = tenantId.Value;
             }
         }
     }

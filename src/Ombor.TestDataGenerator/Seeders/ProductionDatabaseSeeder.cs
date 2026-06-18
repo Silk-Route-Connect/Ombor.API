@@ -14,24 +14,34 @@ internal sealed class ProductionDatabaseSeeder(
     DataSeedSettings seedSettings,
     FileSettings fileSettings,
     IWebHostEnvironment env,
-    IImageThumbnailer thumbnailer) : SeederBase(fileSettings, env, thumbnailer), IDatabaseSeeder
+    IImageThumbnailer thumbnailer,
+    IPasswordHasher passwordHasher)
+    : SeederBase(seedSettings, fileSettings, env, thumbnailer, passwordHasher), IDatabaseSeeder
 {
     private readonly PaymentSeedSettings _paymentOptions = seedSettings.PaymentSettings;
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context)
+    public async Task SeedDatabaseAsync(IApplicationDbContext context, ITenantAccessor tenantAccessor)
     {
-        await AddCategoriesAsync(context);
-        await AddProductsAsync(context);
-        await AddEmployeesAsync(context);
-        await AddProductImagesAsync(context);
-        await AddPartnersAsync(context);
-        await AddTemplatesAsync(context);
-        await AddSalesAsync(context);
-        await AddSuppliesAsync(context);
-        await AddSaleRefundsAsync(context);
-        await AddSupplyRefundsAsync(context);
-        await AddPaymentsAsync(context);
-        await AddOrdersAsync(context);
+        var tenantIds = await EnsureTenantsWithUsersAsync(context);
+        var nameMap = await EnsureImagesCopiedAsync();
+
+        foreach (var tenantId in tenantIds)
+        {
+            tenantAccessor.SetTenant(tenantId);
+
+            await AddCategoriesAsync(context);
+            await AddProductsAsync(context);
+            await AddEmployeesAsync(context);
+            await AddProductImagesAsync(context, nameMap);
+            await AddPartnersAsync(context);
+            await AddTemplatesAsync(context);
+            await AddSalesAsync(context);
+            await AddSuppliesAsync(context);
+            await AddSaleRefundsAsync(context);
+            await AddSupplyRefundsAsync(context);
+            await AddPaymentsAsync(context);
+            await AddOrdersAsync(context);
+        }
     }
 
     private async Task AddCategoriesAsync(IApplicationDbContext context)
@@ -83,15 +93,12 @@ internal sealed class ProductionDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    private async Task AddProductImagesAsync(IApplicationDbContext context)
+    private async Task AddProductImagesAsync(IApplicationDbContext context, Dictionary<string, string> nameMap)
     {
         if (context.ProductImages.Any())
         {
             return;
         }
-
-        // Ensure seed images are in wwwroot and get the map of GUID → original name
-        var nameMap = await EnsureImagesCopiedAsync();
 
         var fileNames = nameMap.Keys.ToArray();
         if (fileNames.Length == 0)

@@ -156,7 +156,7 @@ This is capture, not true multi-currency. A partner's balance is stored in UZS. 
 
 Every tenant-scoped entity (Product, ProductImage, Partner, Category, Inventory, InventoryItem, TransactionRecord, TransactionLine, Payment, PaymentComponent, PaymentAllocation, PaymentAttachment, Template, TemplateItem, Employee, Order, OrderLine) is filtered by TenantId at the query layer. Users cannot see or affect data belonging to other tenants.
 
-**Acceptance:** with two test organizations and two test users, each user sees only their organization's data across every endpoint.
+**Acceptance:** with two test tenants and two test users, each user sees only their tenant's data across every endpoint.
 
 ---
 
@@ -225,7 +225,7 @@ Explicitly out of scope for v1. Listed so nobody adds them back without a decisi
 - Aging buckets (30/60/90 day reports)
 - Barcode scanning via camera
 - Mobile write flows (creating transactions, payments, orders from mobile)
-- Multi-user per organization, full role-based permissions
+- Multi-user per tenant, full role-based permissions
 - In-place editing of transactions or payments (always via reverse events in v1)
 - Data import/export for onboarding (flagged as critical for launch — must be designed and built before public launch, but scope and approach is a separate discussion)
 - Telegram bot integration for order capture (OrderSource field exists, integration does not)

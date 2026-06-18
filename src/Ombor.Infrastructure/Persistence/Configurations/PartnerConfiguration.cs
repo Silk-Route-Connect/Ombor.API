@@ -28,8 +28,7 @@ internal sealed class PartnerConfiguration : IEntityTypeConfiguration<Partner>
             .IsRequired(false);
 
         builder
-            .HasIndex(p => p.Name)
-            .IsUnique();
+            .HasIndex(p => p.Name);
 
         builder
             .Property(p => p.Name)

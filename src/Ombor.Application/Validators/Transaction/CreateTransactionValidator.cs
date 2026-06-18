@@ -32,5 +32,10 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
         RuleFor(x => x.Lines)
             .NotEmpty()
             .WithMessage("Transaction must contain at least one line item.");
+
+        RuleFor(x => x.OriginalTransactionId)
+            .NotNull()
+            .When(x => x.Type == Contracts.Enums.TransactionType.SaleRefund || x.Type == Contracts.Enums.TransactionType.SupplyRefund)
+            .WithMessage("OriginalTransactionId is required for refund transactions.");
     }
 }

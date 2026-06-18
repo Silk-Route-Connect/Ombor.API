@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
+using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.TestDataGenerator.Configurations;
 using Ombor.TestDataGenerator.Interfaces;
@@ -18,13 +19,14 @@ internal sealed class DatabaseSeederFactory(IServiceScopeFactory serviceScopeFac
         var fileSettings = scope.ServiceProvider.GetRequiredService<IOptions<FileSettings>>().Value;
         var hostEnvironment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
         var imageThumbnailer = scope.ServiceProvider.GetRequiredService<IImageThumbnailer>();
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
         return environment.EnvironmentName.ToLowerInvariant() switch
         {
-            "development" => new DevelopmentDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer),
-            "testing" => new TestingDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer),
-            "production" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer),
-            "staging" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer),
+            "development" => new DevelopmentDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
+            "testing" => new TestingDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
+            "production" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
+            "staging" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
             _ => throw new ArgumentOutOfRangeException($"Cannot create an instance of Database Seeder for environment: {environment.EnvironmentName}."),
         };
     }
