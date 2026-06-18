@@ -16,20 +16,80 @@ internal sealed class TestingDatabaseSeeder(
     DataSeedSettings seedSettings,
     FileSettings fileSettings,
     IWebHostEnvironment env,
-    IImageThumbnailer thumbnailer) : IDatabaseSeeder
+    IImageThumbnailer thumbnailer,
+    IPasswordHasher passwordHasher) : IDatabaseSeeder
 {
     private readonly Random _random = new();
     private readonly Faker _faker = new(seedSettings.Locale);
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context)
+    public async Task SeedDatabaseAsync(IApplicationDbContext context, ITenantAccessor tenantAccessor)
     {
-        await CreateCategoriesAsync(context);
-        await CreateProductsAsync(context);
-        await CreateProductImagesAsync(context);
-        await CreatePartners(context);
-        await AppEmployeesAsync(context);
-        await CreateInventoriesAsync(context);
-        await CreateInventoryItemsAsync(context);
+        var tenantIds = await EnsureTenantsWithUsersAsync(context);
+        var nameMap = await EnsureImagesCopiedAsync();
+
+        foreach (var tenantId in tenantIds)
+        {
+            tenantAccessor.SetTenant(tenantId);
+
+            await CreateCategoriesAsync(context);
+            await CreateProductsAsync(context);
+            await CreateProductImagesAsync(context, nameMap);
+            await CreatePartners(context);
+            await AppEmployeesAsync(context);
+            await CreateInventoriesAsync(context);
+            await CreateInventoryItemsAsync(context);
+        }
+    }
+
+    private async Task<int[]> EnsureTenantsWithUsersAsync(IApplicationDbContext context)
+    {
+        var tenants = context.Tenants
+            .OrderBy(t => t.Id)
+            .ToList();
+
+        for (var index = tenants.Count + 1; index <= seedSettings.NumberOfTenants; index++)
+        {
+            var tenant = new Tenant
+            {
+                Name = $"Demo Tenant {index}",
+                IsActive = true,
+            };
+            context.Tenants.Add(tenant);
+            await context.SaveChangesAsync(); // need tenant.Id for the role/user FKs
+
+            var role = new Role
+            {
+                Name = "Owner",
+                Description = "Seeded owner role.",
+                TenantId = tenant.Id,
+                Tenant = null! // set by EF Core via TenantId
+            };
+
+            var password = passwordHasher.HashPassword(seedSettings.SeedUserPassword);
+            var user = new User
+            {
+                FirstName = "Demo",
+                LastName = $"User {index}",
+                PhoneNumber = $"+9989000000{index:00}",
+                PasswordHash = password.Hash,
+                PasswordSalt = password.Salt,
+                IsPhoneNumberConfirmed = true,
+                TenantId = tenant.Id,
+                Tenant = null! // set by EF Core via TenantId
+            };
+            user.Roles.Add(role);
+
+            context.Roles.Add(role);
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            tenants.Add(tenant);
+        }
+
+        return tenants
+            .Take(seedSettings.NumberOfTenants)
+            .Select(t => t.Id)
+            .ToArray();
     }
 
     private async Task CreateCategoriesAsync(IApplicationDbContext context)
@@ -80,15 +140,12 @@ internal sealed class TestingDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    private async Task CreateProductImagesAsync(IApplicationDbContext context)
+    private async Task CreateProductImagesAsync(IApplicationDbContext context, Dictionary<string, string> nameMap)
     {
         if (context.ProductImages.Any())
         {
             return;
         }
-
-        // Ensure seed images are in wwwroot and get the map of GUID → original name
-        var nameMap = await EnsureImagesCopiedAsync();
 
         var fileNames = nameMap.Keys.ToArray();
         if (fileNames.Length == 0)
