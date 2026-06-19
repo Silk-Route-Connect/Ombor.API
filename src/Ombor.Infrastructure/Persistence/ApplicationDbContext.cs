@@ -79,11 +79,16 @@ internal class ApplicationDbContext(
     private void ApplyOrganizationQueryFilter<TEntity>(ModelBuilder modelBuilder)
         where TEntity : class, IOrganizationScoped
     {
-        modelBuilder.Entity<TEntity>()
-            .HasQueryFilter(e => CurrentOrganizationId == 0 || e.OrganizationId == CurrentOrganizationId);
+        var entity = modelBuilder.Entity<TEntity>();
 
-        modelBuilder.Entity<TEntity>()
-            .HasIndex(e => e.OrganizationId);
+        entity.HasQueryFilter(e => CurrentOrganizationId == 0 || e.OrganizationId == CurrentOrganizationId);
+
+        // Keyless projections (e.g. the PartnerBalance view) carry no table and cannot be indexed;
+        // they only need the filter so the view's rows are isolated per organization.
+        if (entity.Metadata.FindPrimaryKey() is not null)
+        {
+            entity.HasIndex(e => e.OrganizationId);
+        }
     }
 
     private void StampOrganization()
