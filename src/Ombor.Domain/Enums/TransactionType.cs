@@ -6,5 +6,4 @@ public enum TransactionType
     Supply = 2,
     SaleRefund = 3,
     SupplyRefund = 4,
-    WriteOff = 5,
 }

@@ -235,7 +235,7 @@ internal sealed class TransactionService(
             }
             else
             {
-                // Stock-out: Sale, SupplyRefund, WriteOff. Negative stock is hard-blocked.
+                // Stock-out: Sale, SupplyRefund. Negative stock is hard-blocked.
                 if (item is null || item.Quantity < line.Quantity)
                 {
                     throw new ValidationException(
