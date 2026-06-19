@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
@@ -38,5 +39,12 @@ internal sealed class OrderLineConfiguration : IEntityTypeConfiguration<OrderLin
             .Property(ol => ol.Discount)
             .HasCurrencyPrecision()
             .IsRequired(false);
+
+        builder
+            .Property(ol => ol.DiscountType)
+            .HasConversion<string>()
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasDefaultValue(DiscountType.Fixed)
+            .IsRequired();
     }
 }

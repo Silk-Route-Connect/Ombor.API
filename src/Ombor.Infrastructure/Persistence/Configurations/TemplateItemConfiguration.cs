@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
@@ -48,6 +49,13 @@ internal sealed class TemplateItemConfiguration : IEntityTypeConfiguration<Templ
         builder
             .Property(ti => ti.DiscountAmount)
             .HasCurrencyPrecision();
+
+        builder
+            .Property(ti => ti.DiscountType)
+            .HasConversion<string>()
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasDefaultValue(DiscountType.Fixed)
+            .IsRequired();
 
         #endregion
     }

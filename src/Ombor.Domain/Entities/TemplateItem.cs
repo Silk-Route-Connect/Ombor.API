@@ -1,4 +1,5 @@
 ﻿using Ombor.Domain.Common;
+using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
@@ -20,9 +21,15 @@ public class TemplateItem : AuditableEntity, IOrganizationScoped
     public decimal UnitPrice { get; set; }
 
     /// <summary>
-    /// Gets or sets discount amount (not in percentage) of the <see cref="TemplateItem"/>.
+    /// Gets or sets the discount value of the <see cref="TemplateItem"/>, interpreted by <see cref="DiscountType"/>.
     /// </summary>
     public decimal DiscountAmount { get; set; }
+
+    /// <summary>
+    /// Gets or sets how <see cref="DiscountAmount"/> is interpreted (rule 37). Defaults to Fixed.
+    /// Persisted so a fixed discount survives a template → transaction load without rescaling.
+    /// </summary>
+    public DiscountType DiscountType { get; set; } = DiscountType.Fixed;
 
     /// <summary>
     /// Gets or sets Product ID of the <see cref="TemplateItem"/>.

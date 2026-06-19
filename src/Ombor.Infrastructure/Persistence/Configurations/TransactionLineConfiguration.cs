@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
@@ -40,6 +41,13 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
         builder
             .Property(tl => tl.Quantity)
             .HasCurrencyPrecision()
+            .IsRequired();
+
+        builder
+            .Property(tl => tl.DiscountType)
+            .HasConversion<string>()
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasDefaultValue(DiscountType.Percentage)
             .IsRequired();
 
         builder.Ignore(tl => tl.Total);
