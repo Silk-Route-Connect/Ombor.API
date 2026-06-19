@@ -2,9 +2,9 @@
 
 namespace Ombor.Domain.Entities;
 
-public class PaymentAttachment : EntityBase, ITenantScoped
+public class PaymentAttachment : EntityBase, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public required string FileId { get; set; }
     public required string FileName { get; set; }

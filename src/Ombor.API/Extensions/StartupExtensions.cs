@@ -17,12 +17,12 @@ public static class StartupExtensions
         // await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
-        // Seeding runs outside any HTTP request, so there is no tenant on the JWT.
-        // The seeder creates the tenants and pins each one (via this accessor, which
-        // shares the context's scope) before stamping that tenant's seeded rows.
-        var tenantAccessor = scope.ServiceProvider.GetRequiredService<ITenantAccessor>();
+        // Seeding runs outside any HTTP request, so there is no organization on the JWT.
+        // The seeder creates the organizations and pins each one (via this accessor, which
+        // shares the context's scope) before stamping that organization's seeded rows.
+        var organizationAccessor = scope.ServiceProvider.GetRequiredService<IOrganizationAccessor>();
 
-        await seeder.SeedDatabaseAsync(context, tenantAccessor);
+        await seeder.SeedDatabaseAsync(context, organizationAccessor);
 
         return app;
     }

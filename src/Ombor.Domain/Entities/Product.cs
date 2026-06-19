@@ -6,9 +6,9 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a product with pricing, stock, and categorization information.
 /// </summary>
-public class Product : EntityBase, ITenantScoped
+public class Product : EntityBase, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     /// <summary>Gets or sets whether the product is archived (hidden from default lists, restorable).</summary>
     public bool IsArchived { get; set; }

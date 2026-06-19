@@ -4,11 +4,11 @@ using Ombor.Domain.Entities;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
-internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
+internal sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 {
-    public void Configure(EntityTypeBuilder<Tenant> builder)
+    public void Configure(EntityTypeBuilder<Organization> builder)
     {
-        builder.ToTable(nameof(Tenant));
+        builder.ToTable(nameof(Organization));
 
         builder.HasKey(o => o.Id);
 

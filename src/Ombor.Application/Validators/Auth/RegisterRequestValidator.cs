@@ -51,10 +51,10 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .WithMessage($"TelegramAccount must not exceed {ValidationConstants.DefaultStringLength} characters.")
             .When(x => !string.IsNullOrWhiteSpace(x.TelegramAccount));
 
-        RuleFor(x => x.TenantName)
+        RuleFor(x => x.OrganizationName)
             .NotEmpty()
-            .WithMessage("TenantName is required.")
+            .WithMessage("OrganizationName is required.")
             .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"TenantName must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .WithMessage($"OrganizationName must not exceed {ValidationConstants.DefaultStringLength} characters.");
     }
 }

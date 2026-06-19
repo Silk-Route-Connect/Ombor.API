@@ -20,14 +20,14 @@ internal sealed class DevelopmentDatabaseSeeder(
 {
     private readonly PaymentSeedSettings _paymentOptions = seedSettings.PaymentSettings;
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context, ITenantAccessor tenantAccessor)
+    public async Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
     {
-        var tenantIds = await EnsureTenantsWithUsersAsync(context);
+        var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();
 
-        foreach (var tenantId in tenantIds)
+        foreach (var organizationId in organizationIds)
         {
-            tenantAccessor.SetTenant(tenantId);
+            organizationAccessor.SetOrganization(organizationId);
 
             await AddCategoriesAsync(context);
             await AddProductsAsync(context);

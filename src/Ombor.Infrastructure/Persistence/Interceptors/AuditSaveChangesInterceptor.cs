@@ -89,7 +89,7 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
                 NewValues = newValues,
                 UserId = currentUser.UserId,
                 TimestampUtc = DateTimeOffset.UtcNow,
-                TenantId = (entry.Entity as ITenantScoped)?.TenantId ?? 0,
+                OrganizationId = (entry.Entity as IOrganizationScoped)?.OrganizationId ?? 0,
             };
 
             context.Add(audit);

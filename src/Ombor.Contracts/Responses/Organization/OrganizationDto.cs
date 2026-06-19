@@ -1,6 +1,6 @@
-namespace Ombor.Contracts.Responses.Tenant;
+namespace Ombor.Contracts.Responses.Organization;
 
-public sealed record TenantDto(
+public sealed record OrganizationDto(
     int Id,
     string Name,
     bool IsActive,

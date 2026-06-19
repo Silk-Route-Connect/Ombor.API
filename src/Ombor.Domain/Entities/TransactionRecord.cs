@@ -3,9 +3,9 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class TransactionRecord : EntityBase, ITenantScoped, IAuditable
+public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public decimal TotalDue { get; set; }
     public decimal TotalPaid { get; set; }

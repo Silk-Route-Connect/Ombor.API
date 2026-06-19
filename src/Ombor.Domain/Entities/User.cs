@@ -2,7 +2,7 @@
 
 namespace Ombor.Domain.Entities;
 
-public class User : AuditableEntity, ITenantScoped
+public class User : AuditableEntity, IOrganizationScoped
 {
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
@@ -13,8 +13,8 @@ public class User : AuditableEntity, ITenantScoped
     public string? Email { get; set; }
     public bool IsPhoneNumberConfirmed { get; set; }
 
-    public int TenantId { get; set; }
-    public required virtual Tenant Tenant { get; set; }
+    public int OrganizationId { get; set; }
+    public required virtual Organization Organization { get; set; }
 
     public virtual ICollection<Role> Roles { get; set; }
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; }

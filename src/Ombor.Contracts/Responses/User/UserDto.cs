@@ -1,4 +1,4 @@
-﻿using Ombor.Contracts.Responses.Tenant;
+﻿using Ombor.Contracts.Responses.Organization;
 
 namespace Ombor.Contracts.Responses.User;
 
@@ -9,6 +9,6 @@ public sealed record UserDto(
     string PhoneNumber,
     string? Email,
     string? TelegramAccount,
-    TenantDto Tenant,
+    OrganizationDto Organization,
     List<string> Roles,
     List<string> Permissions);

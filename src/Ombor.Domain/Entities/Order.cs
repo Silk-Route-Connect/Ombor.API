@@ -3,9 +3,9 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class Order : AuditableEntity, ITenantScoped
+public class Order : AuditableEntity, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public required string OrderNumber { get; set; }
     public string? Notes { get; set; }

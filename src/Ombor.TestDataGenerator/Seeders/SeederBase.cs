@@ -24,33 +24,33 @@ internal abstract class SeederBase(
     protected readonly FileSettings fileSettings = fileSettings;
 
     /// <summary>
-    /// Ensures <see cref="DataSeedSettings.NumberOfTenants"/> tenants exist, each with a
-    /// loginable owner <see cref="User"/> and <see cref="Role"/>. Tenants, users and roles
-    /// are not <c>ITenantScoped</c>, so they are created with no tenant pinned (the global
-    /// query filter and insert stamping are bypassed). Returns the tenant ids to seed.
+    /// Ensures <see cref="DataSeedSettings.NumberOfOrganizations"/> organizations exist, each with a
+    /// loginable owner <see cref="User"/> and <see cref="Role"/>. Organizations, users and roles
+    /// are not <c>IOrganizationScoped</c>, so they are created with no organization pinned (the global
+    /// query filter and insert stamping are bypassed). Returns the organization ids to seed.
     /// </summary>
-    protected async Task<int[]> EnsureTenantsWithUsersAsync(IApplicationDbContext context)
+    protected async Task<int[]> EnsureOrganizationsWithUsersAsync(IApplicationDbContext context)
     {
-        var tenants = context.Tenants
+        var organizations = context.Organizations
             .OrderBy(t => t.Id)
             .ToList();
 
-        for (var index = tenants.Count + 1; index <= seedSettings.NumberOfTenants; index++)
+        for (var index = organizations.Count + 1; index <= seedSettings.NumberOfOrganizations; index++)
         {
-            var tenant = new Tenant
+            var organization = new Organization
             {
-                Name = $"Demo Tenant {index}",
+                Name = $"Demo Organization {index}",
                 IsActive = true,
             };
-            context.Tenants.Add(tenant);
-            await context.SaveChangesAsync(); // need tenant.Id for the role/user FKs
+            context.Organizations.Add(organization);
+            await context.SaveChangesAsync(); // need organization.Id for the role/user FKs
 
             var role = new Role
             {
                 Name = "Owner",
                 Description = "Seeded owner role.",
-                TenantId = tenant.Id,
-                Tenant = null! // set by EF Core via TenantId
+                OrganizationId = organization.Id,
+                Organization = null! // set by EF Core via OrganizationId
             };
 
             var password = passwordHasher.HashPassword(seedSettings.SeedUserPassword);
@@ -62,8 +62,8 @@ internal abstract class SeederBase(
                 PasswordHash = password.Hash,
                 PasswordSalt = password.Salt,
                 IsPhoneNumberConfirmed = true,
-                TenantId = tenant.Id,
-                Tenant = null! // set by EF Core via TenantId
+                OrganizationId = organization.Id,
+                Organization = null! // set by EF Core via OrganizationId
             };
             user.Roles.Add(role);
 
@@ -71,11 +71,11 @@ internal abstract class SeederBase(
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
-            tenants.Add(tenant);
+            organizations.Add(organization);
         }
 
-        return tenants
-            .Take(seedSettings.NumberOfTenants)
+        return organizations
+            .Take(seedSettings.NumberOfOrganizations)
             .Select(t => t.Id)
             .ToArray();
     }

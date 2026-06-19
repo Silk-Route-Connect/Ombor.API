@@ -3,9 +3,9 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class PaymentAllocation : EntityBase, ITenantScoped, IAuditable
+public class PaymentAllocation : EntityBase, IOrganizationScoped, IAuditable
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public decimal Amount { get; set; }
     public PaymentAllocationType Type { get; set; }

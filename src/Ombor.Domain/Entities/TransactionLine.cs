@@ -2,9 +2,9 @@
 
 namespace Ombor.Domain.Entities;
 
-public class TransactionLine : EntityBase, ITenantScoped
+public class TransactionLine : EntityBase, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public decimal UnitPrice { get; set; }
     public decimal Discount { get; set; }

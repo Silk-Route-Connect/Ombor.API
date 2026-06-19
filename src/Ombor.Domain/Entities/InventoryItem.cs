@@ -5,9 +5,9 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a single item of a <see cref="Inventory"/>.
 /// </summary>
-public class InventoryItem : EntityBase, ITenantScoped, IAuditable
+public class InventoryItem : EntityBase, IOrganizationScoped, IAuditable
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     /// <summary>
     /// Gets or sets the weighted-average unit cost, updated atomically on every stock-in event.

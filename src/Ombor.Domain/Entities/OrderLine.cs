@@ -2,9 +2,9 @@
 
 namespace Ombor.Domain.Entities;
 
-public class OrderLine : AuditableEntity, ITenantScoped
+public class OrderLine : AuditableEntity, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public required int Quantity { get; set; }
     public required decimal UnitPrice { get; set; }

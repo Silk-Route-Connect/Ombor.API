@@ -2,12 +2,12 @@
 
 namespace Ombor.Domain.Entities;
 
-public class Role : EntityBase, ITenantScoped
+public class Role : EntityBase, IOrganizationScoped
 {
     public required string Name { get; set; }
     public string? Description { get; set; }
-    public int TenantId { get; set; }
-    public required virtual Tenant Tenant { get; set; }
+    public int OrganizationId { get; set; }
+    public required virtual Organization Organization { get; set; }
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Permission> Permissions { get; set; }
 

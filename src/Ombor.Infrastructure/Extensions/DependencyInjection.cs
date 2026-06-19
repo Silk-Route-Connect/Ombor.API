@@ -78,7 +78,7 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
 
-        services.AddScoped<ITenantAccessor, HttpContextTenantAccessor>();
+        services.AddScoped<IOrganizationAccessor, HttpContextOrganizationAccessor>();
 
         services.AddScoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>();
 

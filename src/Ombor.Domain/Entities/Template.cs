@@ -6,9 +6,9 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a template for transaction entities such as Sale and Supply.
 /// </summary>
-public class Template : AuditableEntity, ITenantScoped
+public class Template : AuditableEntity, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     /// <summary>
     /// Gets or sets name of the <see cref="Template"/>.

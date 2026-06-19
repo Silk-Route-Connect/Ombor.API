@@ -18,7 +18,7 @@ internal sealed class AuthService(
     IJwtTokenService tokenService,
     IOtpCodeProvider otpCodeProvider,
     IPasswordHasher passwordHasher,
-    ITenantService tenantService,
+    IOrganizationService organizationService,
     IOptions<JwtSettings> jwtSettings) : IAuthService
 {
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
@@ -67,7 +67,7 @@ internal sealed class AuthService(
             return new VerifyOtpResponse();
         }
 
-        var tenant = await tenantService.CreateAsync(registerRequest.TenantName);
+        var organization = await organizationService.CreateAsync(registerRequest.OrganizationName);
 
         var passwordHash = passwordHasher.HashPassword(registerRequest.Password);
 
@@ -81,8 +81,8 @@ internal sealed class AuthService(
             PasswordHash = passwordHash.Hash,
             PasswordSalt = passwordHash.Salt,
             IsPhoneNumberConfirmed = true,
-            TenantId = tenant.Id,
-            Tenant = null! // To be set by EF Core
+            OrganizationId = organization.Id,
+            Organization = null! // To be set by EF Core
         };
 
         context.Users.Add(newUser);

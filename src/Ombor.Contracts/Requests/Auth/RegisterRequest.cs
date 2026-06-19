@@ -6,6 +6,6 @@ public sealed record RegisterRequest(
     string PhoneNumber,
     string Password,
     string ConfirmPassword,
-    string TenantName,
+    string OrganizationName,
     string? Email,
     string? TelegramAccount);

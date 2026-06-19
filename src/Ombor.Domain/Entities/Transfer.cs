@@ -7,9 +7,9 @@ namespace Ombor.Domain.Entities;
 /// An inter-warehouse stock transfer: decrements the source inventory and increments
 /// the destination inventory as one tracked operation.
 /// </summary>
-public class Transfer : EntityBase, ITenantScoped, IAuditable
+public class Transfer : EntityBase, IOrganizationScoped, IAuditable
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public DateTimeOffset DateUtc { get; set; }
     public TransferStatus Status { get; set; }

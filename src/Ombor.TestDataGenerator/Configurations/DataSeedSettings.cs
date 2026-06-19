@@ -10,8 +10,8 @@ public sealed class DataSeedSettings
     [AllowedValues(["en", "ru"], ErrorMessage = "Only 'en' and 'ru' locales are allowed")]
     public required string Locale { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of tenants.")]
-    public int NumberOfTenants { get; set; } = 3;
+    [Range(1, int.MaxValue, ErrorMessage = "Invalid number of organizations.")]
+    public int NumberOfOrganizations { get; set; } = 3;
 
     public string SeedUserPassword { get; set; } = "Password123!";
 

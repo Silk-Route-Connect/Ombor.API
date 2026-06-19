@@ -8,7 +8,7 @@ namespace Ombor.Infrastructure.Persistence;
 
 internal class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
-    ITenantAccessor tenantAccessor)
+    IOrganizationAccessor organizationAccessor)
     : DbContext(options), IApplicationDbContext
 {
     public virtual DbSet<Category> Categories { get; set; }
@@ -29,7 +29,7 @@ internal class ApplicationDbContext(
     public virtual DbSet<PaymentAttachment> PaymentAttachments { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
-    public virtual DbSet<Tenant> Tenants { get; set; }
+    public virtual DbSet<Organization> Organizations { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     public virtual DbSet<Order> Orders { get; set; }
@@ -39,21 +39,21 @@ internal class ApplicationDbContext(
     public virtual DbSet<AuditEntry> AuditEntries { get; set; }
 
     /// <summary>
-    /// Tenant every <see cref="ITenantScoped"/> query is filtered by. Zero means
-    /// "no tenant context" (seeding, design-time tooling) and bypasses the filter.
+    /// Organization every <see cref="IOrganizationScoped"/> query is filtered by. Zero means
+    /// "no organization context" (seeding, design-time tooling) and bypasses the filter.
     /// </summary>
-    public int CurrentTenantId => tenantAccessor.TenantId ?? 0;
+    public int CurrentOrganizationId => organizationAccessor.OrganizationId ?? 0;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         var applyFilter = typeof(ApplicationDbContext)
-            .GetMethod(nameof(ApplyTenantQueryFilter), BindingFlags.Instance | BindingFlags.NonPublic)!;
+            .GetMethod(nameof(ApplyOrganizationQueryFilter), BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(ITenantScoped).IsAssignableFrom(entityType.ClrType))
+            if (typeof(IOrganizationScoped).IsAssignableFrom(entityType.ClrType))
             {
                 applyFilter.MakeGenericMethod(entityType.ClrType).Invoke(this, [modelBuilder]);
             }
@@ -64,42 +64,42 @@ internal class ApplicationDbContext(
 
     public override int SaveChanges()
     {
-        StampTenant();
+        StampOrganization();
 
         return base.SaveChanges();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        StampTenant();
+        StampOrganization();
 
         return base.SaveChangesAsync(cancellationToken);
     }
 
-    private void ApplyTenantQueryFilter<TEntity>(ModelBuilder modelBuilder)
-        where TEntity : class, ITenantScoped
+    private void ApplyOrganizationQueryFilter<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class, IOrganizationScoped
     {
         modelBuilder.Entity<TEntity>()
-            .HasQueryFilter(e => CurrentTenantId == 0 || e.TenantId == CurrentTenantId);
+            .HasQueryFilter(e => CurrentOrganizationId == 0 || e.OrganizationId == CurrentOrganizationId);
 
         modelBuilder.Entity<TEntity>()
-            .HasIndex(e => e.TenantId);
+            .HasIndex(e => e.OrganizationId);
     }
 
-    private void StampTenant()
+    private void StampOrganization()
     {
-        var tenantId = tenantAccessor.TenantId;
+        var organizationId = organizationAccessor.OrganizationId;
 
-        if (tenantId is null)
+        if (organizationId is null)
         {
             return;
         }
 
-        foreach (var entry in ChangeTracker.Entries<ITenantScoped>())
+        foreach (var entry in ChangeTracker.Entries<IOrganizationScoped>())
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.TenantId = tenantId.Value;
+                entry.Entity.OrganizationId = organizationId.Value;
             }
         }
     }

@@ -4,5 +4,5 @@ namespace Ombor.TestDataGenerator.Interfaces;
 
 public interface IDatabaseSeeder
 {
-    Task SeedDatabaseAsync(IApplicationDbContext context, ITenantAccessor tenantAccessor);
+    Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor);
 }

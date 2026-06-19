@@ -7,9 +7,9 @@ namespace Ombor.Domain.Entities;
 /// Immutable audit record for a money- or stock-affecting change. Written by the audit
 /// interceptor; never edited or deleted.
 /// </summary>
-public class AuditEntry : EntityBase, ITenantScoped
+public class AuditEntry : EntityBase, IOrganizationScoped
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     /// <summary>The entity type that changed, e.g. "TransactionRecord".</summary>
     public required string EntityType { get; set; }

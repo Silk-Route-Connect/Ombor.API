@@ -5,9 +5,9 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// A single product line of a <see cref="Transfer"/>.
 /// </summary>
-public class TransferLine : EntityBase, ITenantScoped, IAuditable
+public class TransferLine : EntityBase, IOrganizationScoped, IAuditable
 {
-    public int TenantId { get; set; }
+    public int OrganizationId { get; set; }
 
     public decimal Quantity { get; set; }
 
