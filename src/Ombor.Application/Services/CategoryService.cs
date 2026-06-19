@@ -25,7 +25,7 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
         return query
             .AsNoTracking()
             .OrderBy(x => x.Name)
-            .Select(x => new CategoryDto(x.Id, x.Name, x.Description))
+            .Select(x => new CategoryDto(x.Id, x.Name, x.Description, x.Products.Count))
             .ToArrayAsync();
     }
 
@@ -33,9 +33,13 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var entity = await GetOrThrowAsync(request.Id);
+        var dto = await context.Categories
+            .AsNoTracking()
+            .Where(x => x.Id == request.Id)
+            .Select(x => new CategoryDto(x.Id, x.Name, x.Description, x.Products.Count))
+            .FirstOrDefaultAsync();
 
-        return entity.ToDto();
+        return dto ?? throw new EntityNotFoundException<Category>(request.Id);
     }
 
     public async Task<CreateCategoryResponse> CreateAsync(CreateCategoryRequest request)
@@ -66,6 +70,14 @@ internal sealed class CategoryService(IApplicationDbContext context, IRequestVal
         await validator.ValidateAndThrowAsync(request);
 
         var entity = await GetOrThrowAsync(request.Id);
+
+        // Reference gate (rule 32 / contract §3): a category referenced by products
+        // is not deletable. Archive is not offered for categories, so this is a hard 409.
+        var productCount = await context.Products.CountAsync(p => p.CategoryId == request.Id);
+        if (productCount > 0)
+        {
+            throw new ConflictException($"Категория содержит {productCount} товаров.");
+        }
 
         context.Categories.Remove(entity);
         await context.SaveChangesAsync();

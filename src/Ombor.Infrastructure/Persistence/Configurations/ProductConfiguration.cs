@@ -17,7 +17,9 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasOne(p => p.Category)
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade)
+            // Restrict, not Cascade: deleting a referenced category is gated with a 409,
+            // never cascaded into its products.
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
         builder

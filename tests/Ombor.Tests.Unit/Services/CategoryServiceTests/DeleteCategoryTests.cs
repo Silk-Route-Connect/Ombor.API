@@ -51,6 +51,7 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
 
         var mockSet = SetupCategories([.. _defaultCategories, categoryToDelete]);
         mockSet.Setup(mock => mock.Remove(categoryToDelete));
+        SetupProducts([]); // no products reference the category, so the delete is allowed
 
         _mockContext.Setup(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
@@ -63,6 +64,32 @@ public sealed class DeleteCategoryTests : CategoryTestsBase
         mockSet.Verify(mock => mock.Remove(categoryToDelete), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Categories, Times.Exactly(2));
+        _mockContext.Verify(mock => mock.Products, Times.Once);
+
+        VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldThrowConflict_WhenCategoryHasProducts()
+    {
+        // Arrange
+        var categoryToDelete = CreateCategory();
+        var request = new DeleteCategoryRequest(categoryToDelete.Id);
+
+        SetupCategories([.. _defaultCategories, categoryToDelete]);
+        var product = _builder.ProductBuilder
+            .WithCategoryId(categoryToDelete.Id)
+            .Build();
+        SetupProducts([product]);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ConflictException>(
+            () => _service.DeleteAsync(request));
+
+        _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        _mockContext.Verify(mock => mock.Categories, Times.Once);
+        _mockContext.Verify(mock => mock.Products, Times.Once);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 
         VerifyNoOtherCalls();
     }

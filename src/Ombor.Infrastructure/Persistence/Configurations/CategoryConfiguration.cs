@@ -15,7 +15,9 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasMany(c => c.Products)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId)
-            .OnDelete(DeleteBehavior.Cascade)
+            // Restrict, not Cascade: a category referenced by products cannot be deleted
+            // (the service returns 409). Deleting it must never silently delete its products.
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
         #region Properties

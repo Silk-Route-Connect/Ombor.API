@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Category;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -38,5 +39,38 @@ public class GetCategoryByIdTests(TestingWebApplicationFactory factory, ITestOut
 
         // Assert
         response.ShouldBeNotFound<Category>(NonExistentEntityId);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnComputedProductCount()
+    {
+        // Arrange
+        var category = _builder.CategoryBuilder
+            .WithName("Category With Products")
+            .Build();
+        var categoryId = await CreateCategoryAsync(category);
+        await AddProductAsync(categoryId);
+        await AddProductAsync(categoryId);
+        var url = GetUrl(categoryId);
+
+        // Act
+        var response = await _client.GetAsync<CategoryDto>(url);
+
+        // Assert
+        Assert.Equal(2, response.ProductCount);
+    }
+
+    private async Task AddProductAsync(int categoryId)
+    {
+        _context.Products.Add(new Product
+        {
+            Name = "Counted Product",
+            SKU = $"SKU {Guid.NewGuid()}",
+            Measurement = UnitOfMeasurement.Unit,
+            CategoryId = categoryId,
+            Category = null!,
+        });
+
+        await _context.SaveChangesAsync();
     }
 }

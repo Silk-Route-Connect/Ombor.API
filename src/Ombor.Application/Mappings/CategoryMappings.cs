@@ -9,7 +9,8 @@ internal static class CategoryMappings
     public static CategoryDto ToDto(this Category category) =>
         new(category.Id,
             category.Name,
-            category.Description);
+            category.Description,
+            category.Products.Count);
 
     public static Category ToEntity(this CreateCategoryRequest request) =>
         new()
