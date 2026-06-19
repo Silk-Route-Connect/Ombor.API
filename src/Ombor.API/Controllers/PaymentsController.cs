@@ -19,9 +19,13 @@ public class PaymentsController(IPaymentService paymentService) : ControllerBase
     }
 
     [HttpGet("{id:int:min(1)}")]
+    [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PaymentDto>> GetPaymentByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var payment = await paymentService.GetByIdAsync(id);
+
+        return Ok(payment);
     }
 
     [HttpPost]

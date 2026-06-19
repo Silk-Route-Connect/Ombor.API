@@ -233,6 +233,34 @@ internal sealed class PaymentService(
             .ToArray();
     }
 
+    public async Task<PaymentDto> GetByIdAsync(int id)
+    {
+        var payment = await context.Payments
+            .Include(x => x.Partner)
+            .Include(x => x.Employee)
+            .Include(x => x.Components)
+            .Include(x => x.Allocations)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new EntityNotFoundException<Payment>(id);
+
+        return new PaymentDto(
+            payment.Id,
+            payment.PartnerId,
+            payment.Partner?.Name,
+            payment.EmployeeId,
+            payment.Employee?.FullName,
+            payment.Notes,
+            payment.Type == PaymentType.Payroll
+                ? payment.Components.Sum(c => c.Amount * c.ExchangeRate)
+                : payment.Allocations.Sum(a => a.Amount),
+            payment.DateUtc,
+            payment.Direction.ToString(),
+            payment.Type.ToString(),
+            [.. payment.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
+            [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
+    }
+
     public async Task<TransactionPaymentDto[]> GetTransactionPaymentsAsync(GetTransactionPaymentsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
