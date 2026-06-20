@@ -39,21 +39,5 @@ internal sealed class PaymentComponentConfiguration : IEntityTypeConfiguration<P
             .Property(pc => pc.Amount)
             .HasCurrencyPrecision()
             .IsRequired();
-
-        builder
-            .Property(pc => pc.ExchangeRate)
-            .HasCurrencyPrecision()
-            .IsRequired();
-
-        builder
-            .Property(pc => pc.Currency)
-            .HasMaxLength(ConfigurationConstants.EnumLength)
-            .IsRequired();
-
-        builder
-            .Property(pc => pc.Method)
-            .HasConversion<string>()
-            .HasMaxLength(ConfigurationConstants.EnumLength)
-            .IsRequired();
     }
 }

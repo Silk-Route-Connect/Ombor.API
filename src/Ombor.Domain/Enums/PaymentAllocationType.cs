@@ -15,11 +15,4 @@ public enum PaymentAllocationType
 
     /// <summary>Cash handed straight back to the partner; recorded for audit only and excluded from every balance (rule 10).</summary>
     ChangeReturn = 6,
-
-    // Carried for backward compatibility with existing payment records; the values above are the source of truth.
-    Sale = 1,
-    Supply = 2,
-    SaleRefund = 3,
-    SupplyRefund = 4,
-    AdvancePayment = 5,
 }

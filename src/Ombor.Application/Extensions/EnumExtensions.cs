@@ -52,26 +52,6 @@ internal static class EnumExtensions
         throw new InvalidCastException($"Could not cast between domain discount type and contract discount type: {type}.");
     }
 
-    public static Domain.Enums.PaymentMethod ToDomainPaymentMethod(this Contracts.Enums.PaymentMethod method)
-    {
-        if (Enum.TryParse<Domain.Enums.PaymentMethod>(method.ToString(), ignoreCase: true, out var result))
-        {
-            return result;
-        }
-
-        throw new InvalidCastException($"Could not cast between domain payment method and contract payment method: {method}.");
-    }
-
-    public static Domain.Enums.PaymentAllocationType ToPaymentAllocationType(this Domain.Enums.TransactionType type)
-    {
-        if (Enum.TryParse<Domain.Enums.PaymentAllocationType>(type.ToString(), ignoreCase: true, out var result))
-        {
-            return result;
-        }
-
-        throw new InvalidCastException($"Could not cast between payment allocation type and transaction type: {type}.");
-    }
-
     public static Domain.Enums.PaymentType ToDomainType(this Contracts.Enums.PaymentType type)
     {
         if (Enum.TryParse<Domain.Enums.PaymentType>(type.ToString(), ignoreCase: true, out var result))
@@ -80,15 +60,6 @@ internal static class EnumExtensions
         }
 
         throw new InvalidCastException($"Could not cast between domain payment type and contract payment type: {type}.");
-    }
-
-    public static Domain.Enums.PaymentType ToDomainType(this Domain.Enums.PaymentAllocationType type)
-    {
-        if (Enum.TryParse<Domain.Enums.PaymentType>(type.ToString(), ignoreCase: true, out var result))
-        {
-            return result;
-        }
-        throw new InvalidCastException($"Could not cast between domain payment type and payment allocation type: {type}.");
     }
 
     public static Domain.Enums.PaymentDirection ToDomainDirection(this Contracts.Enums.PaymentDirection direction)

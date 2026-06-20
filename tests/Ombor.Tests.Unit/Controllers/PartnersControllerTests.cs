@@ -17,7 +17,7 @@ public sealed class PartnersControllerTests : ControllerTestsBase
     public PartnersControllerTests()
     {
         _mockService = new Mock<IPartnerService>(MockBehavior.Strict);
-        _controller = new PartnersController(_mockService.Object, null);
+        _controller = new PartnersController(_mockService.Object);
     }
 
     [Fact]

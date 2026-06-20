@@ -36,6 +36,7 @@ internal sealed class DevelopmentDatabaseSeeder(
             await AddTemplatesAsync(context);
             await AddEmployeesAsync(context);
             await AddInventoriesAsync(context);
+            await AddWalletsAsync(context);
             await AddSalesAsync(context);
             await AddSuppliesAsync(context);
             await AddSaleRefundsAsync(context);
@@ -314,8 +315,28 @@ internal sealed class DevelopmentDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
+    private async Task AddWalletsAsync(IApplicationDbContext context)
+    {
+        if (context.Wallets.Any())
+        {
+            return;
+        }
+
+        context.Wallets.Add(new Wallet
+        {
+            Name = "Касса",
+            Type = Domain.Enums.WalletType.Cash,
+            OpeningBalance = 0m,
+            CreatedAt = DateTimeOffset.UtcNow,
+        });
+        await context.SaveChangesAsync();
+    }
+
     private async Task AddPaymentsAsync(IApplicationDbContext context)
     {
+        // Wallet-sourced payments need a wallet to draw from (rule 9).
+        var walletId = context.Wallets.Select(w => w.Id).First();
+
         // Load all transactions that do not yet have any allocations OR still have unpaid amounts
         var transactions = await context.Transactions
             .Include(t => t.PaymentAllocations)
@@ -331,7 +352,7 @@ internal sealed class DevelopmentDatabaseSeeder(
             // If already fully paid, skip (or regenerate if you want)
             if (t.UnpaidAmount == 0) continue;
 
-            var generated = PaymentGenerator.GeneratePayments(t, _paymentOptions);
+            var generated = PaymentGenerator.GeneratePayments(t, walletId, _paymentOptions);
             if (generated.Count == 0) continue;
 
             allPayments.AddRange(generated);

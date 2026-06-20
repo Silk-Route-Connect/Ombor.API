@@ -6,8 +6,6 @@ namespace Ombor.Application.Interfaces;
 
 public interface IPaymentService
 {
-    Task<PaymentDto[]> GetAsync(GetPaymentsRequest request);
-    Task<PaymentDto> GetByIdAsync(int id);
     Task<TransactionPaymentDto[]> GetTransactionPaymentsAsync(GetTransactionPaymentsRequest request);
 
     Task<PaymentRecordDto[]> GetRecordsAsync(GetPaymentsRequest request);
@@ -15,7 +13,5 @@ public interface IPaymentService
     Task<PaymentRecordDto> CreateRecordAsync(CreatePaymentRecordRequest request);
     Task<PaymentFormDataDto> GetFormDataAsync();
     Task<OutstandingTransactionDto[]> GetOutstandingAsync(int partnerId);
-    Task<PaymentDto> CreateAsync(CreatePaymentRequest request);
-    Task<PaymentDto?> CreateAsync(CreateTransactionPaymentRequest request);
     Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request);
 }

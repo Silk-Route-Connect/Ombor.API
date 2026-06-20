@@ -21,11 +21,6 @@ public class PaymentComponent : EntityBase, IOrganizationScoped, IAuditable
     public int? WalletId { get; set; }
     public virtual Wallet? Wallet { get; set; }
 
-    // Carried for backward compatibility with existing payment records; SourceType/WalletId are the source of truth.
-    public decimal ExchangeRate { get; set; }
-    public string Currency { get; set; } = "UZS";
-    public PaymentMethod Method { get; set; }
-
     public int PaymentId { get; set; }
     public virtual required Payment Payment { get; set; }
 }
