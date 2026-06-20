@@ -32,3 +32,16 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `shouldReturnChange`. Backend now takes a single wallet source: **`walletId`, `paidAmount`,
   `settlements[]` (`{ transactionId, amount }`), `overpayment` (`"change" | "advance"`)**.
   *Reason:* the redesigned source/allocation payment model (rules 8–12, 40). (Discovered M2c.)
+
+## Payroll — `POST /api/employees/{id}/payrolls`
+
+- **Request shape.** Frontend's legacy payroll create sent `amount`, `currency`, `exchangeRate`,
+  `method`. Backend now takes **`employeeId`, `walletId`, `amount`, `period` (e.g. `"2026-06"`),
+  `notes`** — UZS-only, drawn from a wallet (rule 9), no currency/rate/method. *(Discovered M2d.)*
+
+- **No payroll edit/delete.** Payroll is **immutable** — there are no PUT/DELETE endpoints; a
+  mistaken payroll is corrected with a reverse payment, not an edit. The frontend must not offer
+  edit/delete on a payroll record. *(business-rules rule 1.)*
+
+- **Response shape.** Payroll create + list now return the redesigned `PaymentRecord`
+  (`number`, `period`, `salary`, `employeePosition`, `sources[]`), not the legacy payment shape.
