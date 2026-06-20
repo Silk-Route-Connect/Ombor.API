@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();

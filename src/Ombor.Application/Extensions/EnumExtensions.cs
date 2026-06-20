@@ -91,6 +91,16 @@ internal static class EnumExtensions
         throw new InvalidCastException($"Could not cast between domain payment direction and contract payment direction: {direction}.");
     }
 
+    public static Domain.Enums.WalletType ToDomainType(this Contracts.Enums.WalletType type)
+    {
+        if (Enum.TryParse<Domain.Enums.WalletType>(type.ToString(), ignoreCase: true, out var result))
+        {
+            return result;
+        }
+
+        throw new InvalidCastException($"Could not cast between domain wallet type and contract wallet type: {type}.");
+    }
+
     public static Domain.Enums.OrderStatus ToDomainStatus(this Contracts.Enums.OrderStatus status)
     {
         if (Enum.TryParse<Domain.Enums.OrderStatus>(status.ToString(), ignoreCase: true, out var result))
