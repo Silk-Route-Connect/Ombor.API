@@ -7,10 +7,17 @@ public class Payment : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 
+    /// <summary>Human-friendly payment number (e.g. «P-520»), sequential per organization.</summary>
+    public string? Number { get; set; }
+
     public string? Notes { get; set; }
     public PaymentType Type { get; set; }
     public PaymentDirection Direction { get; set; }
     public DateTimeOffset DateUtc { get; set; }
+
+    /// <summary>The primary wallet the payment moves through (the wallet side of its sources); null for advance-only flows.</summary>
+    public int? WalletId { get; set; }
+    public virtual Wallet? Wallet { get; set; }
 
     public int? PartnerId { get; set; }
     public virtual Partner? Partner { get; set; }

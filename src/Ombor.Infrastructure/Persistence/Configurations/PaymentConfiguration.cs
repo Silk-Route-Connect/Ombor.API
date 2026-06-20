@@ -41,6 +41,18 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .IsRequired(false);
 
         builder
+            .HasOne(p => p.Wallet)
+            .WithMany()
+            .HasForeignKey(p => p.WalletId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
+            .Property(p => p.Number)
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .IsRequired(false);
+
+        builder
             .Property(p => p.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);

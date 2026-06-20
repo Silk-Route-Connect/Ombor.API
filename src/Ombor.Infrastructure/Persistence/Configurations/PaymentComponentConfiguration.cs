@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
@@ -18,6 +19,20 @@ internal sealed class PaymentComponentConfiguration : IEntityTypeConfiguration<P
             .WithMany(p => p.Components)
             .HasForeignKey(pc => pc.PaymentId)
             .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
+            .HasOne(pc => pc.Wallet)
+            .WithMany()
+            .HasForeignKey(pc => pc.WalletId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
+            .Property(pc => pc.SourceType)
+            .HasConversion<string>()
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasDefaultValue(PaymentSourceType.Wallet)
             .IsRequired();
 
         builder
