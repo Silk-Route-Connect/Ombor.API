@@ -19,6 +19,7 @@ internal sealed class AuthService(
     IOtpCodeProvider otpCodeProvider,
     IPasswordHasher passwordHasher,
     IOrganizationService organizationService,
+    IOrganizationSetupService organizationSetupService,
     IOptions<JwtSettings> jwtSettings) : IAuthService
 {
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
@@ -87,6 +88,9 @@ internal sealed class AuthService(
 
         context.Users.Add(newUser);
         await context.SaveChangesAsync();
+
+        // Seed the organization's ordinary starter records (rule 42) so it can transact immediately.
+        await organizationSetupService.SeedStarterDataAsync(organization.Id);
 
         await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
         await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
