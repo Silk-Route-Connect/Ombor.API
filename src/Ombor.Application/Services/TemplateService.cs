@@ -49,7 +49,13 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var template = await GetOrThrowAsync(request.Id);
+        // Items must be tracked so the update can reconcile them (update existing, add new, remove dropped).
+        var template = await context.Templates
+            .Include(x => x.Partner)
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new EntityNotFoundException<Template>(request.Id);
+
         template.ApplyUpdate(request);
 
         await context.SaveChangesAsync();

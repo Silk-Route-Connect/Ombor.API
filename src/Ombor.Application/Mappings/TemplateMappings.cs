@@ -69,14 +69,34 @@ internal static class TemplateMappings
 
     public static void ApplyUpdate(this Template template, UpdateTemplateRequest request)
     {
-        var items = request.Items
-            .Select(ToEntity)
-            .ToList();
-
         template.Name = request.Name;
         template.PartnerId = request.PartnerId;
         template.Type = request.Type.ToDomain();
-        template.Items = items;
+
+        // Reconcile the tracked item collection: update matching items, add new ones (Id == 0), drop the rest.
+        var existingById = template.Items.Where(i => i.Id != 0).ToDictionary(i => i.Id);
+        var keptIds = new HashSet<int>();
+
+        foreach (var requestItem in request.Items)
+        {
+            if (requestItem.Id != 0 && existingById.TryGetValue(requestItem.Id, out var existing))
+            {
+                existing.ProductId = requestItem.ProductId;
+                existing.Quantity = requestItem.Quantity;
+                existing.UnitPrice = requestItem.UnitPrice;
+                existing.DiscountAmount = requestItem.Discount;
+                keptIds.Add(existing.Id);
+            }
+            else
+            {
+                template.Items.Add(requestItem.ToEntity());
+            }
+        }
+
+        foreach (var removed in template.Items.Where(i => i.Id != 0 && !keptIds.Contains(i.Id)).ToList())
+        {
+            template.Items.Remove(removed);
+        }
     }
 
     public static Template ToEntity(this CreateTemplateRequest request)
