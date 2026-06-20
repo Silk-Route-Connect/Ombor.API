@@ -1,0 +1,34 @@
+# Frontend fixes — backend-driven
+
+Running list of changes the **frontend** must make to match the redesigned backend. These are
+backend/frontend contract mismatches discovered while building the backend; the backend is the
+source of truth here (it conforms to `business-rules.md` and the corrected `backend-contract.md`),
+so the frontend adapts. Apply these once the backend redesign is complete and the frontend is
+re-pointed at the new API.
+
+Each entry: **what the frontend does today → what it must do**, with the backend reason.
+
+---
+
+## Transactions — `POST /api/transactions`
+
+- **Discount type values.** Frontend sends per-line `discountType` as `"pct"` / `"fixed"`.
+  Backend expects the canonical enum names **`"Percentage"` / `"Fixed"`** (case-insensitive).
+  *Reason:* the backend enum is `DiscountType { Percentage, Fixed }`; short acronyms are not used
+  anywhere in the codebase. The frontend must send the full names. (Discovered M2c.)
+
+- **Content type.** Frontend sends the create request as JSON. Backend expects
+  **`multipart/form-data`** (transactions carry file attachments). *Reason:* attachments require a
+  multipart body; the contract already specifies multipart. (Build-plan settled decision.)
+
+- **Request shape / refunds.** Frontend uses `direction: "Sale" | "Supply"` plus a separate
+  `CreateRefundRequest` / refund endpoint. Backend is a **single `POST /api/transactions`** with
+  `type` ∈ `{ Sale, Supply, SaleRefund, SupplyRefund }` (refunds carry `originalTransactionId` and
+  a required `refundReason` on the same request, not a separate `CreateRefundRequest.reason`).
+  *Reason:* one immutable create path for all four types (build-plan settled decision; no separate
+  `/refund` endpoint).
+
+- **Payment fields.** Frontend's legacy create payload carried `payments[]` / `debtPayments[]` /
+  `shouldReturnChange`. Backend now takes a single wallet source: **`walletId`, `paidAmount`,
+  `settlements[]` (`{ transactionId, amount }`), `overpayment` (`"change" | "advance"`)**.
+  *Reason:* the redesigned source/allocation payment model (rules 8–12, 40). (Discovered M2c.)

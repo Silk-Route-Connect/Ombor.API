@@ -46,6 +46,7 @@ How Claude works in each tool: senior-partner mode, the ratchet, decision discip
 | `backend-conventions.md`      | Backend craft: layer responsibilities, EF/interceptor/validation patterns, test philosophy                                              | to write                                                                   |
 | `backend-contract.md`         | Target API contract the redesigned frontend already calls (derived from frontend models + mocks). Per-resource REAL/STALE/MOCKED status | exists (status labels verified during the audit, not trusted)              |
 | `backend-complexity-notes.md` | The non-obvious server-side logic each endpoint hides — WAC engine, source=allocation, balance derivation, order promotion, read models | exists (build-guide; absorbs into conventions/rules as items are verified) |
+| `frontend-fixes.md`           | Running list of frontend/backend contract mismatches the frontend must fix once the backend redesign lands (discount-type names, multipart, request shapes)        | active (appended as mismatches surface during backend work)               |
 
 ## Key relationships
 
