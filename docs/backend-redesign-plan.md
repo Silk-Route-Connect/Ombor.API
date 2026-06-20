@@ -78,7 +78,7 @@ Mechanical, each independently shippable (one commit per item, all on `redesign/
 - _(correction to the M0 note)_ the 22 pre-existing failures were **never all `CreateTransactionTests`** — it's 20 transaction + 1 employee + 1 template (see M1 status). The non-transaction two are stale/fragile tests unrelated to the redesign.
 
 ### M2 — Payment field rework
-**Status:** not started
+**Status:** in progress — **M2a done** (additive payment schema: `PaymentSourceType`, `PaymentComponent.SourceType`/`WalletId`, `PaymentAllocationType` +`TransactionSettlement`/`AdvanceCredit`, `Payment.WalletId`/`Number`; migration `Add_Payment_Source_And_Wallet_Fields`; legacy fields kept so the build/suite stayed green). Remaining: **M2b** redesigned `PaymentService` + contracts + read endpoints; **M2c** re-point transactions/refunds + fix the 20 transaction tests; **M2d** payroll onto the new model + remove PUT/DELETE; **M2e** wire wallet balance (payment components) + `advancesHeld`; **M2f** drop legacy payment fields + rewrite `View_PartnerBalance` + seeder rework + employee/template test fixes + suite green. Being built incrementally with green checkpoints (additive-first, then a subtractive migration removes the legacy columns).
 **Depends on:** M1 (payments reference wallets).
 - Update the payment model to the redesigned shape: sources `{Wallet, Advance}`, allocations `{TransactionSettlement, AdvanceCredit, ChangeReturn}`. Drop `PaymentMethod`/`Currency`/`ExchangeRate`; replace the legacy `PaymentAllocationType` values.
 - Enforce the rule-8 identity (sources = settling allocations; ChangeReturn excluded), advance-as-claim (rule 11), advance gating on zero debt (rule 40), change-return-as-memo.
@@ -86,6 +86,7 @@ Mechanical, each independently shippable (one commit per item, all on `redesign/
 - `GET /api/payments/form-data`, `GET /api/payments/outstanding?partnerId=` (FIFO oldest-first).
 
 **Decisions & notes:**
+- **Folded-in failing tests (user-confirmed):** this milestone also fixes the **22 pre-existing integration failures** — 20 `CreateTransactionTests` (the transaction-create flow reworked here; test factory must supply `InventoryId`), 1 `CreateEmployeeTests` (stale assertion: expects validation key `"FullName"`, request field is `"Name"`), 1 `UpdateTemplateTests` (hardcoded `/api/templates/1`, fragile to shared-DB order). The employee/template two are quick test fixes carried here so the suite goes fully green with M2.
 - _(from M0)_ `GET /api/payments/{id}` now returns the **legacy** PaymentDto shape (components carry `Method`/`Currency`/`ExchangeRate`). Reshape it here alongside the rest of the payment rework.
 - _(from M0)_ ⚠️ **The `View_PartnerBalance` SQL depends on legacy payment fields** — it filters on `PaymentComponent.Method = 'AccountBalance'`, `PaymentAllocation.Type = 'AdvancePayment'`, and multiplies by `ExchangeRate`. When this milestone drops/renames those fields, **the view migration must be rewritten** (see `Add_Partner_Balance_View` + `Scope_PartnerBalance_To_Organization`) or partner balances will break. Coordinate M2 ↔ M3.
 
