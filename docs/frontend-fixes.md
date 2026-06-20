@@ -56,3 +56,17 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   (legacy). Each line is now `{ id, transactionId, amount, paymentNumber, walletName, walletType,
   notes, date }`. The frontend's `TransactionPaymentLine.method` no longer exists — show the wallet
   (name/type) instead.
+
+## Partners (M3)
+
+- **Opening balance, not balance.** `CreatePartnerRequest` takes **`openingBalance`** (signed:
+  +partner owes us), not `balance`. `UpdatePartnerRequest` **has no balance field at all** — the
+  opening balance is an immutable event set once at creation.
+
+- **Partner read shape.** `PartnerDto` no longer carries the legacy `balanceDto` breakdown. It now
+  exposes `balance` (computed net), `openingBalance`, `openingDate`, `isArchived`, `isDeletable`,
+  `activityCount`.
+
+- **Ledger endpoint.** `GET /api/partners/{id}/ledger` returns `PartnerLedgerEntry[]` newest-first
+  with a running `balance` that reconciles to the partner's net balance. Entries omit the contract's
+  legacy `method`/`allocation` fields (method is gone with the legacy payment model).
