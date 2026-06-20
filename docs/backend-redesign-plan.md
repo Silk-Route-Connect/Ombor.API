@@ -36,7 +36,7 @@ Status legend: `not started` / `in progress` / `done` / `blocked`.
 ## Milestones
 
 ### M0 — Schema corrections
-**Status:** done — code complete, `dotnet build` green, unit suite green (307 pass). ⚠️ **Integration suite NOT executed this session** — no Docker/Podman runtime available on the dev machine, and the Testcontainers fixture requires one. All new integration tests compile (full Release build passes). **User action: run `dotnet test tests/Ombor.Tests.Integration` with Docker running to close the DoD.**
+**Status:** done — `dotnet build` green; unit suite green (307 pass); integration suite ran via Podman and **all M0 tests pass** (7 new integration tests: PartnerBalance cross-org isolation ×1, Category delete 409 / no-cascade / productCount ×6). ⚠️ **22 pre-existing failures remain in `CreateTransactionTests`** — root cause: `TransactionRequestFactory` builds `CreateTransactionRequest` without `InventoryId`, which the legacy `TransactionService.ValidateOrThrowAsync` requires (→ 400 "InventoryId is required"). Confirmed unrelated to M0: none of the six commits touch that factory, the request DTO, or the validation (the only TransactionService change was a one-line comment). These belong to the legacy transaction-create flow (M2/M4), not schema corrections — left for a separate task.
 **Depends on:** nothing — unblocks everything.
 Mechanical, each independently shippable (one commit per item, all on `redesign/schema-corrections`):
 - ✅ Rename `Tenant`/`TenantId` → `Organization`/`OrganizationId` throughout (entity, claim, query filter, configs, migration).
