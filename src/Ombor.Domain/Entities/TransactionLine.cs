@@ -10,7 +10,10 @@ public class TransactionLine : EntityBase, IOrganizationScoped
     public decimal UnitPrice { get; set; }
     public decimal Discount { get; set; }
 
-    /// <summary>How <see cref="Discount"/> is interpreted (rule 37). Defaults to Percentage, matching legacy lines.</summary>
+    /// <summary>
+    /// How <see cref="Discount"/> is interpreted (rule 37). Defaults to Percentage so a line that
+    /// stored its discount before this field existed still computes the same total.
+    /// </summary>
     public DiscountType DiscountType { get; set; } = DiscountType.Percentage;
 
     public decimal Quantity { get; set; }

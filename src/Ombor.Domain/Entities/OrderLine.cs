@@ -11,7 +11,10 @@ public class OrderLine : AuditableEntity, IOrganizationScoped
     public required decimal UnitPrice { get; set; }
     public decimal? Discount { get; set; }
 
-    /// <summary>How <see cref="Discount"/> is interpreted (rule 37). Defaults to Fixed, matching legacy order lines.</summary>
+    /// <summary>
+    /// How <see cref="Discount"/> is interpreted (rule 37). Defaults to Fixed so an order line that
+    /// stored its discount before this field existed still computes the same total.
+    /// </summary>
     public DiscountType DiscountType { get; set; } = DiscountType.Fixed;
 
     /// <summary>

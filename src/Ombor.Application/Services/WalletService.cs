@@ -284,7 +284,8 @@ internal sealed class WalletService(
     private static WalletDto ToDto(WalletRow row)
     {
         var balance = row.OpeningBalance + row.Incoming - row.Outgoing;
-        const decimal advancesHeld = 0m; // M2: partner advances physically held in this wallet (rule 11)
+        // No partner advances are recorded against wallets yet, so none are held here (rule 11).
+        const decimal advancesHeld = 0m;
 
         return new WalletDto(
             row.Id,

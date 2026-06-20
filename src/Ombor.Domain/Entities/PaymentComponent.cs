@@ -21,7 +21,7 @@ public class PaymentComponent : EntityBase, IOrganizationScoped, IAuditable
     public int? WalletId { get; set; }
     public virtual Wallet? Wallet { get; set; }
 
-    // --- Legacy fields. Removed in the M2 subtractive migration once no consumer reads them. ---
+    // Carried for backward compatibility with existing payment records; SourceType/WalletId are the source of truth.
     public decimal ExchangeRate { get; set; }
     public string Currency { get; set; } = "UZS";
     public PaymentMethod Method { get; set; }
