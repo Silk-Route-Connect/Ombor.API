@@ -21,6 +21,7 @@ namespace Ombor.Contracts.Requests.Transaction;
 /// <param name="Attachments">Optional file attachments.</param>
 /// <param name="InventoryId">The warehouse the stock moves through (required for stock movement).</param>
 /// <param name="OriginalTransactionId">The transaction being refunded (required for refund types).</param>
+/// <param name="RefundReason">Why the refund was issued (required for refund types).</param>
 public sealed record CreateTransactionRequest(
     int PartnerId,
     TransactionType Type,
@@ -32,7 +33,8 @@ public sealed record CreateTransactionRequest(
     OverpaymentHandling Overpayment,
     IFormFile[] Attachments,
     int? InventoryId = null,
-    int? OriginalTransactionId = null);
+    int? OriginalTransactionId = null,
+    string? RefundReason = null);
 
 /// <summary>A single line of a transaction.</summary>
 /// <param name="ProductId">The product sold or supplied.</param>

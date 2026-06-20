@@ -36,7 +36,17 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
 
         RuleFor(x => x.OriginalTransactionId)
             .NotNull()
-            .When(x => x.Type == Contracts.Enums.TransactionType.SaleRefund || x.Type == Contracts.Enums.TransactionType.SupplyRefund)
+            .When(IsRefund)
             .WithMessage("OriginalTransactionId is required for refund transactions.");
+
+        RuleFor(x => x.RefundReason)
+            .NotEmpty()
+            .When(IsRefund)
+            .WithMessage("A reason is required for refund transactions.")
+            .MaximumLength(ValidationConstants.MaxStringLength)
+            .WithMessage($"Refund reason must not exceed {ValidationConstants.MaxStringLength} characters.");
     }
+
+    private static bool IsRefund(CreateTransactionRequest request)
+        => request.Type is Contracts.Enums.TransactionType.SaleRefund or Contracts.Enums.TransactionType.SupplyRefund;
 }

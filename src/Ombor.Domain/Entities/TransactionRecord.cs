@@ -27,6 +27,9 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
     public int? OriginalTransactionId { get; set; }
     public virtual TransactionRecord? OriginalTransaction { get; set; }
 
+    /// <summary>Why the refund was issued. Set only on SaleRefund and SupplyRefund transactions.</summary>
+    public string? RefundReason { get; set; }
+
     public virtual ICollection<TransactionLine> Lines { get; set; } = [];
 
     public virtual ICollection<PaymentAllocation> PaymentAllocations { get; set; } = [];

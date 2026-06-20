@@ -31,7 +31,9 @@ internal sealed class TransactionService(
                 x.Status.ToString(),
                 x.TotalDue,
                 x.TotalPaid,
-                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total))))
+                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)),
+                x.OriginalTransactionId,
+                x.RefundReason))
             .ToArrayAsync();
     }
 

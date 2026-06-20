@@ -9,7 +9,9 @@ public sealed record TransactionDto(
     string Status,
     decimal TotalDue,
     decimal TotalPaid,
-    IEnumerable<TransactionLineDto> Lines);
+    IEnumerable<TransactionLineDto> Lines,
+    int? OriginalTransactionId = null,
+    string? RefundReason = null);
 
 public sealed record TransactionLineDto(
     int Id,

@@ -31,6 +31,7 @@ internal sealed class TransactionMapper : ITransactionMapper
             PartnerId = request.PartnerId,
             InventoryId = request.InventoryId,
             OriginalTransactionId = request.OriginalTransactionId,
+            RefundReason = request.RefundReason,
             DateUtc = DateTimeOffset.UtcNow,
             Type = request.Type.ToDomainType(),
             Partner = null!,
@@ -54,6 +55,8 @@ internal sealed class TransactionMapper : ITransactionMapper
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
-                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total)));
+                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total)),
+            transaction.OriginalTransactionId,
+            transaction.RefundReason);
     }
 }

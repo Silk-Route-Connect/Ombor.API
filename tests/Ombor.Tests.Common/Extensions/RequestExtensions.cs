@@ -167,6 +167,9 @@ public static class RequestExtensions
         if (request.OriginalTransactionId.HasValue)
             content.Add(new StringContent(request.OriginalTransactionId.Value.ToString()), nameof(request.OriginalTransactionId));
 
+        if (!string.IsNullOrEmpty(request.RefundReason))
+            content.Add(new StringContent(request.RefundReason), nameof(request.RefundReason));
+
         // Lines
         for (var i = 0; i < request.Lines.Length; i++)
         {

@@ -41,6 +41,11 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 
+        builder
+            .Property(t => t.RefundReason)
+            .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired(false);
+
         builder.Ignore(t => t.UnpaidAmount);
 
         builder
