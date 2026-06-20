@@ -1,91 +1,71 @@
-﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Transaction;
 
 namespace Ombor.Tests.Common.Factories;
 
+/// <summary>
+/// Builds <see cref="CreateTransactionRequest"/> instances for the source/allocation payment model:
+/// a single wallet source (<paramref name="paidAmount"/>) settles the transaction first, then any
+/// <paramref name="settlements"/>; the remainder is handled per <paramref name="overpayment"/>.
+/// </summary>
 public static class TransactionRequestFactory
 {
-    /// <summary>
-    /// Builds a Sale transaction request.
-    /// </summary>
+    /// <summary>Builds a Sale transaction request (single line: <c>unitPrice = due</c>, quantity 1).</summary>
     public static CreateTransactionRequest Sale(
         int partnerId,
-        decimal totalDue,
-        decimal cashLocal,
-        decimal creditLocal = 0m,
-        IList<CreateDebtPaymentRequest>? debts = null,
-        bool refundChange = true)
-        => BuildRequest(
-            partnerId,
-            TransactionType.Sale,
-            totalDue,
-            cashLocal,
-            creditLocal,
-            debts,
-            refundChange);
+        int productId,
+        int inventoryId,
+        decimal due,
+        int? walletId,
+        decimal paidAmount,
+        OverpaymentHandling overpayment = OverpaymentHandling.Change,
+        SettlementInput[]? settlements = null)
+        => Build(partnerId, TransactionType.Sale, productId, inventoryId, due, walletId, paidAmount, overpayment, settlements);
 
-    /// <summary>
-    /// Builds a Supply transaction request.
-    /// </summary>
+    /// <summary>Builds a Supply transaction request (single line: <c>unitPrice = due</c>, quantity 1).</summary>
     public static CreateTransactionRequest Supply(
         int partnerId,
-        decimal totalDue,
-        decimal cashLocal,
-        decimal creditLocal = 0m,
-        IList<CreateDebtPaymentRequest>? debts = null,
-        bool refundChange = true)
-        => BuildRequest(
-            partnerId,
-            TransactionType.Supply,
-            totalDue,
-            cashLocal,
-            creditLocal,
-            debts,
-            refundChange);
+        int productId,
+        int inventoryId,
+        decimal due,
+        int? walletId,
+        decimal paidAmount,
+        OverpaymentHandling overpayment = OverpaymentHandling.Change,
+        SettlementInput[]? settlements = null)
+        => Build(partnerId, TransactionType.Supply, productId, inventoryId, due, walletId, paidAmount, overpayment, settlements);
 
-    private static CreateTransactionRequest BuildRequest(
+    private static CreateTransactionRequest Build(
         int partnerId,
         TransactionType type,
-        decimal totalDue,
-        decimal cashLocal,
-        decimal creditLocal,
-        IList<CreateDebtPaymentRequest>? debts,
-        bool refundChange)
+        int productId,
+        int inventoryId,
+        decimal due,
+        int? walletId,
+        decimal paidAmount,
+        OverpaymentHandling overpayment,
+        SettlementInput[]? settlements)
     {
-        var payments = new List<CreatePaymentRequest>();
-        var debtAmount = debts?.Count > 0
-            ? debts.Sum(x => x.Amount)
-            : 0;
-
-        if (cashLocal > 0)
-        {
-            payments.Add(new CreatePaymentRequest(cashLocal + debtAmount, 1m, "UZS", PaymentMethod.Cash));
-        }
-
-        if (creditLocal > 0)
-        {
-            payments.Add(new CreatePaymentRequest(creditLocal, 1m, "UZS", PaymentMethod.AccountBalance));
-        }
-
-        // single line that matches <totalDue>; tests don't vary products yet
         var lines = new[]
         {
             new CreateTransactionLine(
-                ProductId : 1,
-                UnitPrice : totalDue,
-                Discount  : 0m,
-                Quantity  : 1)
+                ProductId: productId,
+                UnitPrice: due,
+                Discount: 0m,
+                DiscountType: DiscountType.Percentage,
+                Quantity: 1),
         };
 
         return new CreateTransactionRequest(
             PartnerId: partnerId,
             Type: type,
-            Lines: lines,
             Notes: null,
-            Payments: [.. payments],
-            DebtPayments: debts?.ToArray(),
-            ShouldReturnChange: refundChange,
-            Attachments: null);
+            Lines: lines,
+            WalletId: walletId,
+            PaidAmount: paidAmount,
+            Settlements: settlements,
+            Overpayment: overpayment,
+            Attachments: null!,
+            InventoryId: inventoryId);
     }
 }

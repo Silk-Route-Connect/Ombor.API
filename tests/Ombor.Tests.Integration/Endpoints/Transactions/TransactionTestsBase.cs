@@ -1,4 +1,4 @@
-﻿using Ombor.Domain.Entities;
+using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -26,6 +26,77 @@ public abstract class TransactionsTestsBase(
         return partner.Id;
     }
 
+    protected async Task<int> CreateWalletAsync(decimal openingBalance = 0m)
+    {
+        var wallet = new Wallet
+        {
+            Name = $"Wallet {Guid.NewGuid():N}",
+            Type = WalletType.Cash,
+            OpeningBalance = openingBalance,
+            CreatedAt = DateTimeOffset.UtcNow,
+        };
+        _context.Wallets.Add(wallet);
+        await _context.SaveChangesAsync();
+
+        return wallet.Id;
+    }
+
+    protected async Task<int> CreateInventoryAsync()
+    {
+        var inventory = new Inventory
+        {
+            Name = $"Warehouse {Guid.NewGuid():N}",
+            Location = "Tashkent",
+            IsActive = true,
+        };
+        _context.Inventories.Add(inventory);
+        await _context.SaveChangesAsync();
+
+        return inventory.Id;
+    }
+
+    protected async Task<int> CreateProductAsync()
+    {
+        var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        var product = new Product
+        {
+            Name = $"Product {Guid.NewGuid():N}",
+            SKU = $"SKU-{Guid.NewGuid():N}",
+            SalePrice = 100m,
+            SupplyPrice = 50m,
+            RetailPrice = 90m,
+            LowStockThreshold = 10,
+            QuantityInStock = 0,
+            Measurement = UnitOfMeasurement.Unit,
+            Type = ProductType.All,
+            CategoryId = category.Id,
+            Category = null!,
+        };
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return product.Id;
+    }
+
+    /// <summary>Seeds an inventory item so a Sale (stock-out) has stock to draw from.</summary>
+    protected async Task SeedStockAsync(int inventoryId, int productId, int quantity, decimal averageCost = 50m)
+    {
+        var item = new InventoryItem
+        {
+            InventoryId = inventoryId,
+            ProductId = productId,
+            Quantity = quantity,
+            AverageCost = averageCost,
+            Inventory = null!,
+            Product = null!,
+        };
+        _context.InventoryItems.Add(item);
+        await _context.SaveChangesAsync();
+    }
+
     protected async Task<int> CreateOpenTransactionAsync(int partnerId, decimal due, decimal paid, TransactionType type = TransactionType.Sale)
     {
         var openTransaction = new TransactionRecord
@@ -44,8 +115,15 @@ public abstract class TransactionsTestsBase(
         return openTransaction.Id;
     }
 
+    /// <summary>
+    /// Seeds a partner advance on the new model: a payment with a wallet source and an
+    /// <see cref="PaymentAllocationType.AdvanceCredit"/> allocation. Income → partner prepaid us
+    /// (PartnerAdvance); Expense → we prepaid the partner (CompanyAdvance).
+    /// </summary>
     protected async Task<int> CreateAdvancePaymentAsync(int partnerId, decimal amount, PaymentDirection direction = PaymentDirection.Income)
     {
+        var walletId = await CreateWalletAsync();
+
         var payment = new Payment
         {
             DateUtc = DateTimeOffset.UtcNow,
@@ -53,21 +131,20 @@ public abstract class TransactionsTestsBase(
             Type = PaymentType.General,
             Direction = direction,
             PartnerId = partnerId,
+            WalletId = walletId,
         };
         payment.Components.Add(new PaymentComponent
         {
             Amount = amount,
-            Currency = "UZS",
-            ExchangeRate = 1,
-            Method = PaymentMethod.Cash,
-            Payment = null!, // will be set by EF
+            SourceType = PaymentSourceType.Wallet,
+            WalletId = walletId,
+            Payment = null!,
         });
         payment.Allocations.Add(new PaymentAllocation
         {
             Amount = amount,
-            Type = PaymentAllocationType.AdvancePayment,
+            Type = PaymentAllocationType.AdvanceCredit,
             Payment = null!,
-            Transaction = null!
         });
 
         _context.Payments.Add(payment);

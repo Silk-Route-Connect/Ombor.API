@@ -18,5 +18,6 @@ public sealed record TransactionLineDto(
     int TransactionId,
     decimal UnitPrice,
     decimal Discount,
+    string DiscountType,
     decimal Quantity,
     decimal Total);

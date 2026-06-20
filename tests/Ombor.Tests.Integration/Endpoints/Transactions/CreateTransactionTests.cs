@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Tests.Common.Extensions;
@@ -15,5 +15,11 @@ public partial class CreateTransactionTests(
     {
         var form = request.ToMultipartFormData();
         return await _client.PostAsync<TransactionDto>(Routes.Transaction, form, HttpStatusCode.Created);
+    }
+
+    private async Task PostTransactionExpectingBadRequestAsync(CreateTransactionRequest request)
+    {
+        var form = request.ToMultipartFormData();
+        await _client.PostAsync<object>(Routes.Transaction, form, HttpStatusCode.BadRequest);
     }
 }

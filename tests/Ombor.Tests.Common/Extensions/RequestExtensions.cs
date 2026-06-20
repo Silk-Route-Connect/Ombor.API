@@ -153,8 +153,19 @@ public static class RequestExtensions
         var content = new MultipartFormDataContent
         {
             { new StringContent(request.PartnerId.ToString()),        nameof(request.PartnerId) },
-            { new StringContent(((int)request.Type).ToString()),      nameof(request.Type) }
+            { new StringContent(((int)request.Type).ToString()),      nameof(request.Type) },
+            { new StringContent(request.PaidAmount.ToString(cultureInfo)), nameof(request.PaidAmount) },
+            { new StringContent(((int)request.Overpayment).ToString()),   nameof(request.Overpayment) },
         };
+
+        if (request.InventoryId.HasValue)
+            content.Add(new StringContent(request.InventoryId.Value.ToString()), nameof(request.InventoryId));
+
+        if (request.WalletId.HasValue)
+            content.Add(new StringContent(request.WalletId.Value.ToString()), nameof(request.WalletId));
+
+        if (request.OriginalTransactionId.HasValue)
+            content.Add(new StringContent(request.OriginalTransactionId.Value.ToString()), nameof(request.OriginalTransactionId));
 
         // Lines
         for (var i = 0; i < request.Lines.Length; i++)
@@ -163,27 +174,18 @@ public static class RequestExtensions
             content.Add(new StringContent(l.ProductId.ToString()), $"Lines[{i}].ProductId");
             content.Add(new StringContent(l.UnitPrice.ToString(cultureInfo)), $"Lines[{i}].UnitPrice");
             content.Add(new StringContent(l.Discount.ToString(cultureInfo)), $"Lines[{i}].Discount");
+            content.Add(new StringContent(((int)l.DiscountType).ToString()), $"Lines[{i}].DiscountType");
             content.Add(new StringContent(l.Quantity.ToString(cultureInfo)), $"Lines[{i}].Quantity");
         }
 
-        // Payments
-        for (var i = 0; i < request.Payments.Length; i++)
+        // Settlements of other open transactions (optional)
+        if (request.Settlements is not null)
         {
-            var p = request.Payments[i];
-            content.Add(new StringContent(p.Amount.ToString(cultureInfo)), $"Payments[{i}].Amount");
-            content.Add(new StringContent(p.ExchangeRate.ToString(cultureInfo)), $"Payments[{i}].ExchangeRate");
-            content.Add(new StringContent(p.Currency), $"Payments[{i}].Currency");
-            content.Add(new StringContent(((int)p.Method).ToString()), $"Payments[{i}].Method");
-        }
-
-        // Debt-payments (optional)
-        if (request.DebtPayments is not null)
-        {
-            for (var i = 0; i < request.DebtPayments.Length; i++)
+            for (var i = 0; i < request.Settlements.Length; i++)
             {
-                var d = request.DebtPayments[i];
-                content.Add(new StringContent(d.TransactionId.ToString()), $"DebtPayments[{i}].TransactionId");
-                content.Add(new StringContent(d.Amount.ToString(cultureInfo)), $"DebtPayments[{i}].Amount");
+                var s = request.Settlements[i];
+                content.Add(new StringContent(s.TransactionId.ToString()), $"Settlements[{i}].TransactionId");
+                content.Add(new StringContent(s.Amount.ToString(cultureInfo)), $"Settlements[{i}].Amount");
             }
         }
 

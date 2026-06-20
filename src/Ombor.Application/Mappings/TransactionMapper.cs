@@ -15,6 +15,17 @@ internal sealed class TransactionMapper : ITransactionMapper
 {
     public TransactionRecord ToEntity(CreateTransactionRequest request)
     {
+        var lines = request.Lines.Select(x => new TransactionLine
+        {
+            ProductId = x.ProductId,
+            UnitPrice = x.UnitPrice,
+            Discount = x.Discount,
+            DiscountType = x.DiscountType.ToDomainDiscountType(),
+            Quantity = x.Quantity,
+            Product = null!,
+            Transaction = null!
+        }).ToArray();
+
         return new TransactionRecord
         {
             PartnerId = request.PartnerId,
@@ -23,16 +34,9 @@ internal sealed class TransactionMapper : ITransactionMapper
             DateUtc = DateTimeOffset.UtcNow,
             Type = request.Type.ToDomainType(),
             Partner = null!,
-            Lines = request.Lines.Select(x => new TransactionLine
-            {
-                ProductId = x.ProductId,
-                UnitPrice = x.UnitPrice,
-                Discount = x.Discount,
-                Quantity = x.Quantity,
-                Product = null!,
-                Transaction = null!
-            }).ToArray(),
-            TotalDue = request.Lines.Sum(CalculateLineTotal),
+            Lines = lines,
+            // Line totals already apply rule 37 (percentage vs fixed, clamped); sum them for the due.
+            TotalDue = lines.Sum(l => l.Total),
             TotalPaid = 0,
             Status = Domain.Enums.TransactionStatus.Open,
         };
@@ -50,9 +54,6 @@ internal sealed class TransactionMapper : ITransactionMapper
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
-                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.Quantity, x.Total)));
+                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total)));
     }
-
-    private static decimal CalculateLineTotal(CreateTransactionLine l)
-        => l.UnitPrice * l.Quantity * (1 - (l.Discount / 100m));
 }

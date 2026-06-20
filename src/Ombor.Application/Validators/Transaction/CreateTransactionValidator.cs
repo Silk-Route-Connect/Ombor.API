@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Ombor.Contracts.Requests.Transaction;
 
 namespace Ombor.Application.Validators.Transaction;
@@ -9,29 +9,30 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
     {
         RuleFor(x => x.PartnerId)
             .GreaterThan(0)
-            .WithErrorCode("Invalid Partner ID.");
+            .WithMessage("Invalid Partner ID.");
 
         RuleFor(x => x.Notes)
             .MaximumLength(ValidationConstants.MaxStringLength)
-            .WithMessage($"Payment notes must not exceed {ValidationConstants.MaxStringLength} characters.");
-
-        RuleFor(x => x.Payments)
-            .NotNull()
-            .WithMessage("Payments collection cannot be null.")
-            .Must(p => p.All(pc => pc.ExchangeRate > 0))
-            .WithMessage("Exchange rate must be positive for all payment components.");
-
-        RuleForEach(x => x.Payments)
-            .ChildRules(pc =>
-            {
-                pc.RuleFor(c => c.Amount)
-                .GreaterThan(0m)
-                .WithMessage("Payment amount must be positive.");
-            });
+            .WithMessage($"Notes must not exceed {ValidationConstants.MaxStringLength} characters.");
 
         RuleFor(x => x.Lines)
             .NotEmpty()
             .WithMessage("Transaction must contain at least one line item.");
+
+        RuleFor(x => x.PaidAmount)
+            .GreaterThanOrEqualTo(0m)
+            .WithMessage("Paid amount cannot be negative.");
+
+        RuleFor(x => x.WalletId)
+            .NotNull()
+            .When(x => x.PaidAmount > 0m)
+            .WithMessage("A wallet is required when a payment is made.");
+
+        RuleForEach(x => x.Settlements)
+            .ChildRules(settlement =>
+                settlement.RuleFor(s => s.Amount)
+                    .GreaterThan(0m)
+                    .WithMessage("Settlement amount must be positive."));
 
         RuleFor(x => x.OriginalTransactionId)
             .NotNull()
