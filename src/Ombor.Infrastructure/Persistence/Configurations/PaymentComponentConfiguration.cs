@@ -23,7 +23,7 @@ internal sealed class PaymentComponentConfiguration : IEntityTypeConfiguration<P
 
         builder
             .HasOne(pc => pc.Wallet)
-            .WithMany()
+            .WithMany(w => w.Components)
             .HasForeignKey(pc => pc.WalletId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);

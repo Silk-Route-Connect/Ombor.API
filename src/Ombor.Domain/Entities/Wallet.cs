@@ -32,4 +32,7 @@ public class Wallet : EntityBase, IOrganizationScoped
 
     /// <summary>Transfers received into this wallet.</summary>
     public virtual ICollection<WalletTransfer> IncomingTransfers { get; set; } = [];
+
+    /// <summary>Payment components sourced from this wallet — the payment side of the computed balance (rule 15).</summary>
+    public virtual ICollection<PaymentComponent> Components { get; set; } = [];
 }

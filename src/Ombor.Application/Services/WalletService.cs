@@ -150,13 +150,10 @@ internal sealed class WalletService(
         var transfers = await context.WalletTransfers
             .AsNoTracking()
             .Where(t => t.FromWalletId == walletId || t.ToWalletId == walletId)
-            .OrderBy(t => t.DateUtc)
-            .ThenBy(t => t.Id)
             .Select(t => new
             {
                 t.Id,
                 t.DateUtc,
-                t.FromWalletId,
                 t.ToWalletId,
                 t.Amount,
                 FromName = t.FromWallet.Name,
@@ -164,31 +161,83 @@ internal sealed class WalletService(
             })
             .ToArrayAsync();
 
-        // Running balance starts at the opening balance and reconciles to the current balance.
-        var operations = new List<WalletOperationDto>(transfers.Length);
-        var running = wallet.OpeningBalance;
+        // Wallet-sourced payment components are the payment side of the ledger (rule 15).
+        var payments = await context.PaymentComponents
+            .AsNoTracking()
+            .Where(c => c.SourceType == Domain.Enums.PaymentSourceType.Wallet && c.WalletId == walletId)
+            .Select(c => new
+            {
+                c.Id,
+                c.Amount,
+                c.Payment.DateUtc,
+                c.Payment.Number,
+                c.Payment.Type,
+                c.Payment.Direction,
+                Party = c.Payment.Partner != null
+                    ? c.Payment.Partner.Name
+                    : (c.Payment.Employee != null ? c.Payment.Employee.FullName : null),
+            })
+            .ToArrayAsync();
 
-        foreach (var transfer in transfers)
+        var entries = new List<TimelineEntry>(transfers.Length + payments.Length);
+
+        foreach (var t in transfers)
         {
-            var isIncoming = transfer.ToWalletId == walletId;
-            running += isIncoming ? transfer.Amount : -transfer.Amount;
-
-            operations.Add(new WalletOperationDto(
-                Id: transfer.Id,
-                Date: transfer.DateUtc,
+            var isIncoming = t.ToWalletId == walletId;
+            entries.Add(new TimelineEntry(t.DateUtc, t.Id, isIncoming ? t.Amount : -t.Amount, new WalletOperationDto(
+                Id: t.Id,
+                Date: t.DateUtc,
                 Kind: "Transfer",
                 Direction: isIncoming ? "In" : "Out",
                 PaymentNumber: null,
-                Party: isIncoming ? transfer.FromName : transfer.ToName,
-                Amount: transfer.Amount,
-                BalanceAfter: running,
-                TransferId: transfer.Id));
+                Party: isIncoming ? t.FromName : t.ToName,
+                Amount: t.Amount,
+                BalanceAfter: 0m,
+                TransferId: t.Id)));
         }
+
+        foreach (var p in payments)
+        {
+            var isIncoming = p.Direction == Domain.Enums.PaymentDirection.Income;
+            entries.Add(new TimelineEntry(p.DateUtc, p.Id, isIncoming ? p.Amount : -p.Amount, new WalletOperationDto(
+                Id: p.Id,
+                Date: p.DateUtc,
+                Kind: OperationKind(p.Type, isIncoming),
+                Direction: isIncoming ? "In" : "Out",
+                PaymentNumber: p.Number,
+                Party: p.Party,
+                Amount: p.Amount,
+                BalanceAfter: 0m,
+                TransferId: null)));
+        }
+
+        // Fold the running balance from the opening balance over the merged timeline; it reconciles to the current balance.
+        var running = wallet.OpeningBalance;
+        var operations = entries
+            .OrderBy(e => e.Date)
+            .ThenBy(e => e.Id)
+            .Select(e =>
+            {
+                running += e.SignedAmount;
+                return e.Operation with { BalanceAfter = running };
+            })
+            .ToList();
 
         operations.Reverse(); // newest-first
 
         return [.. operations];
     }
+
+    private static string OperationKind(Domain.Enums.PaymentType type, bool isIncoming) => type switch
+    {
+        Domain.Enums.PaymentType.Deposit => "Deposit",
+        Domain.Enums.PaymentType.Withdrawal => "Withdrawal",
+        Domain.Enums.PaymentType.Transaction => "Payment",
+        Domain.Enums.PaymentType.Payroll => "Expense",
+        _ => isIncoming ? "Payment" : "Expense", // General
+    };
+
+    private sealed record TimelineEntry(DateTimeOffset Date, int Id, decimal SignedAmount, WalletOperationDto Operation);
 
     public async Task<WalletTransferDto[]> GetTransfersAsync(int walletId)
     {
@@ -247,7 +296,7 @@ internal sealed class WalletService(
             .Select(WalletProjection())
             .FirstAsync();
 
-        return row.OpeningBalance + row.Incoming - row.Outgoing;
+        return Balance(row);
     }
 
     private async Task EnsureNameIsUniqueAsync(string name, int? excludingId)
@@ -268,7 +317,7 @@ internal sealed class WalletService(
         await context.Wallets.FirstOrDefaultAsync(w => w.Id == id)
         ?? throw new EntityNotFoundException<Wallet>(id);
 
-    /// <summary>Projects a wallet plus its transfer sums — the inputs to the computed balance.</summary>
+    /// <summary>Projects a wallet plus its transfer and payment-component sums — the inputs to the computed balance.</summary>
     private static System.Linq.Expressions.Expression<Func<Wallet, WalletRow>> WalletProjection() =>
         w => new WalletRow(
             w.Id,
@@ -279,12 +328,22 @@ internal sealed class WalletService(
             w.CreatedBy,
             w.CreatedAt,
             w.IncomingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m,
-            w.OutgoingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m);
+            w.OutgoingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m,
+            // Only Wallet-source components move wallet cash (rule 15); signed by the payment direction.
+            w.Components
+                .Where(c => c.SourceType == Domain.Enums.PaymentSourceType.Wallet && c.Payment.Direction == Domain.Enums.PaymentDirection.Income)
+                .Sum(c => (decimal?)c.Amount) ?? 0m,
+            w.Components
+                .Where(c => c.SourceType == Domain.Enums.PaymentSourceType.Wallet && c.Payment.Direction == Domain.Enums.PaymentDirection.Expense)
+                .Sum(c => (decimal?)c.Amount) ?? 0m);
+
+    private static decimal Balance(WalletRow row)
+        => row.OpeningBalance + row.Incoming - row.Outgoing + row.PaymentsIn - row.PaymentsOut;
 
     private static WalletDto ToDto(WalletRow row)
     {
-        var balance = row.OpeningBalance + row.Incoming - row.Outgoing;
-        // No partner advances are recorded against wallets yet, so none are held here (rule 11).
+        var balance = Balance(row);
+        // Advances aren't attributed to wallets until the advance-draw/withdrawal feature lands (rule 11).
         const decimal advancesHeld = 0m;
 
         return new WalletDto(
@@ -309,5 +368,7 @@ internal sealed class WalletService(
         string? CreatedBy,
         DateTimeOffset CreatedAt,
         decimal Incoming,
-        decimal Outgoing);
+        decimal Outgoing,
+        decimal PaymentsIn,
+        decimal PaymentsOut);
 }
