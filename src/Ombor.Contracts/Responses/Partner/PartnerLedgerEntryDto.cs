@@ -1,0 +1,23 @@
+namespace Ombor.Contracts.Responses.Partner;
+
+/// <summary>
+/// One entry of a partner's derived ledger (newest-first). The running <see cref="Balance"/> over the
+/// whole ledger reconciles exactly to the partner's net balance (complexity notes §G).
+/// </summary>
+/// <param name="Id">The source event id (transaction id, payment id, or 0 for the opening event).</param>
+/// <param name="Type">The event type: opening, sale, supply, refund-sale, refund-supply, payment, deposit, withdraw.</param>
+/// <param name="Date">When the event occurred.</param>
+/// <param name="Delta">The signed effect on the balance (positive = the partner owes us more).</param>
+/// <param name="Balance">The running balance after this event.</param>
+/// <param name="Reference">A human reference (e.g. payment number «P-520»), if any.</param>
+/// <param name="ItemCount">Number of line items, for transaction events.</param>
+/// <param name="Status">Settlement status for transaction events (paid, partial, unpaid) or "done".</param>
+public sealed record PartnerLedgerEntryDto(
+    int Id,
+    string Type,
+    DateTimeOffset Date,
+    decimal Delta,
+    decimal Balance,
+    string? Reference,
+    int? ItemCount,
+    string? Status);

@@ -25,8 +25,14 @@ public class Partner : EntityBase, IOrganizationScoped
     /// <summary>Gets or sets the name of the company associated with the partner.</summary>
     public string? CompanyName { get; set; }
 
-    /// <summary>Gets or sets the partner's balance.</summary>
-    public decimal Balance { get; set; }
+    /// <summary>
+    /// The partner's starting balance, recorded once at creation as an immutable event (signed:
+    /// positive = the partner owes us). The net balance is computed from this plus the event log.
+    /// </summary>
+    public decimal OpeningBalance { get; set; }
+
+    /// <summary>The date the opening balance was recorded (partner creation). Immutable.</summary>
+    public DateOnly OpeningDate { get; set; }
 
     /// <summary>Gets or sets the type of the Partner.</summary>
     public PartnerType Type { get; set; }

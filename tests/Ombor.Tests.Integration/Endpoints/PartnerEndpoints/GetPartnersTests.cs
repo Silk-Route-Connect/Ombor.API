@@ -41,7 +41,8 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Email = "search-test@gmail.com",
                 CompanyName = "Partner's company name",
                 Type = PartnerType.Customer,
-                Balance = 1000.00m,
+                OpeningBalance = 1000.00m,
+                OpeningDate = new DateOnly(2026, 1, 1),
                 PhoneNumbers = ["+998914778888"]
             },
             // Matching search term by address
@@ -52,7 +53,8 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Email = "search-test1@gmail.com",
                 CompanyName = "Partner's company name",
                 Type = PartnerType.Supplier,
-                Balance = 1000.00m,
+                OpeningBalance = 1000.00m,
+                OpeningDate = new DateOnly(2026, 1, 1),
                 PhoneNumbers = ["+998914778888"]
             },
             // Matching company
@@ -62,7 +64,8 @@ public class GetPartnersTests(TestingWebApplicationFactory factory, ITestOutputH
                 Address = "Tashkent",
                 CompanyName = searchTerm,
                 Type = PartnerType.Both,
-                Balance = 10_000,
+                OpeningBalance = 10_000,
+                OpeningDate = new DateOnly(2026, 1, 1),
                 PhoneNumbers = ["+99890-100-00-00"]
             },
         };

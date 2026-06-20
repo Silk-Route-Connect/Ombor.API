@@ -44,6 +44,19 @@ public sealed class PartnersController(
     }
 
     /// <summary>
+    /// Returns the partner's ledger (newest-first); the running balance reconciles to the partner's net balance.
+    /// </summary>
+    [HttpGet("{id:int:min(1)}/ledger")]
+    [ProducesResponseType(typeof(PartnerLedgerEntryDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PartnerLedgerEntryDto[]>> GetLedgerAsync([FromRoute] int id)
+    {
+        var response = await partnerService.GetLedgerAsync(id);
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Creates a new partner.
     /// </summary>
     /// <param name="request">Payload describing the partner to create.</param>

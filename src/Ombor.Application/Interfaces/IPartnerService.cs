@@ -62,4 +62,10 @@ public interface IPartnerService
     /// <summary>Restores a previously archived partner.</summary>
     /// <exception cref="EntityNotFoundException{partner}">If no partner with the given ID exists.</exception>
     Task RestoreAsync(int id);
+
+    /// <summary>
+    /// Returns the partner's derived ledger (newest-first); the running balance reconciles to the partner's net balance.
+    /// </summary>
+    /// <exception cref="EntityNotFoundException{partner}">If no partner with the given ID exists.</exception>
+    Task<PartnerLedgerEntryDto[]> GetLedgerAsync(int partnerId);
 }

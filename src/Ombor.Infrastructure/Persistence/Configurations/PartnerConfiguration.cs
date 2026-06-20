@@ -48,8 +48,12 @@ internal sealed class PartnerConfiguration : IEntityTypeConfiguration<Partner>
             .HasMaxLength(ConfigurationConstants.DefaultStringLength);
 
         builder
-            .Property(p => p.Balance)
+            .Property(p => p.OpeningBalance)
             .HasCurrencyPrecision();
+
+        builder
+            .Property(p => p.OpeningDate)
+            .IsRequired();
 
         builder
             .Property(p => p.Type)

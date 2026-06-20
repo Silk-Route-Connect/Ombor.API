@@ -19,7 +19,8 @@ public static class PartnerGenerator
         .RuleFor(x => x.Address, f => f.Address.FullAddress())
         .RuleFor(x => x.Email, f => f.Person.Email)
         .RuleFor(x => x.CompanyName, f => f.Person.Company.Name)
-        .RuleFor(x => x.Balance, _ => 0)
+        .RuleFor(x => x.OpeningBalance, _ => 0m)
+        .RuleFor(x => x.OpeningDate, f => DateOnly.FromDateTime(f.Date.Past(1)))
         .RuleFor(x => x.Type, f => f.Random.Enum<PartnerType>())
         .RuleFor(x => x.PhoneNumbers, f => [.. Enumerable.Range(0, f.Random.Number(5)).Select(_ => f.Phone.PhoneNumber("+998-9#-###-##-##"))]);
 }

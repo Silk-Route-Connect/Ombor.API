@@ -30,8 +30,9 @@ public sealed class GetPartnerByIdTests : PartnerTestsBase
     [Fact]
     public async Task GetByIdAsync_ShouldThrowNotFound_WhenpartnerDoesNotExist()
     {
-        // Arrange 
+        // Arrange
         var request = new GetPartnerByIdRequest(NonExistentEntityId);
+        SetupPartnerBalances([]);
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException<Partner>>(
@@ -39,6 +40,7 @@ public sealed class GetPartnerByIdTests : PartnerTestsBase
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Partners, Times.Once);
+        _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
         VerifyNoOtherCalls();
     }
@@ -51,8 +53,9 @@ public sealed class GetPartnerByIdTests : PartnerTestsBase
         var request = new GetPartnerByIdRequest(expected.Id);
 
         SetupPartners([.. _defaultpartners, expected]);
+        SetupPartnerBalances([new PartnerBalance { PartnerId = expected.Id, OpeningBalance = expected.OpeningBalance }]);
 
-        // Act 
+        // Act
         var response = await _service.GetByIdAsync(request);
 
         // Assert
@@ -60,6 +63,7 @@ public sealed class GetPartnerByIdTests : PartnerTestsBase
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Partners, Times.Once);
+        _mockContext.Verify(mock => mock.PartnerBalances, Times.Once);
 
         VerifyNoOtherCalls();
     }

@@ -10,7 +10,6 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="Address">An optional new address.</param>
 /// <param name="Email">An optional new Email.</param>
 /// <param name="CompanyName">An optional new company name.</param>
-/// <param name="Balance">The new balance of partner.</param>
 /// <param name="Type">The type of the partner.</param>
 /// <param name="PhoneNumbers">New phone numbers of partner.</param>
 public sealed record UpdatePartnerRequest(
@@ -19,6 +18,5 @@ public sealed record UpdatePartnerRequest(
     string? Address,
     string? Email,
     string? CompanyName,
-    decimal Balance,
     PartnerType Type,
     List<string> PhoneNumbers);

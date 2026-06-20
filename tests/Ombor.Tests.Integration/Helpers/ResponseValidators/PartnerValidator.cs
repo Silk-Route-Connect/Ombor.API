@@ -19,10 +19,10 @@ public sealed class PartnerValidator(IApplicationDbContext context)
         Assert.All(expectedPartners, expected =>
         {
             var actual = response.First(s => s.Id == expected.Id);
-            var expectedBalance = balances[actual.Id];
 
             PartnerAssertionHelper.AssertEquivalent(expected, actual);
-            PartnerAssertionHelper.AssertEquivalent(expectedBalance, actual.BalanceDto);
+            // The DTO's net balance is the view's computed Total.
+            Assert.Equal(balances[actual.Id].Total, actual.Balance);
         });
     }
 
@@ -65,7 +65,9 @@ public sealed class PartnerValidator(IApplicationDbContext context)
 
     private async Task<Partner[]> GetAsync(GetPartnersRequest request)
     {
-        var query = context.Partners.AsNoTracking();
+        var query = context.Partners
+            .AsNoTracking()
+            .Where(s => s.IsArchived == (request.IsArchived ?? false));
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {

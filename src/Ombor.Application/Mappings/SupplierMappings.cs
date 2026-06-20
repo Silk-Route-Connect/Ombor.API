@@ -7,17 +7,6 @@ namespace Ombor.Application.Mappings;
 
 internal static class PartnerMappings
 {
-    public static PartnerDto ToDto(this Partner partner) =>
-        new(Id: partner.Id,
-            Name: partner.Name,
-            Type: partner.Type.ToString(),
-            Address: partner.Address,
-            Email: partner.Email,
-            CompanyName: partner.CompanyName,
-            Balance: partner.Balance,
-            PhoneNumbers: partner.PhoneNumbers,
-            null);
-
     public static Partner ToEntity(this CreatePartnerRequest request) =>
         new()
         {
@@ -26,7 +15,7 @@ internal static class PartnerMappings
             Email = request.Email,
             CompanyName = request.CompanyName,
             Type = Enum.Parse<PartnerType>(request.Type.ToString()),
-            Balance = request.Balance,
+            OpeningBalance = request.OpeningBalance,
             PhoneNumbers = request.PhoneNumbers
         };
 
@@ -37,7 +26,9 @@ internal static class PartnerMappings
             Address: partner.Address,
             Email: partner.Email,
             CompanyName: partner.CompanyName,
-            Balance: partner.Balance,
+            OpeningBalance: partner.OpeningBalance,
+            OpeningDate: partner.OpeningDate,
+            IsArchived: partner.IsArchived,
             PhoneNumbers: partner.PhoneNumbers);
 
     public static UpdatePartnerResponse ToUpdateResponse(this Partner partner) =>
@@ -47,16 +38,18 @@ internal static class PartnerMappings
             Address: partner.Address,
             Email: partner.Email,
             CompanyName: partner.CompanyName,
-            Balance: partner.Balance,
+            OpeningBalance: partner.OpeningBalance,
+            OpeningDate: partner.OpeningDate,
+            IsArchived: partner.IsArchived,
             PhoneNumbers: partner.PhoneNumbers);
 
+    // Opening balance/date are immutable (set once at creation) — the update never touches them.
     public static void ApplyUpdate(this Partner partner, UpdatePartnerRequest request)
     {
         partner.Name = request.Name;
         partner.Address = request.Address;
         partner.Email = request.Email;
         partner.CompanyName = request.CompanyName;
-        partner.Balance = request.Balance;
         partner.PhoneNumbers = request.PhoneNumbers;
         partner.Type = Enum.Parse<PartnerType>(request.Type.ToString());
     }

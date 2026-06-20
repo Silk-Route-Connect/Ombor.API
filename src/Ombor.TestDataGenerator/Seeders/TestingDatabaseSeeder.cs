@@ -191,7 +191,8 @@ internal sealed class TestingDatabaseSeeder(
                 Name = $"Test Partner {i}",
                 Address = "Test Partner address",
                 CompanyName = "Random Company",
-                Balance = 5_000,
+                OpeningBalance = 5_000m,
+                OpeningDate = new DateOnly(2026, 1, 1),
                 Type = PartnerType.Both,
                 Email = $"partner{i}@test.com",
                 PhoneNumbers = ["+99890-100-00-00"]

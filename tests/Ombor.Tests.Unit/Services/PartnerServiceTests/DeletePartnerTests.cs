@@ -80,8 +80,8 @@ public sealed class DeletePartnerTests : PartnerTestsBase
         SetupOrders([]);
         SetupTemplates([]);
 
-        // Act & Assert — a referenced partner cannot be hard-deleted.
-        await Assert.ThrowsAsync<FluentValidation.ValidationException>(
+        // Act & Assert — a referenced partner cannot be hard-deleted (409).
+        await Assert.ThrowsAsync<Ombor.Domain.Exceptions.ConflictException>(
             () => _service.DeleteAsync(request));
 
         mockSet.Verify(mock => mock.Remove(It.IsAny<Partner>()), Times.Never);

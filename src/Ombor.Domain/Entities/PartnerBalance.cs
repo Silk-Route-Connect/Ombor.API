@@ -11,6 +11,9 @@ public class PartnerBalance : IOrganizationScoped
     public int OrganizationId { get; set; }
     public int PartnerId { get; init; }
 
+    /// <summary>The partner's immutable opening balance (signed: positive = the partner owes us).</summary>
+    public decimal OpeningBalance { get; init; }
+
     /// <summary>The partner's prepaid claim on us (we owe it back).</summary>
     public decimal PartnerAdvance { get; init; }
 
@@ -24,5 +27,5 @@ public class PartnerBalance : IOrganizationScoped
     public decimal ReceivableDebt { get; init; }
 
     /// <summary>Net balance (rule 12, sign per complexity notes §G): positive means the partner owes us.</summary>
-    public decimal Total => (ReceivableDebt + CompanyAdvance) - (PayableDebt + PartnerAdvance);
+    public decimal Total => OpeningBalance + (ReceivableDebt + CompanyAdvance) - (PayableDebt + PartnerAdvance);
 }

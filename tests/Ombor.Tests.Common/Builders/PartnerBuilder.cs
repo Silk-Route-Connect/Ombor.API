@@ -79,7 +79,8 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         Address = _address,
         Email = _email,
         CompanyName = _companyName,
-        Balance = _balance ?? 0,
+        OpeningBalance = _balance ?? 0,
+        OpeningDate = new DateOnly(2026, 1, 1),
         Type = _type ?? PartnerType.Both,
         PhoneNumbers = _phoneNumbers ?? []
     };
@@ -91,7 +92,8 @@ internal sealed class PartnerBuilder(Faker faker) : BuilderBase(faker), IPartner
         Address = _address ?? _faker.Address.FullAddress(),
         Email = _email ?? _faker.Person.Email,
         CompanyName = _companyName ?? _faker.Company.CompanyName(),
-        Balance = _balance ?? _faker.Random.Decimal(10_000, 1_000_000),
+        OpeningBalance = _balance ?? _faker.Random.Decimal(10_000, 1_000_000),
+        OpeningDate = DateOnly.FromDateTime(_faker.Date.Past(1)),
         Type = _type ?? _faker.Random.Enum<PartnerType>(),
         PhoneNumbers = _phoneNumbers ?? GeneratePhoneNumbers()
     };

@@ -10,28 +10,27 @@ public class PartnerMappingsTests
     [Fact]
     public void ToEntity_ShouldMapAllFieldsCorrectly_WhenValidRequest()
     {
-        // Arrange 
+        // Arrange
         var request = new CreatePartnerRequest(
             Name: "John",
             Address: "New York",
             Email: "qwerty@gmail.com",
             CompanyName: "qwertgvc",
-            Balance: 1000.00m,
+            OpeningBalance: 1000.00m,
             Type: PartnerType.Customer,
             PhoneNumbers: ["+998945558888"]
         );
 
-        // Act 
+        // Act
         var entity = request.ToEntity();
 
         // Assert
-
         Assert.Equal(request.Name, entity.Name);
         Assert.Equal(request.Address, entity.Address);
         Assert.Equal(request.Email, entity.Email);
         Assert.Equal(request.CompanyName, entity.CompanyName);
         Assert.Equal(request.Type.ToString(), entity.Type.ToString());
-        Assert.Equal(request.Balance, entity.Balance);
+        Assert.Equal(request.OpeningBalance, entity.OpeningBalance);
         Assert.Equal(request.PhoneNumbers, entity.PhoneNumbers);
     }
 
@@ -46,6 +45,8 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
+            OpeningBalance = 1500m,
+            OpeningDate = new DateOnly(2026, 1, 1),
             Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
@@ -60,7 +61,8 @@ public class PartnerMappingsTests
         Assert.Equal(partner.Email, response.Email);
         Assert.Equal(partner.CompanyName, response.CompanyName);
         Assert.Equal(partner.Type.ToString(), response.Type);
-        Assert.Equal(partner.Balance, response.Balance);
+        Assert.Equal(partner.OpeningBalance, response.OpeningBalance);
+        Assert.Equal(partner.OpeningDate, response.OpeningDate);
         Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
     }
 
@@ -75,6 +77,8 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
+            OpeningBalance = 1500m,
+            OpeningDate = new DateOnly(2026, 1, 1),
             Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
@@ -89,41 +93,13 @@ public class PartnerMappingsTests
         Assert.Equal(partner.Email, response.Email);
         Assert.Equal(partner.CompanyName, response.CompanyName);
         Assert.Equal(partner.Type.ToString(), response.Type);
-        Assert.Equal(partner.Balance, response.Balance);
+        Assert.Equal(partner.OpeningBalance, response.OpeningBalance);
+        Assert.Equal(partner.OpeningDate, response.OpeningDate);
         Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
     }
 
     [Fact]
-    public void ToDto_ShouldMapAllFields()
-    {
-        // Arrange
-        var partner = new Partner
-        {
-            Id = 13,
-            Name = "Test partner",
-            Address = "asdfghjk",
-            Email = "testemail@gmail.com",
-            CompanyName = "qwerty",
-            Type = Domain.Enums.PartnerType.Supplier,
-            PhoneNumbers = ["+998944447788"]
-        };
-
-        // Act
-        var response = partner.ToDto();
-
-        // Assert
-        Assert.Equal(partner.Id, response.Id);
-        Assert.Equal(partner.Name, response.Name);
-        Assert.Equal(partner.Address, response.Address);
-        Assert.Equal(partner.Email, response.Email);
-        Assert.Equal(partner.CompanyName, response.CompanyName);
-        Assert.Equal(partner.Type.ToString(), response.Type);
-        Assert.Equal(partner.Balance, response.Balance);
-        Assert.Equal(partner.PhoneNumbers, response.PhoneNumbers);
-    }
-
-    [Fact]
-    public void ApplyUpdate_ShouldOverwriteAllFields()
+    public void ApplyUpdate_ShouldOverwriteEditableFields_AndLeaveOpeningBalanceUntouched()
     {
         // Arrange
         var partner = new Partner
@@ -133,6 +109,8 @@ public class PartnerMappingsTests
             Address = "asdfghjk",
             Email = "testemail@gmail.com",
             CompanyName = "qwerty",
+            OpeningBalance = 1500m,
+            OpeningDate = new DateOnly(2026, 1, 1),
             Type = Domain.Enums.PartnerType.Supplier,
             PhoneNumbers = ["+998944447788"]
         };
@@ -143,7 +121,6 @@ public class PartnerMappingsTests
             Address: "Updated address",
             Email: "Updated email",
             CompanyName: "Updated company name",
-            Balance: 0.00m,
             Type: PartnerType.Supplier,
             PhoneNumbers: ["+998885552200"]);
 
@@ -157,7 +134,9 @@ public class PartnerMappingsTests
         Assert.Equal(request.Email, partner.Email);
         Assert.Equal(request.CompanyName, partner.CompanyName);
         Assert.Equal(request.Type.ToString(), partner.Type.ToString());
-        Assert.Equal(request.Balance, partner.Balance);
         Assert.Equal(request.PhoneNumbers, partner.PhoneNumbers);
+        // Opening balance is immutable — untouched by update.
+        Assert.Equal(1500m, partner.OpeningBalance);
+        Assert.Equal(new DateOnly(2026, 1, 1), partner.OpeningDate);
     }
 }

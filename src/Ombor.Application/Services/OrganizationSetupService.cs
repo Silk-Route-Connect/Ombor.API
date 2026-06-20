@@ -15,7 +15,12 @@ internal sealed class OrganizationSetupService(
         organizationAccessor.SetOrganization(organizationId);
 
         context.Categories.Add(new Category { Name = "Основная" });
-        context.Partners.Add(new Partner { Name = "Розничный покупатель", Type = PartnerType.Customer });
+        context.Partners.Add(new Partner
+        {
+            Name = "Розничный покупатель",
+            Type = PartnerType.Customer,
+            OpeningDate = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime),
+        });
         context.Inventories.Add(new Inventory { Name = "Основной склад", IsActive = true });
         context.Wallets.Add(new Wallet
         {

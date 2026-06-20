@@ -14,6 +14,9 @@ internal sealed class PartnerBalanceConfiguration : IEntityTypeConfiguration<Par
         builder.HasNoKey();
 
         builder
+            .Property(v => v.OpeningBalance)
+            .HasCurrencyPrecision();
+        builder
             .Property(v => v.PartnerAdvance)
             .HasCurrencyPrecision();
         builder
