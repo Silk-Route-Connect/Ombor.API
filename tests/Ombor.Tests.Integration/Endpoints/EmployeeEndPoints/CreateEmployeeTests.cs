@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Employee;
-using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Factories;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -36,6 +35,7 @@ public class CreateEmployeeTests(
 
         // Assert
         Assert.NotNull(response);
-        Assert.Contains(nameof(Employee.FullName), response.Errors.Keys);
+        // The request field is `Name`; FluentValidation keys the error by the request property.
+        Assert.Contains("Name", response.Errors.Keys);
     }
 }
