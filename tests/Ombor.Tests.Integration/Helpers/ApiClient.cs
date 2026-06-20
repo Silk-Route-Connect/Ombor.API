@@ -15,6 +15,9 @@ public sealed class ApiClient(HttpClient client)
     public Task<TResult> PostAsync<TResult>(string url, object content, HttpStatusCode expectedStatusCode = HttpStatusCode.Created)
         => SendAsync<TResult>(HttpMethod.Post, url, expectedStatusCode, content);
 
+    public Task PostAsync(string url, HttpStatusCode expectedStatusCode = HttpStatusCode.NoContent)
+        => SendAsync(HttpMethod.Post, url, expectedStatusCode);
+
     public Task<TResult> PutAsync<TResult>(string url, object content, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
         => SendAsync<TResult>(HttpMethod.Put, url, expectedStatusCode, content);
 
