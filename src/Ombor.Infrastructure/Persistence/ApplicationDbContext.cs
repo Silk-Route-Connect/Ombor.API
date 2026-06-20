@@ -24,6 +24,8 @@ internal class ApplicationDbContext(
     public virtual DbSet<TransactionRecord> Transactions { get; set; }
     public virtual DbSet<TransactionLine> TransactionLines { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<Wallet> Wallets { get; set; }
+    public virtual DbSet<WalletTransfer> WalletTransfers { get; set; }
     public virtual DbSet<PaymentComponent> PaymentComponents { get; set; }
     public virtual DbSet<PaymentAllocation> PaymentAllocations { get; set; }
     public virtual DbSet<PaymentAttachment> PaymentAttachments { get; set; }

@@ -47,6 +47,12 @@ public interface IApplicationDbContext
 
     DbSet<Payment> Payments { get; set; }
 
+    /// <summary>Gets or sets the wallets (money locations) set.</summary>
+    DbSet<Wallet> Wallets { get; set; }
+
+    /// <summary>Gets or sets the inter-wallet transfers set.</summary>
+    DbSet<WalletTransfer> WalletTransfers { get; set; }
+
     DbSet<PaymentComponent> PaymentComponents { get; set; }
 
     DbSet<PaymentAllocation> PaymentAllocations { get; set; }
