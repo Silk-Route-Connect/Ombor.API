@@ -74,7 +74,7 @@ internal sealed class PaymentService(
         if (advanceAmount > 0 && request.PartnerId is int debtPartnerId)
         {
             var direction = request.Direction.ToDomainDirection();
-            var remainingDebt = await ComputeSettlableDebtAsync(debtPartnerId, direction) - settlementTotal;
+            var remainingDebt = await context.ComputeSettlableDebtAsync(debtPartnerId, direction) - settlementTotal;
 
             if (remainingDebt > 0)
             {
@@ -85,7 +85,7 @@ internal sealed class PaymentService(
 
         var payment = new Payment
         {
-            Number = await NextPaymentNumberAsync(),
+            Number = await context.NextPaymentNumberAsync(),
             Type = request.Type.ToDomainType(),
             Direction = request.Direction.ToDomainDirection(),
             DateUtc = DateTimeOffset.UtcNow,
@@ -288,26 +288,6 @@ internal sealed class PaymentService(
                 a.TransactionId,
                 a.TransactionId != null ? "#" + a.TransactionId : a.Type.ToString(),
                 a.Amount)).ToArray());
-
-    private async Task<decimal> ComputeSettlableDebtAsync(int partnerId, PaymentDirection direction)
-    {
-        var settlableTypes = direction == PaymentDirection.Income
-            ? new[] { TransactionType.Sale, TransactionType.SupplyRefund }
-            : new[] { TransactionType.Supply, TransactionType.SaleRefund };
-
-        return await context.Transactions
-            .Where(t => t.PartnerId == partnerId
-                && settlableTypes.Contains(t.Type)
-                && t.TotalDue > t.TotalPaid)
-            .SumAsync(t => (decimal?)(t.TotalDue - t.TotalPaid)) ?? 0m;
-    }
-
-    private async Task<string> NextPaymentNumberAsync()
-    {
-        var count = await context.Payments.CountAsync();
-
-        return $"P-{count + 1}";
-    }
 
     public Task<PaymentDto> CreateAsync(CreatePaymentRequest request)
     {
@@ -585,65 +565,6 @@ internal sealed class PaymentService(
                 x.Notes,
                 x.DateUtc))
             .ToArray();
-    }
-
-    private async Task ValidateOrThrowAsync(CreateTransactionRequest request, TransactionRecord transaction)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-        // await validator.ValidateAndThrowAsync(request);
-
-        var partner = await context.Partners
-            .FirstOrDefaultAsync(x => x.Id == request.PartnerId)
-            ?? throw new InvalidOperationException("Partner does not exist");
-        var partnerBalance = await context.PartnerBalances
-            .FirstAsync(x => x.PartnerId == request.PartnerId);
-        var totalDebt = request.Type == Contracts.Enums.TransactionType.Sale
-            ? partnerBalance.PayableDebt
-            : partnerBalance.ReceivableDebt;
-
-        var totalDue = transaction.UnpaidAmount;
-        var totalPaid = request.Payments.Sum(x => x.Amount * x.ExchangeRate);
-        var totalPaidDebt = request.DebtPayments?.Sum(x => x.Amount) ?? 0;
-        var totalPaidAdvance = totalPaid - totalDue - totalPaidDebt; // if negative, no advance payment
-
-        if (totalPaid < totalDue && totalPaidDebt > 0)
-        {
-            throw new ValidationException("Debt payment is not allowed without fully covering current debt.");
-        }
-
-        if (totalDebt < totalPaidDebt)
-        {
-            throw new ValidationException("Debt payment cannot be greater than partner's total debt amount.");
-        }
-
-        if (totalDebt > totalPaidDebt && totalPaidAdvance > 0)
-        {
-            throw new ValidationException("Cannot make advance payment without closing existing debts.");
-        }
-
-        if (!partner.CanHandleTransaction(request.Type))
-        {
-            throw new ValidationException($"Partner of type: {partner.Type} cannot have transactions of type: {request.Type}");
-        }
-
-        var creditRequired = request.Payments
-                .Where(p => p.Method == Contracts.Enums.PaymentMethod.AccountBalance)
-                .Sum(p => p.Amount * p.ExchangeRate);
-
-        if (creditRequired <= 0)
-        {
-            return;
-        }
-
-        if (request.Type.GetPaymentDirection() == PaymentDirection.Income && partnerBalance.PartnerAdvance < creditRequired)
-        {
-            throw new ValidationException("Insufficient partner advance balance.");
-        }
-
-        if (request.Type.GetPaymentDirection() == PaymentDirection.Expense && partnerBalance.CompanyAdvance < creditRequired)
-        {
-            throw new ValidationException("Insufficient company advance balance.");
-        }
     }
 
     private IQueryable<Payment> GetQuery(GetPaymentsRequest request)
