@@ -73,7 +73,7 @@ internal static class TemplateMappings
         template.PartnerId = request.PartnerId;
         template.Type = request.Type.ToDomain();
 
-        // Reconcile the tracked item collection: update matching items, add new ones (Id == 0), drop the rest.
+        // Reconcile against the original items: update matches, add new ones, drop the rest.
         var existingById = template.Items.Where(i => i.Id != 0).ToDictionary(i => i.Id);
         var keptIds = new HashSet<int>();
 
@@ -89,11 +89,20 @@ internal static class TemplateMappings
             }
             else
             {
-                template.Items.Add(requestItem.ToEntity());
+                // A new item — never carry a foreign Id, so EF inserts it.
+                template.Items.Add(new TemplateItem
+                {
+                    ProductId = requestItem.ProductId,
+                    Quantity = requestItem.Quantity,
+                    UnitPrice = requestItem.UnitPrice,
+                    DiscountAmount = requestItem.Discount,
+                    Product = null!,
+                    Template = null!,
+                });
             }
         }
 
-        foreach (var removed in template.Items.Where(i => i.Id != 0 && !keptIds.Contains(i.Id)).ToList())
+        foreach (var removed in existingById.Values.Where(i => !keptIds.Contains(i.Id)).ToList())
         {
             template.Items.Remove(removed);
         }
