@@ -45,3 +45,14 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 
 - **Response shape.** Payroll create + list now return the redesigned `PaymentRecord`
   (`number`, `period`, `salary`, `employeePosition`, `sources[]`), not the legacy payment shape.
+
+## Removed / reshaped legacy payment endpoints (M2f)
+
+- **`GET /api/partners/{id}/payments` removed.** It returned the legacy payment shape and is
+  superseded by the partner **ledger** (coming in M3). The frontend must stop calling it; use the
+  ledger for per-partner history.
+
+- **`GET /api/transactions/{id}/payments` reshaped.** It no longer returns `currency`/`method`
+  (legacy). Each line is now `{ id, transactionId, amount, paymentNumber, walletName, walletType,
+  notes, date }`. The frontend's `TransactionPaymentLine.method` no longer exists — show the wallet
+  (name/type) instead.
