@@ -25,6 +25,12 @@ public class Payment : EntityBase, IOrganizationScoped, IAuditable
     public int? EmployeeId { get; set; }
     public virtual Employee? Employee { get; set; }
 
+    /// <summary>Payroll period (e.g. «2026-06»). Set only on Payroll payments.</summary>
+    public string? Period { get; set; }
+
+    /// <summary>The employee's salary snapshotted when this payroll was paid. Set only on Payroll payments.</summary>
+    public decimal? Salary { get; set; }
+
     public virtual ICollection<PaymentComponent> Components { get; set; } = [];
     public virtual ICollection<PaymentAllocation> Allocations { get; set; } = [];
     public virtual ICollection<PaymentAttachment> Attachments { get; set; } = [];

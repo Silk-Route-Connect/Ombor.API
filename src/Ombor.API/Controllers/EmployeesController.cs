@@ -34,13 +34,13 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
     }
 
     [HttpGet("{employeeId:int:min(1)}/payrolls")]
-    [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaymentRecordDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PaymentDto[]>> GetEmployeePayrollsAsync(
+    public async Task<ActionResult<PaymentRecordDto[]>> GetEmployeePayrollsAsync(
         [FromRoute] int employeeId)
     {
         var request = new GetPaymentsRequest(EmployeeId: employeeId, Type: Contracts.Enums.PaymentType.Payroll);
-        var response = await paymentService.GetAsync(request);
+        var response = await paymentService.GetRecordsAsync(request);
 
         return Ok(response);
     }
@@ -60,9 +60,9 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
     }
 
     [HttpPost("{employeeId}/payrolls")]
-    [ProducesResponseType(typeof(PaymentDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PaymentRecordDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<PaymentDto>> PostPayrollAsync(
+    public async Task<ActionResult<PaymentRecordDto>> PostPayrollAsync(
         [FromRoute] int employeeId,
         [FromBody] CreatePayrollRequest request)
     {

@@ -272,8 +272,8 @@ internal sealed class PaymentService(
             p.Components.Sum(c => c.Amount),
             string.Empty,
             p.Notes,
-            null,
-            null,
+            p.Period,
+            p.Salary,
             null,
             p.Components.Select(c => new PaymentSourceDto(
                 c.Id,
@@ -405,78 +405,42 @@ internal sealed class PaymentService(
                 [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
     }
 
-    public async Task<PaymentDto> CreateAsync(CreatePayrollRequest request)
+    public async Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var entity = request.ToPaymentEntity();
+        var employee = await context.Employees.FirstOrDefaultAsync(e => e.Id == request.EmployeeId)
+            ?? throw new EntityNotFoundException<Employee>(request.EmployeeId);
 
-        context.Payments.Add(entity);
+        var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Id == request.WalletId)
+            ?? throw new EntityNotFoundException<Wallet>(request.WalletId);
+
+        var payment = new Payment
+        {
+            Number = await context.NextPaymentNumberAsync(),
+            Type = PaymentType.Payroll,
+            Direction = PaymentDirection.Expense,
+            DateUtc = DateTimeOffset.UtcNow,
+            EmployeeId = employee.Id,
+            WalletId = wallet.Id,
+            Period = request.Period,
+            Salary = employee.Salary, // snapshot at creation so a later salary change doesn't rewrite history
+            Notes = request.Notes,
+        };
+
+        // Source side (rule 9): payroll is money leaving one wallet.
+        payment.Components.Add(new PaymentComponent
+        {
+            Payment = payment,
+            SourceType = PaymentSourceType.Wallet,
+            WalletId = wallet.Id,
+            Amount = request.Amount,
+        });
+
+        context.Payments.Add(payment);
         await context.SaveChangesAsync();
 
-        entity = await context.Payments
-            .Include(x => x.Employee)
-            .FirstAsync(x => x.Id == entity.Id);
-
-        return new PaymentDto(
-            entity.Id,
-            entity.PartnerId,
-            entity.Partner?.Name,
-            entity.EmployeeId,
-            entity.Employee?.FullName,
-            entity.Notes,
-            entity.Components.Sum(c => c.Amount * c.ExchangeRate),
-            entity.DateUtc,
-            entity.Direction.ToString(),
-            entity.Type.ToString(),
-            [.. entity.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
-            [.. entity.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
-    }
-
-    public async Task<PaymentDto> UpdateAsync(UpdatePayrollRequest request)
-    {
-        await validator.ValidateAndThrowAsync(request);
-        var payment = await context.Payments
-            .Include(x => x.Components)
-            .Include(x => x.Allocations)
-            .Include(x => x.Employee)
-            .FirstOrDefaultAsync(
-                x => x.Id == request.PaymentId &&
-                x.EmployeeId == request.EmployeeId &&
-                x.Type == PaymentType.Payroll)
-            ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
-
-        payment.ApplyUpdate(request);
-        context.Payments.Update(payment);
-        await context.SaveChangesAsync();
-
-        return new PaymentDto(
-            payment.Id,
-            payment.PartnerId,
-            payment.Partner?.Name,
-            payment.EmployeeId,
-            payment.Employee?.FullName,
-            payment.Notes,
-            payment.Components.Sum(a => a.Amount * a.ExchangeRate),
-            payment.DateUtc,
-            payment.Direction.ToString(),
-            payment.Type.ToString(),
-            [.. payment.Components.Select(c => new PaymentComponentDto(c.Id, c.Method.ToString(), c.Currency, c.Amount, c.ExchangeRate))],
-            [.. payment.Allocations.Select(a => new PaymentAllocationDto(a.Id, a.PaymentId, a.TransactionId, a.Amount, a.Type.ToString()))]);
-    }
-
-    public async Task DeleteAsync(DeletePayrollRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-        var payment = await context.Payments
-            .FirstOrDefaultAsync(
-                x => x.Id == request.PaymentId &&
-                x.Type == PaymentType.Payroll &&
-                x.EmployeeId == request.EmployeeId)
-            ?? throw new EntityNotFoundException<Payment>($"Payroll payment with id: {request.PaymentId} does not exist.");
-
-        context.Payments.Remove(payment);
-        await context.SaveChangesAsync();
+        return await GetRecordByIdAsync(payment.Id);
     }
 
     public async Task<PaymentDto[]> GetAsync(GetPaymentsRequest request)

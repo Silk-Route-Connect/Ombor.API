@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
+using Ombor.Infrastructure.Extensions;
 
 namespace Ombor.Infrastructure.Persistence.Configurations;
 
@@ -72,5 +73,15 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder
             .Property(p => p.DateUtc)
             .IsRequired();
+
+        builder
+            .Property(p => p.Period)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired(false);
+
+        builder
+            .Property(p => p.Salary)
+            .HasCurrencyPrecision()
+            .IsRequired(false);
     }
 }

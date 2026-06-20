@@ -17,7 +17,5 @@ public interface IPaymentService
     Task<OutstandingTransactionDto[]> GetOutstandingAsync(int partnerId);
     Task<PaymentDto> CreateAsync(CreatePaymentRequest request);
     Task<PaymentDto?> CreateAsync(CreateTransactionPaymentRequest request);
-    Task<PaymentDto> CreateAsync(CreatePayrollRequest request);
-    Task<PaymentDto> UpdateAsync(UpdatePayrollRequest request);
-    Task DeleteAsync(DeletePayrollRequest request);
+    Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request);
 }
