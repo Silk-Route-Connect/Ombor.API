@@ -16,5 +16,10 @@ internal sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organ
             .Property(o => o.Name)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired();
+
+        builder.Property(o => o.Address).HasMaxLength(ConfigurationConstants.MaxStringLength);
+        builder.Property(o => o.Phone).HasMaxLength(ConfigurationConstants.PhoneNumberLength);
+        builder.Property(o => o.Email).HasMaxLength(ConfigurationConstants.DefaultStringLength);
+        builder.Property(o => o.LogoUrl).HasMaxLength(ConfigurationConstants.MaxStringLength);
     }
 }

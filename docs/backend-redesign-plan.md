@@ -196,10 +196,18 @@ The remaining M2c work reworks `TransactionService.CreateAsync` + `CreateTransac
 **Decisions & notes:**
 
 ### M7 — Settings / Users
-**Status:** not started
+**Status:** in progress — split into slices. **M7a (org profile) done & verified** (`dotnet build` + unit (353) green; Settings integration 4/4 via Podman). M7b (users + language) not started.
 **Depends on:** independent of the money path — parked last.
-- Org profile (name/address/phone/email/logo) — `GET/PUT /api/settings/organization`.
-- User management: invite, deactivate/reactivate (rule 41 — never hard-delete), per-user language preference.
+- Org profile (name/address/phone/email/logo) — `GET/PUT /api/settings/organization`. → **M7a**
+- User management: invite, deactivate/reactivate (rule 41 — never hard-delete), per-user language preference. → **M7b**
+
+**M7a — Org profile (done & verified):** added `Address`/`Phone`/`Email`/`LogoUrl` to `Organization` (migration `Add_Organization_Profile_Fields`, additive — 4 nullable columns); `SettingsController` with `GET /api/settings/organization` → `OrganizationProfileDto` and `PUT` (multipart) → updates the profile + uploads a logo via the existing `IFileService` (subfolder `organizations`), returning the hosted URL. `IOrganizationService` extended (`GetProfileAsync`/`UpdateProfileAsync`, resolving the current org via `IOrganizationAccessor`); `UpdateOrganizationRequest` (+ validator: name required, email format). Omitting the logo file keeps the existing one. `SettingsOrganizationTests` integration suite added (profile round-trip, logo upload, logo-kept-on-omit, blank-name 400).
+
+**M7a decision (user-confirmed):** **logo = multipart file upload** via `IFileService` (mirrors product images), not a raw URL string.
+
+**M7b decisions (pending implementation, user-confirmed):**
+- **Invite = create-now, phone-based:** an invite (`{ method, value }`) by **phone** immediately creates an active `User` with that phone, a placeholder name, and a random password the invitee replaces via the existing OTP/forgot-password flow. Email invites are **not** supported in v1 (login is phone-based). No separate invitation entity.
+- **Per-user language** (mvp-plan §18: ru / uz-Latn / uz-Cyrl) is **in scope** even though the contract `TenantUser` shape omits it — to be added as `User.Language` + a current-user setter endpoint (the contract gap).
 
 **Decisions & notes:**
 
