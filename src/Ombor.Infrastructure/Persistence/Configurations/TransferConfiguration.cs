@@ -35,13 +35,13 @@ internal sealed class TransferConfiguration : IEntityTypeConfiguration<Transfer>
             .IsRequired();
 
         builder
-            .Property(t => t.Status)
-            .HasEnumConversion()
-            .IsRequired();
-
-        builder
             .Property(t => t.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired(false);
+
+        builder
+            .Property(t => t.CreatedBy)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired(false);
 
         builder

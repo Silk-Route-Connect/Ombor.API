@@ -19,9 +19,9 @@ public sealed class CreateTransferValidator : AbstractValidator<CreateTransferRe
             .NotEqual(x => x.FromWarehouseId)
             .WithMessage("Source and destination warehouses must be different.");
 
-        RuleFor(x => x.Notes)
+        RuleFor(x => x.Note)
             .MaximumLength(ValidationConstants.MaxStringLength)
-            .WithMessage($"Notes must not exceed {ValidationConstants.MaxStringLength} characters.");
+            .WithMessage($"Note must not exceed {ValidationConstants.MaxStringLength} characters.");
 
         RuleFor(x => x.Lines)
             .NotEmpty()

@@ -1,16 +1,17 @@
 namespace Ombor.Contracts.Requests.Transfer;
 
 /// <summary>
-/// Request to move stock from one warehouse to another.
+/// Request to move stock from one warehouse to another. Atomic and immutable; each line is hard-blocked
+/// over the source stock.
 /// </summary>
 /// <param name="FromWarehouseId">The source warehouse.</param>
 /// <param name="ToWarehouseId">The destination warehouse.</param>
-/// <param name="Notes">Optional free-text note.</param>
+/// <param name="Note">Optional free-text note.</param>
 /// <param name="Lines">The products and quantities to move.</param>
 public sealed record CreateTransferRequest(
     int FromWarehouseId,
     int ToWarehouseId,
-    string? Notes,
+    string? Note,
     CreateTransferLine[] Lines);
 
 /// <param name="ProductId">The product to move.</param>

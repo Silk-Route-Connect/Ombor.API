@@ -135,3 +135,13 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **Response** `StockAdjustmentDto`: `{ id, date, warehouseId, warehouseName, productId, productName, sku,
   categoryName, measurement, direction, quantity, reason, note, createdBy }`. **`balanceAfter` is not yet
   returned** — it's the movement-ledger running balance, coming in M4e.
+
+## Transfers (M4d) — DTO reshaped
+
+- **`TransferDto`** drops **`status`** (transfers are immutable single-step) and adds **`createdBy`**; the
+  date field is **`date`** (was `dateUtc`) and the note field is **`note`** (was `notes`). **`TransferLine`**
+  now carries **`sku`** + **`measurement`**.
+- **`CreateTransferRequest`** = `{ fromWarehouseId, toWarehouseId, note, lines: { productId, quantity }[] }`
+  (note: **`note`**, was `notes`).
+- **Immutable** — no PUT/DELETE. `GET /api/transfers` (newest-first, optional `?warehouseId=`) + `POST` only;
+  each line is hard-blocked over the source stock (400), and both warehouses move atomically.
