@@ -168,6 +168,9 @@ public static class RequestExtensions
         if (!string.IsNullOrEmpty(request.RefundReason))
             content.Add(new StringContent(request.RefundReason), nameof(request.RefundReason));
 
+        if (request.DueDate.HasValue)
+            content.Add(new StringContent(request.DueDate.Value.ToString("yyyy-MM-dd", cultureInfo)), nameof(request.DueDate));
+
         // Lines
         for (var i = 0; i < request.Lines.Length; i++)
         {

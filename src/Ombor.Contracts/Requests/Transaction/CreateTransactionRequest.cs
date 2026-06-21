@@ -22,6 +22,7 @@ namespace Ombor.Contracts.Requests.Transaction;
 /// <param name="WarehouseId">The warehouse the stock moves through (required for stock movement).</param>
 /// <param name="OriginalTransactionId">The transaction being refunded (required for refund types).</param>
 /// <param name="RefundReason">Why the refund was issued (required for refund types).</param>
+/// <param name="DueDate">When the outstanding amount is due. Optional; blank means due on receipt (no overdue tracking).</param>
 public sealed record CreateTransactionRequest(
     int PartnerId,
     TransactionType Type,
@@ -34,7 +35,8 @@ public sealed record CreateTransactionRequest(
     IFormFile[] Attachments,
     int? WarehouseId = null,
     int? OriginalTransactionId = null,
-    string? RefundReason = null);
+    string? RefundReason = null,
+    DateOnly? DueDate = null);
 
 /// <summary>A single line of a transaction.</summary>
 /// <param name="ProductId">The product sold or supplied.</param>

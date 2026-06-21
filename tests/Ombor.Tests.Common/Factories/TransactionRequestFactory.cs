@@ -20,8 +20,9 @@ public static class TransactionRequestFactory
         int? walletId,
         decimal paidAmount,
         OverpaymentHandling overpayment = OverpaymentHandling.Change,
-        SettlementInput[]? settlements = null)
-        => Build(partnerId, TransactionType.Sale, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements);
+        SettlementInput[]? settlements = null,
+        DateOnly? dueDate = null)
+        => Build(partnerId, TransactionType.Sale, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements, dueDate);
 
     /// <summary>Builds a Supply transaction request (single line: <c>unitPrice = due</c>, quantity 1).</summary>
     public static CreateTransactionRequest Supply(
@@ -32,8 +33,9 @@ public static class TransactionRequestFactory
         int? walletId,
         decimal paidAmount,
         OverpaymentHandling overpayment = OverpaymentHandling.Change,
-        SettlementInput[]? settlements = null)
-        => Build(partnerId, TransactionType.Supply, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements);
+        SettlementInput[]? settlements = null,
+        DateOnly? dueDate = null)
+        => Build(partnerId, TransactionType.Supply, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements, dueDate);
 
     private static CreateTransactionRequest Build(
         int partnerId,
@@ -44,7 +46,8 @@ public static class TransactionRequestFactory
         int? walletId,
         decimal paidAmount,
         OverpaymentHandling overpayment,
-        SettlementInput[]? settlements)
+        SettlementInput[]? settlements,
+        DateOnly? dueDate)
     {
         var lines = new[]
         {
@@ -66,6 +69,7 @@ public static class TransactionRequestFactory
             Settlements: settlements,
             Overpayment: overpayment,
             Attachments: null!,
-            WarehouseId: warehouseId);
+            WarehouseId: warehouseId,
+            DueDate: dueDate);
     }
 }
