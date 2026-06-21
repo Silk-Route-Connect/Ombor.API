@@ -253,20 +253,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("DateUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("DeliveryAddress")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateOnly?>("DeliveryDate")
                         .HasColumnType("date");
-
-                    b.Property<decimal?>("DeliveryLatitude")
-                        .HasPrecision(9, 6)
-                        .HasColumnType("decimal(9,6)");
-
-                    b.Property<decimal?>("DeliveryLongitude")
-                        .HasPrecision(9, 6)
-                        .HasColumnType("decimal(9,6)");
 
                     b.Property<TimeOnly?>("DeliveryTime")
                         .HasColumnType("time");
@@ -310,6 +298,23 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.Property<int?>("WarehouseId")
                         .HasColumnType("int");
+
+                    b.ComplexProperty<Dictionary<string, object>>("DeliveryAddress", "Ombor.Domain.Entities.Order.DeliveryAddress#Address", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<decimal?>("Latitude")
+                                .HasPrecision(9, 6)
+                                .HasColumnType("decimal(9,6)");
+
+                            b1.Property<decimal?>("Longitude")
+                                .HasPrecision(9, 6)
+                                .HasColumnType("decimal(9,6)");
+
+                            b1.Property<string>("Text")
+                                .HasMaxLength(500)
+                                .HasColumnType("nvarchar(500)");
+                        });
 
                     b.HasKey("Id");
 

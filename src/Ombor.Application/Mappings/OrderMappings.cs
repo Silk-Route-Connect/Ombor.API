@@ -1,6 +1,7 @@
 using Ombor.Application.Extensions;
 using Ombor.Contracts.Requests.Order;
 using Ombor.Contracts.Responses.Order;
+using Ombor.Domain.Common;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
@@ -27,7 +28,7 @@ internal static class OrderMappings
             Source = Enum.Parse<Domain.Enums.OrderSource>(request.Source.ToString(), ignoreCase: true),
             Notes = request.Notes,
             WarehouseId = request.WarehouseId,
-            DeliveryAddress = request.DeliveryAddress,
+            DeliveryAddress = new Address { Text = request.DeliveryAddress },
             DeliveryDate = request.DeliveryDate,
             DeliveryTime = request.DeliveryTime,
             Customer = null!, // Will be set by EF
@@ -56,7 +57,7 @@ internal static class OrderMappings
             Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),
             Status: order.Status.ToString(),
             Source: order.Source.ToString(),
-            DeliveryAddress: order.DeliveryAddress,
+            DeliveryAddress: order.DeliveryAddress.Text,
             DeliveryDate: order.DeliveryDate,
             DeliveryTime: order.DeliveryTime,
             WarehouseId: order.WarehouseId,

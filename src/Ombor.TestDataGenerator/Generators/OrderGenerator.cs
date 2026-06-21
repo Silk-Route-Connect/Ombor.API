@@ -14,9 +14,12 @@ internal static class OrderGenerator
         .RuleFor(x => x.CustomerId, customerId)
         .RuleFor(x => x.DateUtc, f => f.Date.BetweenOffset(f.Date.PastOffset(), f.Date.SoonOffset()))
         .RuleFor(x => x.Source, Domain.Enums.OrderSource.OmborWeb)
-        .RuleFor(x => x.DeliveryAddress, f => f.Address.FullAddress())
-        .RuleFor(x => x.DeliveryLatitude, f => (decimal)f.Address.Latitude())
-        .RuleFor(x => x.DeliveryLongitude, f => (decimal)f.Address.Longitude())
+        .RuleFor(x => x.DeliveryAddress, f => new Domain.Common.Address
+        {
+            Text = f.Address.FullAddress(),
+            Latitude = (decimal)f.Address.Latitude(),
+            Longitude = (decimal)f.Address.Longitude(),
+        })
         .RuleFor(x => x.Status, f => f.Random.Enum<Domain.Enums.OrderStatus>())
         .RuleFor(x => x.OrderNumber, f => f.Random.Guid().ToString("N").ToUpperInvariant()[..10])
         .RuleFor(x => x.Notes, f => f.Lorem.Sentence())

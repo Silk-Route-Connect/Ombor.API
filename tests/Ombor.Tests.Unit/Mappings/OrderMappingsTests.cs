@@ -140,7 +140,7 @@ public sealed class OrderMappingsTests
 
         Assert.Equal(5, entity.CustomerId);
         Assert.Equal(3, entity.WarehouseId);
-        Assert.Equal("Tashkent", entity.DeliveryAddress);
+        Assert.Equal("Tashkent", entity.DeliveryAddress.Text);
         Assert.Equal(OrderStatus.Pending, entity.Status);
         var line = Assert.Single(entity.Lines);
         Assert.Equal(DiscountType.Percentage, line.DiscountType);

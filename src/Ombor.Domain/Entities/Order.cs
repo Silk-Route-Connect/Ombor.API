@@ -14,16 +14,11 @@ public class Order : AuditableEntity, IOrganizationScoped
     public OrderStatus Status { get; set; }
     public OrderSource Source { get; set; }
 
-    /// <summary>Free-text delivery address shown on the order.</summary>
-    public string? DeliveryAddress { get; set; }
-
     /// <summary>
-    /// Delivery coordinates. Retained but dormant — not part of the current contract; reserved for a
-    /// future geo-delivery feature, so the columns are kept rather than dropped. EF Core 8 cannot make a
-    /// complex/owned type optional, so the latitude/longitude are held as two nullable columns.
+    /// The delivery address — free-text plus dormant, optional coordinates (reserved for future geo
+    /// delivery). A required complex property: always present, with individually optional members.
     /// </summary>
-    public decimal? DeliveryLatitude { get; set; }
-    public decimal? DeliveryLongitude { get; set; }
+    public Address DeliveryAddress { get; set; } = new();
 
     /// <summary>Optional delivery date.</summary>
     public DateOnly? DeliveryDate { get; set; }

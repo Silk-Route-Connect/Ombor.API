@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,21 +11,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Keep the existing latitude/longitude data: rename the old complex-property columns and relax
-            // them to nullable rather than dropping them. Coordinates are retained but dormant (reserved for
-            // a future geo-delivery feature); the contract's delivery address is the new free-text column.
-            migrationBuilder.RenameColumn(
-                name: "DeliveryAddress_Latitude",
-                table: "Order",
-                newName: "DeliveryLatitude");
-
-            migrationBuilder.RenameColumn(
-                name: "DeliveryAddress_Longitude",
-                table: "Order",
-                newName: "DeliveryLongitude");
-
             migrationBuilder.AlterColumn<decimal>(
-                name: "DeliveryLatitude",
+                name: "DeliveryAddress_Longitude",
                 table: "Order",
                 type: "decimal(9,6)",
                 precision: 9,
@@ -37,7 +24,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 oldScale: 6);
 
             migrationBuilder.AlterColumn<decimal>(
-                name: "DeliveryLongitude",
+                name: "DeliveryAddress_Latitude",
                 table: "Order",
                 type: "decimal(9,6)",
                 precision: 9,
@@ -49,7 +36,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 oldScale: 6);
 
             migrationBuilder.AddColumn<string>(
-                name: "DeliveryAddress",
+                name: "DeliveryAddress_Text",
                 table: "Order",
                 type: "nvarchar(500)",
                 maxLength: 500,
@@ -163,7 +150,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 table: "Order");
 
             migrationBuilder.DropColumn(
-                name: "DeliveryAddress",
+                name: "DeliveryAddress_Text",
                 table: "Order");
 
             migrationBuilder.DropColumn(
@@ -182,9 +169,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 name: "WarehouseId",
                 table: "Order");
 
-            // Restore the coordinates to the original required complex-property columns.
             migrationBuilder.AlterColumn<decimal>(
-                name: "DeliveryLatitude",
+                name: "DeliveryAddress_Longitude",
                 table: "Order",
                 type: "decimal(9,6)",
                 precision: 9,
@@ -198,7 +184,7 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<decimal>(
-                name: "DeliveryLongitude",
+                name: "DeliveryAddress_Latitude",
                 table: "Order",
                 type: "decimal(9,6)",
                 precision: 9,
@@ -210,16 +196,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                 oldPrecision: 9,
                 oldScale: 6,
                 oldNullable: true);
-
-            migrationBuilder.RenameColumn(
-                name: "DeliveryLatitude",
-                table: "Order",
-                newName: "DeliveryAddress_Latitude");
-
-            migrationBuilder.RenameColumn(
-                name: "DeliveryLongitude",
-                table: "Order",
-                newName: "DeliveryAddress_Longitude");
         }
     }
 }

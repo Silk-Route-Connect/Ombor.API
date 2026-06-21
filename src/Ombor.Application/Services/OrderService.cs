@@ -70,7 +70,8 @@ internal sealed class OrderService(
         order.CustomerId = request.CustomerId;
         order.Source = Enum.Parse<Domain.Enums.OrderSource>(request.Source.ToString(), ignoreCase: true);
         order.Notes = request.Notes;
-        order.DeliveryAddress = request.DeliveryAddress;
+        // Only the free-text changes here; any dormant coordinates are preserved.
+        order.DeliveryAddress.Text = request.DeliveryAddress;
         order.DeliveryDate = request.DeliveryDate;
         order.DeliveryTime = request.DeliveryTime;
 

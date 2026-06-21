@@ -45,20 +45,21 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
-        builder
-            .Property(o => o.DeliveryAddress)
-            .HasMaxLength(ConfigurationConstants.MaxStringLength)
-            .IsRequired(false);
+        builder.ComplexProperty(o => o.DeliveryAddress, address =>
+        {
+            address.Property(a => a.Text)
+                .HasMaxLength(ConfigurationConstants.MaxStringLength)
+                .IsRequired(false);
 
-        builder
-            .Property(o => o.DeliveryLatitude)
-            .HasPrecision(9, 6)
-            .IsRequired(false);
+            // Coordinates are dormant (reserved for geo delivery) — nullable, never 0-sentinel.
+            address.Property(a => a.Latitude)
+                .HasPrecision(9, 6)
+                .IsRequired(false);
 
-        builder
-            .Property(o => o.DeliveryLongitude)
-            .HasPrecision(9, 6)
-            .IsRequired(false);
+            address.Property(a => a.Longitude)
+                .HasPrecision(9, 6)
+                .IsRequired(false);
+        });
 
         builder
             .Property(o => o.OrderNumber)
