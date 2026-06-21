@@ -90,6 +90,29 @@ public sealed class CreateOrderTests(TestingWebApplicationFactory factory, ITest
     }
 
     [Fact]
+    public async Task PostAsync_ShouldRoundTripNullDeliveryAddress()
+    {
+        // Arrange — no delivery address: the Address complex type is materialized all-null on read-back.
+        var customerId = await CreateCustomerAsync();
+        var productId = await CreateProductAsync();
+        var body = new
+        {
+            customerId,
+            source = "OmborWeb",
+            deliveryAddress = (string?)null,
+            lines = new[] { new { productId, quantity = 1, unitPrice = 100m, discount = (decimal?)null, discountType = "Fixed" } },
+        };
+
+        // Act
+        var created = await PostOrderAsync(body);
+        var fetched = await _client.GetAsync<OrderDto>($"{Routes.Order}/{created.Id}");
+
+        // Assert — both the create projection and a fresh GET handle the all-null address.
+        Assert.Null(created.DeliveryAddress);
+        Assert.Null(fetched.DeliveryAddress);
+    }
+
+    [Fact]
     public async Task PostAsync_ShouldReturnBadRequest_WhenNoLines()
     {
         // Arrange
