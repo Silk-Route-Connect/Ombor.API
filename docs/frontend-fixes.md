@@ -159,3 +159,29 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   product's running **total stock across warehouses** — a transfer appears as **two** rows (send at the source,
   receive at the destination) that net to zero there.
 - 404 if the warehouse/product doesn't exist.
+
+## Debts (M6a) — now REAL (was mocked)
+
+- **`GET /api/debts`** → `Debt[]` (newest-first): `{ transactionId, number, direction, transactionType,
+  partnerId, partnerName, partnerCompany, partnerType, date, dueDate, total, paid, remaining, ageDays, overdueDays }`.
+  `direction ∈ "Receivable" | "Payable"`. Outstanding transactions only (`remaining > 0`).
+- **`number` is provisional** — derived from type + id (`S-`/`SP-`/`SR-`/`SPR-`), not a stable per-type sequence
+  yet (real transaction numbering is future work). Treat it as display-only; it may change later.
+- **`dueDate` can be null.** A transaction's due date is now an **optional** field on create
+  (`POST /api/transactions` accepts `dueDate`, a `yyyy-MM-dd` date); blank = due on receipt, so `overdueDays` is
+  `0`. There is no "payment terms" concept — the operator sets the date directly.
+
+## Dashboard (M6b) — now REAL (was mocked)
+
+- **`GET /api/dashboard?period=today|week|month`** (default `month`, case-insensitive) → `DashboardData`. The
+  response `period` echoes the lowercase token.
+- **Wallet type has three values.** `wallets[].type` is **`"Cash" | "Card" | "Bank"`** (PascalCase, matching the
+  rest of the API), not the contract's lowercase `"cash" | "bank"`. *Reason:* the model has three wallet types and
+  collapsing `Card` into `bank` would lose information (user decision, M6b). The payments-chart filter must handle
+  three values.
+- **Series field names.** `series[]` = `{ label, sales, supplies, payin, payout, walletPayin[], walletPayout[] }`;
+  `walletPayin`/`walletPayout` are per-wallet arrays **aligned to `wallets[]` order**.
+- **«Просрочено» (overdue) = receivables aged 31+ days**, which is **distinct** from `/api/debts` due-date
+  `overdueDays` — the two screens can legitimately disagree on "overdue" (intentional, complexity notes §K).
+- **Debt figures reconcile with `/api/debts`** — receivable/payable/aging/top-debtors are derived from the same
+  source, so the dashboard and the debts page always agree.

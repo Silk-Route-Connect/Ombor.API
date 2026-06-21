@@ -54,7 +54,7 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
     // Receivable = the partner owes us (unpaid Sale / SupplyRefund); Payable = we owe (unpaid Supply / SaleRefund).
     // Same split as View_PartnerBalance, so the totals reconcile (complexity notes §J).
     private static string DirectionOf(TransactionType type) =>
-        type is TransactionType.Sale or TransactionType.SupplyRefund ? "Receivable" : "Payable";
+        type is TransactionType.Sale or TransactionType.SupplyRefund ? DebtDirections.Receivable : DebtDirections.Payable;
 
     // Provisional display number derived from type + id; real per-type sequences are future work (complexity §L).
     private static string Number(TransactionType type, int id)

@@ -80,5 +80,6 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         public const string StockAdjustment = "stock-adjustments";
         public const string Transfer = "transfers";
         public const string Debt = "debts";
+        public const string Dashboard = "dashboard";
     }
 }

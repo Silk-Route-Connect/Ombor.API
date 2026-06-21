@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
         services.AddScoped<IMovementService, MovementService>();
         services.AddScoped<IDebtService, DebtService>();
+        services.AddScoped<IDashboardService, DashboardService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();
