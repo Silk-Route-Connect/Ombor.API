@@ -31,7 +31,6 @@ public sealed record UpdateProductRequest(
     decimal SalePrice,
     decimal SupplyPrice,
     decimal RetailPrice,
-    int QuantityInStock,
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
     ProductType Type,

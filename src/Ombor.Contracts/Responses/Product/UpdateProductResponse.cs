@@ -32,9 +32,9 @@ public sealed record UpdateProductResponse(
     decimal SalePrice,
     decimal SupplyPrice,
     decimal RetailPrice,
-    int QuantityInStock,
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
     string Type,
+    bool IsArchived,
     ProductPackagingDto? Packaging);

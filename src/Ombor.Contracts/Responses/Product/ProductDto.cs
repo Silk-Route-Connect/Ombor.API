@@ -1,5 +1,4 @@
-﻿using Ombor.Contracts.Common;
-using Ombor.Contracts.Responses.Inventory;
+using Ombor.Contracts.Common;
 
 namespace Ombor.Contracts.Responses.Product;
 
@@ -16,13 +15,15 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="SalePrice">The sale price.</param>
 /// <param name="SupplyPrice">The supply price.</param>
 /// <param name="RetailPrice">The retail price.</param>
-/// <param name="QuantityInStock">The stock level.</param>
 /// <param name="LowStockThreshold">The low‑stock threshold.</param>
-/// <param name="IsLowStock">Whether stock ≤ threshold.</param>
-/// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
-/// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
+/// <param name="IsLowStock">Whether total stock ≤ threshold.</param>
+/// <param name="Measurement">The unit of measurement (e.g. “Unit”, “Kilogram”).</param>
+/// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “All”).</param>
+/// <param name="IsArchived">Whether the product is archived.</param>
 /// <param name="Images">Associated product images.</param>
-/// <param name="InventoryItems">Inventory item quantities for the product.</param>
+/// <param name="InventoryItems">Per-warehouse stock for the product.</param>
+/// <param name="TotalStock">Total stock summed across warehouses (rule 17).</param>
+/// <param name="AverageCost">Value-weighted average cost across warehouses; null when there is no stock.</param>
 /// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
 public sealed record ProductDto(
     int Id,
@@ -35,11 +36,13 @@ public sealed record ProductDto(
     decimal SalePrice,
     decimal SupplyPrice,
     decimal RetailPrice,
-    int QuantityInStock,
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
     string Type,
+    bool IsArchived,
     ProductImageDto[] Images,
-    InventoryItemDto[] InventoryItems,
+    ProductInventoryItemDto[] InventoryItems,
+    int TotalStock,
+    decimal? AverageCost,
     ProductPackagingDto? Packaging);

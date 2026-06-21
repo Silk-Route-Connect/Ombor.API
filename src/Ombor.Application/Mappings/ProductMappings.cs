@@ -18,9 +18,7 @@ internal static class ProductMappings
             .Select(x => x.ToDto())
             .ToArray();
 
-        var inventoryItems = product.InventoryItems
-            .Select(x => x.ToDto())
-            .ToArray();
+        var totalStock = product.TotalStock();
 
         return new(
             Id: product.Id,
@@ -33,13 +31,15 @@ internal static class ProductMappings
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
             RetailPrice: product.RetailPrice,
-            QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
+            IsArchived: product.IsArchived,
             Images: images,
-            InventoryItems: inventoryItems,
+            InventoryItems: product.InventoryItemDtos(),
+            TotalStock: totalStock,
+            AverageCost: product.WeightedAverageCost(),
             Packaging: product.Packaging.ToDto());
     }
 
@@ -54,13 +54,13 @@ internal static class ProductMappings
             SalePrice = request.SalePrice,
             SupplyPrice = request.SupplyPrice,
             RetailPrice = request.RetailPrice,
-            QuantityInStock = request.QuantityInStock,
             LowStockThreshold = request.LowStockThreshold,
             Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
             Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
             Packaging = (request.Packaging ?? new(0, null, null)).ToEntity(), // TODO: Remove default value when upgraded to .NET 10
             CategoryId = request.CategoryId,
-            Category = null! // should be taken from CategoryId
+            Category = null!, // should be taken from CategoryId
+            // Created at zero stock — stock arrives via opening-stock or supply (rule 17).
         };
     }
 
@@ -71,9 +71,7 @@ internal static class ProductMappings
             throw new InvalidOperationException("Cannot map product without Category.");
         }
 
-        var inventoryItems = product.InventoryItems
-            .Select(x => x.ToDto())
-            .ToArray();
+        var totalStock = product.TotalStock();
 
         return new(
             Id: product.Id,
@@ -86,13 +84,15 @@ internal static class ProductMappings
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
             RetailPrice: product.RetailPrice,
-            QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
+            IsArchived: product.IsArchived,
             Images: product.Images.ToDto(),
-            InventoryItems: inventoryItems,
+            InventoryItems: product.InventoryItemDtos(),
+            TotalStock: totalStock,
+            AverageCost: product.WeightedAverageCost(),
             Packaging: product.Packaging.ToDto());
     }
 
@@ -114,11 +114,11 @@ internal static class ProductMappings
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
             RetailPrice: product.RetailPrice,
-            QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.QuantityInStock <= product.LowStockThreshold,
+            IsLowStock: product.TotalStock() <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
+            IsArchived: product.IsArchived,
             Packaging: product.Packaging.ToDto());
     }
 
@@ -131,7 +131,6 @@ internal static class ProductMappings
         product.SalePrice = request.SalePrice;
         product.SupplyPrice = request.SupplyPrice;
         product.RetailPrice = request.RetailPrice;
-        product.QuantityInStock = request.QuantityInStock;
         product.LowStockThreshold = request.LowStockThreshold;
         product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
         product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
@@ -141,6 +140,27 @@ internal static class ProductMappings
 
     public static Domain.Enums.ProductType ToDomain(this Contracts.Enums.ProductType type)
         => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
+
+    // Stock is the sum of per-warehouse inventory items — InventoryItem is the sole source (rule 17).
+    private static int TotalStock(this Product product)
+        => product.InventoryItems.Sum(i => i.Quantity);
+
+    // Value-weighted average cost across warehouses; null when there is no stock.
+    private static decimal? WeightedAverageCost(this Product product)
+    {
+        var total = product.InventoryItems.Sum(i => i.Quantity);
+
+        return total == 0
+            ? null
+            : product.InventoryItems.Sum(i => i.Quantity * i.AverageCost) / total;
+    }
+
+    private static ProductInventoryItemDto[] InventoryItemDtos(this Product product)
+        => [.. product.InventoryItems.Select(i => new ProductInventoryItemDto(
+            i.InventoryId,
+            i.Inventory.Name,
+            i.Quantity,
+            i.AverageCost))];
 
     private static ProductPackagingDto? ToDto(this ProductPackaging packaging)
         => packaging.Size == 0

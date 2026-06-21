@@ -62,12 +62,7 @@ public static class ProductGenerator
             var maxK = Math.Max(minK, ToThousandsFloor(p.SalePrice));
             return f.Random.NextThousand(minK, maxK);
         })
-        .RuleFor(x => x.QuantityInStock, f => f.Random.Number(10, 100))
-        .RuleFor(x => x.LowStockThreshold, (f, p) =>
-        {
-            var max = Math.Min(100, (int)(p.QuantityInStock / 2m));
-            return f.Random.Number(10, Math.Max(10, max));
-        })
+        .RuleFor(x => x.LowStockThreshold, f => f.Random.Number(10, 50))
         .RuleFor(x => x.Measurement, f => f.Random.Enum<UnitOfMeasurement>());
 
     private static int ToThousandsCeil(decimal value) => (int)Math.Ceiling(value / 1000m);

@@ -61,10 +61,6 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .WithMessage("Retail price must be less than sale price")
             .When(x => x.Type != ProductType.Supply);
 
-        RuleFor(x => x.QuantityInStock)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Quantity in stock must be greater than or equal to zero.");
-
         RuleFor(x => x.LowStockThreshold)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Low stock threshold must be greater than or equal to zero.");

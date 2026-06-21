@@ -45,7 +45,6 @@ public class ProductMappingsTests
             SalePrice = 9.99m,
             SupplyPrice = 5.00m,
             RetailPrice = 12.50m,
-            QuantityInStock = 3,
             LowStockThreshold = 5,
             Measurement = DomainMeasurement.Kilogram,
             Type = DomainType.Supply
@@ -65,8 +64,9 @@ public class ProductMappingsTests
         Assert.Equal(9.99m, dto.SalePrice);
         Assert.Equal(5.00m, dto.SupplyPrice);
         Assert.Equal(12.50m, dto.RetailPrice);
-        Assert.Equal(3, dto.QuantityInStock);
         Assert.Equal(5, dto.LowStockThreshold);
+        Assert.Equal(0, dto.TotalStock);
+        Assert.Null(dto.AverageCost);
         Assert.True(dto.IsLowStock);
         Assert.Equal("Kilogram", dto.Measurement);
         Assert.Equal("Supply", dto.Type);
@@ -107,7 +107,6 @@ public class ProductMappingsTests
             SalePrice = 30m,
             SupplyPrice = 20m,
             RetailPrice = 35m,
-            QuantityInStock = 10,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.Box,
             Type = DomainType.All
@@ -127,9 +126,8 @@ public class ProductMappingsTests
         Assert.Equal(30m, response.SalePrice);
         Assert.Equal(20m, response.SupplyPrice);
         Assert.Equal(35m, response.RetailPrice);
-        Assert.Equal(10, response.QuantityInStock);
         Assert.Equal(2, response.LowStockThreshold);
-        Assert.False(response.IsLowStock);
+        Assert.True(response.IsLowStock); // created at zero stock
         Assert.Equal("Box", response.Measurement);
         Assert.Equal(nameof(DomainType.All), response.Type);
     }
@@ -168,7 +166,6 @@ public class ProductMappingsTests
             SalePrice = 25m,
             SupplyPrice = 15m,
             RetailPrice = 28m,
-            QuantityInStock = 4,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.Ton,
             Type = DomainType.Sale
@@ -188,9 +185,8 @@ public class ProductMappingsTests
         Assert.Equal(25m, response.SalePrice);
         Assert.Equal(15m, response.SupplyPrice);
         Assert.Equal(28m, response.RetailPrice);
-        Assert.Equal(4, response.QuantityInStock);
         Assert.Equal(2, response.LowStockThreshold);
-        Assert.False(response.IsLowStock);
+        Assert.True(response.IsLowStock); // no stock loaded → low
         Assert.Equal("Ton", response.Measurement);
         Assert.Equal("Sale", response.Type);
     }
@@ -208,7 +204,6 @@ public class ProductMappingsTests
             SalePrice: 10m,
             SupplyPrice: 6m,
             RetailPrice: 12m,
-            QuantityInStock: 8,
             LowStockThreshold: 3,
             Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: ContractMeasurement.Piece,
@@ -226,7 +221,6 @@ public class ProductMappingsTests
         Assert.Equal(10m, entity.SalePrice);
         Assert.Equal(6m, entity.SupplyPrice);
         Assert.Equal(12m, entity.RetailPrice);
-        Assert.Equal(8, entity.QuantityInStock);
         Assert.Equal(3, entity.LowStockThreshold);
         Assert.Equal(DomainMeasurement.Piece, entity.Measurement);
         Assert.Equal(DomainType.Sale, entity.Type);
@@ -253,7 +247,6 @@ public class ProductMappingsTests
             SalePrice = 12m,
             SupplyPrice = 7m,
             RetailPrice = 14m,
-            QuantityInStock = 5,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.None,
             Type = DomainType.Supply
@@ -269,7 +262,6 @@ public class ProductMappingsTests
             SalePrice: 20m,
             SupplyPrice: 10m,
             RetailPrice: 22m,
-            QuantityInStock: 3,
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
             Type: ContractType.All,
@@ -288,7 +280,6 @@ public class ProductMappingsTests
         Assert.Equal(20m, product.SalePrice);
         Assert.Equal(10m, product.SupplyPrice);
         Assert.Equal(22m, product.RetailPrice);
-        Assert.Equal(3, product.QuantityInStock);
         Assert.Equal(1, product.LowStockThreshold);
         Assert.Equal(DomainMeasurement.Ton, product.Measurement);
         Assert.Equal(DomainType.All, product.Type);
@@ -375,7 +366,6 @@ public class ProductMappingsTests
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
             RetailPrice: product.RetailPrice,
-            QuantityInStock: product.QuantityInStock,
             LowStockThreshold: product.LowStockThreshold,
             Measurement: ContractMeasurement.None,
             Type: ContractType.All,

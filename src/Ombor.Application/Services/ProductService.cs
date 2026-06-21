@@ -142,7 +142,10 @@ internal sealed class ProductService(
     }
 
     private async Task<Product> GetOrThrowAsync(int id) =>
-        await context.Products.FirstOrDefaultAsync(x => x.Id == id)
+        await context.Products
+            .Include(x => x.InventoryItems)
+            .ThenInclude(i => i.Inventory)
+            .FirstOrDefaultAsync(x => x.Id == id)
         ?? throw new EntityNotFoundException<Product>(id);
 
     private IQueryable<Product> GetQuery(GetProductsRequest request)
@@ -151,6 +154,12 @@ internal sealed class ProductService(
 
         var query = context.Products
             .AsNoTracking()
+            // Ignore auto-includes: the explicit Inventory ThenInclude otherwise cycles (Inventory↔InventoryItems) under no-tracking.
+            .IgnoreAutoIncludes()
+            .Include(x => x.Category)
+            .Include(x => x.Images)
+            .Include(x => x.InventoryItems)
+            .ThenInclude(i => i.Inventory)
             .Where(x => x.IsArchived == (request.IsArchived ?? false));
 
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))

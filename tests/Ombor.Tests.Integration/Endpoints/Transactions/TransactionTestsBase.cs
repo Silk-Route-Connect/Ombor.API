@@ -69,7 +69,6 @@ public abstract class TransactionsTestsBase(
             SupplyPrice = 50m,
             RetailPrice = 90m,
             LowStockThreshold = 10,
-            QuantityInStock = 0,
             Measurement = UnitOfMeasurement.Unit,
             Type = ProductType.All,
             CategoryId = category.Id,

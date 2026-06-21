@@ -53,7 +53,6 @@ public static class RequestExtensions
             { new StringContent(request.SalePrice.ToString(cultureInfo)), nameof(request.SalePrice) },
             { new StringContent(request.SupplyPrice.ToString(cultureInfo)), nameof(request.SupplyPrice) },
             { new StringContent(request.RetailPrice.ToString(cultureInfo)), nameof(request.RetailPrice) },
-            { new StringContent(request.QuantityInStock.ToString()), nameof(request.QuantityInStock) },
             { new StringContent(request.LowStockThreshold.ToString()), nameof(request.LowStockThreshold) },
             { new StringContent(((int)request.Measurement).ToString()), nameof(request.Measurement) },
             { new StringContent(((int)request.Type).ToString()), nameof(request.Type) }
@@ -104,7 +103,6 @@ public static class RequestExtensions
             { new StringContent(request.SalePrice.ToString(cultureInfo)), nameof(request.SalePrice) },
             { new StringContent(request.SupplyPrice.ToString(cultureInfo)), nameof(request.SupplyPrice) },
             { new StringContent(request.RetailPrice.ToString(cultureInfo)), nameof(request.RetailPrice) },
-            { new StringContent(request.QuantityInStock.ToString()), nameof(request.QuantityInStock) },
             { new StringContent(request.LowStockThreshold.ToString()), nameof(request.LowStockThreshold) },
             { new StringContent(((int)request.Measurement).ToString()), nameof(request.Measurement) },
             { new StringContent(((int)request.Type).ToString()), nameof(request.Type) },

@@ -34,10 +34,7 @@ public class Product : EntityBase, IOrganizationScoped
     /// <summary>Gets or sets the retail price.</summary>
     public decimal RetailPrice { get; set; }
 
-    /// <summary>Gets or sets the current quantity in stock.</summary>
-    public int QuantityInStock { get; set; }
-
-    /// <summary>Gets or sets the threshold below which stock is considered low.</summary>
+    /// <summary>Gets or sets the threshold below which total stock is considered low.</summary>
     public int LowStockThreshold { get; set; }
 
     /// <summary>Gets or sets the unit of measurement for the product.</summary>

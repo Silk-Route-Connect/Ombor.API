@@ -1,5 +1,4 @@
 ﻿using Ombor.Contracts.Common;
-using Ombor.Contracts.Responses.Inventory;
 
 namespace Ombor.Contracts.Responses.Product;
 
@@ -35,11 +34,13 @@ public sealed record CreateProductResponse(
     decimal SalePrice,
     decimal SupplyPrice,
     decimal RetailPrice,
-    int QuantityInStock,
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,
     string Type,
+    bool IsArchived,
     ProductImageDto[] Images,
-    InventoryItemDto[] InventoryItems,
+    ProductInventoryItemDto[] InventoryItems,
+    int TotalStock,
+    decimal? AverageCost,
     ProductPackagingDto? Packaging);

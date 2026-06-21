@@ -30,7 +30,6 @@ public sealed record CreateProductRequest(
     decimal SalePrice,
     decimal SupplyPrice,
     decimal RetailPrice,
-    int QuantityInStock,
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
     ProductType Type,

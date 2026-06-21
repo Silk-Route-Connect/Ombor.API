@@ -42,7 +42,6 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         Assert.Equal(expected.SalePrice, response.SalePrice);
         Assert.Equal(expected.SupplyPrice, response.SupplyPrice);
         Assert.Equal(expected.RetailPrice, response.RetailPrice);
-        Assert.Equal(expected.QuantityInStock, response.QuantityInStock);
         Assert.Equal(expected.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), response.Measurement);
         Assert.Equal(expected.Type.ToString(), response.Type);
@@ -121,32 +120,44 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         }
 
         var products = await query
+            .IgnoreAutoIncludes()
             .Include(x => x.Category)
             .Include(x => x.Images)
             .Include(x => x.InventoryItems)
+            .ThenInclude(i => i.Inventory)
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
         return products
-            .Select(x => new ProductDto(
-                x.Id,
-                x.CategoryId,
-                x.Category.Name,
-                x.Name,
-                x.SKU,
-                x.Description,
-                x.Barcode,
-                x.SalePrice,
-                x.SupplyPrice,
-                x.RetailPrice,
-                x.QuantityInStock,
-                x.LowStockThreshold,
-                x.QuantityInStock <= x.LowStockThreshold,
-                x.Measurement.ToString(),
-                x.Type.ToString(),
-                x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
-                x.InventoryItems.Select(item => new InventoryItemDto(item.Id, item.Quantity, item.AverageCost, item.InventoryId, item.ProductId)).ToArray(),
-                x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode)))
+            .Select(x =>
+            {
+                var totalStock = x.InventoryItems.Sum(i => i.Quantity);
+                decimal? averageCost = totalStock == 0
+                    ? null
+                    : x.InventoryItems.Sum(i => i.Quantity * i.AverageCost) / totalStock;
+
+                return new ProductDto(
+                    x.Id,
+                    x.CategoryId,
+                    x.Category.Name,
+                    x.Name,
+                    x.SKU,
+                    x.Description,
+                    x.Barcode,
+                    x.SalePrice,
+                    x.SupplyPrice,
+                    x.RetailPrice,
+                    x.LowStockThreshold,
+                    totalStock <= x.LowStockThreshold,
+                    x.Measurement.ToString(),
+                    x.Type.ToString(),
+                    x.IsArchived,
+                    x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
+                    x.InventoryItems.Select(item => new ProductInventoryItemDto(item.InventoryId, item.Inventory.Name, item.Quantity, item.AverageCost)).ToArray(),
+                    totalStock,
+                    averageCost,
+                    x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode));
+            })
             .ToArray();
     }
 

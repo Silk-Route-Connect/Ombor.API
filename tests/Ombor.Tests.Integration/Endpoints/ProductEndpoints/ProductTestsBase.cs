@@ -31,7 +31,6 @@ public class ProductTestsBase(TestingWebApplicationFactory factory, ITestOutputH
             SupplyPrice = 50.00m,
             RetailPrice = 90.00m,
             LowStockThreshold = 10,
-            QuantityInStock = 100,
             Measurement = UnitOfMeasurement.Unit,
             CategoryId = categoryId,
             Category = null!

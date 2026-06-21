@@ -14,7 +14,6 @@ public static class ProductExtensions
         product.SalePrice == request.SalePrice &&
         product.SupplyPrice == request.SupplyPrice &&
         product.RetailPrice == request.RetailPrice &&
-        product.QuantityInStock == request.QuantityInStock &&
         product.LowStockThreshold == request.LowStockThreshold &&
         IsMeasurementEqual(product.Measurement, request.Measurement) &&
         IsTypeEqual(product.Type, request.Type) &&
