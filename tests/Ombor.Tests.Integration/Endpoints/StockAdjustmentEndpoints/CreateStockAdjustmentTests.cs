@@ -32,6 +32,22 @@ public sealed class CreateStockAdjustmentTests(TestingWebApplicationFactory fact
     }
 
     [Fact]
+    public async Task Create_ShouldReturnBalanceAfter_AsLiveStock()
+    {
+        // Arrange — 100 on hand.
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+
+        // Act + Assert — balanceAfter is the stock right after each adjustment.
+        var decrease = await PostAdjustmentAsync(warehouseId, productId, "Decrease", quantity: 30, reason: "Damage");
+        Assert.Equal(70, decrease.BalanceAfter);
+
+        var increase = await PostAdjustmentAsync(warehouseId, productId, "Increase", quantity: 10, reason: "Found");
+        Assert.Equal(80, increase.BalanceAfter);
+    }
+
+    [Fact]
     public async Task Decrease_ShouldRemoveStock_AtWac_AndSnapshotLossCost()
     {
         // Arrange — 10 units @ WAC 50.

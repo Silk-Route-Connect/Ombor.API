@@ -13,7 +13,8 @@ namespace Ombor.Application.Services;
 internal sealed class StockAdjustmentService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    ICurrentUserAccessor currentUser) : IStockAdjustmentService
+    ICurrentUserAccessor currentUser,
+    IMovementService movementService) : IStockAdjustmentService
 {
     public async Task<StockAdjustmentDto[]> GetAsync(GetStockAdjustmentsRequest request)
     {
@@ -41,7 +42,19 @@ internal sealed class StockAdjustmentService(
             .ThenByDescending(x => x.Id)
             .ToArrayAsync();
 
-        return [.. adjustments.Select(x => x.ToDto())];
+        // balanceAfter is the running stock right after each adjustment — reuse the warehouse movement
+        // ledger so this list and GET /warehouses/{id}/movements report the same figure for the same event.
+        var balanceByAdjustmentId = new Dictionary<int, int>();
+        foreach (var warehouseId in adjustments.Select(a => a.WarehouseId).Distinct())
+        {
+            var movements = await movementService.GetWarehouseMovementsAsync(warehouseId);
+            foreach (var movement in movements.Where(m => m.Kind == MovementKinds.Adjustment))
+            {
+                balanceByAdjustmentId[movement.Id] = movement.BalanceAfter;
+            }
+        }
+
+        return [.. adjustments.Select(x => x.ToDto(balanceByAdjustmentId.GetValueOrDefault(x.Id)))];
     }
 
     public async Task<StockAdjustmentDto> CreateAsync(CreateStockAdjustmentRequest request)
@@ -102,7 +115,13 @@ internal sealed class StockAdjustmentService(
 
             await transaction.CommitAsync();
 
-            return await GetProjectedOrThrowAsync(adjustment.Id);
+            // The adjustment is the latest event for this product, so its post-adjustment balance is the live stock.
+            var balanceAfter = await context.WarehouseItems
+                .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
+                .Select(i => i.Quantity)
+                .FirstOrDefaultAsync();
+
+            return await GetProjectedOrThrowAsync(adjustment.Id, balanceAfter);
         }
         catch
         {
@@ -111,7 +130,7 @@ internal sealed class StockAdjustmentService(
         }
     }
 
-    private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id)
+    private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id, int balanceAfter)
     {
         var adjustment = await context.StockAdjustments
             .Include(x => x.Warehouse)
@@ -121,6 +140,6 @@ internal sealed class StockAdjustmentService(
             .AsNoTracking()
             .FirstAsync(x => x.Id == id);
 
-        return adjustment.ToDto();
+        return adjustment.ToDto(balanceAfter);
     }
 }

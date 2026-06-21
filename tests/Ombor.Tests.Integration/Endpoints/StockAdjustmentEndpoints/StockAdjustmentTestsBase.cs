@@ -1,4 +1,6 @@
+using System.Net;
 using Ombor.Contracts.Responses.StockAdjustment;
+using Ombor.Contracts.Responses.Warehouse;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
@@ -68,4 +70,11 @@ public abstract class StockAdjustmentTestsBase(
         => _client.PostAsync<StockAdjustmentDto>(
             Routes.StockAdjustment,
             new { warehouseId, productId, direction, quantity, reason, note = (string?)null });
+
+    /// <summary>Records opening stock through the real flow, so it lands as an event the ledger can derive.</summary>
+    protected Task AddOpeningStockAsync(int warehouseId, int productId, int quantity, decimal unitCost) =>
+        _client.PostAsync<WarehouseDto>(
+            $"{Routes.Warehouse}/{warehouseId}/opening-stock",
+            new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },
+            HttpStatusCode.OK);
 }

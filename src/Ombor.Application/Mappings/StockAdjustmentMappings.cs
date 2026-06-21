@@ -5,7 +5,11 @@ namespace Ombor.Application.Mappings;
 
 internal static class StockAdjustmentMappings
 {
-    public static StockAdjustmentDto ToDto(this StockAdjustment adjustment)
+    /// <param name="balanceAfter">
+    /// The product's stock in this warehouse right after the adjustment — a movement-ledger figure
+    /// the caller derives (it isn't stored on the event).
+    /// </param>
+    public static StockAdjustmentDto ToDto(this StockAdjustment adjustment, int balanceAfter)
     {
         if (adjustment.Warehouse is null || adjustment.Product is null)
         {
@@ -27,6 +31,7 @@ internal static class StockAdjustmentMappings
             adjustment.Quantity,
             adjustment.Reason,
             adjustment.Note,
-            adjustment.CreatedBy);
+            adjustment.CreatedBy,
+            balanceAfter);
     }
 }

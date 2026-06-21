@@ -133,8 +133,9 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `reason` must be from the set for the direction (Decrease: `Damage|Expiry|Theft|RecountDown|Other`;
   Increase: `Found|RecountUp|Other`) — a mismatch is **400**. A Decrease over available stock is **400**.
 - **Response** `StockAdjustmentDto`: `{ id, date, warehouseId, warehouseName, productId, productName, sku,
-  categoryName, measurement, direction, quantity, reason, note, createdBy }`. **`balanceAfter` is not yet
-  returned** — it's the movement-ledger running balance, coming in M4e.
+  categoryName, measurement, direction, quantity, reason, note, createdBy, balanceAfter }`. **`balanceAfter`**
+  is the product's stock in that warehouse **right after** the adjustment (the point-in-time ledger balance —
+  a historical row keeps its own value, it is not the current stock).
 
 ## Transfers (M4d) — DTO reshaped
 

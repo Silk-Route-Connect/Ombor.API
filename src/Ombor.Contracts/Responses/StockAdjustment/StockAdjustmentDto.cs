@@ -15,6 +15,7 @@ namespace Ombor.Contracts.Responses.StockAdjustment;
 /// <param name="Reason">The adjustment reason.</param>
 /// <param name="Note">Optional free-text note.</param>
 /// <param name="CreatedBy">The user who made the adjustment, if known.</param>
+/// <param name="BalanceAfter">The product's stock in this warehouse immediately after the adjustment.</param>
 public sealed record StockAdjustmentDto(
     int Id,
     DateTimeOffset Date,
@@ -29,4 +30,5 @@ public sealed record StockAdjustmentDto(
     int Quantity,
     string Reason,
     string? Note,
-    string? CreatedBy);
+    string? CreatedBy,
+    int BalanceAfter);

@@ -24,7 +24,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(o => new { o.Id, o.DateUtc, o.ProductId, ProductName = o.Product.Name, o.Product.Measurement, o.Quantity })
             .ToListAsync();
         movements.AddRange(openings.Select(o => new Raw(
-            o.Id, o.DateUtc, "Opening", o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, null, o.Quantity)));
+            o.Id, o.DateUtc, MovementKinds.Opening, o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, null, o.Quantity)));
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.Transaction.WarehouseId == warehouseId)
@@ -38,7 +38,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(a => new { a.Id, a.DateUtc, a.Direction, a.ProductId, ProductName = a.Product.Name, a.Product.Measurement, a.Quantity, a.Reason, a.Note })
             .ToListAsync();
         movements.AddRange(adjustments.Select(a => new Raw(
-            a.Id, a.DateUtc, "Adjustment", a.ProductId, a.ProductName, a.Measurement.ToString(), warehouseId, string.Empty, null, a.Note ?? a.Reason,
+            a.Id, a.DateUtc, MovementKinds.Adjustment, a.ProductId, a.ProductName, a.Measurement.ToString(), warehouseId, string.Empty, null, a.Note ?? a.Reason,
             a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity)));
 
         var transferLines = await context.TransferLines
@@ -49,7 +49,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         {
             var isSend = l.FromWarehouseId == warehouseId;
             return new Raw(
-                l.Id, l.DateUtc, "Transfer", l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty,
+                l.Id, l.DateUtc, MovementKinds.Transfer, l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty,
                 isSend ? l.ToName : l.FromName, l.Notes, isSend ? -(int)l.Quantity : (int)l.Quantity);
         }));
 
@@ -76,7 +76,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(o => new { o.Id, o.DateUtc, o.WarehouseId, WarehouseName = o.Warehouse.Name, o.Quantity })
             .ToListAsync();
         movements.AddRange(openings.Select(o => new Raw(
-            o.Id, o.DateUtc, "Opening", productId, string.Empty, string.Empty, o.WarehouseId, o.WarehouseName, null, null, o.Quantity)));
+            o.Id, o.DateUtc, MovementKinds.Opening, productId, string.Empty, string.Empty, o.WarehouseId, o.WarehouseName, null, null, o.Quantity)));
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.ProductId == productId && l.Transaction.WarehouseId != null)
@@ -90,7 +90,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(a => new { a.Id, a.DateUtc, a.Direction, a.WarehouseId, WarehouseName = a.Warehouse.Name, a.Quantity })
             .ToListAsync();
         movements.AddRange(adjustments.Select(a => new Raw(
-            a.Id, a.DateUtc, "Adjustment", productId, string.Empty, string.Empty, a.WarehouseId, a.WarehouseName, null, null,
+            a.Id, a.DateUtc, MovementKinds.Adjustment, productId, string.Empty, string.Empty, a.WarehouseId, a.WarehouseName, null, null,
             a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity)));
 
         // A transfer of this product is two movements: send at the source, receive at the destination.
@@ -100,8 +100,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .ToListAsync();
         foreach (var l in transferLines)
         {
-            movements.Add(new Raw(l.Id, l.DateUtc, "Transfer", productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, null, null, -(int)l.Quantity));
-            movements.Add(new Raw(l.Id, l.DateUtc, "Transfer", productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, null, null, (int)l.Quantity));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKinds.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, null, null, -(int)l.Quantity));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKinds.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, null, null, (int)l.Quantity));
         }
 
         // Running total stock across all warehouses (reconciles to the product's total stock).
@@ -141,9 +141,9 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
 
     private static string KindOf(TransactionType type) => type switch
     {
-        TransactionType.Supply => "Supply",
-        TransactionType.Sale => "Sale",
-        _ => "Refund",
+        TransactionType.Supply => MovementKinds.Supply,
+        TransactionType.Sale => MovementKinds.Sale,
+        _ => MovementKinds.Refund,
     };
 
     private static int SignedOf(TransactionType type, int quantity)
