@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -56,12 +57,14 @@ public sealed class OrderStateTransitionTests(TestingWebApplicationFactory facto
     [Fact]
     public async Task Deliver_FromPending_ShouldReturnConflict()
     {
-        // Arrange
+        // Arrange — the illegal transition is rejected before any stock/warehouse work.
         var customerId = await CreateCustomerAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
         var created = await PostOrderAsync(BuildCreateBody(customerId, productId));
 
         // Act + Assert
-        await _client.PostAsync($"{Routes.Order}/{created.Id}/deliver", HttpStatusCode.Conflict);
+        await _client.PostAsync<ProblemDetails>(
+            $"{Routes.Order}/{created.Id}/deliver", new { warehouseId }, HttpStatusCode.Conflict);
     }
 }

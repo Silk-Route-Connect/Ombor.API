@@ -46,9 +46,9 @@ public class OrderStatesController(IOrderService service) : ControllerBase
     }
 
     [HttpPost("{id}/deliver")]
-    public async Task<ActionResult<OrderDto>> DeliverAsync([FromRoute] int id)
+    public async Task<ActionResult<OrderDto>> DeliverAsync([FromRoute] int id, [FromBody] DeliverOrderBody body)
     {
-        var request = new DeliverOrderRequest(id);
+        var request = new DeliverOrderRequest(id, body.WarehouseId);
         var response = await service.DeliverAsync(request);
 
         return Ok(response);

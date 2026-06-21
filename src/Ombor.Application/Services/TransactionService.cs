@@ -63,7 +63,10 @@ internal sealed class TransactionService(
         await using var databaseTransaction = await context.Database.BeginTransactionAsync();
         try
         {
-            await UpdateProducts(request);
+            await context.MoveStockAsync(
+                request.InventoryId!.Value,
+                request.Type.ToDomainType(),
+                request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
             context.Transactions.Add(transactionEntity);
             await context.SaveChangesAsync();
 
@@ -267,83 +270,6 @@ internal sealed class TransactionService(
             {
                 throw new ValidationException(
                     $"Settlement of {settlement.Amount} exceeds the remaining {settled.UnpaidAmount} on transaction {settled.Id}.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Applies the transaction's stock movement to <see cref="InventoryItem"/> rows of the
-    /// selected warehouse. InventoryItem is the sole source of truth for stock; weighted-average
-    /// cost is recomputed on every Supply stock-in. Negative stock is hard-blocked.
-    /// </summary>
-    private async Task UpdateProducts(CreateTransactionRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var inventoryId = request.InventoryId!.Value;
-        var domainType = request.Type.ToDomainType();
-        var isStockIn = domainType is TransactionType.Supply or TransactionType.SaleRefund;
-
-        var lines = request.Lines
-            .GroupBy(x => x.ProductId)
-            .Select(g => new
-            {
-                ProductId = g.Key,
-                Quantity = g.Sum(l => l.Quantity),
-                IncomingValue = g.Sum(l => l.Quantity * l.UnitPrice),
-            })
-            .ToArray();
-        var productIds = lines.Select(x => x.ProductId).ToArray();
-
-        var items = await context.InventoryItems
-            .Where(x => x.InventoryId == inventoryId && productIds.Contains(x.ProductId))
-            .ToDictionaryAsync(x => x.ProductId);
-
-        foreach (var line in lines)
-        {
-            items.TryGetValue(line.ProductId, out var item);
-
-            if (isStockIn)
-            {
-                if (item is null)
-                {
-                    item = new InventoryItem
-                    {
-                        InventoryId = inventoryId,
-                        ProductId = line.ProductId,
-                        Quantity = 0,
-                        AverageCost = 0m,
-                        Inventory = null!,
-                        Product = null!,
-                    };
-                    context.InventoryItems.Add(item);
-                }
-
-                if (domainType == TransactionType.Supply)
-                {
-                    // Weighted-average cost recompute on stock-in (rules.md #10).
-                    var newQuantity = item.Quantity + line.Quantity;
-                    item.AverageCost = newQuantity == 0
-                        ? 0m
-                        : ((item.Quantity * item.AverageCost) + line.IncomingValue) / newQuantity;
-                    item.Quantity = newQuantity;
-                }
-                else
-                {
-                    // SaleRefund: returned goods re-enter at their existing carrying cost.
-                    item.Quantity += line.Quantity;
-                }
-            }
-            else
-            {
-                // Stock-out: Sale, SupplyRefund. Negative stock is hard-blocked.
-                if (item is null || item.Quantity < line.Quantity)
-                {
-                    throw new ValidationException(
-                        $"Insufficient stock for product {line.ProductId} in the selected warehouse.");
-                }
-
-                item.Quantity -= line.Quantity;
             }
         }
     }

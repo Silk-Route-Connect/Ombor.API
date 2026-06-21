@@ -103,7 +103,80 @@ internal sealed class OrderService(
 
     public Task<OrderDto> ReturnAsync(ReturnOrderRequest request) => UpdateOrderStatus(request);
 
-    public Task<OrderDto> DeliverAsync(DeliverOrderRequest request) => UpdateOrderStatus(request);
+    /// <summary>
+    /// Confirms delivery and promotes the order to a real Sale at the chosen warehouse: hard stock check
+    /// (rule 20), a Sale on account (receivable — payment is recorded separately later), the saleId link,
+    /// and the Delivered history event — all in one transaction so it can't half-apply.
+    /// </summary>
+    public async Task<OrderDto> DeliverAsync(DeliverOrderRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var order = await context.Orders
+            .Include(x => x.Lines)
+            .FirstOrDefaultAsync(x => x.Id == request.OrderId)
+            ?? throw new EntityNotFoundException<Order>(request.OrderId);
+
+        // Enforce Shipping → Delivered (throws → 409) before touching stock.
+        order.ValidateTransition(DomainOrderStatus.Delivered);
+
+        if (!await context.Inventories.AnyAsync(i => i.Id == request.WarehouseId))
+        {
+            throw new ValidationException($"Warehouse {request.WarehouseId} does not exist.");
+        }
+
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
+        {
+            // Rule-20 hard block at the chosen warehouse; insufficient stock throws → rollback → 400.
+            await context.MoveStockAsync(
+                request.WarehouseId,
+                Domain.Enums.TransactionType.Sale,
+                order.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+
+            var saleLines = order.Lines.Select(ToSaleLine).ToArray();
+            var sale = new TransactionRecord
+            {
+                PartnerId = order.CustomerId,
+                Partner = null!,
+                InventoryId = request.WarehouseId,
+                DateUtc = DateTimeOffset.UtcNow,
+                Type = Domain.Enums.TransactionType.Sale,
+                Lines = saleLines,
+                TotalDue = saleLines.Sum(l => l.Total),
+                TotalPaid = 0m,
+                Status = Domain.Enums.TransactionStatus.Open,
+            };
+            context.Transactions.Add(sale);
+            await context.SaveChangesAsync();
+
+            var previous = order.Status;
+            order.Status = DomainOrderStatus.Delivered;
+            order.SaleId = sale.Id;
+            AppendStatusEvent(order, previous, DomainOrderStatus.Delivered);
+            await context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
+        return await GetProjectedOrThrowAsync(order.Id);
+    }
+
+    private static TransactionLine ToSaleLine(OrderLine line) => new()
+    {
+        ProductId = line.ProductId,
+        UnitPrice = line.UnitPrice,
+        Discount = line.Discount ?? 0m,
+        DiscountType = line.DiscountType,
+        Quantity = line.Quantity,
+        Product = null!,
+        Transaction = null!,
+    };
 
     private async Task<OrderDto> UpdateOrderStatus(IOrderStateUpdateRequest request)
     {
