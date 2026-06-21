@@ -35,7 +35,7 @@ internal sealed class DevelopmentDatabaseSeeder(
             await AddPartnersAsync(context);
             await AddTemplatesAsync(context);
             await AddEmployeesAsync(context);
-            await AddInventoriesAsync(context);
+            await AddWarehousesAsync(context);
             await AddWalletsAsync(context);
             await AddSalesAsync(context);
             await AddSuppliesAsync(context);
@@ -180,9 +180,9 @@ internal sealed class DevelopmentDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    private async Task AddInventoriesAsync(IApplicationDbContext context)
+    private async Task AddWarehousesAsync(IApplicationDbContext context)
     {
-        if (context.Inventories.Any())
+        if (context.Warehouses.Any())
         {
             return;
         }
@@ -191,15 +191,15 @@ internal sealed class DevelopmentDatabaseSeeder(
                 .Select(x => x.Id)
                 .ToArray();
 
-        var inventories = InventoryGenerator.Generate(
+        var warehouses = WarehouseGenerator.Generate(
             products,
-            seedSettings.NumberOfItemsPerInventory,
-            seedSettings.NumberOfInventories,
+            seedSettings.NumberOfItemsPerWarehouse,
+            seedSettings.NumberOfWarehouses,
             seedSettings.Locale)
             .DistinctBy(x => x.Name)
             .ToArray();
 
-        context.Inventories.AddRange(inventories);
+        context.Warehouses.AddRange(warehouses);
         await context.SaveChangesAsync();
     }
 

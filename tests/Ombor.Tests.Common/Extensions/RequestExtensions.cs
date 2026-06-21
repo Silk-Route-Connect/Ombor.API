@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Employee;
-using Ombor.Contracts.Requests.Inventory;
+using Ombor.Contracts.Requests.Warehouse;
 using Ombor.Contracts.Requests.Partner;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Template;
@@ -33,7 +33,7 @@ public static class RequestExtensions
     public static bool IsEmpty(this GetEmployeesRequest request) =>
         string.IsNullOrWhiteSpace(request.SearchTerm);
 
-    public static bool IsEmpty(this GetInventoriesRequest request) =>
+    public static bool IsEmpty(this GetWarehousesRequest request) =>
         string.IsNullOrWhiteSpace(request.SearchTerm);
 
     public static bool IsFullyPopulated(this GetProductsRequest request) =>
@@ -156,8 +156,8 @@ public static class RequestExtensions
             { new StringContent(((int)request.Overpayment).ToString()),   nameof(request.Overpayment) },
         };
 
-        if (request.InventoryId.HasValue)
-            content.Add(new StringContent(request.InventoryId.Value.ToString()), nameof(request.InventoryId));
+        if (request.WarehouseId.HasValue)
+            content.Add(new StringContent(request.WarehouseId.Value.ToString()), nameof(request.WarehouseId));
 
         if (request.WalletId.HasValue)
             content.Add(new StringContent(request.WalletId.Value.ToString()), nameof(request.WalletId));

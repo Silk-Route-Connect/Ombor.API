@@ -104,3 +104,23 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **New read fields.** `OrderDto` adds `customerType`, `customerBalance` (computed), `warehouseId` /
   `warehouseName` (intended warehouse), `saleId` (set once delivered — M5b), and `history[]`
   (`{ at, from, to, by }`, oldest-first).
+
+## Warehouses (M4b) — the `Inventory`→`Warehouse` rename
+
+- **Resource cutover.** `/api/inventories` is **gone**; use **`/api/warehouses`** (hard cutover, no
+  alias). *Reason:* the stock-location entity is canonically a **Warehouse** (a place); "inventory" is
+  the stock it holds. Every `inventoryId`/`inventoryName` field across the API is now
+  **`warehouseId`/`warehouseName`** — including `CreateTransactionRequest` (`warehouseId`, was
+  `inventoryId`) and the product DTOs (`ProductDto.warehouseItems`, each `{ warehouseId, warehouseName, … }`).
+
+- **Warehouse shape.** `WarehouseDto` = `{ id, name, location, productCount, totalUnits, stockValue, isArchived }`
+  — **computed totals**, no embedded item list, no `isActive`. The per-product stock moved to
+  **`GET /api/warehouses/{id}/stock`** → `WarehouseStockItem[]` (`{ productId, productName, sku,
+  categoryName, measurement, quantity, averageCost, value }`).
+
+- **Create/Update.** `CreateWarehouseRequest { name, location }` (no `isActive`); **duplicate name → 400**.
+  `UpdateWarehouseRequest { id, name, location }`.
+
+- **Archive, not delete.** The hard `DELETE /api/inventories/{id}` is **removed**. Warehouses are
+  soft-archived: **`POST /api/warehouses/{id}/archive`** / **`/restore`** (both return the `WarehouseDto`,
+  200). Archived warehouses still appear in `GET /api/warehouses` and still count in totals (rule 31).

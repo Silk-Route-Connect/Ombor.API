@@ -40,8 +40,8 @@ internal sealed class AuthService(
         var message = new SmsMessage
         (
             request.PhoneNumber,
-            $"Inventory Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-            "Inventory Management"
+            $"Warehouse Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
+            "Warehouse Management"
         );
 
         // disable for testing

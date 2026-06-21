@@ -30,14 +30,14 @@ public sealed class DeliverOrderTests(TestingWebApplicationFactory factory, ITes
         Assert.NotNull(delivered.SaleId);
 
         // Stock decremented by the ordered quantity.
-        var item = await _context.InventoryItems.AsNoTracking()
-            .FirstAsync(i => i.InventoryId == warehouseId && i.ProductId == productId);
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
         Assert.Equal(98, item.Quantity);
 
         // A Sale on account exists for the order total, fully unpaid.
         var sale = await _context.Transactions.AsNoTracking().FirstAsync(t => t.Id == delivered.SaleId!.Value);
         Assert.Equal(TransactionType.Sale, sale.Type);
-        Assert.Equal(warehouseId, sale.InventoryId);
+        Assert.Equal(warehouseId, sale.WarehouseId);
         Assert.Equal(200m, sale.TotalDue);
         Assert.Equal(0m, sale.TotalPaid);
 
@@ -89,8 +89,8 @@ public sealed class DeliverOrderTests(TestingWebApplicationFactory factory, ITes
         Assert.Equal(OrderStatus.Shipping, order.Status);
         Assert.Null(order.SaleId);
 
-        var item = await _context.InventoryItems.AsNoTracking()
-            .FirstAsync(i => i.InventoryId == warehouseId && i.ProductId == productId);
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
         Assert.Equal(1, item.Quantity);
 
         Assert.False(await _context.Transactions.AsNoTracking().AnyAsync(t => t.PartnerId == customerId));
@@ -127,8 +127,8 @@ public sealed class DeliverOrderTests(TestingWebApplicationFactory factory, ITes
         var order = await _context.Orders.AsNoTracking().FirstAsync(o => o.Id == processing.Id);
         Assert.Null(order.SaleId);
 
-        var item = await _context.InventoryItems.AsNoTracking()
-            .FirstAsync(i => i.InventoryId == warehouseId && i.ProductId == productId);
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
         Assert.Equal(100, item.Quantity);
     }
 
@@ -145,8 +145,8 @@ public sealed class DeliverOrderTests(TestingWebApplicationFactory factory, ITes
         await CreateOrderInStatusAsync(customerId, productId, OrderStatus.Shipping);
 
         // Assert — stock is untouched until delivery.
-        var item = await _context.InventoryItems.AsNoTracking()
-            .FirstAsync(i => i.InventoryId == warehouseId && i.ProductId == productId);
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
         Assert.Equal(100, item.Quantity);
     }
 }

@@ -14,16 +14,16 @@ internal sealed class TransferConfiguration : IEntityTypeConfiguration<Transfer>
         builder.HasKey(t => t.Id);
 
         builder
-            .HasOne(t => t.FromInventory)
+            .HasOne(t => t.FromWarehouse)
             .WithMany()
-            .HasForeignKey(t => t.FromInventoryId)
+            .HasForeignKey(t => t.FromWarehouseId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
         builder
-            .HasOne(t => t.ToInventory)
+            .HasOne(t => t.ToWarehouse)
             .WithMany()
-            .HasForeignKey(t => t.ToInventoryId)
+            .HasForeignKey(t => t.ToWarehouseId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 

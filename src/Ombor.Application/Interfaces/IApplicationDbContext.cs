@@ -74,14 +74,14 @@ public interface IApplicationDbContext
     /// </summary>
     DbSet<Employee> Employees { get; set; }
 
-    /// Gets or sets the Inventories set.
+    /// Gets or sets the Warehouses set.
     /// </summary>
-    DbSet<Inventory> Inventories { get; set; }
+    DbSet<Warehouse> Warehouses { get; set; }
 
     /// <summary>
-    /// Gets or sets the Inventory Items set.
+    /// Gets or sets the Warehouse Items set.
     /// </summary>
-    DbSet<InventoryItem> InventoryItems { get; set; }
+    DbSet<WarehouseItem> WarehouseItems { get; set; }
 
     /// <summary>
     /// Gets or sets the Orders.

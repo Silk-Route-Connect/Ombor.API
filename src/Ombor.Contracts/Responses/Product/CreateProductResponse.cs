@@ -21,7 +21,7 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
 /// <param name="Images">Associated product images.</param>
-/// <param name="InventoryItems">Inventory items returned with the created product.</param>
+/// <param name="WarehouseItems">Warehouse items returned with the created product.</param>
 /// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
 public sealed record CreateProductResponse(
     int Id,
@@ -40,7 +40,7 @@ public sealed record CreateProductResponse(
     string Type,
     bool IsArchived,
     ProductImageDto[] Images,
-    ProductInventoryItemDto[] InventoryItems,
+    ProductWarehouseItemDto[] WarehouseItems,
     int TotalStock,
     decimal? AverageCost,
     ProductPackagingDto? Packaging);

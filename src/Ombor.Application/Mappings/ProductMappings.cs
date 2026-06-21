@@ -37,7 +37,7 @@ internal static class ProductMappings
             Type: product.Type.ToString(),
             IsArchived: product.IsArchived,
             Images: images,
-            InventoryItems: product.InventoryItemDtos(),
+            WarehouseItems: product.WarehouseItemDtos(),
             TotalStock: totalStock,
             AverageCost: product.WeightedAverageCost(),
             Packaging: product.Packaging.ToDto());
@@ -90,7 +90,7 @@ internal static class ProductMappings
             Type: product.Type.ToString(),
             IsArchived: product.IsArchived,
             Images: product.Images.ToDto(),
-            InventoryItems: product.InventoryItemDtos(),
+            WarehouseItems: product.WarehouseItemDtos(),
             TotalStock: totalStock,
             AverageCost: product.WeightedAverageCost(),
             Packaging: product.Packaging.ToDto());
@@ -141,24 +141,24 @@ internal static class ProductMappings
     public static Domain.Enums.ProductType ToDomain(this Contracts.Enums.ProductType type)
         => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
 
-    // Stock is the sum of per-warehouse inventory items — InventoryItem is the sole source (rule 17).
+    // Stock is the sum of per-warehouse warehouse items — WarehouseItem is the sole source (rule 17).
     private static int TotalStock(this Product product)
-        => product.InventoryItems.Sum(i => i.Quantity);
+        => product.WarehouseItems.Sum(i => i.Quantity);
 
     // Value-weighted average cost across warehouses; null when there is no stock.
     private static decimal? WeightedAverageCost(this Product product)
     {
-        var total = product.InventoryItems.Sum(i => i.Quantity);
+        var total = product.WarehouseItems.Sum(i => i.Quantity);
 
         return total == 0
             ? null
-            : product.InventoryItems.Sum(i => i.Quantity * i.AverageCost) / total;
+            : product.WarehouseItems.Sum(i => i.Quantity * i.AverageCost) / total;
     }
 
-    private static ProductInventoryItemDto[] InventoryItemDtos(this Product product)
-        => [.. product.InventoryItems.Select(i => new ProductInventoryItemDto(
-            i.InventoryId,
-            i.Inventory.Name,
+    private static ProductWarehouseItemDto[] WarehouseItemDtos(this Product product)
+        => [.. product.WarehouseItems.Select(i => new ProductWarehouseItemDto(
+            i.WarehouseId,
+            i.Warehouse.Name,
             i.Quantity,
             i.AverageCost))];
 

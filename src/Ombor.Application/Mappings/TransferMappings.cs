@@ -8,10 +8,10 @@ internal static class TransferMappings
     public static TransferDto ToDto(this Transfer transfer) =>
         new(
             transfer.Id,
-            transfer.FromInventoryId,
-            transfer.FromInventory.Name,
-            transfer.ToInventoryId,
-            transfer.ToInventory.Name,
+            transfer.FromWarehouseId,
+            transfer.FromWarehouse.Name,
+            transfer.ToWarehouseId,
+            transfer.ToWarehouse.Name,
             transfer.DateUtc,
             transfer.Status.ToString(),
             transfer.Notes,

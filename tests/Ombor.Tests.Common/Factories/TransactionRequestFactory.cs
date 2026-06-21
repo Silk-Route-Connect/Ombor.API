@@ -15,31 +15,31 @@ public static class TransactionRequestFactory
     public static CreateTransactionRequest Sale(
         int partnerId,
         int productId,
-        int inventoryId,
+        int warehouseId,
         decimal due,
         int? walletId,
         decimal paidAmount,
         OverpaymentHandling overpayment = OverpaymentHandling.Change,
         SettlementInput[]? settlements = null)
-        => Build(partnerId, TransactionType.Sale, productId, inventoryId, due, walletId, paidAmount, overpayment, settlements);
+        => Build(partnerId, TransactionType.Sale, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements);
 
     /// <summary>Builds a Supply transaction request (single line: <c>unitPrice = due</c>, quantity 1).</summary>
     public static CreateTransactionRequest Supply(
         int partnerId,
         int productId,
-        int inventoryId,
+        int warehouseId,
         decimal due,
         int? walletId,
         decimal paidAmount,
         OverpaymentHandling overpayment = OverpaymentHandling.Change,
         SettlementInput[]? settlements = null)
-        => Build(partnerId, TransactionType.Supply, productId, inventoryId, due, walletId, paidAmount, overpayment, settlements);
+        => Build(partnerId, TransactionType.Supply, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements);
 
     private static CreateTransactionRequest Build(
         int partnerId,
         TransactionType type,
         int productId,
-        int inventoryId,
+        int warehouseId,
         decimal due,
         int? walletId,
         decimal paidAmount,
@@ -66,6 +66,6 @@ public static class TransactionRequestFactory
             Settlements: settlements,
             Overpayment: overpayment,
             Attachments: null!,
-            InventoryId: inventoryId);
+            WarehouseId: warehouseId);
     }
 }

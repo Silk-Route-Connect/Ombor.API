@@ -19,10 +19,10 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
-        var request = TransactionRequestFactory.Supply(partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 10_000m);
+        var request = TransactionRequestFactory.Supply(partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 10_000m);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -48,10 +48,10 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
-        var request = TransactionRequestFactory.Supply(partnerId, productId, inventoryId, due, walletId, paid);
+        var request = TransactionRequestFactory.Supply(partnerId, productId, warehouseId, due, walletId, paid);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -70,10 +70,10 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
-        var request = TransactionRequestFactory.Supply(partnerId, productId, inventoryId, due: 10_000m, walletId: null, paidAmount: 0m);
+        var request = TransactionRequestFactory.Supply(partnerId, productId, warehouseId, due: 10_000m, walletId: null, paidAmount: 0m);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -93,11 +93,11 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
         var request = TransactionRequestFactory.Supply(
-            partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Advance);
+            partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Advance);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -126,11 +126,11 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
         var request = TransactionRequestFactory.Supply(
-            partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Change);
+            partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Change);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -159,11 +159,11 @@ public partial class CreateTransactionTests
         await CreateOpenTransactionAsync(partnerId, due: 10_000m, paid: 0m, TransactionType.Supply);
 
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
         var request = TransactionRequestFactory.Supply(
-            partnerId, productId, inventoryId, due: 5_000m, walletId, paidAmount: 8_000m, OverpaymentHandling.Advance);
+            partnerId, productId, warehouseId, due: 5_000m, walletId, paidAmount: 8_000m, OverpaymentHandling.Advance);
 
         // Act + Assert
         await PostTransactionExpectingBadRequestAsync(request);

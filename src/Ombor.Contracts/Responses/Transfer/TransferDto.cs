@@ -5,10 +5,10 @@ namespace Ombor.Contracts.Responses.Transfer;
 /// </summary>
 public sealed record TransferDto(
     int Id,
-    int FromInventoryId,
-    string FromInventoryName,
-    int ToInventoryId,
-    string ToInventoryName,
+    int FromWarehouseId,
+    string FromWarehouseName,
+    int ToWarehouseId,
+    string ToWarehouseName,
     DateTimeOffset DateUtc,
     string Status,
     string? Notes,

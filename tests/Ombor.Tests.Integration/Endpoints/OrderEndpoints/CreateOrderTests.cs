@@ -49,8 +49,8 @@ public sealed class CreateOrderTests(TestingWebApplicationFactory factory, ITest
         await PostOrderAsync(BuildCreateBody(customerId, productId, warehouseId: warehouseId));
 
         // Assert — an order reserves nothing; stock is untouched.
-        var item = await _context.InventoryItems
-            .FirstAsync(i => i.InventoryId == warehouseId && i.ProductId == productId);
+        var item = await _context.WarehouseItems
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
         Assert.Equal(100, item.Quantity);
     }
 

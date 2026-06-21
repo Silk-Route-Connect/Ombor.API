@@ -28,9 +28,9 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .IsRequired();
 
         builder
-            .HasOne(t => t.Inventory)
+            .HasOne(t => t.Warehouse)
             .WithMany()
-            .HasForeignKey(t => t.InventoryId)
+            .HasForeignKey(t => t.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 

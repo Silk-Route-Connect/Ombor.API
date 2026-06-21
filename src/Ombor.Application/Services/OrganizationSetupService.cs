@@ -21,7 +21,7 @@ internal sealed class OrganizationSetupService(
             Type = PartnerType.Customer,
             OpeningDate = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime),
         });
-        context.Inventories.Add(new Inventory { Name = "Основной склад", IsActive = true });
+        context.Warehouses.Add(new Warehouse { Name = "Основной склад" });
         context.Wallets.Add(new Wallet
         {
             Name = "Касса",

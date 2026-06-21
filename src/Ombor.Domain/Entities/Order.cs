@@ -31,7 +31,7 @@ public class Order : AuditableEntity, IOrganizationScoped
     /// but non-binding — it reserves no stock. The authoritative warehouse is chosen at delivery.
     /// </summary>
     public int? WarehouseId { get; set; }
-    public virtual Inventory? Warehouse { get; set; }
+    public virtual Warehouse? Warehouse { get; set; }
 
     /// <summary>
     /// The Sale this order was promoted into on delivery. Null until delivered.

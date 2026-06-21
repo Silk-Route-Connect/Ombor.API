@@ -29,7 +29,7 @@ internal sealed class TransactionMapper : ITransactionMapper
         return new TransactionRecord
         {
             PartnerId = request.PartnerId,
-            InventoryId = request.InventoryId,
+            WarehouseId = request.WarehouseId,
             OriginalTransactionId = request.OriginalTransactionId,
             RefundReason = request.RefundReason,
             DateUtc = DateTimeOffset.UtcNow,

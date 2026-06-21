@@ -19,11 +19,11 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
-        var request = TransactionRequestFactory.Sale(partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 10_000m);
+        var request = TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 10_000m);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -49,11 +49,11 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
-        var request = TransactionRequestFactory.Sale(partnerId, productId, inventoryId, due, walletId, paid);
+        var request = TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due, walletId, paid);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -72,11 +72,11 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
-        var request = TransactionRequestFactory.Sale(partnerId, productId, inventoryId, due: 10_000m, walletId: null, paidAmount: 0m);
+        var request = TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due: 10_000m, walletId: null, paidAmount: 0m);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -96,12 +96,12 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
         var request = TransactionRequestFactory.Sale(
-            partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Advance);
+            partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Advance);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -131,12 +131,12 @@ public partial class CreateTransactionTests
         // Arrange
         var partnerId = await CreatePartnerAsync();
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
         var request = TransactionRequestFactory.Sale(
-            partnerId, productId, inventoryId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Change);
+            partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 15_000m, OverpaymentHandling.Change);
 
         // Act
         var created = await PostTransactionAsync(request);
@@ -166,13 +166,13 @@ public partial class CreateTransactionTests
         await CreateOpenTransactionAsync(partnerId, due: 10_000m, paid: 0m, TransactionType.Sale);
 
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
         // Pay this 5k Sale and try to park the rest as advance without clearing the 10k debt → rule 40.
         var request = TransactionRequestFactory.Sale(
-            partnerId, productId, inventoryId, due: 5_000m, walletId, paidAmount: 8_000m, OverpaymentHandling.Advance);
+            partnerId, productId, warehouseId, due: 5_000m, walletId, paidAmount: 8_000m, OverpaymentHandling.Advance);
 
         // Act + Assert
         await PostTransactionExpectingBadRequestAsync(request);
@@ -186,13 +186,13 @@ public partial class CreateTransactionTests
         var openSaleId = await CreateOpenTransactionAsync(partnerId, due: 10_000m, paid: 0m, TransactionType.Sale);
 
         var walletId = await CreateWalletAsync();
-        var inventoryId = await CreateInventoryAsync();
+        var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
-        await SeedStockAsync(inventoryId, productId, quantity: 100);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
 
         // Pay 15k: 5k closes this Sale, 10k settles the open one (excess 0).
         var request = TransactionRequestFactory.Sale(
-            partnerId, productId, inventoryId, due: 5_000m, walletId, paidAmount: 15_000m,
+            partnerId, productId, warehouseId, due: 5_000m, walletId, paidAmount: 15_000m,
             OverpaymentHandling.Change,
             settlements: [new SettlementInput(openSaleId, 10_000m)]);
 

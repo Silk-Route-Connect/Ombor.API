@@ -21,7 +21,7 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “All”).</param>
 /// <param name="IsArchived">Whether the product is archived.</param>
 /// <param name="Images">Associated product images.</param>
-/// <param name="InventoryItems">Per-warehouse stock for the product.</param>
+/// <param name="WarehouseItems">Per-warehouse stock for the product.</param>
 /// <param name="TotalStock">Total stock summed across warehouses (rule 17).</param>
 /// <param name="AverageCost">Value-weighted average cost across warehouses; null when there is no stock.</param>
 /// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
@@ -42,7 +42,7 @@ public sealed record ProductDto(
     string Type,
     bool IsArchived,
     ProductImageDto[] Images,
-    ProductInventoryItemDto[] InventoryItems,
+    ProductWarehouseItemDto[] WarehouseItems,
     int TotalStock,
     decimal? AverageCost,
     ProductPackagingDto? Packaging);

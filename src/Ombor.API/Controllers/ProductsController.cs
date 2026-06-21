@@ -7,7 +7,7 @@ using Ombor.Contracts.Responses.Transaction;
 namespace Ombor.API.Controllers;
 
 /// <summary>
-/// Endpoints to manage products and inventory.
+/// Endpoints to manage products and warehouse.
 /// </summary>
 [ApiController]
 [Route("api/products")]

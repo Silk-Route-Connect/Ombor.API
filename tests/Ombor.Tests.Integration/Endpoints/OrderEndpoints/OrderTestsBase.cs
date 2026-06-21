@@ -30,16 +30,15 @@ public abstract class OrderTestsBase(
 
     protected async Task<int> CreateWarehouseAsync()
     {
-        var inventory = new Inventory
+        var warehouse = new Warehouse
         {
             Name = $"Warehouse {Guid.NewGuid():N}",
             Location = "Tashkent",
-            IsActive = true,
         };
-        _context.Inventories.Add(inventory);
+        _context.Warehouses.Add(warehouse);
         await _context.SaveChangesAsync();
 
-        return inventory.Id;
+        return warehouse.Id;
     }
 
     protected async Task<int> CreateProductAsync()
@@ -70,16 +69,16 @@ public abstract class OrderTestsBase(
     /// <summary>Seeds stock so a delivery (stock-out) has something to draw from (used in M5b).</summary>
     protected async Task SeedStockAsync(int warehouseId, int productId, int quantity, decimal averageCost = 50m)
     {
-        var item = new InventoryItem
+        var item = new WarehouseItem
         {
-            InventoryId = warehouseId,
+            WarehouseId = warehouseId,
             ProductId = productId,
             Quantity = quantity,
             AverageCost = averageCost,
-            Inventory = null!,
+            Warehouse = null!,
             Product = null!,
         };
-        _context.InventoryItems.Add(item);
+        _context.WarehouseItems.Add(item);
         await _context.SaveChangesAsync();
     }
 

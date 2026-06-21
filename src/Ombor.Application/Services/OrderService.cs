@@ -121,7 +121,7 @@ internal sealed class OrderService(
         // Enforce Shipping → Delivered (throws → 409) before touching stock.
         order.ValidateTransition(DomainOrderStatus.Delivered);
 
-        if (!await context.Inventories.AnyAsync(i => i.Id == request.WarehouseId))
+        if (!await context.Warehouses.AnyAsync(i => i.Id == request.WarehouseId))
         {
             throw new ValidationException($"Warehouse {request.WarehouseId} does not exist.");
         }
@@ -140,7 +140,7 @@ internal sealed class OrderService(
             {
                 PartnerId = order.CustomerId,
                 Partner = null!,
-                InventoryId = request.WarehouseId,
+                WarehouseId = request.WarehouseId,
                 DateUtc = DateTimeOffset.UtcNow,
                 Type = Domain.Enums.TransactionType.Sale,
                 Lines = saleLines,

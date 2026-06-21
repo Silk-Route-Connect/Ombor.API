@@ -20,8 +20,8 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
     public virtual required Partner Partner { get; set; }
 
     /// <summary>Warehouse whose stock this transaction affects. Required for stock-affecting types.</summary>
-    public int? InventoryId { get; set; }
-    public virtual Inventory? Inventory { get; set; }
+    public int? WarehouseId { get; set; }
+    public virtual Warehouse? Warehouse { get; set; }
 
     /// <summary>The original transaction this one reverses. Required for SaleRefund and SupplyRefund.</summary>
     public int? OriginalTransactionId { get; set; }

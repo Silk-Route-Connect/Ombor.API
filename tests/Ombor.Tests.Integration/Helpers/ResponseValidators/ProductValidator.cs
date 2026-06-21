@@ -3,7 +3,7 @@ using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
-using Ombor.Contracts.Responses.Inventory;
+using Ombor.Contracts.Responses.Warehouse;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Tests.Common.Helpers;
 
@@ -123,18 +123,18 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
             .IgnoreAutoIncludes()
             .Include(x => x.Category)
             .Include(x => x.Images)
-            .Include(x => x.InventoryItems)
-            .ThenInclude(i => i.Inventory)
+            .Include(x => x.WarehouseItems)
+            .ThenInclude(i => i.Warehouse)
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
         return products
             .Select(x =>
             {
-                var totalStock = x.InventoryItems.Sum(i => i.Quantity);
+                var totalStock = x.WarehouseItems.Sum(i => i.Quantity);
                 decimal? averageCost = totalStock == 0
                     ? null
-                    : x.InventoryItems.Sum(i => i.Quantity * i.AverageCost) / totalStock;
+                    : x.WarehouseItems.Sum(i => i.Quantity * i.AverageCost) / totalStock;
 
                 return new ProductDto(
                     x.Id,
@@ -153,7 +153,7 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                     x.Type.ToString(),
                     x.IsArchived,
                     x.Images.Select(image => new ProductImageDto(image.Id, image.ImageName, image.OriginalUrl, image.ThumbnailUrl)).ToArray(),
-                    x.InventoryItems.Select(item => new ProductInventoryItemDto(item.InventoryId, item.Inventory.Name, item.Quantity, item.AverageCost)).ToArray(),
+                    x.WarehouseItems.Select(item => new ProductWarehouseItemDto(item.WarehouseId, item.Warehouse.Name, item.Quantity, item.AverageCost)).ToArray(),
                     totalStock,
                     averageCost,
                     x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode));

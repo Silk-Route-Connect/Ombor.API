@@ -57,8 +57,8 @@ public class Product : EntityBase, IOrganizationScoped
     /// <summary>Gets or sets collection of <see cref="TemplateItem"/>. </summary>
     public virtual List<TemplateItem> TemplateItems { get; set; } = [];
 
-    /// <summary>Gets or sets collection of <see cref="InventoryItem"/>. </summary>
-    public virtual ICollection<InventoryItem> InventoryItems { get; set; } = [];
+    /// <summary>Gets or sets collection of <see cref="WarehouseItem"/>. </summary>
+    public virtual ICollection<WarehouseItem> WarehouseItems { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the collection of <see cref="TransactionLine>"/> for product.

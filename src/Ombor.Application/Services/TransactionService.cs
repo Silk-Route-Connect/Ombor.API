@@ -64,7 +64,7 @@ internal sealed class TransactionService(
         try
         {
             await context.MoveStockAsync(
-                request.InventoryId!.Value,
+                request.WarehouseId!.Value,
                 request.Type.ToDomainType(),
                 request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
             context.Transactions.Add(transactionEntity);
@@ -203,14 +203,14 @@ internal sealed class TransactionService(
         ArgumentNullException.ThrowIfNull(request);
         await validator.ValidateAndThrowAsync(request);
 
-        if (!request.InventoryId.HasValue)
+        if (!request.WarehouseId.HasValue)
         {
-            throw new ValidationException("A warehouse (InventoryId) is required for the transaction.");
+            throw new ValidationException("A warehouse (WarehouseId) is required for the transaction.");
         }
 
-        if (!await context.Inventories.AnyAsync(i => i.Id == request.InventoryId.Value))
+        if (!await context.Warehouses.AnyAsync(i => i.Id == request.WarehouseId.Value))
         {
-            throw new ValidationException($"Warehouse {request.InventoryId} does not exist.");
+            throw new ValidationException($"Warehouse {request.WarehouseId} does not exist.");
         }
 
         await ValidateRefundOrThrowAsync(request);

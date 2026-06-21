@@ -7,16 +7,16 @@ public sealed class CreateTransferValidator : AbstractValidator<CreateTransferRe
 {
     public CreateTransferValidator()
     {
-        RuleFor(x => x.FromInventoryId)
+        RuleFor(x => x.FromWarehouseId)
             .GreaterThan(0)
             .WithMessage("Source warehouse ID must be valid.");
 
-        RuleFor(x => x.ToInventoryId)
+        RuleFor(x => x.ToWarehouseId)
             .GreaterThan(0)
             .WithMessage("Destination warehouse ID must be valid.");
 
-        RuleFor(x => x.ToInventoryId)
-            .NotEqual(x => x.FromInventoryId)
+        RuleFor(x => x.ToWarehouseId)
+            .NotEqual(x => x.FromWarehouseId)
             .WithMessage("Source and destination warehouses must be different.");
 
         RuleFor(x => x.Notes)

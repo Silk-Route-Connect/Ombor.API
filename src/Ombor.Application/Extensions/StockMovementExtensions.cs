@@ -9,14 +9,14 @@ namespace Ombor.Application.Extensions;
 internal static class StockMovementExtensions
 {
     /// <summary>
-    /// Applies a stock movement to the <see cref="InventoryItem"/> rows of one warehouse — the single
-    /// stock path shared by transaction creation and order-delivery promotion. <see cref="InventoryItem"/>
+    /// Applies a stock movement to the <see cref="WarehouseItem"/> rows of one warehouse — the single
+    /// stock path shared by transaction creation and order-delivery promotion. <see cref="WarehouseItem"/>
     /// is the sole source of truth for stock; weighted-average cost is recomputed on every Supply stock-in.
     /// Negative stock is hard-blocked (rule 20). The caller owns the surrounding transaction.
     /// </summary>
     public static async Task MoveStockAsync(
         this IApplicationDbContext context,
-        int inventoryId,
+        int warehouseId,
         TransactionType domainType,
         IEnumerable<(int ProductId, int Quantity, decimal UnitPrice)> rawLines)
     {
@@ -33,8 +33,8 @@ internal static class StockMovementExtensions
             .ToArray();
         var productIds = lines.Select(x => x.ProductId).ToArray();
 
-        var items = await context.InventoryItems
-            .Where(x => x.InventoryId == inventoryId && productIds.Contains(x.ProductId))
+        var items = await context.WarehouseItems
+            .Where(x => x.WarehouseId == warehouseId && productIds.Contains(x.ProductId))
             .ToDictionaryAsync(x => x.ProductId);
 
         foreach (var line in lines)
@@ -45,16 +45,16 @@ internal static class StockMovementExtensions
             {
                 if (item is null)
                 {
-                    item = new InventoryItem
+                    item = new WarehouseItem
                     {
-                        InventoryId = inventoryId,
+                        WarehouseId = warehouseId,
                         ProductId = line.ProductId,
                         Quantity = 0,
                         AverageCost = 0m,
-                        Inventory = null!,
+                        Warehouse = null!,
                         Product = null!,
                     };
-                    context.InventoryItems.Add(item);
+                    context.WarehouseItems.Add(item);
                 }
 
                 if (domainType == TransactionType.Supply)

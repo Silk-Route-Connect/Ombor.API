@@ -19,7 +19,7 @@ namespace Ombor.Contracts.Requests.Transaction;
 /// <param name="Settlements">Other open transactions of the same partner this payment also settles.</param>
 /// <param name="Overpayment">What to do with any amount beyond the settled debt (change or advance).</param>
 /// <param name="Attachments">Optional file attachments.</param>
-/// <param name="InventoryId">The warehouse the stock moves through (required for stock movement).</param>
+/// <param name="WarehouseId">The warehouse the stock moves through (required for stock movement).</param>
 /// <param name="OriginalTransactionId">The transaction being refunded (required for refund types).</param>
 /// <param name="RefundReason">Why the refund was issued (required for refund types).</param>
 public sealed record CreateTransactionRequest(
@@ -32,7 +32,7 @@ public sealed record CreateTransactionRequest(
     SettlementInput[]? Settlements,
     OverpaymentHandling Overpayment,
     IFormFile[] Attachments,
-    int? InventoryId = null,
+    int? WarehouseId = null,
     int? OriginalTransactionId = null,
     string? RefundReason = null);
 

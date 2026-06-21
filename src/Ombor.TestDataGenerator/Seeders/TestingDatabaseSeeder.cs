@@ -36,8 +36,8 @@ internal sealed class TestingDatabaseSeeder(
             await CreateProductImagesAsync(context, nameMap);
             await CreatePartners(context);
             await AppEmployeesAsync(context);
-            await CreateInventoriesAsync(context);
-            await CreateInventoryItemsAsync(context);
+            await CreateWarehousesAsync(context);
+            await CreateWarehouseItemsAsync(context);
         }
     }
 
@@ -222,52 +222,51 @@ internal sealed class TestingDatabaseSeeder(
         await context.SaveChangesAsync();
     }
 
-    private async Task CreateInventoriesAsync(IApplicationDbContext context)
+    private async Task CreateWarehousesAsync(IApplicationDbContext context)
     {
-        if (context.Inventories.Any())
+        if (context.Warehouses.Any())
         {
             return;
         }
 
-        var inventories = Enumerable.Range(1, seedSettings.NumberOfInventories)
-            .Select(i => new Inventory
+        var warehouses = Enumerable.Range(1, seedSettings.NumberOfWarehouses)
+            .Select(i => new Warehouse
             {
-                Name = $"Test Inventory {i}",
+                Name = $"Test Warehouse {i}",
                 Location = _faker.Address.StreetAddress(),
-                IsActive = _faker.Random.Bool(),
             });
 
-        context.Inventories.AddRange(inventories);
+        context.Warehouses.AddRange(warehouses);
         await context.SaveChangesAsync();
     }
 
-    private async Task CreateInventoryItemsAsync(IApplicationDbContext context)
+    private async Task CreateWarehouseItemsAsync(IApplicationDbContext context)
     {
-        if (context.InventoryItems.Any())
+        if (context.WarehouseItems.Any())
         {
             return;
         }
 
         var products = context.Products.Select(p => p.Id).ToArray();
-        var inventories = context.Inventories.Select(i => i.Id).ToArray();
-        var inventoryItems = new List<InventoryItem>();
+        var warehouses = context.Warehouses.Select(i => i.Id).ToArray();
+        var warehouseItems = new List<WarehouseItem>();
 
-        foreach (var product in products.Take(seedSettings.NumberOfItemsPerInventory))
+        foreach (var product in products.Take(seedSettings.NumberOfItemsPerWarehouse))
         {
-            foreach (var inventory in inventories)
+            foreach (var warehouse in warehouses)
             {
-                inventoryItems.Add(new InventoryItem
+                warehouseItems.Add(new WarehouseItem
                 {
                     Quantity = 10,
                     ProductId = product,
-                    InventoryId = inventory,
+                    WarehouseId = warehouse,
                     Product = null!, // EF Core will set these automatically
-                    Inventory = null! // EF Core will set these automatically
+                    Warehouse = null! // EF Core will set these automatically
                 });
             }
         }
 
-        context.InventoryItems.AddRange(inventoryItems);
+        context.WarehouseItems.AddRange(warehouseItems);
         await context.SaveChangesAsync();
     }
 

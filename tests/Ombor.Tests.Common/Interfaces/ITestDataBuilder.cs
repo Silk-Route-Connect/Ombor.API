@@ -7,5 +7,5 @@ public interface ITestDataBuilder
     IPartnerBuilder PartnerBuilder { get; }
     IProductImageBuilder ProductImageBuilder { get; }
     IEmployeeBuilder EmployeeBuilder { get; }
-    IInventoryBuilder InventoryBuilder { get; }
+    IWarehouseBuilder WarehouseBuilder { get; }
 }

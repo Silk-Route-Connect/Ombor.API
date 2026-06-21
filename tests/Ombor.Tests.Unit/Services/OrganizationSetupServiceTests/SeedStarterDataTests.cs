@@ -15,7 +15,7 @@ public sealed class SeedStarterDataTests : ServiceTestsBase
         var mockAccessor = new Mock<IOrganizationAccessor>();
         var categories = SetupCategories([]);
         var partners = SetupPartners([]);
-        var inventories = SetupInventories([]);
+        var warehouses = SetupWarehouses([]);
         var wallets = SetupWallets([]);
         _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(4);
 
@@ -28,7 +28,7 @@ public sealed class SeedStarterDataTests : ServiceTestsBase
         mockAccessor.Verify(a => a.SetOrganization(organizationId), Times.Once);
         categories.Verify(s => s.Add(It.IsAny<Category>()), Times.Once);
         partners.Verify(s => s.Add(It.IsAny<Partner>()), Times.Once);
-        inventories.Verify(s => s.Add(It.IsAny<Inventory>()), Times.Once);
+        warehouses.Verify(s => s.Add(It.IsAny<Warehouse>()), Times.Once);
         wallets.Verify(s => s.Add(It.IsAny<Wallet>()), Times.Once);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

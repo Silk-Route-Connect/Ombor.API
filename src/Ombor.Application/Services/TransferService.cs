@@ -20,10 +20,10 @@ internal sealed class TransferService(
 
         var query = GetQuery();
 
-        if (request.InventoryId.HasValue)
+        if (request.WarehouseId.HasValue)
         {
-            var inventoryId = request.InventoryId.Value;
-            query = query.Where(t => t.FromInventoryId == inventoryId || t.ToInventoryId == inventoryId);
+            var warehouseId = request.WarehouseId.Value;
+            query = query.Where(t => t.FromWarehouseId == warehouseId || t.ToWarehouseId == warehouseId);
         }
 
         var transfers = await query
@@ -48,13 +48,13 @@ internal sealed class TransferService(
     {
         await validator.ValidateAndThrowAsync(request);
 
-        if (request.FromInventoryId == request.ToInventoryId)
+        if (request.FromWarehouseId == request.ToWarehouseId)
         {
             throw new ValidationException("Source and destination warehouses must be different.");
         }
 
-        await EnsureInventoryExistsAsync(request.FromInventoryId, "Source");
-        await EnsureInventoryExistsAsync(request.ToInventoryId, "Destination");
+        await EnsureWarehouseExistsAsync(request.FromWarehouseId, "Source");
+        await EnsureWarehouseExistsAsync(request.ToWarehouseId, "Destination");
 
         var lines = request.Lines
             .GroupBy(l => l.ProductId)
@@ -62,26 +62,26 @@ internal sealed class TransferService(
             .ToArray();
         var productIds = lines.Select(l => l.ProductId).ToArray();
 
-        var items = await context.InventoryItems
-            .Where(i => (i.InventoryId == request.FromInventoryId || i.InventoryId == request.ToInventoryId)
+        var items = await context.WarehouseItems
+            .Where(i => (i.WarehouseId == request.FromWarehouseId || i.WarehouseId == request.ToWarehouseId)
                 && productIds.Contains(i.ProductId))
             .ToListAsync();
 
         var transfer = new Transfer
         {
-            FromInventoryId = request.FromInventoryId,
-            ToInventoryId = request.ToInventoryId,
+            FromWarehouseId = request.FromWarehouseId,
+            ToWarehouseId = request.ToWarehouseId,
             DateUtc = DateTimeOffset.UtcNow,
             Status = TransferStatus.Completed,
             Notes = request.Notes,
-            FromInventory = null!,
-            ToInventory = null!,
+            FromWarehouse = null!,
+            ToWarehouse = null!,
         };
 
         foreach (var line in lines)
         {
             var source = items.FirstOrDefault(
-                i => i.InventoryId == request.FromInventoryId && i.ProductId == line.ProductId);
+                i => i.WarehouseId == request.FromWarehouseId && i.ProductId == line.ProductId);
 
             if (source is null || source.Quantity < line.Quantity)
             {
@@ -92,20 +92,20 @@ internal sealed class TransferService(
             source.Quantity -= line.Quantity;
 
             var destination = items.FirstOrDefault(
-                i => i.InventoryId == request.ToInventoryId && i.ProductId == line.ProductId);
+                i => i.WarehouseId == request.ToWarehouseId && i.ProductId == line.ProductId);
 
             if (destination is null)
             {
-                destination = new InventoryItem
+                destination = new WarehouseItem
                 {
-                    InventoryId = request.ToInventoryId,
+                    WarehouseId = request.ToWarehouseId,
                     ProductId = line.ProductId,
                     Quantity = 0,
                     AverageCost = 0m,
-                    Inventory = null!,
+                    Warehouse = null!,
                     Product = null!,
                 };
-                context.InventoryItems.Add(destination);
+                context.WarehouseItems.Add(destination);
                 items.Add(destination);
             }
 
@@ -134,17 +134,17 @@ internal sealed class TransferService(
     private IQueryable<Transfer> GetQuery() =>
         context.Transfers
             .IgnoreAutoIncludes()
-            .Include(t => t.FromInventory)
-            .Include(t => t.ToInventory)
+            .Include(t => t.FromWarehouse)
+            .Include(t => t.ToWarehouse)
             .Include(t => t.Lines)
             .ThenInclude(l => l.Product)
             .AsNoTracking();
 
-    private async Task EnsureInventoryExistsAsync(int inventoryId, string role)
+    private async Task EnsureWarehouseExistsAsync(int warehouseId, string role)
     {
-        if (!await context.Inventories.AnyAsync(i => i.Id == inventoryId))
+        if (!await context.Warehouses.AnyAsync(i => i.Id == warehouseId))
         {
-            throw new ValidationException($"{role} warehouse {inventoryId} does not exist.");
+            throw new ValidationException($"{role} warehouse {warehouseId} does not exist.");
         }
     }
 }
