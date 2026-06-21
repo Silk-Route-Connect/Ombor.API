@@ -70,3 +70,13 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **Ledger endpoint.** `GET /api/partners/{id}/ledger` returns `PartnerLedgerEntry[]` newest-first
   with a running `balance` that reconciles to the partner's net balance. Entries omit the contract's
   legacy `method`/`allocation` fields (method is gone with the legacy payment model).
+
+## Products (M4a)
+
+- **No `quantityInStock`.** `Create/UpdateProductRequest` no longer take `quantityInStock` — products
+  are **created at zero stock** (rule 17); stock arrives via opening-stock / supply. `ProductDto` no
+  longer returns `quantityInStock`.
+
+- **Computed stock fields.** `ProductDto` now exposes `totalStock` (sum across warehouses), `averageCost`
+  (value-weighted; **null** when there's no stock), `isLowStock` (from `totalStock`), `isArchived`, and
+  `inventoryItems[]` reshaped to `{ inventoryId, inventoryName, quantity, averageCost }`.
