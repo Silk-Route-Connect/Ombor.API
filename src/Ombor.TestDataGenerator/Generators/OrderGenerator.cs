@@ -13,8 +13,10 @@ internal static class OrderGenerator
     private static Faker<Order> GetGenerator(int customerId, Product[] products) => new Faker<Order>()
         .RuleFor(x => x.CustomerId, customerId)
         .RuleFor(x => x.DateUtc, f => f.Date.BetweenOffset(f.Date.PastOffset(), f.Date.SoonOffset()))
-        .RuleFor(x => x.Source, Domain.Enums.OrderSource.Telegram)
-        .RuleFor(x => x.DeliveryAddress, _ => GetAddress())
+        .RuleFor(x => x.Source, Domain.Enums.OrderSource.OmborWeb)
+        .RuleFor(x => x.DeliveryAddress, f => f.Address.FullAddress())
+        .RuleFor(x => x.DeliveryLatitude, f => (decimal)f.Address.Latitude())
+        .RuleFor(x => x.DeliveryLongitude, f => (decimal)f.Address.Longitude())
         .RuleFor(x => x.Status, f => f.Random.Enum<Domain.Enums.OrderStatus>())
         .RuleFor(x => x.OrderNumber, f => f.Random.Guid().ToString("N").ToUpperInvariant()[..10])
         .RuleFor(x => x.Notes, f => f.Lorem.Sentence())
@@ -29,11 +31,6 @@ internal static class OrderGenerator
         .GenerateBetween(1, 5)
         .DistinctBy(x => x.Product)
         .ToList();
-
-    private static Domain.Common.Address GetAddress() => new Faker<Domain.Common.Address>()
-        .RuleFor(x => x.Latitude, f => (decimal)f.Address.Latitude())
-        .RuleFor(x => x.Longitude, f => (decimal)f.Address.Longitude())
-        .Generate();
 
     private static decimal GetDiscount(decimal productPrice)
     {

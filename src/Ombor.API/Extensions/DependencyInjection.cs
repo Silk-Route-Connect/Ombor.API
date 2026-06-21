@@ -49,6 +49,7 @@ internal static class DependencyInjection
         services.AddExceptionHandler<ValidationExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
         services.AddExceptionHandler<ConflictExceptionHandler>();
+        services.AddExceptionHandler<InvalidOrderStateTransitionExceptionHandler>();
         services.AddExceptionHandler<InvalidFileExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
 

@@ -1,7 +1,6 @@
-﻿using Ombor.Contracts.Common;
+using Ombor.Application.Extensions;
 using Ombor.Contracts.Requests.Order;
 using Ombor.Contracts.Responses.Order;
-using Ombor.Domain.Common;
 using Ombor.Domain.Entities;
 
 namespace Ombor.Application.Mappings;
@@ -21,18 +20,24 @@ internal static class OrderMappings
         {
             CustomerId = request.CustomerId,
             DateUtc = DateTime.UtcNow,
-            DeliveryAddress = request.DeliveryAddress.ToEntity(),
             OrderNumber = Guid.NewGuid().ToString("N").ToUpperInvariant()[..10],
             TotalAmount = totalAmount,
             Lines = lines,
             Status = Domain.Enums.OrderStatus.Pending,
             Source = Enum.Parse<Domain.Enums.OrderSource>(request.Source.ToString(), ignoreCase: true),
             Notes = request.Notes,
+            WarehouseId = request.WarehouseId,
+            DeliveryAddress = request.DeliveryAddress,
+            DeliveryDate = request.DeliveryDate,
+            DeliveryTime = request.DeliveryTime,
             Customer = null!, // Will be set by EF
         };
     }
 
-    public static OrderDto ToDto(this Order order)
+    public static OrderLine[] ToEntity(this IEnumerable<CreateOrderLineRequest> dtos)
+        => [.. dtos.Select(ToEntity)];
+
+    public static OrderDto ToDto(this Order order, decimal customerBalance, IReadOnlyDictionary<int, string> actorNames)
     {
         if (order.Customer is null)
         {
@@ -43,14 +48,22 @@ internal static class OrderMappings
             Id: order.Id,
             CustomerId: order.CustomerId,
             CustomerName: order.Customer.Name,
+            CustomerType: order.Customer.Type.ToString(),
+            CustomerBalance: customerBalance,
             OrderNumber: order.OrderNumber,
             Notes: order.Notes,
-            TotalAmount: order.TotalAmount,
+            Total: order.TotalAmount,
             Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),
             Status: order.Status.ToString(),
             Source: order.Source.ToString(),
-            DeliveryAddress: order.DeliveryAddress.ToDto(),
-            Lines: order.Lines.ToDto());
+            DeliveryAddress: order.DeliveryAddress,
+            DeliveryDate: order.DeliveryDate,
+            DeliveryTime: order.DeliveryTime,
+            WarehouseId: order.WarehouseId,
+            WarehouseName: order.Warehouse?.Name,
+            SaleId: order.SaleId,
+            Lines: order.Lines.ToDto(),
+            History: order.History.ToDto(actorNames));
     }
 
     public static OrderLineDto[] ToDto(this IEnumerable<OrderLine> lines)
@@ -67,13 +80,24 @@ internal static class OrderMappings
             line.Id,
             line.ProductId,
             line.Product.Name,
+            line.Product.SKU,
+            line.Product.Measurement.ToString(),
             line.Quantity,
             line.UnitPrice,
-            line.Discount);
+            line.Discount,
+            line.DiscountType.ToString(),
+            line.TotalPrice);
     }
 
-    private static OrderLine[] ToEntity(this IEnumerable<CreateOrderLineRequest> dtos)
-        => [.. dtos.Select(ToEntity)];
+    private static OrderStatusEventDto[] ToDto(this IEnumerable<OrderStatusEvent> history, IReadOnlyDictionary<int, string> actorNames)
+        => [.. history
+            .OrderBy(e => e.At)
+            .ThenBy(e => e.Id)
+            .Select(e => new OrderStatusEventDto(
+                e.At,
+                e.From?.ToString(),
+                e.To.ToString(),
+                e.By is int by && actorNames.TryGetValue(by, out var name) ? name : null))];
 
     private static OrderLine ToEntity(this CreateOrderLineRequest dto)
         => new()
@@ -82,19 +106,8 @@ internal static class OrderMappings
             Quantity = dto.Quantity,
             UnitPrice = dto.UnitPrice,
             Discount = dto.Discount,
+            DiscountType = dto.DiscountType.ToDomainDiscountType(),
             Product = null!, // Will be set by EF
             Order = null!,   // Will be set by EF
         };
-
-    private static Address ToEntity(this AddressDto dto)
-        => new()
-        {
-            Latitude = dto.Latitude,
-            Longitude = dto.Longitude
-        };
-
-    private static AddressDto ToDto(this Address address)
-        => new(
-            Latitude: address.Latitude,
-            Longitude: address.Longitude);
 }

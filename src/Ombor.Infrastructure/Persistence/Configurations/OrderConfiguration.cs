@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 using Ombor.Infrastructure.Extensions;
@@ -25,17 +25,40 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
-        builder
-            .ComplexProperty(o => o.DeliveryAddress, addressBuilder =>
-            {
-                addressBuilder.Property(da => da.Latitude)
-                    .HasPrecision(9, 6)
-                    .IsRequired();
+        // Intended warehouse — non-binding, so a warehouse that an order points at cannot be hard-deleted.
+        builder.HasOne(o => o.Warehouse)
+            .WithMany()
+            .HasForeignKey(o => o.WarehouseId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
-                addressBuilder.Property(da => da.Longitude)
-                    .HasPrecision(9, 6)
-                    .IsRequired();
-            });
+        // The Sale this order was promoted into on delivery (set in M5b).
+        builder.HasOne(o => o.Sale)
+            .WithMany()
+            .HasForeignKey(o => o.SaleId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder.HasMany(o => o.History)
+            .WithOne(h => h.Order)
+            .HasForeignKey(h => h.OrderId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder
+            .Property(o => o.DeliveryAddress)
+            .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired(false);
+
+        builder
+            .Property(o => o.DeliveryLatitude)
+            .HasPrecision(9, 6)
+            .IsRequired(false);
+
+        builder
+            .Property(o => o.DeliveryLongitude)
+            .HasPrecision(9, 6)
+            .IsRequired(false);
 
         builder
             .Property(o => o.OrderNumber)

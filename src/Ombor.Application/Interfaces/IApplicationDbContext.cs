@@ -94,6 +94,11 @@ public interface IApplicationDbContext
     DbSet<OrderLine> OrderLines { get; set; }
 
     /// <summary>
+    /// Gets or sets the order status-transition events (order history).
+    /// </summary>
+    DbSet<OrderStatusEvent> OrderStatusEvents { get; set; }
+
+    /// <summary>
     /// Gets or sets the inter-warehouse transfers.
     /// </summary>
     DbSet<Transfer> Transfers { get; set; }

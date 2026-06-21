@@ -1,12 +1,16 @@
 using FluentValidation;
+using Ombor.Application.Validators.Common;
 using Ombor.Contracts.Requests.Order;
 
 namespace Ombor.Application.Validators.Order;
 
-public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
+public sealed class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
 {
-    public CreateOrderRequestValidator()
+    public UpdateOrderRequestValidator()
     {
+        RuleFor(x => x.Id)
+            .SetValidator(new IdValidator<Domain.Entities.Order>());
+
         RuleFor(x => x.CustomerId)
             .GreaterThan(0)
             .WithMessage(x => $"Invalid customer ID: {x.CustomerId}.");
@@ -15,9 +19,9 @@ public sealed class CreateOrderRequestValidator : AbstractValidator<CreateOrderR
             .IsInEnum()
             .WithMessage("Invalid order source.");
 
+        // Tri-state: unspecified or cleared is fine; a supplied value must be a valid id.
         RuleFor(x => x.WarehouseId)
-            .GreaterThan(0)
-            .When(x => x.WarehouseId.HasValue)
+            .Must(w => !w.IsSpecified || w.Value is null or > 0)
             .WithMessage("Invalid warehouse ID.");
 
         RuleFor(x => x.DeliveryAddress)

@@ -36,4 +36,24 @@ public class OrdersController(IOrderService service) : ControllerBase
             new { id = response.Id },
             response);
     }
+
+    [HttpPut("{id:int:min(1)}")]
+    public async Task<ActionResult<OrderDto>> UpdateOrderAsync(
+        [FromRoute] int id,
+        [FromBody] UpdateOrderRequest request)
+    {
+        if (id != request.Id)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "ID mismatch",
+                Detail = $"Route id {id} does not match body id {request.Id}.",
+                Status = StatusCodes.Status400BadRequest,
+            });
+        }
+
+        var response = await service.UpdateAsync(request);
+
+        return Ok(response);
+    }
 }

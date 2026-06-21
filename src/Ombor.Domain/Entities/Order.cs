@@ -1,4 +1,4 @@
-﻿using Ombor.Domain.Common;
+using Ombor.Domain.Common;
 using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
@@ -14,15 +14,47 @@ public class Order : AuditableEntity, IOrganizationScoped
     public OrderStatus Status { get; set; }
     public OrderSource Source { get; set; }
 
-    public required Address DeliveryAddress { get; set; }
+    /// <summary>Free-text delivery address shown on the order.</summary>
+    public string? DeliveryAddress { get; set; }
+
+    /// <summary>
+    /// Delivery coordinates. Retained but dormant — not part of the current contract; reserved for a
+    /// future geo-delivery feature, so the columns are kept rather than dropped. EF Core 8 cannot make a
+    /// complex/owned type optional, so the latitude/longitude are held as two nullable columns.
+    /// </summary>
+    public decimal? DeliveryLatitude { get; set; }
+    public decimal? DeliveryLongitude { get; set; }
+
+    /// <summary>Optional delivery date.</summary>
+    public DateOnly? DeliveryDate { get; set; }
+
+    /// <summary>Optional delivery time of day.</summary>
+    public TimeOnly? DeliveryTime { get; set; }
+
+    /// <summary>
+    /// The warehouse the order is intended to ship from. Captured at creation and editable while open,
+    /// but non-binding — it reserves no stock. The authoritative warehouse is chosen at delivery.
+    /// </summary>
+    public int? WarehouseId { get; set; }
+    public virtual Inventory? Warehouse { get; set; }
+
+    /// <summary>
+    /// The Sale this order was promoted into on delivery. Null until delivered.
+    /// </summary>
+    public int? SaleId { get; set; }
+    public virtual TransactionRecord? Sale { get; set; }
 
     public required int CustomerId { get; set; }
     public required virtual Partner Customer { get; set; }
 
     public virtual ICollection<OrderLine> Lines { get; set; }
 
+    /// <summary>The status-transition history, one event per transition (and one at creation).</summary>
+    public virtual ICollection<OrderStatusEvent> History { get; set; }
+
     public Order()
     {
         Lines = [];
+        History = [];
     }
 }

@@ -80,3 +80,27 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **Computed stock fields.** `ProductDto` now exposes `totalStock` (sum across warehouses), `averageCost`
   (value-weighted; **null** when there's no stock), `isLowStock` (from `totalStock`), `isArchived`, and
   `inventoryItems[]` reshaped to `{ inventoryId, inventoryName, quantity, averageCost }`.
+
+## Orders (M5a)
+
+- **Discount type values.** Same as transactions: order line `discountType` must be the canonical
+  **`"Percentage"` / `"Fixed"`** (case-insensitive), not `"pct"` / `"fixed"`. *Reason:* shared
+  `DiscountType` enum; no acronyms.
+
+- **`deliveryAddress` is a string.** The order's `deliveryAddress` is now a **free-text string**
+  (nullable), not a `{ latitude, longitude }` object. Coordinates are retained server-side but
+  dormant (not in the contract); the frontend sends/receives a plain address string.
+
+- **Order total field.** `OrderDto` exposes the total as **`total`** (was `totalAmount`). Lines carry
+  computed `total`, plus `sku` and `measurement` (from the product) and `discountType`.
+
+- **Status endpoints return the order.** `POST /api/orders/{id}/{process|ship|deliver|cancel|reject|return}`
+  now return **`200` + the full `OrderDto`** (were `204 No Content`). Illegal transitions return **`409`**.
+
+- **`PUT /api/orders/{id}` warehouse tri-state.** `warehouseId` is tri-state: **omit = keep**,
+  **`null` = clear**, **value = set**. The frontend must omit the field (not send `null`) when it
+  means "leave unchanged". Editing is only allowed while the order is open (Pending/Processing).
+
+- **New read fields.** `OrderDto` adds `customerType`, `customerBalance` (computed), `warehouseId` /
+  `warehouseName` (intended warehouse), `saleId` (set once delivered — M5b), and `history[]`
+  (`{ at, from, to, by }`, oldest-first).

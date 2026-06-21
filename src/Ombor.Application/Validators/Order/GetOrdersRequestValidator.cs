@@ -11,6 +11,11 @@ public sealed class GetOrdersRequestValidator : AbstractValidator<GetOrdersReque
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Search term must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
+        RuleFor(x => x.Status)
+            .IsInEnum()
+            .When(x => x.Status.HasValue)
+            .WithMessage("Invalid order status.");
+
         RuleFor(x => x.CustomerId)
             .GreaterThan(0)
             .When(x => x.CustomerId.HasValue)

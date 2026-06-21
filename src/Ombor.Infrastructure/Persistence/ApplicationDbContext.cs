@@ -36,6 +36,7 @@ internal class ApplicationDbContext(
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     public virtual DbSet<Order> Orders { get; set; }
     public virtual DbSet<OrderLine> OrderLines { get; set; }
+    public virtual DbSet<OrderStatusEvent> OrderStatusEvents { get; set; }
     public virtual DbSet<Transfer> Transfers { get; set; }
     public virtual DbSet<TransferLine> TransferLines { get; set; }
     public virtual DbSet<AuditEntry> AuditEntries { get; set; }
