@@ -179,7 +179,10 @@ internal sealed class OrderService(
         Transaction = null!,
     };
 
-    private async Task<OrderDto> UpdateOrderStatus(IOrderStateUpdateRequest request)
+    // Generic so the concrete request type flows to the validator — IRequestValidator resolves
+    // IValidator<TRequest> by the static type, and no IValidator<IOrderStateUpdateRequest> is registered.
+    private async Task<OrderDto> UpdateOrderStatus<TRequest>(TRequest request)
+        where TRequest : IOrderStateUpdateRequest
     {
         await validator.ValidateAndThrowAsync(request);
 

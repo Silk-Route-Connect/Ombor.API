@@ -1,5 +1,4 @@
 using FluentValidation;
-using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Order;
 
 namespace Ombor.Application.Validators.Order;
@@ -20,15 +19,11 @@ public sealed class CreateOrderLineRequestValidator : AbstractValidator<CreateOr
             .IsInEnum()
             .WithMessage("Invalid discount type.");
 
+        // Only the non-negative floor is enforced; an over-large discount (percentage > 100 or a fixed
+        // amount above the line gross) is clamped by the line's rule-37 total, per complexity notes §G.
         RuleFor(x => x.Discount)
             .GreaterThanOrEqualTo(0)
             .When(x => x.Discount.HasValue)
             .WithMessage("Discount cannot be negative.");
-
-        // A percentage discount above 100 makes no sense; the entity clamps it, but reject it up front.
-        RuleFor(x => x.Discount)
-            .LessThanOrEqualTo(100)
-            .When(x => x.Discount.HasValue && x.DiscountType == DiscountType.Percentage)
-            .WithMessage("A percentage discount cannot exceed 100.");
     }
 }
