@@ -1,3 +1,5 @@
+using Moq;
+using Ombor.Application.Interfaces;
 using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 
@@ -16,7 +18,8 @@ public abstract class WarehouseTestsBase : ServiceTestsBase
 
         _service = new WarehouseService(
             _mockContext.Object,
-            _mockValidator.Object);
+            _mockValidator.Object,
+            Mock.Of<ICurrentUserAccessor>());
     }
 
     protected Warehouse[] GenerateRandomWarehouses(int count = 5)

@@ -145,3 +145,16 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   (note: **`note`**, was `notes`).
 - **Immutable** — no PUT/DELETE. `GET /api/transfers` (newest-first, optional `?warehouseId=`) + `POST` only;
   each line is hard-blocked over the source stock (400), and both warehouses move atomically.
+
+## Stock movements (M4e) — new read models
+
+- **`GET /api/warehouses/{id}/movements`** → `WarehouseMovement[]` (newest-first):
+  `{ id, date, kind, productId, productName, measurement, counterparty, note, quantity, balanceAfter }`.
+  `kind ∈ Opening | Supply | Sale | Refund | Adjustment | Transfer`; `quantity` is **signed** (+ in, − out);
+  `balanceAfter` is the product's running stock **in this warehouse**. `counterparty` = the partner (sale/
+  supply/refund) or the other warehouse (transfer); `null` otherwise.
+- **`GET /api/products/{id}/movements`** → `ProductMovement[]` (newest-first):
+  `{ id, productId, date, kind, warehouseId, warehouseName, quantity, balanceAfter }`. `balanceAfter` is the
+  product's running **total stock across warehouses** — a transfer appears as **two** rows (send at the source,
+  receive at the destination) that net to zero there.
+- 404 if the warehouse/product doesn't exist.

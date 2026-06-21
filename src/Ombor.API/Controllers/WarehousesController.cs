@@ -10,7 +10,9 @@ namespace Ombor.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/warehouses")]
-public sealed class WarehousesController(IWarehouseService warehouseService) : ControllerBase
+public sealed class WarehousesController(
+    IWarehouseService warehouseService,
+    IMovementService movementService) : ControllerBase
 {
     /// <summary>Retrieves warehouses (archived included), with optional search.</summary>
     [HttpGet]
@@ -40,6 +42,17 @@ public sealed class WarehousesController(IWarehouseService warehouseService) : C
     public async Task<ActionResult<WarehouseStockItemDto[]>> GetStockAsync([FromRoute] int id)
     {
         var response = await warehouseService.GetStockAsync(new GetWarehouseByIdRequest(id));
+
+        return Ok(response);
+    }
+
+    /// <summary>Retrieves the warehouse's stock-movement ledger (newest-first) with running per-product balances.</summary>
+    [HttpGet("{id:int:min(1)}/movements")]
+    [ProducesResponseType(typeof(WarehouseMovementDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WarehouseMovementDto[]>> GetMovementsAsync([FromRoute] int id)
+    {
+        var response = await movementService.GetWarehouseMovementsAsync(id);
 
         return Ok(response);
     }

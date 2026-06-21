@@ -11,7 +11,9 @@ namespace Ombor.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/products")]
-public sealed class ProductsController(IProductService productService) : ControllerBase
+public sealed class ProductsController(
+    IProductService productService,
+    IMovementService movementService) : ControllerBase
 {
     /// <summary>
     /// Retrieves a list of products, with optional filtering by search term, category, and price range.
@@ -56,6 +58,21 @@ public sealed class ProductsController(IProductService productService) : Control
         [FromRoute] GetProductTransactionsRequest request)
     {
         var response = await productService.GetTransactionsAsync(request);
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves the product's stock-movement ledger across warehouses (newest-first) with running total-stock balances.
+    /// </summary>
+    /// <param name="id">The product ID.</param>
+    /// <returns>The product's stock movements.</returns>
+    [HttpGet("{id:int:min(1)}/movements")]
+    [ProducesResponseType(typeof(ProductMovementDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductMovementDto[]>> GetMovementsAsync([FromRoute] int id)
+    {
+        var response = await movementService.GetProductMovementsAsync(id);
 
         return Ok(response);
     }

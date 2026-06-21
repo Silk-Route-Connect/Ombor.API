@@ -17,7 +17,7 @@ public class WarehousesControllerTests : ControllerTestsBase
     public WarehousesControllerTests()
     {
         _mockService = new Mock<IWarehouseService>(MockBehavior.Strict);
-        _controller = new WarehousesController(_mockService.Object);
+        _controller = new WarehousesController(_mockService.Object, Mock.Of<IMovementService>());
     }
 
     [Fact]

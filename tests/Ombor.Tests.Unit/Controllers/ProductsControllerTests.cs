@@ -17,7 +17,7 @@ public sealed class ProductsControllerTests : ControllerTestsBase
     public ProductsControllerTests()
     {
         _mockService = new Mock<IProductService>(MockBehavior.Strict);
-        _controller = new ProductsController(_mockService.Object);
+        _controller = new ProductsController(_mockService.Object, Mock.Of<IMovementService>());
     }
 
     [Fact]

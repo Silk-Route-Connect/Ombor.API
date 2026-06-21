@@ -114,6 +114,11 @@ public interface IApplicationDbContext
     DbSet<StockAdjustment> StockAdjustments { get; set; }
 
     /// <summary>
+    /// Gets or sets the opening-stock events (immutable initial stock per product per warehouse).
+    /// </summary>
+    DbSet<OpeningStock> OpeningStocks { get; set; }
+
+    /// <summary>
     /// Gets or sets the audit log entries.
     /// </summary>
     DbSet<AuditEntry> AuditEntries { get; set; }

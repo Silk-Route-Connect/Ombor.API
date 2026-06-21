@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Warehouse;
@@ -12,7 +13,8 @@ namespace Ombor.Application.Services;
 
 internal sealed class WarehouseService(
     IApplicationDbContext context,
-    IRequestValidator validator) : IWarehouseService
+    IRequestValidator validator,
+    ICurrentUserAccessor currentUser) : IWarehouseService
 {
     public async Task<WarehouseDto[]> GetAsync(GetWarehousesRequest request)
     {
@@ -111,7 +113,8 @@ internal sealed class WarehouseService(
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var warehouse = await GetOrThrowAsync(request.WarehouseId);
+        // 404 if the warehouse doesn't exist.
+        _ = await GetOrThrowAsync(request.WarehouseId);
 
         var productIds = request.Items.Select(x => x.ProductId).ToArray();
 
@@ -127,22 +130,33 @@ internal sealed class WarehouseService(
                 "Use a Supply transaction to add more stock.");
         }
 
+        // Record the opening as an immutable event per product (gives the movement ledger an "Opening" row).
+        var now = DateTimeOffset.UtcNow;
+        var createdBy = currentUser.UserId?.ToString();
         foreach (var item in request.Items)
         {
-            warehouse.WarehouseItems.Add(new WarehouseItem
+            context.OpeningStocks.Add(new OpeningStock
             {
+                DateUtc = now,
                 WarehouseId = request.WarehouseId,
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                AverageCost = item.UnitCost,
                 Warehouse = null!,
+                ProductId = item.ProductId,
                 Product = null!,
+                Quantity = item.Quantity,
+                UnitCost = item.UnitCost,
+                CreatedBy = createdBy,
             });
         }
 
+        // Set the stock through the shared path — a fresh item weighted-averages to the opening cost.
+        await context.MoveStockAsync(
+            request.WarehouseId,
+            StockMovement.StockInWeightedAverage,
+            request.Items.Select(i => (i.ProductId, i.Quantity, i.UnitCost)));
+
         await context.SaveChangesAsync();
 
-        return warehouse.ToDto();
+        return await GetByIdAsync(new GetWarehouseByIdRequest(request.WarehouseId));
     }
 
     private async Task EnsureNameIsUniqueAsync(string name, int? excludingId)
