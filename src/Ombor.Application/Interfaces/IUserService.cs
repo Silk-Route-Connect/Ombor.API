@@ -1,18 +1,26 @@
-﻿using Ombor.Contracts.Requests.Common;
 using Ombor.Contracts.Requests.User;
-using Ombor.Contracts.Responses.Common;
 using Ombor.Contracts.Responses.User;
 
 namespace Ombor.Application.Interfaces;
 
+/// <summary>
+/// User management for the current organization (Settings). Users are deactivated, never deleted
+/// (rule 41), so they stay resolvable as audit actors.
+/// </summary>
 public interface IUserService
 {
-    Task<PagedResponse<UserDto>> GetUsersAsync(PagedRequest request);
-    Task<UserDto> GetUserByIdAsync(int userId);
-    Task<UserDto> CreateUserAsync(CreateUserRequest request, int organizationId, int createdBy);
-    Task<UserDto> UpdateUserAsync(int userId, UpdateUserRequest request, int organizationId);
-    Task<bool> DeactivateUserAsync(int userId, int organizationId);
-    Task<bool> ActivateUserAsync(int userId, int organizationId);
-    Task<bool> AssignRoleAsync(int userId, int roleId, int organizationId, int assignedBy);
-    Task<bool> RemoveRoleAsync(int userId, int roleId, int organizationId);
+    /// <summary>All users in the current organization, including deactivated ones.</summary>
+    Task<TenantUserDto[]> GetUsersAsync();
+
+    /// <summary>Invites a user by phone, creating a usable account immediately.</summary>
+    Task<TenantUserDto> InviteAsync(InviteUserRequest request);
+
+    /// <summary>Deactivates a user (cannot be the current user).</summary>
+    Task<TenantUserDto> DeactivateAsync(int userId);
+
+    /// <summary>Reactivates a previously deactivated user.</summary>
+    Task<TenantUserDto> ReactivateAsync(int userId);
+
+    /// <summary>Sets the current user's interface language.</summary>
+    Task SetLanguageAsync(SetLanguageRequest request);
 }

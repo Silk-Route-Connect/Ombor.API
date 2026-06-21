@@ -185,3 +185,18 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `overdueDays` — the two screens can legitimately disagree on "overdue" (intentional, complexity notes §K).
 - **Debt figures reconcile with `/api/debts`** — receivable/payable/aging/top-debtors are derived from the same
   source, so the dashboard and the debts page always agree.
+
+## Settings (M7) — now REAL (was mocked)
+
+- **Org profile:** `GET/PUT /api/settings/organization` → `{ name, address, phone, email, logoUrl }`. **PUT is
+  `multipart/form-data`** (`name`/`address`/`phone`/`email` text fields + optional `logo` file) — not JSON.
+  Omitting the `logo` file keeps the existing logo; the response returns the hosted `logoUrl`.
+- **Invite is phone-only in v1.** `POST /api/settings/users/invite` with `{ method, value }` accepts
+  **`method: "phone"`** only; `method: "email"` returns **400** (login is phone-based). The invitee is created
+  active with a random password and signs in via the OTP / forgot-password flow.
+- **Per-user language endpoint** (not in the original contract): **`PUT /api/settings/language`** with
+  `{ language }` ∈ `"ru" | "uz-Latn" | "uz-Cyrl"` sets the **current** user's language (the header globe). Stored
+  on the user; invalid values → 400.
+- **`TenantUser` shape served:** `{ id, name, contact, contactType: "phone", active, self, online, lastActiveAt }`.
+  `online` is always `false` (no presence tracking in v1); `lastActiveAt` is the **deactivation date** (null while
+  active); `self` marks the current user. Deactivated users remain in the list (rule 41) and **cannot log in**.

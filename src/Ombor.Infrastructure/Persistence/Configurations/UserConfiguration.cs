@@ -66,5 +66,14 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .Property(u => u.Email)
             .HasMaxLength(ConfigurationConstants.DefaultStringLength)
             .IsRequired(false);
+
+        builder
+            .Property(u => u.IsActive)
+            .HasDefaultValue(true);
+
+        builder
+            .Property(u => u.Language)
+            .HasMaxLength(ConfigurationConstants.EnumLength)
+            .HasDefaultValue("ru");
     }
 }

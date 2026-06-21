@@ -22,6 +22,7 @@ public class AuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         var claims = new[]
         {
+            new Claim(ClaimTypes.NameIdentifier, "1"),
             new Claim(ClaimTypes.Name, "testuser"),
             new Claim("organization_id", "1")
         };

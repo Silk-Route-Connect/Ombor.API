@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using Ombor.Contracts.Requests.Organization;
 using Ombor.Contracts.Responses.Organization;
+using Ombor.Contracts.Responses.User;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -10,10 +11,30 @@ namespace Ombor.Tests.Integration.Endpoints.SettingsEndpoints;
 public abstract class SettingsTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper output)
     : EndpointTestsBase(factory, output)
 {
+    /// <summary>The current user in integration tests (matches <c>AuthHandler</c>'s NameIdentifier claim).</summary>
+    protected const int CurrentUserId = 1;
+
     protected override string GetUrl() => Routes.Settings;
     protected override string GetUrl(int id) => $"{Routes.Settings}/{id}";
 
     protected string OrganizationUrl => $"{Routes.Settings}/organization";
+    protected string UsersUrl => $"{Routes.Settings}/users";
+
+    protected Task<TenantUserDto[]> GetUsersAsync() => _client.GetAsync<TenantUserDto[]>(UsersUrl);
+
+    protected Task<TenantUserDto> InviteUserAsync(string phone) =>
+        _client.PostAsync<TenantUserDto>($"{UsersUrl}/invite", new { method = "Phone", value = phone }, HttpStatusCode.Created);
+
+    protected Task<TenantUserDto> DeactivateUserAsync(int id) =>
+        _client.PostAsync<TenantUserDto>($"{UsersUrl}/{id}/deactivate", new { }, HttpStatusCode.OK);
+
+    protected Task<TenantUserDto> ReactivateUserAsync(int id) =>
+        _client.PostAsync<TenantUserDto>($"{UsersUrl}/{id}/reactivate", new { }, HttpStatusCode.OK);
+
+    protected Task SetLanguageAsync(string language, HttpStatusCode expected = HttpStatusCode.NoContent) =>
+        _client.PutAsync($"{Routes.Settings}/language", new { language }, expected);
+
+    protected static string UniquePhone() => $"+998{Math.Abs(Guid.NewGuid().GetHashCode())}";
 
     protected Task<OrganizationProfileDto> GetOrganizationAsync() =>
         _client.GetAsync<OrganizationProfileDto>(OrganizationUrl);

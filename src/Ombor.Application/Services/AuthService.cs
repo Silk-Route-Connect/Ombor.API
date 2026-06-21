@@ -111,6 +111,12 @@ internal sealed class AuthService(
 
         VerifyPassword(user, request.Password);
 
+        // Deactivated users keep their audit history but cannot authenticate (rule 41).
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedAccessException("This account has been deactivated.");
+        }
+
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
