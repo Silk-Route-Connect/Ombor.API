@@ -124,3 +124,14 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **Archive, not delete.** The hard `DELETE /api/inventories/{id}` is **removed**. Warehouses are
   soft-archived: **`POST /api/warehouses/{id}/archive`** / **`/restore`** (both return the `WarehouseDto`,
   200). Archived warehouses still appear in `GET /api/warehouses` and still count in totals (rule 31).
+
+## Stock Adjustments (M4c) — now REAL (was mocked)
+
+- **Live endpoints.** `GET /api/stock-adjustments` (newest-first; optional `?warehouseId=&productId=`) and
+  `POST /api/stock-adjustments` (201). Immutable — **no edit/delete** (corrections are counter-adjustments).
+- **Request:** `{ warehouseId, productId, direction: "Increase"|"Decrease", quantity, reason, note? }`.
+  `reason` must be from the set for the direction (Decrease: `Damage|Expiry|Theft|RecountDown|Other`;
+  Increase: `Found|RecountUp|Other`) — a mismatch is **400**. A Decrease over available stock is **400**.
+- **Response** `StockAdjustmentDto`: `{ id, date, warehouseId, warehouseName, productId, productName, sku,
+  categoryName, measurement, direction, quantity, reason, note, createdBy }`. **`balanceAfter` is not yet
+  returned** — it's the movement-ledger running balance, coming in M4e.

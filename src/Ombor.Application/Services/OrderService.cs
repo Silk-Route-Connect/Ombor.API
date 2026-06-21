@@ -132,7 +132,7 @@ internal sealed class OrderService(
             // Rule-20 hard block at the chosen warehouse; insufficient stock throws → rollback → 400.
             await context.MoveStockAsync(
                 request.WarehouseId,
-                Domain.Enums.TransactionType.Sale,
+                StockMovement.StockOut,
                 order.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
 
             var saleLines = order.Lines.Select(ToSaleLine).ToArray();

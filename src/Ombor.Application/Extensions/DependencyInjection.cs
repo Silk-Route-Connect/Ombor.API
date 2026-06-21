@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ITransferService, TransferService>();
+        services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();

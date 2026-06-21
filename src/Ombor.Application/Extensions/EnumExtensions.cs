@@ -91,4 +91,14 @@ internal static class EnumExtensions
 
         throw new InvalidCastException($"Could not cast contract order status: '{status}' to domain order status.");
     }
+
+    public static Domain.Enums.StockAdjustmentDirection ToDomainDirection(this Contracts.Enums.StockAdjustmentDirection direction)
+    {
+        if (Enum.TryParse<Domain.Enums.StockAdjustmentDirection>(direction.ToString(), ignoreCase: true, out var result))
+        {
+            return result;
+        }
+
+        throw new InvalidCastException($"Could not cast contract stock-adjustment direction: '{direction}' to domain.");
+    }
 }

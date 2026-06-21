@@ -39,6 +39,7 @@ internal class ApplicationDbContext(
     public virtual DbSet<OrderStatusEvent> OrderStatusEvents { get; set; }
     public virtual DbSet<Transfer> Transfers { get; set; }
     public virtual DbSet<TransferLine> TransferLines { get; set; }
+    public virtual DbSet<StockAdjustment> StockAdjustments { get; set; }
     public virtual DbSet<AuditEntry> AuditEntries { get; set; }
 
     /// <summary>

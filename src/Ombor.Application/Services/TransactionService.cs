@@ -65,7 +65,7 @@ internal sealed class TransactionService(
         {
             await context.MoveStockAsync(
                 request.WarehouseId!.Value,
-                request.Type.ToDomainType(),
+                request.Type.ToDomainType().ToStockMovement(),
                 request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
             context.Transactions.Add(transactionEntity);
             await context.SaveChangesAsync();

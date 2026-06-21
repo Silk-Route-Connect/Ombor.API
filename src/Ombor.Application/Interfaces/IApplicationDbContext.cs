@@ -109,6 +109,11 @@ public interface IApplicationDbContext
     DbSet<TransferLine> TransferLines { get; set; }
 
     /// <summary>
+    /// Gets or sets the stock adjustments (immutable loss/correction stock events).
+    /// </summary>
+    DbSet<StockAdjustment> StockAdjustments { get; set; }
+
+    /// <summary>
     /// Gets or sets the audit log entries.
     /// </summary>
     DbSet<AuditEntry> AuditEntries { get; set; }
