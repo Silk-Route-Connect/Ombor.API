@@ -9,6 +9,11 @@ namespace Ombor.Contracts.Responses.Partner;
 /// <param name="Date">When the event occurred.</param>
 /// <param name="Delta">The signed effect on the balance (positive = the partner owes us more).</param>
 /// <param name="Balance">The running balance after this event.</param>
+/// <param name="SourceId">
+/// The id of the underlying record to navigate to: the transaction id for sale/supply/refund-* rows,
+/// the payment id for payment/deposit/withdraw rows, and null for the opening event.
+/// <see cref="Type"/> tells the frontend which kind it is.
+/// </param>
 /// <param name="Reference">A human reference (e.g. payment number «P-520»), if any.</param>
 /// <param name="ItemCount">Number of line items, for transaction events.</param>
 /// <param name="Status">Settlement status for transaction events (paid, partial, unpaid) or "done".</param>
@@ -18,6 +23,7 @@ public sealed record PartnerLedgerEntryDto(
     DateTimeOffset Date,
     decimal Delta,
     decimal Balance,
+    int? SourceId,
     string? Reference,
     int? ItemCount,
     string? Status);

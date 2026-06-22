@@ -12,6 +12,7 @@ namespace Ombor.Contracts.Responses.Wallet;
 /// <param name="Amount">The amount moved (positive magnitude).</param>
 /// <param name="BalanceAfter">Computed running balance after this event.</param>
 /// <param name="TransferId">The transfer this row belongs to, when the event is a transfer.</param>
+/// <param name="PaymentId">The payment this row belongs to, when the event is a payment-kind operation.</param>
 public sealed record WalletOperationDto(
     int Id,
     DateTimeOffset Date,
@@ -21,4 +22,5 @@ public sealed record WalletOperationDto(
     string? Party,
     decimal Amount,
     decimal BalanceAfter,
-    int? TransferId);
+    int? TransferId,
+    int? PaymentId);

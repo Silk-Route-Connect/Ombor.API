@@ -138,6 +138,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 "opening",
                 new DateTimeOffset(partner.OpeningDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero),
                 partner.OpeningBalance,
+                null, // SourceId — opening has no underlying record
                 null,
                 null,
                 null),
@@ -158,7 +159,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 ? "unpaid"
                 : (t.TotalPaid < t.TotalDue ? "partial" : "paid");
 
-            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, null, t.ItemCount, status));
+            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, null, t.ItemCount, status));
         }
 
         foreach (var p in payments)
@@ -172,7 +173,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 _ => "payment",
             };
 
-            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Number, null, "done"));
+            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number, null, "done"));
         }
 
         // Fold the running balance oldest→newest (final value reconciles to PartnerBalance.Total), then newest-first.
@@ -183,7 +184,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             .Select(e =>
             {
                 running += e.Delta;
-                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.Reference, e.ItemCount, e.Status);
+                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.SourceId, e.Reference, e.ItemCount, e.Status);
             })
             .ToList();
 
@@ -246,6 +247,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
         string Type,
         DateTimeOffset Date,
         decimal Delta,
+        int? SourceId,
         string? Reference,
         int? ItemCount,
         string? Status);

@@ -168,6 +168,7 @@ internal sealed class WalletService(
             .Select(c => new
             {
                 c.Id,
+                c.PaymentId,
                 c.Amount,
                 c.Payment.DateUtc,
                 c.Payment.Number,
@@ -193,7 +194,8 @@ internal sealed class WalletService(
                 Party: isIncoming ? t.FromName : t.ToName,
                 Amount: t.Amount,
                 BalanceAfter: 0m,
-                TransferId: t.Id)));
+                TransferId: t.Id,
+                PaymentId: null)));
         }
 
         foreach (var p in payments)
@@ -208,7 +210,8 @@ internal sealed class WalletService(
                 Party: p.Party,
                 Amount: p.Amount,
                 BalanceAfter: 0m,
-                TransferId: null)));
+                TransferId: null,
+                PaymentId: p.PaymentId)));
         }
 
         // Fold the running balance from the opening balance over the merged timeline; it reconciles to the current balance.

@@ -37,10 +37,13 @@ public sealed record PaymentSourceDto(
     string? WalletType,
     decimal Amount);
 
-/// <summary>The destination side of a payment (rule 10): what the money settled.</summary>
+/// <summary>
+/// The destination side of a payment (rule 10): what the money settled. <see cref="TransactionId"/>
+/// links a <c>TransactionSettlement</c> to the transaction it paid (null for advance/change); the
+/// frontend composes any display label from <see cref="AllocationType"/> + <see cref="TransactionId"/>.
+/// </summary>
 public sealed record PaymentAllocationEntryDto(
     int Id,
     string AllocationType,
     int? TransactionId,
-    string Reference,
     decimal Amount);
