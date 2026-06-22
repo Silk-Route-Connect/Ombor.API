@@ -10,6 +10,52 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 
 ---
 
+## Priority checklist (work top-to-bottom)
+
+🔴 = **breaking** (the page won't work until updated) · 🟢 = **additive** (new capability/field; adopt incrementally).
+After re-pointing at the new API, regenerating the API client/types from the live OpenAPI will surface most 🔴 shape changes at compile time.
+
+- **Auth / onboarding** — 🟢 deactivated users can no longer authenticate (handle the login rejection); register already sends `organizationName` (no change). → _Settings_
+- **Dashboard** — 🔴 entirely new `GET /api/dashboard?period=` shape (period-driven revenue/series + period-independent debt KPIs); wallet `type` is `Cash|Card|Bank`. → _Dashboard_
+- **Wallets** — 🟢 **NEW resource** (CRUD, transfers, operations, computed balances). → _Wallets_
+- **Transactions (Sales / Supplies / Refunds)** — 🔴 `multipart/form-data`; one endpoint with `type`; source/allocation payment fields; `discountType` = `Percentage|Fixed`. 🟢 optional `dueDate`. → _Transactions_, _Debts_
+- **Payments & Debts** — 🔴 new `GET /api/debts` shape; `GET /partners/{id}/payments` removed; `GET /transactions/{id}/payments` reshaped. 🟢 allocation rows add `transactionType` (clickable settlement links). → _Debts_, _Removed … payment endpoints_
+- **Partners** — 🔴 `openingBalance` (not `balance`); reshaped `PartnerDto`; new `/ledger`. 🟢 ledger entries add `walletName`/`walletType` (payment rows). → _Partners_
+- **Products & Categories** — 🔴 no `quantityInStock`; computed `totalStock`/`averageCost`; reshaped `warehouseItems`. → _Products_
+- **Warehouses & stock** — 🔴 `/api/inventories` → `/api/warehouses` hard cutover; reshaped DTO; new `/stock` + `/movements`; archive-not-delete. → _Warehouses_, _Stock movements_
+- **Stock Adjustments** — 🟢 now real (`/api/stock-adjustments`). → _Stock Adjustments_
+- **Transfers** — 🔴 DTO reshaped (drops `status`; `notes`→`note`, `dateUtc`→`date`; adds `createdBy`). → _Transfers_
+- **Orders** — 🔴 `discountType` names; `deliveryAddress` is a string; total field is `total`; state endpoints return `200 + OrderDto`; `warehouseId` tri-state on PUT. → _Orders_
+- **Payroll** — 🔴 new request shape; no edit/delete; `PaymentRecord` response. → _Payroll_
+- **Settings** — 🟢 now real: org profile (multipart + logo), phone-only invite, `PUT /language`, `TenantUser` shape. → _Settings_
+
+---
+
+## Wallets (M1) — NEW resource
+
+Wallets (money locations) are a **new resource** underpinning every payment. If the frontend has no wallet UI (or a
+different shape), build it against the following — and note that **Transactions/Payments/Payroll now require a `walletId`**.
+
+- **Endpoints:**
+  - `GET /api/wallets` (all, incl. archived; optional `?searchTerm=`) → `Wallet[]`
+  - `GET /api/wallets/{id}` → `Wallet` (404 if missing)
+  - `POST /api/wallets` → `Wallet` (201)
+  - `PUT /api/wallets/{id}` → `Wallet` — **name only** (type + opening balance are immutable)
+  - `POST /api/wallets/{id}/archive` · `/restore` → **204** (no hard delete; an archived wallet that still holds money keeps counting in totals — rule 31)
+  - `GET /api/wallets/{id}/operations` → `WalletOperation[]` (derived running ledger, newest-first)
+  - `POST /api/wallets/transfers` → `WalletTransfer` (201; atomic + immutable; **hard-blocked over the source balance → 400**)
+  - `GET /api/wallets/{id}/transfers` → `WalletTransfer[]` (newest-first)
+- **Shapes:**
+  - `Wallet { id; name; type: "Cash"|"Card"|"Bank"; balance /*⚙*/; advancesHeld /*⚙*/; ourMoney /*⚙*/; openingBalance; isArchived; createdBy; createdAt }`
+  - `CreateWalletRequest { name; type; openingBalance }` · `UpdateWalletRequest { id; name }`
+  - `WalletOperation { id; date; kind: "Opening"|"Payment"|"Deposit"|"Expense"|"Withdrawal"|"Transfer"; direction: "In"|"Out"; paymentNumber: string|null; party: string|null; amount; balanceAfter /*⚙*/; transferId: number|null }`
+  - `WalletTransfer { id; date; fromWalletId; fromWalletName; fromWalletType; toWalletId; toWalletName; toWalletType; amount; createdBy; note }` · `CreateWalletTransferRequest { fromWalletId; toWalletId; amount; note }`
+- **Computed money (server-only):** `balance` = opening + wallet-source payment components + transfers (rule 15);
+  `advancesHeld` = partner advances physically held in this wallet (rule 11); `ourMoney` = `balance − advancesHeld` (rule 12).
+  **Current state:** `advancesHeld` is `0` and `ourMoney == balance` until the advance-draw/withdrawal feature lands —
+  render both, but don't expect them to diverge yet.
+- **Type values are `Cash`/`Card`/`Bank`** (PascalCase) — the dashboard's wallet filter uses the same three.
+
 ## Transactions — `POST /api/transactions`
 
 - **Discount type values.** Frontend sends per-line `discountType` as `"pct"` / `"fixed"`.
