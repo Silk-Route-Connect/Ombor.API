@@ -93,6 +93,15 @@ internal abstract class SeederBase(
             fileSettings.ProductUploadsSection,
             fileSettings.ThumbnailsSubfolder);
 
+        // Seed images extract once, onto a fresh volume. If originals already holds files (a restart
+        // over the bind-mounted uploads volume), re-extracting would delete both seed and user-uploaded
+        // images and re-issue GUIDs the seeded ProductImage rows no longer match. The ProductImage seed
+        // is itself guarded on ProductImages.Any(), so the returned map is unused on this path.
+        if (Directory.Exists(originalsDirectory) && Directory.EnumerateFiles(originalsDirectory).Any())
+        {
+            return Task.FromResult(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        }
+
         if (Directory.Exists(originalsDirectory))
         {
             Directory.Delete(originalsDirectory, true);
