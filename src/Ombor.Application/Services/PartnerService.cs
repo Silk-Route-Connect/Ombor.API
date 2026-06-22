@@ -124,6 +124,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 p.Number,
                 p.Type,
                 p.Direction,
+                WalletName = p.Wallet != null ? p.Wallet.Name : null,
+                WalletType = p.Wallet != null ? p.Wallet.Type.ToString() : null,
                 // Only settling allocations move the balance; ChangeReturn is a memo (rule 10).
                 Settling = p.Allocations
                     .Where(a => a.Type == PaymentAllocationType.TransactionSettlement || a.Type == PaymentAllocationType.AdvanceCredit)
@@ -141,6 +143,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 null, // SourceId — opening has no underlying record
                 null,
                 null,
+                null,
+                null, // WalletName — opening has no wallet
                 null),
         };
 
@@ -159,7 +163,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 ? "unpaid"
                 : (t.TotalPaid < t.TotalDue ? "partial" : "paid");
 
-            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, null, t.ItemCount, status));
+            // Transactions aren't tied to a single wallet (settled across zero-to-many payments), so no wallet here.
+            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, null, t.ItemCount, status, null, null));
         }
 
         foreach (var p in payments)
@@ -173,7 +178,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 _ => "payment",
             };
 
-            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number, null, "done"));
+            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number, null, "done", p.WalletName, p.WalletType));
         }
 
         // Fold the running balance oldest→newest (final value reconciles to PartnerBalance.Total), then newest-first.
@@ -184,7 +189,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             .Select(e =>
             {
                 running += e.Delta;
-                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.SourceId, e.Reference, e.ItemCount, e.Status);
+                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.SourceId, e.Reference, e.ItemCount, e.Status, e.WalletName, e.WalletType);
             })
             .ToList();
 
@@ -250,5 +255,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
         int? SourceId,
         string? Reference,
         int? ItemCount,
-        string? Status);
+        string? Status,
+        string? WalletName,
+        string? WalletType);
 }

@@ -42,8 +42,13 @@ public sealed record PaymentSourceDto(
 /// links a <c>TransactionSettlement</c> to the transaction it paid (null for advance/change); the
 /// frontend composes any display label from <see cref="AllocationType"/> + <see cref="TransactionId"/>.
 /// </summary>
+/// <param name="TransactionType">
+/// The settled transaction's type (Sale, Supply, SaleRefund, SupplyRefund); null for advance/change
+/// allocations. Lets the frontend pick the right detail route (sales vs supplies) for a settlement row.
+/// </param>
 public sealed record PaymentAllocationEntryDto(
     int Id,
     string AllocationType,
     int? TransactionId,
+    string? TransactionType,
     decimal Amount);

@@ -17,6 +17,8 @@ namespace Ombor.Contracts.Responses.Partner;
 /// <param name="Reference">A human reference (e.g. payment number «P-520»), if any.</param>
 /// <param name="ItemCount">Number of line items, for transaction events.</param>
 /// <param name="Status">Settlement status for transaction events (paid, partial, unpaid) or "done".</param>
+/// <param name="WalletName">The wallet the money moved through, for payment events (payment, deposit, withdraw); null otherwise.</param>
+/// <param name="WalletType">The wallet's type (e.g. Cash, Card), for payment events; null otherwise.</param>
 public sealed record PartnerLedgerEntryDto(
     int Id,
     string Type,
@@ -26,4 +28,6 @@ public sealed record PartnerLedgerEntryDto(
     int? SourceId,
     string? Reference,
     int? ItemCount,
-    string? Status);
+    string? Status,
+    string? WalletName,
+    string? WalletType);

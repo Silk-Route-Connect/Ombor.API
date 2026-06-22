@@ -17,7 +17,7 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
         // Arrange — opening 2,000; a 10,000 sale paid 4,000.
         var partnerId = await CreateLedgerPartnerAsync(openingBalance: 2_000m);
         var saleId = await CreateOpenTransactionAsync(partnerId, TransactionType.Sale, due: 10_000m, paid: 4_000m);
-        await CreateSettlementPaymentAsync(partnerId, saleId, PaymentDirection.Income, amount: 4_000m);
+        var walletName = await CreateSettlementPaymentAsync(partnerId, saleId, PaymentDirection.Income, amount: 4_000m);
 
         // Act
         var partner = await _client.GetAsync<PartnerDto>(GetUrl(partnerId));
@@ -36,9 +36,14 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
         var sale = ledger.Single(e => e.Type == "sale");
         Assert.Equal(10_000m, sale.Delta);
         Assert.Equal("partial", sale.Status);
+        Assert.Null(sale.WalletName); // a transaction isn't tied to a single wallet
 
         var payment = ledger.Single(e => e.Type == "payment");
         Assert.Equal(-4_000m, payment.Delta); // an Income payment reduces what the partner owes
+        Assert.Equal(walletName, payment.WalletName); // payment rows carry the wallet for the «Платежи» tab column
+        Assert.Equal("Cash", payment.WalletType);
+
+        Assert.Null(ledger.Single(e => e.Type == "opening").WalletName);
     }
 
     [Fact]
@@ -97,7 +102,7 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
         return transaction.Id;
     }
 
-    private async Task CreateSettlementPaymentAsync(int partnerId, int transactionId, PaymentDirection direction, decimal amount)
+    private async Task<string> CreateSettlementPaymentAsync(int partnerId, int transactionId, PaymentDirection direction, decimal amount)
     {
         var wallet = new Wallet
         {
@@ -135,5 +140,7 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
 
         _context.Payments.Add(payment);
         await _context.SaveChangesAsync();
+
+        return wallet.Name;
     }
 }

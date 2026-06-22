@@ -57,6 +57,13 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   notes, date }`. The frontend's `TransactionPaymentLine.method` no longer exists — show the wallet
   (name/type) instead.
 
+- 🟢 **Payment allocation rows now carry the transaction type.** On `PaymentRecord` (`GET /api/payments`,
+  `GET /api/payments/{id}`), each `allocations[]` entry adds **`transactionType`** ∈
+  `Sale|Supply|SaleRefund|SupplyRefund`, **null** for `AdvanceCredit`/`ChangeReturn` (no transaction).
+  `transactionId` alone can't pick the detail route since it's split (`/sales/:id` vs `/supplies/:id`);
+  `transactionType` resolves it (map `SaleRefund`→sales, `SupplyRefund`→supplies) and also supplies the
+  detail page's `direction` prop. Settlement rows become clickable; advance/change rows stay plain text.
+
 ## Partners (M3)
 
 - **Opening balance, not balance.** `CreatePartnerRequest` takes **`openingBalance`** (signed:
@@ -70,6 +77,11 @@ Each entry: **what the frontend does today → what it must do**, with the backe
 - **Ledger endpoint.** `GET /api/partners/{id}/ledger` returns `PartnerLedgerEntry[]` newest-first
   with a running `balance` that reconciles to the partner's net balance. Entries omit the contract's
   legacy `method`/`allocation` fields (method is gone with the legacy payment model).
+
+- 🟢 **Ledger entries now carry the wallet.** `PartnerLedgerEntry` adds **`walletName`** / **`walletType`**,
+  populated only on **payment** rows (`type ∈ payment|deposit|withdraw`) and **null** on `opening` and
+  transaction rows (a transaction isn't tied to a single wallet — it's settled across zero-to-many payments).
+  Use them for the wallet column on the partner **«Платежи»** tab (which filters the ledger to payment rows).
 
 ## Products (M4a)
 

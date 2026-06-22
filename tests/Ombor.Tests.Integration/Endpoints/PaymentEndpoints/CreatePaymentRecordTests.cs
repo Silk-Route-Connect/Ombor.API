@@ -36,6 +36,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
         var allocation = Assert.Single(payment.Allocations);
         Assert.Equal("TransactionSettlement", allocation.AllocationType);
         Assert.Equal(saleId, allocation.TransactionId);
+        Assert.Equal("Sale", allocation.TransactionType); // lets the frontend route a settlement row to the sale detail page
         Assert.Equal(10_000m, allocation.Amount);
         Assert.StartsWith("P-", payment.Number);
 
@@ -61,8 +62,9 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
         var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request);
 
         // Assert — settlement + advance, and they sum to the wallet source (rule 8).
-        Assert.Contains(payment.Allocations, a => a.AllocationType == "TransactionSettlement" && a.Amount == 6_000m);
-        Assert.Contains(payment.Allocations, a => a.AllocationType == "AdvanceCredit" && a.Amount == 4_000m);
+        Assert.Contains(payment.Allocations, a => a.AllocationType == "TransactionSettlement" && a.Amount == 6_000m && a.TransactionType == "Sale");
+        // Advance isn't tied to a transaction, so it carries no transaction type to route on.
+        Assert.Contains(payment.Allocations, a => a.AllocationType == "AdvanceCredit" && a.Amount == 4_000m && a.TransactionType == null);
         Assert.Equal(payment.Sources.Sum(s => s.Amount), payment.Allocations.Sum(a => a.Amount));
     }
 

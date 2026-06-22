@@ -286,6 +286,7 @@ internal sealed class PaymentService(
                 a.Id,
                 a.Type.ToString(),
                 a.TransactionId,
+                a.Transaction != null ? a.Transaction.Type.ToString() : null,
                 a.Amount)).ToArray());
 
     public async Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request)
