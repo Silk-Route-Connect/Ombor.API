@@ -409,3 +409,6 @@ FodyWeavers.xsd
 !.env.example
 # CI assembles this (secrets) on the runner; never commit it
 deploy.env
+# Local dev secrets — real values live in .NET user secrets; a filled secrets.json (copied
+# from secrets.example.json) must never be committed
+secrets.json

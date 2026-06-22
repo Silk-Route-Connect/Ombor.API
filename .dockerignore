@@ -15,3 +15,7 @@ coverage/
 **/appsettings.Development.json
 **/appsettings.Testing.json
 **/appsettings.Staging.json
+
+# Local dev secrets templates/copies are never needed in an image.
+**/secrets.json
+**/secrets.example.json
