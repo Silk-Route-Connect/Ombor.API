@@ -30,6 +30,7 @@ public sealed class WalletCrudTests(TestingWebApplicationFactory factory, ITestO
         Assert.Equal(0m, response.AdvancesHeld);
         Assert.Equal(5_000m, response.OurMoney);
         Assert.False(response.IsArchived);
+        Assert.False(string.IsNullOrWhiteSpace(response.CreatedBy)); // resolved from the current user's name, not a raw id
     }
 
     [Fact]

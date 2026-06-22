@@ -33,8 +33,10 @@ internal sealed class WalletTransferConfiguration : IEntityTypeConfiguration<Wal
             .IsRequired();
 
         builder
-            .Property(t => t.CreatedBy)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .HasOne(t => t.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 
         #endregion

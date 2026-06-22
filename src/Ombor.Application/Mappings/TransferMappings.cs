@@ -1,3 +1,4 @@
+using Ombor.Application.Extensions;
 using Ombor.Contracts.Responses.Transfer;
 using Ombor.Domain.Entities;
 
@@ -14,7 +15,7 @@ internal static class TransferMappings
             transfer.ToWarehouseId,
             transfer.ToWarehouse.Name,
             transfer.Notes,
-            transfer.CreatedBy,
+            transfer.CreatedByUser.DisplayName(),
             [.. transfer.Lines.Select(l => new TransferLineDto(
                 l.Id,
                 l.ProductId,

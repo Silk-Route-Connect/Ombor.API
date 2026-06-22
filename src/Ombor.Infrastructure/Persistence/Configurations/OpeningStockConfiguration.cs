@@ -33,8 +33,10 @@ internal sealed class OpeningStockConfiguration : IEntityTypeConfiguration<Openi
             .HasCurrencyPrecision()
             .IsRequired();
 
-        builder.Property(x => x.CreatedBy)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+        builder.HasOne(x => x.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
     }
 }

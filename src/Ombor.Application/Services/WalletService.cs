@@ -54,7 +54,7 @@ internal sealed class WalletService(
             Type = request.Type.ToDomainType(),
             OpeningBalance = request.OpeningBalance,
             CreatedAt = DateTimeOffset.UtcNow,
-            CreatedBy = currentUser.UserId?.ToString(),
+            CreatedById = currentUser.UserId,
         };
 
         context.Wallets.Add(entity);
@@ -123,7 +123,7 @@ internal sealed class WalletService(
             Amount = request.Amount,
             Note = request.Note,
             DateUtc = DateTimeOffset.UtcNow,
-            CreatedBy = currentUser.UserId?.ToString(),
+            CreatedById = currentUser.UserId,
         };
 
         context.WalletTransfers.Add(transfer);
@@ -139,7 +139,7 @@ internal sealed class WalletService(
             to.Name,
             to.Type.ToString(),
             transfer.Amount,
-            transfer.CreatedBy,
+            await ResolveCreatorNameAsync(transfer.CreatedById),
             transfer.Note);
     }
 
@@ -261,7 +261,7 @@ internal sealed class WalletService(
                 ToName = t.ToWallet.Name,
                 ToType = t.ToWallet.Type,
                 t.Amount,
-                t.CreatedBy,
+                CreatedBy = t.CreatedByUser != null ? t.CreatedByUser.FirstName + " " + t.CreatedByUser.LastName : null,
                 t.Note,
             })
             .ToArrayAsync();
@@ -320,6 +320,12 @@ internal sealed class WalletService(
         await context.Wallets.FirstOrDefaultAsync(w => w.Id == id)
         ?? throw new EntityNotFoundException<Wallet>(id);
 
+    /// <summary>Resolves a creator's display name (the create path builds its response without re-querying).</summary>
+    private async Task<string?> ResolveCreatorNameAsync(int? userId) =>
+        userId is int id
+            ? await context.Users.Where(u => u.Id == id).Select(u => u.FirstName + " " + u.LastName).FirstOrDefaultAsync()
+            : null;
+
     /// <summary>Projects a wallet plus its transfer and payment-component sums — the inputs to the computed balance.</summary>
     private static System.Linq.Expressions.Expression<Func<Wallet, WalletRow>> WalletProjection() =>
         w => new WalletRow(
@@ -328,7 +334,7 @@ internal sealed class WalletService(
             w.Type,
             w.OpeningBalance,
             w.IsArchived,
-            w.CreatedBy,
+            w.CreatedByUser != null ? w.CreatedByUser.FirstName + " " + w.CreatedByUser.LastName : null,
             w.CreatedAt,
             w.IncomingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m,
             w.OutgoingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m,

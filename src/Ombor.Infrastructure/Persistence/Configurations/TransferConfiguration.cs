@@ -40,8 +40,10 @@ internal sealed class TransferConfiguration : IEntityTypeConfiguration<Transfer>
             .IsRequired(false);
 
         builder
-            .Property(t => t.CreatedBy)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .HasOne(t => t.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 
         builder

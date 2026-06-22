@@ -87,7 +87,7 @@ internal sealed class TransferService(
             ToWarehouseId = request.ToWarehouseId,
             DateUtc = DateTimeOffset.UtcNow,
             Notes = request.Note,
-            CreatedBy = currentUser.UserId?.ToString(),
+            CreatedById = currentUser.UserId,
             FromWarehouse = null!,
             ToWarehouse = null!,
             Lines = [.. lines.Select(l => new TransferLine
@@ -110,6 +110,7 @@ internal sealed class TransferService(
             .IgnoreAutoIncludes()
             .Include(t => t.FromWarehouse)
             .Include(t => t.ToWarehouse)
+            .Include(t => t.CreatedByUser)
             .Include(t => t.Lines)
             .ThenInclude(l => l.Product)
             .AsNoTracking();

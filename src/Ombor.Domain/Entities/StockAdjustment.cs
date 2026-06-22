@@ -28,8 +28,9 @@ public class StockAdjustment : EntityBase, IOrganizationScoped, IAuditable
     /// <summary>The weighted-average unit cost at the time of the adjustment — the loss cost on a Decrease.</summary>
     public decimal UnitCost { get; set; }
 
-    /// <summary>The user who made the adjustment; null outside an authenticated request.</summary>
-    public string? CreatedBy { get; set; }
+    /// <summary>The user who made the adjustment; null for seed/system rows. Resolved to a display name on read.</summary>
+    public int? CreatedById { get; set; }
+    public virtual User? CreatedByUser { get; set; }
 
     public int WarehouseId { get; set; }
     public required virtual Warehouse Warehouse { get; set; }

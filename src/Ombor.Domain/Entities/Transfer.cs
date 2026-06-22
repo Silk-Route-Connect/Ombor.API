@@ -13,8 +13,9 @@ public class Transfer : EntityBase, IOrganizationScoped, IAuditable
     public DateTimeOffset DateUtc { get; set; }
     public string? Notes { get; set; }
 
-    /// <summary>The user who made the transfer; null outside an authenticated request.</summary>
-    public string? CreatedBy { get; set; }
+    /// <summary>The user who made the transfer; null for seed/system rows. Resolved to a display name on read.</summary>
+    public int? CreatedById { get; set; }
+    public virtual User? CreatedByUser { get; set; }
 
     public int FromWarehouseId { get; set; }
     public virtual required Warehouse FromWarehouse { get; set; }

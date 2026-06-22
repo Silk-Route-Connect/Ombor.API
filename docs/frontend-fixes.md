@@ -43,8 +43,10 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `direction` is the money direction `Receivable`/`Payable`, **not** the sale/supply route — use `type`
   for routing). This **supersedes `GET /{id}/lines`** for the detail page (that endpoint stays for now but
   returns lines only).
-  - **`createdBy`** is the author's **display name** (audit card), or `null` for seed/system rows — note
-    this is a name, unlike the raw user-id `createdBy` on `Wallet`/`Transfer`/`StockAdjustment` today.
+  - **`createdBy`** is the author's **display name** (audit card), or `null` for seed/system rows. 🟢 The
+    `createdBy` on `Wallet`, `WalletTransfer`, `Transfer`, and `StockAdjustment` is now the **same** — a
+    display name, not the raw user-id string it used to be. No shape change (still a `string?`); just adopt
+    it as a label everywhere.
   - **`notes`** is the transaction's free-text note (`null` when none) — the same `notes` field the create
     form already sends; it's now persisted on the transaction and returned here.
   - **`attachments[]`** = `{ name, contentType, sizeBytes, url }` — **raw values only**: the frontend

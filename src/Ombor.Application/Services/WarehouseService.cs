@@ -132,7 +132,7 @@ internal sealed class WarehouseService(
 
         // Record the opening as an immutable event per product (gives the movement ledger an "Opening" row).
         var now = DateTimeOffset.UtcNow;
-        var createdBy = currentUser.UserId?.ToString();
+        var createdById = currentUser.UserId;
         foreach (var item in request.Items)
         {
             context.OpeningStocks.Add(new OpeningStock
@@ -144,7 +144,7 @@ internal sealed class WarehouseService(
                 Product = null!,
                 Quantity = item.Quantity,
                 UnitCost = item.UnitCost,
-                CreatedBy = createdBy,
+                CreatedById = createdById,
             });
         }
 

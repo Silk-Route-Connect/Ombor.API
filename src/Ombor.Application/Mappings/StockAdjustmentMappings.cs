@@ -1,3 +1,4 @@
+using Ombor.Application.Extensions;
 using Ombor.Contracts.Responses.StockAdjustment;
 using Ombor.Domain.Entities;
 
@@ -31,7 +32,7 @@ internal static class StockAdjustmentMappings
             adjustment.Quantity,
             adjustment.Reason,
             adjustment.Note,
-            adjustment.CreatedBy,
+            adjustment.CreatedByUser.DisplayName(),
             balanceAfter);
     }
 }

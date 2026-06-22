@@ -22,6 +22,7 @@ internal sealed class StockAdjustmentService(
 
         var query = context.StockAdjustments
             .Include(x => x.Warehouse)
+            .Include(x => x.CreatedByUser)
             .Include(x => x.Product)
             .ThenInclude(p => p.Category)
             .IgnoreAutoIncludes()
@@ -108,7 +109,7 @@ internal sealed class StockAdjustmentService(
                 Reason = request.Reason,
                 Note = request.Note,
                 UnitCost = unitCost,
-                CreatedBy = currentUser.UserId?.ToString(),
+                CreatedById = currentUser.UserId,
             };
             context.StockAdjustments.Add(adjustment);
             await context.SaveChangesAsync();
@@ -134,6 +135,7 @@ internal sealed class StockAdjustmentService(
     {
         var adjustment = await context.StockAdjustments
             .Include(x => x.Warehouse)
+            .Include(x => x.CreatedByUser)
             .Include(x => x.Product)
             .ThenInclude(p => p.Category)
             .IgnoreAutoIncludes()

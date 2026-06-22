@@ -25,7 +25,10 @@ public class Wallet : EntityBase, IOrganizationScoped
     public bool IsArchived { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
-    public string? CreatedBy { get; set; }
+
+    /// <summary>The user who created the wallet; null for seed/system rows. Resolved to a display name on read.</summary>
+    public int? CreatedById { get; set; }
+    public virtual User? CreatedByUser { get; set; }
 
     /// <summary>Transfers sent from this wallet.</summary>
     public virtual ICollection<WalletTransfer> OutgoingTransfers { get; set; } = [];

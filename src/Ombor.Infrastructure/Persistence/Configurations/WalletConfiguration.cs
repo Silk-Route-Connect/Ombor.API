@@ -48,8 +48,10 @@ internal sealed class WalletConfiguration : IEntityTypeConfiguration<Wallet>
             .IsRequired();
 
         builder
-            .Property(w => w.CreatedBy)
-            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .HasOne(w => w.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(w => w.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
 
         #endregion

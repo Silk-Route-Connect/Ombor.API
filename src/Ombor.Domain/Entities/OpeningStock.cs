@@ -18,8 +18,9 @@ public class OpeningStock : EntityBase, IOrganizationScoped, IAuditable
     /// <summary>The opening unit cost — sets the initial weighted-average cost.</summary>
     public decimal UnitCost { get; set; }
 
-    /// <summary>The user who recorded the opening stock; null outside an authenticated request.</summary>
-    public string? CreatedBy { get; set; }
+    /// <summary>The user who recorded the opening stock; null for seed/system rows.</summary>
+    public int? CreatedById { get; set; }
+    public virtual User? CreatedByUser { get; set; }
 
     public int WarehouseId { get; set; }
     public required virtual Warehouse Warehouse { get; set; }
