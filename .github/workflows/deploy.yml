@@ -1,0 +1,81 @@
+name: Deploy - Dev (Docker / GHCR / Hetzner)
+
+# Required GitHub repository secrets:
+#   DEPLOY_HOST    - dev server hostname or IP (SSH target)
+#   DEPLOY_USER    - SSH username on the dev server
+#   DEPLOY_SSH_KEY - private SSH key (PEM) for DEPLOY_USER
+# GITHUB_TOKEN is injected automatically (no secret to create) and is used to push to
+# and pull from GHCR. No other secrets are required by this workflow.
+
+on:
+  push:
+    # Intentionally all branches: this is the single shared dev server.
+    # Narrow to [master, development] once the dev environment stabilizes.
+    branches: ['**']
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    name: Build image and push to GHCR
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compute lowercase image name
+        id: image
+        # GHCR requires a lowercase path; the repo slug (Silk-Route-Connect/Ombor.API) is mixed case.
+        run: echo "image=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.image.outputs.image }}:${{ github.sha }}
+            ${{ steps.image.outputs.image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to dev server over SSH
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Pull and restart on the dev server
+        uses: appleboy/ssh-action@v1
+        env:
+          # GITHUB_TOKEN is valid for the duration of this run; enough to pull from GHCR.
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: GHCR_USER,GHCR_TOKEN
+          script: |
+            set -e
+            # One-time server bootstrap (not done by CI): place docker-compose.deploy.yml
+            # and a filled-in .env in this directory, and create the uploads host folder.
+            cd /opt/ombor/dev
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker compose -f docker-compose.deploy.yml pull
+            docker compose -f docker-compose.deploy.yml up -d
+            docker image prune -f

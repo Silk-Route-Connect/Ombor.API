@@ -38,6 +38,9 @@ try
 
     app.MapControllers();
 
+    // Anonymous liveness endpoint for the container HEALTHCHECK; bypasses the global authorize filter.
+    app.MapHealthChecks("/health").AllowAnonymous();
+
     app.UseStaticFiles();
 
     await app.UseDatabaseSeederAsync();

@@ -1,0 +1,59 @@
+# Dev-server deployment stack. Pulled and run on the Hetzner box by the deploy workflow.
+# No build context here: the image is built and pushed to GHCR by CI.
+# Reads values from a co-located .env file (see .env.example).
+
+services:
+  ombor-api:
+    image: ghcr.io/silk-route-connect/ombor.api:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
+    volumes:
+      # Persist uploaded files outside the container; absolute host path lives only in this mount.
+      - ${UPLOADS_HOST_PATH}:/app/wwwroot/uploads
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - ombor-net
+    # No published ports: the API is reached only via cloudflared over the internal network.
+    restart: unless-stopped
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_MEMORY_LIMIT_MB: "4096"
+    volumes:
+      # Whole data root, not just /data, so logs and system DBs persist too.
+      - mssql-data:/var/opt/mssql
+    networks:
+      - ombor-net
+    healthcheck:
+      # $$ escapes compose interpolation so the shell inside the container expands the env var.
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    # No published 1433: the DB is reachable only from the API on the internal network.
+    restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - ombor-net
+    # The public hostname (api.miraziz.net) -> http://ombor-api:80 mapping is configured
+    # in the Cloudflare Zero Trust dashboard (manual step), not here.
+    restart: unless-stopped
+
+networks:
+  ombor-net:
+    driver: bridge
+
+volumes:
+  mssql-data:

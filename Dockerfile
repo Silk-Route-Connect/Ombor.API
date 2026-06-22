@@ -20,7 +20,18 @@ RUN dotnet publish src/Ombor.API/Ombor.API.csproj \
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# curl is not in the aspnet base image; it is the probe client for the HEALTHCHECK below.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
+
+# start-period covers startup migration + data seeding, which run before Kestrel accepts requests.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+    CMD curl -fsS http://localhost:80/health || exit 1
+
 ENTRYPOINT ["dotnet", "Ombor.API.dll"]

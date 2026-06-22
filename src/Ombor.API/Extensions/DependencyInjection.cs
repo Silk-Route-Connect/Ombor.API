@@ -14,13 +14,18 @@ internal static class DependencyInjection
 {
     public const string CorsPolicyName = "DefaultCorsPolicy";
 
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration) =>
-        services
-        .AddControllers()
-        .AddAuthorization()
-        .AddSwagger(configuration)
-        .AddErrorHandlers()
-        .AddCors(configuration);
+    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Liveness probe backing the container HEALTHCHECK and compose health gate.
+        services.AddHealthChecks();
+
+        return services
+            .AddControllers()
+            .AddAuthorization()
+            .AddSwagger(configuration)
+            .AddErrorHandlers()
+            .AddCors(configuration);
+    }
 
     private static IServiceCollection AddControllers(this IServiceCollection services)
     {
