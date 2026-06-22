@@ -1,28 +1,19 @@
 name: Deploy (Docker / GHCR / multi-env)
 
-# One workflow, many environments. The branch selects a GitHub Environment, and GitHub
-# injects that environment's secret + variable set. App config is written into a .env on
-# the server at deploy time — the server is never hand-edited for config.
+# One workflow, many environments. The branch selects a GitHub Environment; GitHub injects
+# that environment's secret set. App config follows a three-way split:
 #
-# Convention: any secret/variable whose NAME contains "__" is treated as app config and
-# written verbatim into .env (ASP.NET Core reads "__" as section nesting). Plus two flat
-# keys: MSSQL_SA_PASSWORD and UPLOADS_HOST_PATH. Everything else (deploy plumbing, and any
-# unrelated repo secrets) is ignored — so adding a new app key needs only a new GitHub
-# secret/variable, never a workflow edit.
+#   1. Committed appsettings.Production.json (in the image) — all NON-SECRET app config:
+#      CORS origins, cookie settings, JWT issuer/audience/expiry, SMS ApiUrl/FromNumber,
+#      DataSeedSettings (except the seed password). Loaded on every server (all run Production).
+#   2. GitHub Environment SECRETS — written into the server .env and injected as env vars,
+#      overriding the blank placeholders in appsettings.Production.json:
+#        ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
+#        Sentry__Dsn, MSSQL_SA_PASSWORD, DataSeedSettings__SeedUserPassword
+#      Plus deploy-only secrets (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
+#   3. GitHub Environment VARIABLES (deploy/infra only): DEPLOY_DIR (cd target, not in .env),
+#      UPLOADS_HOST_PATH (written to .env for the compose bind mount).
 #
-# === GitHub Environment SECRETS ===
-#   Deploy plumbing (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
-#   App secrets (written to .env):
-#     ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
-#     Sentry__Dsn, MSSQL_SA_PASSWORD            (DataSeedSettings__SeedUserPassword optional)
-# === GitHub Environment VARIABLES ===
-#   Deploy plumbing (NOT written to .env): DEPLOY_DIR
-#   App/compose config (written to .env): UPLOADS_HOST_PATH,
-#     Cors__AllowedOrigins__0 [__1 ...], CookieSettings__Domain, CookieSettings__Secure,
-#     CookieSettings__SameSite, JwtSettings__Issuer, JwtSettings__Audience,
-#     JwtSettings__AccessTokenExpiresInHours, JwtSettings__RefreshTokenExpiresInDays,
-#     SmsSettings__ApiUrl, SmsSettings__FromNumber,
-#     DataSeedSettings__Locale and DataSeedSettings__NumberOf* (see deploy docs / key table)
 # ASPNETCORE_ENVIRONMENT is pinned to Production in docker-compose.deploy.yml, not injected.
 # GITHUB_TOKEN is automatic (GHCR push + server-side pull). No PAT.
 
@@ -95,39 +86,47 @@ jobs:
     needs: [setup, build-and-push]
     environment: ${{ needs.setup.outputs.environment }}
     steps:
-      - name: Assemble .env from this environment's secrets and variables
+      - name: Checkout code
+        # Needed so we can ship the repo's compose file to the server this run.
+        uses: actions/checkout@v4
+
+      - name: Assemble .env from this environment's secrets (+ UPLOADS_HOST_PATH)
         id: dotenv
         env:
           SECRETS_JSON: ${{ toJSON(secrets) }}
-          VARS_JSON: ${{ toJSON(vars) }}
+          UPLOADS_HOST_PATH: ${{ vars.UPLOADS_HOST_PATH }}
         run: |
           set -euo pipefail
-          # Keep only app config: keys containing "__", plus the two flat keys below.
-          # This drops deploy plumbing (DEPLOY_*, github_token) and any unrelated repo secrets,
-          # none of which use the "__" convention.
-          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH)='
-          {
-            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$VARS_JSON"
-            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON"
-          } | grep -E "$KEEP" > deploy.env || true
+          # App secrets only: keys containing "__" (ASP.NET nesting) plus the flat MSSQL_SA_PASSWORD.
+          # This drops deploy secrets (DEPLOY_*) and github_token, none of which use "__".
+          # Non-secret app config lives in committed appsettings.Production.json, not here; the only
+          # non-secret value still needed at deploy time is UPLOADS_HOST_PATH (compose bind mount).
+          jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON" \
+            | grep -E '^[^=]*__[^=]*=|^MSSQL_SA_PASSWORD=' > deploy.env || true
+          printf 'UPLOADS_HOST_PATH=%s\n' "$UPLOADS_HOST_PATH" >> deploy.env
 
-          # Fail loudly rather than deploy a half-configured container. The app's own
-          # ValidateOnStart covers the rest, but these would otherwise break silently or late.
+          # Fail loudly rather than deploy a half-configured container; the app's ValidateOnStart
+          # covers the rest once it boots.
           require() { grep -q "^$1=." deploy.env || { echo "::error::Missing required key: $1"; exit 1; }; }
           require ConnectionStrings__DefaultConnection
           require JwtSettings__Key
           require MSSQL_SA_PASSWORD
           require UPLOADS_HOST_PATH
 
-          # base64 so the blob survives transit and never prints; mask it as a belt-and-braces.
+          # base64 so the blob survives transit and never prints; mask it belt-and-braces.
           B64="$(base64 -w0 deploy.env)"
           echo "::add-mask::$B64"
           echo "env_b64=$B64" >> "$GITHUB_OUTPUT"
 
-      - name: Pull and restart on the server
+      - name: Encode compose file for transfer
+        id: compose
+        run: echo "b64=$(base64 -w0 docker-compose.deploy.yml)" >> "$GITHUB_OUTPUT"
+
+      - name: Sync compose, write .env, pull and restart
         uses: appleboy/ssh-action@v1
         env:
           ENV_B64: ${{ steps.dotenv.outputs.env_b64 }}
+          COMPOSE_B64: ${{ steps.compose.outputs.b64 }}
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
@@ -135,13 +134,16 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: ENV_B64,GHCR_USER,GHCR_TOKEN,DEPLOY_DIR
+          envs: ENV_B64,COMPOSE_B64,GHCR_USER,GHCR_TOKEN,DEPLOY_DIR
           script: |
             set -eu
             test -n "$DEPLOY_DIR" || { echo "DEPLOY_DIR not set for this environment"; exit 1; }
             cd "$DEPLOY_DIR"
-            # Write .env atomically with tight perms; never echo its contents.
             umask 077
+            # Ship the repo's compose file every deploy so compose changes land by commit, not by hand.
+            echo "$COMPOSE_B64" | base64 -d > docker-compose.deploy.yml.tmp
+            mv -f docker-compose.deploy.yml.tmp docker-compose.deploy.yml
+            # Write .env atomically; never echo its contents.
             echo "$ENV_B64" | base64 -d > .env.tmp
             mv -f .env.tmp .env
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin

@@ -404,8 +404,8 @@ FodyWeavers.xsd
 
 /src/Ombor.API/wwwroot/uploads
 
-appsettings.Production.json
-
 # Deploy secrets — keep the template, never commit the real file
 .env
 !.env.example
+# CI assembles this (secrets) on the runner; never commit it
+deploy.env

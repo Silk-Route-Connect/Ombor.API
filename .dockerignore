@@ -9,3 +9,9 @@ coverage/
 
 *.user
 *.suo
+
+# Local-override env files: never bake them into an image. The container runs as
+# Production and loads only appsettings.json + appsettings.Production.json.
+**/appsettings.Development.json
+**/appsettings.Testing.json
+**/appsettings.Staging.json
