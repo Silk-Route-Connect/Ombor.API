@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Payment;
@@ -15,8 +16,14 @@ namespace Ombor.Application.Services;
 internal sealed class TransactionService(
     IApplicationDbContext context,
     ITransactionMapper mapper,
-    IRequestValidator validator) : ITransactionService
+    IRequestValidator validator,
+    ICurrentUserAccessor currentUser,
+    IFileService fileService) : ITransactionService
 {
+    // Uploaded transaction files land here (originals + thumbnails under their standard sections).
+    private const string AttachmentsSubfolder = "transactions";
+
+
     public Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
     {
         var query = GetQuery(request);
@@ -77,6 +84,11 @@ internal sealed class TransactionService(
                 t.TotalPaid,
                 t.OriginalTransactionId,
                 t.RefundReason,
+                t.Notes,
+                CreatedBy = t.CreatedByUser != null ? t.CreatedByUser.FirstName + " " + t.CreatedByUser.LastName : null,
+                Attachments = t.Attachments
+                    .Select(a => new TransactionAttachmentDto(a.FileName, a.ContentType, a.SizeBytes, a.Url))
+                    .ToArray(),
                 Lines = t.Lines.Select(l => new TransactionLineDto(
                     l.Id, l.ProductId, l.Product.Name, l.TransactionId,
                     l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
@@ -112,6 +124,9 @@ internal sealed class TransactionService(
             row.TotalDue - row.TotalPaid,
             row.Lines,
             row.Payments,
+            row.Attachments,
+            row.CreatedBy,
+            row.Notes,
             row.OriginalTransactionId,
             row.RefundReason);
     }
@@ -121,6 +136,7 @@ internal sealed class TransactionService(
         await ValidateOrThrowAsync(request);
 
         var transactionEntity = mapper.ToEntity(request);
+        transactionEntity.CreatedById = currentUser.UserId;
         var partner = await context.Partners.FindAsync(request.PartnerId)
                 ?? throw new InvalidOperationException($"Partner {request.PartnerId} not found");
 
@@ -132,6 +148,7 @@ internal sealed class TransactionService(
                 request.Type.ToDomainType().ToStockMovement(),
                 request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
             context.Transactions.Add(transactionEntity);
+            await AddAttachmentsAsync(request, transactionEntity);
             await context.SaveChangesAsync();
 
             if (request.WalletId is int walletId && request.PaidAmount > 0m)
@@ -154,6 +171,34 @@ internal sealed class TransactionService(
         {
             await databaseTransaction.RollbackAsync();
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Uploads the request's files and links them to the transaction. Reuses the file service's
+    /// size/type validation; the original name, MIME type, and size are kept so the client can
+    /// render each attachment without re-reading the file.
+    /// </summary>
+    private async Task AddAttachmentsAsync(CreateTransactionRequest request, TransactionRecord transaction)
+    {
+        if (request.Attachments is not { Length: > 0 })
+        {
+            return;
+        }
+
+        foreach (var file in request.Attachments)
+        {
+            var uploaded = await fileService.UploadAsync(file, AttachmentsSubfolder);
+
+            transaction.Attachments.Add(new TransactionAttachment
+            {
+                Transaction = transaction,
+                FileId = uploaded.FileName,
+                FileName = uploaded.OriginalFileName,
+                ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+                SizeBytes = file.Length,
+                Url = uploaded.Url,
+            });
         }
     }
 

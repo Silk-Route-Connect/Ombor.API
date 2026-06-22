@@ -37,11 +37,20 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `TransactionDetail` for the sale/supply detail page, in **one call** (no need to combine `/lines` +
   `/payments`): `{ id, number, type, direction, status, date, dueDate, partnerId, partnerName,
   partnerCompany, partnerType, warehouseId, warehouseName, totalDue, totalPaid, remaining, lines[],
-  payments[], originalTransactionId, refundReason }`. `lines[]` = the `TransactionLine` shape;
-  `payments[]` = the same settlement shape as `GET /{id}/payments` (newest-first). `number`/`direction`
-  match the **debts** read model (provisional `S-`/`SP-`/`SR-`/`SPR-` number; `direction` is the
-  money direction `Receivable`/`Payable`, **not** the sale/supply route — use `type` for routing). This
-  **supersedes `GET /{id}/lines`** for the detail page (that endpoint stays for now but returns lines only).
+  payments[], attachments[], createdBy, notes, originalTransactionId, refundReason }`. `lines[]` = the
+  `TransactionLine` shape; `payments[]` = the same settlement shape as `GET /{id}/payments` (newest-first).
+  `number`/`direction` match the **debts** read model (provisional `S-`/`SP-`/`SR-`/`SPR-` number;
+  `direction` is the money direction `Receivable`/`Payable`, **not** the sale/supply route — use `type`
+  for routing). This **supersedes `GET /{id}/lines`** for the detail page (that endpoint stays for now but
+  returns lines only).
+  - **`createdBy`** is the author's **display name** (audit card), or `null` for seed/system rows — note
+    this is a name, unlike the raw user-id `createdBy` on `Wallet`/`Transfer`/`StockAdjustment` today.
+  - **`notes`** is the transaction's free-text note (`null` when none) — the same `notes` field the create
+    form already sends; it's now persisted on the transaction and returned here.
+  - **`attachments[]`** = `{ name, contentType, sizeBytes, url }` — **raw values only**: the frontend
+    derives the pdf/img icon from `contentType` and formats `sizeBytes` (e.g. «248 КБ»). Files are uploaded
+    with the existing multipart create (`Attachments` field, already sent) — no request change, they're just
+    persisted and served now.
 
 ## Payroll — `POST /api/employees/{id}/payrolls`
 

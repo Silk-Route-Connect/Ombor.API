@@ -24,6 +24,9 @@ namespace Ombor.Contracts.Responses.Transaction;
 /// <param name="Remaining">The outstanding amount (<c>TotalDue − TotalPaid</c>).</param>
 /// <param name="Lines">The line items.</param>
 /// <param name="Payments">The payments that settled this transaction (newest-first); empty when nothing has been paid.</param>
+/// <param name="Attachments">Files uploaded with the transaction (receipts, scans); empty when none.</param>
+/// <param name="CreatedBy">The author's display name for the audit card; null for seed/system rows.</param>
+/// <param name="Notes">The free-text note captured at creation, if any.</param>
 /// <param name="OriginalTransactionId">For refunds, the transaction this one reverses; otherwise null.</param>
 /// <param name="RefundReason">For refunds, why it was issued; otherwise null.</param>
 public sealed record TransactionDetailDto(
@@ -45,5 +48,22 @@ public sealed record TransactionDetailDto(
     decimal Remaining,
     IReadOnlyList<TransactionLineDto> Lines,
     IReadOnlyList<TransactionPaymentDto> Payments,
+    IReadOnlyList<TransactionAttachmentDto> Attachments,
+    string? CreatedBy,
+    string? Notes,
     int? OriginalTransactionId,
     string? RefundReason);
+
+/// <summary>
+/// A file uploaded with a transaction. Raw values only — the client derives the icon from
+/// <see cref="ContentType"/> and formats <see cref="SizeBytes"/> for display.
+/// </summary>
+/// <param name="Name">The original file name as uploaded.</param>
+/// <param name="ContentType">The MIME type (e.g. application/pdf, image/jpeg).</param>
+/// <param name="SizeBytes">The file size in bytes.</param>
+/// <param name="Url">The public URL to fetch the file.</param>
+public sealed record TransactionAttachmentDto(
+    string Name,
+    string ContentType,
+    long SizeBytes,
+    string Url);

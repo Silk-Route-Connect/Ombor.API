@@ -32,6 +32,7 @@ internal sealed class TransactionMapper : ITransactionMapper
             WarehouseId = request.WarehouseId,
             OriginalTransactionId = request.OriginalTransactionId,
             RefundReason = request.RefundReason,
+            Notes = request.Notes,
             DateUtc = DateTimeOffset.UtcNow,
             DueDate = request.DueDate,
             Type = request.Type.ToDomainType(),

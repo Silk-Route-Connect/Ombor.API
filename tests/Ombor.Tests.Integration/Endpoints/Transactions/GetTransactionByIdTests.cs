@@ -11,6 +11,14 @@ namespace Ombor.Tests.Integration.Endpoints.Transactions;
 public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory, ITestOutputHelper output)
     : TransactionsTestsBase(factory, output)
 {
+    private const string AuthorFirstName = "Aziz";
+    private const string AuthorLastName = "Karimov";
+    private const string NoteText = "Counter sale, partial payment.";
+    private const string AttachmentName = "receipt.pdf";
+    private const string AttachmentContentType = "application/pdf";
+    private const long AttachmentSizeBytes = 2_048;
+    private const string AttachmentUrl = "/files/transactions/originals/receipt.pdf";
+
     [Fact]
     public async Task GetById_ShouldReturnFullDetail_WithLinesAndSettlingPayments()
     {
@@ -47,6 +55,17 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         Assert.Equal(4_000m, payment.Amount);
         Assert.Equal(walletName, payment.WalletName);
         Assert.Equal("Cash", payment.WalletType);
+
+        // Assert — audit card (author display name) + note
+        Assert.Equal($"{AuthorFirstName} {AuthorLastName}", detail.CreatedBy);
+        Assert.Equal(NoteText, detail.Notes);
+
+        // Assert — attachment carries raw values (client derives icon + formats size)
+        var attachment = Assert.Single(detail.Attachments);
+        Assert.Equal(AttachmentName, attachment.Name);
+        Assert.Equal(AttachmentContentType, attachment.ContentType);
+        Assert.Equal(AttachmentSizeBytes, attachment.SizeBytes);
+        Assert.Equal(AttachmentUrl, attachment.Url);
     }
 
     [Fact]
@@ -57,6 +76,19 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
 
     private async Task<(int transactionId, string walletName)> SeedSettledSaleAsync(int partnerId, int warehouseId, int productId)
     {
+        // The author resolves to a display name on read; org 1 exists (seeded host), so the FK holds.
+        var author = new User
+        {
+            FirstName = AuthorFirstName,
+            LastName = AuthorLastName,
+            PhoneNumber = $"+998{Math.Abs(Guid.NewGuid().GetHashCode())}",
+            PasswordHash = "x",
+            PasswordSalt = "x",
+            Organization = null!,
+        };
+        _context.Users.Add(author);
+        await _context.SaveChangesAsync();
+
         var transaction = new TransactionRecord
         {
             PartnerId = partnerId,
@@ -68,6 +100,8 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
             TotalDue = 10_000m,
             TotalPaid = 4_000m,
             Status = TransactionStatus.PartiallyPaid,
+            Notes = NoteText,
+            CreatedById = author.Id,
         };
         transaction.Lines.Add(new TransactionLine
         {
@@ -78,6 +112,15 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
             Discount = 0m,
             DiscountType = DiscountType.Fixed,
             Quantity = 10m,
+        });
+        transaction.Attachments.Add(new TransactionAttachment
+        {
+            Transaction = null!,
+            FileId = "receipt-key.pdf",
+            FileName = AttachmentName,
+            ContentType = AttachmentContentType,
+            SizeBytes = AttachmentSizeBytes,
+            Url = AttachmentUrl,
         });
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();

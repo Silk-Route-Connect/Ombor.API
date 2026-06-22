@@ -42,7 +42,19 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .IsRequired(false);
 
         builder
+            .HasOne(t => t.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(t => t.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
+
+        builder
             .Property(t => t.RefundReason)
+            .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired(false);
+
+        builder
+            .Property(t => t.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);
 

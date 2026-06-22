@@ -23,6 +23,7 @@ internal class ApplicationDbContext(
     public virtual DbSet<WarehouseItem> WarehouseItems { get; set; }
     public virtual DbSet<TransactionRecord> Transactions { get; set; }
     public virtual DbSet<TransactionLine> TransactionLines { get; set; }
+    public virtual DbSet<TransactionAttachment> TransactionAttachments { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<Wallet> Wallets { get; set; }
     public virtual DbSet<WalletTransfer> WalletTransfers { get; set; }

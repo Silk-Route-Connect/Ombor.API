@@ -45,6 +45,8 @@ public interface IApplicationDbContext
 
     DbSet<TransactionLine> TransactionLines { get; set; }
 
+    DbSet<TransactionAttachment> TransactionAttachments { get; set; }
+
     DbSet<Payment> Payments { get; set; }
 
     /// <summary>Gets or sets the wallets (money locations) set.</summary>

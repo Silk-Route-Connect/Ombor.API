@@ -16,6 +16,13 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
 
     public decimal UnpaidAmount => TotalDue - TotalPaid;
 
+    /// <summary>Optional free-text note captured when the transaction was created.</summary>
+    public string? Notes { get; set; }
+
+    /// <summary>The user who created the transaction; null for seed/system rows. Resolved to a display name on read.</summary>
+    public int? CreatedById { get; set; }
+    public virtual User? CreatedByUser { get; set; }
+
     public int PartnerId { get; set; }
     public virtual required Partner Partner { get; set; }
 
@@ -31,6 +38,8 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
     public string? RefundReason { get; set; }
 
     public virtual ICollection<TransactionLine> Lines { get; set; } = [];
+
+    public virtual ICollection<TransactionAttachment> Attachments { get; set; } = [];
 
     public virtual ICollection<PaymentAllocation> PaymentAllocations { get; set; } = [];
 }
