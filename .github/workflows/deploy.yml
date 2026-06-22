@@ -9,7 +9,8 @@ name: Deploy (Docker / GHCR / multi-env)
 #   2. GitHub Environment SECRETS — written into the server .env and injected as env vars,
 #      overriding the blank placeholders in appsettings.Production.json:
 #        ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
-#        Sentry__Dsn, MSSQL_SA_PASSWORD, DataSeedSettings__SeedUserPassword
+#        Sentry__Dsn, MSSQL_SA_PASSWORD, DataSeedSettings__SeedUserPassword,
+#        CLOUDFLARE_TUNNEL_TOKEN (consumed by the cloudflared service in compose)
 #      Plus deploy-only secrets (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
 #   3. GitHub Environment VARIABLES — written to .env: Cors__AllowedOrigins__0 [__1 ...]
 #      (per-environment CORS origins) and UPLOADS_HOST_PATH (compose bind mount).
@@ -98,11 +99,12 @@ jobs:
           VARS_JSON: ${{ toJSON(vars) }}
         run: |
           set -euo pipefail
-          # Keep app config: keys with "__" (ASP.NET nesting) plus the two flat keys. This drops deploy
-          # plumbing (DEPLOY_*, github_token) and any unrelated repo secret/var, none of which use "__".
-          # Secrets fill the blank values in appsettings.Production.json; CORS origins
-          # (Cors__AllowedOrigins__N) and UPLOADS_HOST_PATH are non-secret env-provisioned variables.
-          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH)='
+          # Keep app config: keys with "__" (ASP.NET nesting) plus the flat keys listed below. This
+          # drops deploy plumbing (DEPLOY_*, github_token) and any unrelated repo secret/var, none of
+          # which use "__". Secrets fill the blank values in appsettings.Production.json; CORS origins
+          # (Cors__AllowedOrigins__N) and UPLOADS_HOST_PATH are non-secret env-provisioned variables;
+          # CLOUDFLARE_TUNNEL_TOKEN is a secret consumed by the cloudflared service in compose.
+          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH|CLOUDFLARE_TUNNEL_TOKEN)='
           {
             jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON"
             jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$VARS_JSON"
@@ -116,6 +118,7 @@ jobs:
           require MSSQL_SA_PASSWORD
           require UPLOADS_HOST_PATH
           require Cors__AllowedOrigins__0
+          require CLOUDFLARE_TUNNEL_TOKEN
 
           # base64 so the blob survives transit and never prints; mask it belt-and-braces.
           B64="$(base64 -w0 deploy.env)"
