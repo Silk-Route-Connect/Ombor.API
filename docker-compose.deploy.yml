@@ -5,9 +5,13 @@
 services:
   ombor-api:
     image: ghcr.io/silk-route-connect/ombor.api:latest
+    # All app config is injected from the CI-written .env (keys use ASP.NET Core's __ nesting).
+    env_file:
+      - .env
     environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
+      # Pinned, never injected: running as anything but Production would load the committed
+      # appsettings.<Env>.json baked into the image and run the wrong (heavy) seeder.
+      ASPNETCORE_ENVIRONMENT: Production
     volumes:
       # Persist uploaded files outside the container; absolute host path lives only in this mount.
       - ${UPLOADS_HOST_PATH}:/app/wwwroot/uploads

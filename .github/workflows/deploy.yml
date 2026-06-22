@@ -1,23 +1,58 @@
-name: Deploy - Dev (Docker / GHCR / Hetzner)
+name: Deploy (Docker / GHCR / multi-env)
 
-# Required GitHub repository secrets:
-#   DEPLOY_HOST    - dev server hostname or IP (SSH target)
-#   DEPLOY_USER    - SSH username on the dev server
-#   DEPLOY_SSH_KEY - private SSH key (PEM) for DEPLOY_USER
-# GITHUB_TOKEN is injected automatically (no secret to create) and is used to push to
-# and pull from GHCR. No other secrets are required by this workflow.
+# One workflow, many environments. The branch selects a GitHub Environment, and GitHub
+# injects that environment's secret + variable set. App config is written into a .env on
+# the server at deploy time — the server is never hand-edited for config.
+#
+# Convention: any secret/variable whose NAME contains "__" is treated as app config and
+# written verbatim into .env (ASP.NET Core reads "__" as section nesting). Plus two flat
+# keys: MSSQL_SA_PASSWORD and UPLOADS_HOST_PATH. Everything else (deploy plumbing, and any
+# unrelated repo secrets) is ignored — so adding a new app key needs only a new GitHub
+# secret/variable, never a workflow edit.
+#
+# === GitHub Environment SECRETS ===
+#   Deploy plumbing (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
+#   App secrets (written to .env):
+#     ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
+#     Sentry__Dsn, MSSQL_SA_PASSWORD            (DataSeedSettings__SeedUserPassword optional)
+# === GitHub Environment VARIABLES ===
+#   Deploy plumbing (NOT written to .env): DEPLOY_DIR
+#   App/compose config (written to .env): UPLOADS_HOST_PATH,
+#     Cors__AllowedOrigins__0 [__1 ...], CookieSettings__Domain, CookieSettings__Secure,
+#     CookieSettings__SameSite, JwtSettings__Issuer, JwtSettings__Audience,
+#     JwtSettings__AccessTokenExpiresInHours, JwtSettings__RefreshTokenExpiresInDays,
+#     SmsSettings__ApiUrl, SmsSettings__FromNumber,
+#     DataSeedSettings__Locale and DataSeedSettings__NumberOf* (see deploy docs / key table)
+# ASPNETCORE_ENVIRONMENT is pinned to Production in docker-compose.deploy.yml, not injected.
+# GITHUB_TOKEN is automatic (GHCR push + server-side pull). No PAT.
 
 on:
   push:
-    # Intentionally all branches: this is the single shared dev server.
-    # Narrow to [master, development] once the dev environment stabilizes.
-    branches: ['**']
+    branches:
+      - development
+      # - staging     # add the matching case below + a 'staging' GitHub Environment
+      # - production  # add the matching case below + a 'production' GitHub Environment
 
 permissions:
   contents: read
   packages: write
 
 jobs:
+  setup:
+    name: Resolve environment from branch
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.map.outputs.environment }}
+    steps:
+      - id: map
+        run: |
+          case "${{ github.ref_name }}" in
+            development) echo "environment=development" >> "$GITHUB_OUTPUT" ;;
+            # staging)    echo "environment=staging"    >> "$GITHUB_OUTPUT" ;;
+            # production) echo "environment=production" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::No environment mapping for branch '${{ github.ref_name }}'"; exit 1 ;;
+          esac
+
   build-and-push:
     name: Build image and push to GHCR
     runs-on: ubuntu-latest
@@ -55,26 +90,60 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy to dev server over SSH
+    name: Deploy to ${{ needs.setup.outputs.environment }}
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: [setup, build-and-push]
+    environment: ${{ needs.setup.outputs.environment }}
     steps:
-      - name: Pull and restart on the dev server
+      - name: Assemble .env from this environment's secrets and variables
+        id: dotenv
+        env:
+          SECRETS_JSON: ${{ toJSON(secrets) }}
+          VARS_JSON: ${{ toJSON(vars) }}
+        run: |
+          set -euo pipefail
+          # Keep only app config: keys containing "__", plus the two flat keys below.
+          # This drops deploy plumbing (DEPLOY_*, github_token) and any unrelated repo secrets,
+          # none of which use the "__" convention.
+          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH)='
+          {
+            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$VARS_JSON"
+            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON"
+          } | grep -E "$KEEP" > deploy.env || true
+
+          # Fail loudly rather than deploy a half-configured container. The app's own
+          # ValidateOnStart covers the rest, but these would otherwise break silently or late.
+          require() { grep -q "^$1=." deploy.env || { echo "::error::Missing required key: $1"; exit 1; }; }
+          require ConnectionStrings__DefaultConnection
+          require JwtSettings__Key
+          require MSSQL_SA_PASSWORD
+          require UPLOADS_HOST_PATH
+
+          # base64 so the blob survives transit and never prints; mask it as a belt-and-braces.
+          B64="$(base64 -w0 deploy.env)"
+          echo "::add-mask::$B64"
+          echo "env_b64=$B64" >> "$GITHUB_OUTPUT"
+
+      - name: Pull and restart on the server
         uses: appleboy/ssh-action@v1
         env:
-          # GITHUB_TOKEN is valid for the duration of this run; enough to pull from GHCR.
+          ENV_B64: ${{ steps.dotenv.outputs.env_b64 }}
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: GHCR_USER,GHCR_TOKEN
+          envs: ENV_B64,GHCR_USER,GHCR_TOKEN,DEPLOY_DIR
           script: |
-            set -e
-            # One-time server bootstrap (not done by CI): place docker-compose.deploy.yml
-            # and a filled-in .env in this directory, and create the uploads host folder.
-            cd /opt/ombor/dev
+            set -eu
+            test -n "$DEPLOY_DIR" || { echo "DEPLOY_DIR not set for this environment"; exit 1; }
+            cd "$DEPLOY_DIR"
+            # Write .env atomically with tight perms; never echo its contents.
+            umask 077
+            echo "$ENV_B64" | base64 -d > .env.tmp
+            mv -f .env.tmp .env
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker compose -f docker-compose.deploy.yml pull
             docker compose -f docker-compose.deploy.yml up -d
