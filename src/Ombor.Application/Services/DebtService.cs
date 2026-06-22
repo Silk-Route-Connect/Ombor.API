@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Responses.Debt;
-using Ombor.Domain.Enums;
 
 namespace Ombor.Application.Services;
 
@@ -33,8 +33,8 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
         return [.. rows
             .Select(r => new DebtDto(
                 r.Id,
-                Number(r.Type, r.Id),
-                DirectionOf(r.Type),
+                r.Type.ToProvisionalNumber(r.Id),
+                r.Type.ToDebtDirection(),
                 r.Type.ToString(),
                 r.PartnerId,
                 r.PartnerName,
@@ -49,26 +49,6 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
                 OverdueDays(today, r.DueDate)))
             .OrderByDescending(d => d.Date)
             .ThenByDescending(d => d.TransactionId)];
-    }
-
-    // Receivable = the partner owes us (unpaid Sale / SupplyRefund); Payable = we owe (unpaid Supply / SaleRefund).
-    // Same split as View_PartnerBalance, so the totals reconcile (complexity notes §J).
-    private static string DirectionOf(TransactionType type) =>
-        type is TransactionType.Sale or TransactionType.SupplyRefund ? DebtDirections.Receivable : DebtDirections.Payable;
-
-    // Provisional display number derived from type + id; real per-type sequences are future work (complexity §L).
-    private static string Number(TransactionType type, int id)
-    {
-        var prefix = type switch
-        {
-            TransactionType.Sale => "S",
-            TransactionType.Supply => "SP",
-            TransactionType.SaleRefund => "SR",
-            TransactionType.SupplyRefund => "SPR",
-            _ => "T",
-        };
-
-        return $"{prefix}-{id}";
     }
 
     private static int AgeDays(DateOnly today, DateTimeOffset date) =>

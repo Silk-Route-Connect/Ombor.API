@@ -4,6 +4,7 @@ using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Transaction;
+using Ombor.Contracts.Responses.Payment;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -50,6 +51,69 @@ internal sealed class TransactionService(
             ?? throw new EntityNotFoundException<TransactionRecord>($"Transaction with ID {request.Id} not found.");
 
         return mapper.ToDto(transaction);
+    }
+
+    public async Task<TransactionDetailDto> GetDetailByIdAsync(GetTransactionByIdRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var row = await context.Transactions
+            .AsNoTracking()
+            .Where(t => t.Id == request.Id)
+            .Select(t => new
+            {
+                t.Id,
+                t.Type,
+                t.Status,
+                t.DateUtc,
+                t.DueDate,
+                t.PartnerId,
+                PartnerName = t.Partner.Name,
+                PartnerCompany = t.Partner.CompanyName,
+                PartnerType = t.Partner.Type,
+                t.WarehouseId,
+                WarehouseName = t.Warehouse != null ? t.Warehouse.Name : null,
+                t.TotalDue,
+                t.TotalPaid,
+                t.OriginalTransactionId,
+                t.RefundReason,
+                Lines = t.Lines.Select(l => new TransactionLineDto(
+                    l.Id, l.ProductId, l.Product.Name, l.TransactionId,
+                    l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
+                // Settling allocations only (rule 10), newest-first — same shape as GET /{id}/payments.
+                Payments = t.PaymentAllocations
+                    .Where(a => a.Type == PaymentAllocationType.TransactionSettlement)
+                    .OrderByDescending(a => a.Payment.DateUtc)
+                    .Select(a => new TransactionPaymentDto(
+                        a.Id, t.Id, a.Amount, a.Payment.Number,
+                        a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,
+                        a.Payment.Wallet != null ? a.Payment.Wallet.Type.ToString() : null,
+                        a.Payment.Notes, a.Payment.DateUtc)).ToArray(),
+            })
+            .FirstOrDefaultAsync()
+            ?? throw new EntityNotFoundException<TransactionRecord>($"Transaction with ID {request.Id} not found.");
+
+        return new TransactionDetailDto(
+            row.Id,
+            row.Type.ToProvisionalNumber(row.Id),
+            row.Type.ToString(),
+            row.Type.ToDebtDirection(),
+            row.Status.ToString(),
+            row.DateUtc,
+            row.DueDate,
+            row.PartnerId,
+            row.PartnerName,
+            row.PartnerCompany,
+            row.PartnerType.ToString(),
+            row.WarehouseId,
+            row.WarehouseName,
+            row.TotalDue,
+            row.TotalPaid,
+            row.TotalDue - row.TotalPaid,
+            row.Lines,
+            row.Payments,
+            row.OriginalTransactionId,
+            row.RefundReason);
     }
 
     public async Task<TransactionDto> CreateAsync(CreateTransactionRequest request)

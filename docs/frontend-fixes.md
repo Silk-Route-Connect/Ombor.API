@@ -33,6 +33,16 @@ Each entry: **what the frontend does today → what it must do**, with the backe
   `settlements[]` (`{ transactionId, amount }`), `overpayment` (`"change" | "advance"`)**.
   *Reason:* the redesigned source/allocation payment model (rules 8–12, 40). (Discovered M2c.)
 
+- 🟢 **Transaction detail — `GET /api/transactions/{id}`** (200/404). Now returns a full
+  `TransactionDetail` for the sale/supply detail page, in **one call** (no need to combine `/lines` +
+  `/payments`): `{ id, number, type, direction, status, date, dueDate, partnerId, partnerName,
+  partnerCompany, partnerType, warehouseId, warehouseName, totalDue, totalPaid, remaining, lines[],
+  payments[], originalTransactionId, refundReason }`. `lines[]` = the `TransactionLine` shape;
+  `payments[]` = the same settlement shape as `GET /{id}/payments` (newest-first). `number`/`direction`
+  match the **debts** read model (provisional `S-`/`SP-`/`SR-`/`SPR-` number; `direction` is the
+  money direction `Receivable`/`Payable`, **not** the sale/supply route — use `type` for routing). This
+  **supersedes `GET /{id}/lines`** for the detail page (that endpoint stays for now but returns lines only).
+
 ## Payroll — `POST /api/employees/{id}/payrolls`
 
 - **Request shape.** Frontend's legacy payroll create sent `amount`, `currency`, `exchangeRate`,

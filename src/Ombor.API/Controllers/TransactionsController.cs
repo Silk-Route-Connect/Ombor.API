@@ -22,6 +22,15 @@ public class TransactionsController(
         return Ok(response);
     }
 
+    [HttpGet("{id:int:min(1)}")]
+    public async Task<ActionResult<TransactionDetailDto>> GetByIdAsync(int id)
+    {
+        var request = new GetTransactionByIdRequest(id);
+        var response = await transactionService.GetDetailByIdAsync(request);
+
+        return Ok(response);
+    }
+
     [HttpGet("{id:int:min(1)}/payments")]
     public async Task<ActionResult<TransactionPaymentDto[]>> GetPaymentsAsync(int id)
     {

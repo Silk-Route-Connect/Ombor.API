@@ -7,5 +7,6 @@ public interface ITransactionService
 {
     Task<TransactionDto[]> GetAsync(GetTransactionsRequest request);
     Task<TransactionDto> GetByIdAsync(GetTransactionByIdRequest request);
+    Task<TransactionDetailDto> GetDetailByIdAsync(GetTransactionByIdRequest request);
     Task<TransactionDto> CreateAsync(CreateTransactionRequest request);
 }
