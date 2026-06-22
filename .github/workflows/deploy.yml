@@ -3,16 +3,17 @@ name: Deploy (Docker / GHCR / multi-env)
 # One workflow, many environments. The branch selects a GitHub Environment; GitHub injects
 # that environment's secret set. App config follows a three-way split:
 #
-#   1. Committed appsettings.Production.json (in the image) — all NON-SECRET app config:
-#      CORS origins, cookie settings, JWT issuer/audience/expiry, SMS ApiUrl/FromNumber,
+#   1. Committed appsettings.Production.json (in the image) — environment-invariant NON-SECRET
+#      config: cookie settings, JWT issuer/audience/expiry, SMS ApiUrl/FromNumber,
 #      DataSeedSettings (except the seed password). Loaded on every server (all run Production).
 #   2. GitHub Environment SECRETS — written into the server .env and injected as env vars,
 #      overriding the blank placeholders in appsettings.Production.json:
 #        ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
 #        Sentry__Dsn, MSSQL_SA_PASSWORD, DataSeedSettings__SeedUserPassword
 #      Plus deploy-only secrets (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
-#   3. GitHub Environment VARIABLES (deploy/infra only): DEPLOY_DIR (cd target, not in .env),
-#      UPLOADS_HOST_PATH (written to .env for the compose bind mount).
+#   3. GitHub Environment VARIABLES — written to .env: Cors__AllowedOrigins__0 [__1 ...]
+#      (per-environment CORS origins) and UPLOADS_HOST_PATH (compose bind mount).
+#      Plus deploy-only: DEPLOY_DIR (cd target, NOT written to .env).
 #
 # ASPNETCORE_ENVIRONMENT is pinned to Production in docker-compose.deploy.yml, not injected.
 # GITHUB_TOKEN is automatic (GHCR push + server-side pull). No PAT.
@@ -90,28 +91,31 @@ jobs:
         # Needed so we can ship the repo's compose file to the server this run.
         uses: actions/checkout@v4
 
-      - name: Assemble .env from this environment's secrets (+ UPLOADS_HOST_PATH)
+      - name: Assemble .env from this environment's secrets and variables
         id: dotenv
         env:
           SECRETS_JSON: ${{ toJSON(secrets) }}
-          UPLOADS_HOST_PATH: ${{ vars.UPLOADS_HOST_PATH }}
+          VARS_JSON: ${{ toJSON(vars) }}
         run: |
           set -euo pipefail
-          # App secrets only: keys containing "__" (ASP.NET nesting) plus the flat MSSQL_SA_PASSWORD.
-          # This drops deploy secrets (DEPLOY_*) and github_token, none of which use "__".
-          # Non-secret app config lives in committed appsettings.Production.json, not here; the only
-          # non-secret value still needed at deploy time is UPLOADS_HOST_PATH (compose bind mount).
-          jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON" \
-            | grep -E '^[^=]*__[^=]*=|^MSSQL_SA_PASSWORD=' > deploy.env || true
-          printf 'UPLOADS_HOST_PATH=%s\n' "$UPLOADS_HOST_PATH" >> deploy.env
+          # Keep app config: keys with "__" (ASP.NET nesting) plus the two flat keys. This drops deploy
+          # plumbing (DEPLOY_*, github_token) and any unrelated repo secret/var, none of which use "__".
+          # Secrets fill the blank values in appsettings.Production.json; CORS origins
+          # (Cors__AllowedOrigins__N) and UPLOADS_HOST_PATH are non-secret env-provisioned variables.
+          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH)='
+          {
+            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON"
+            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$VARS_JSON"
+          } | grep -E "$KEEP" > deploy.env || true
 
           # Fail loudly rather than deploy a half-configured container; the app's ValidateOnStart
-          # covers the rest once it boots.
+          # covers the rest once it boots. CORS is required here since it no longer lives in appsettings.
           require() { grep -q "^$1=." deploy.env || { echo "::error::Missing required key: $1"; exit 1; }; }
           require ConnectionStrings__DefaultConnection
           require JwtSettings__Key
           require MSSQL_SA_PASSWORD
           require UPLOADS_HOST_PATH
+          require Cors__AllowedOrigins__0
 
           # base64 so the blob survives transit and never prints; mask it belt-and-braces.
           B64="$(base64 -w0 deploy.env)"
