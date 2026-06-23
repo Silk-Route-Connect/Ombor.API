@@ -23,6 +23,7 @@ on:
   push:
     branches:
       - development
+      - ci-cd
       # - staging     # add the matching case below + a 'staging' GitHub Environment
       # - production  # add the matching case below + a 'production' GitHub Environment
 
@@ -41,6 +42,7 @@ jobs:
         run: |
           case "${{ github.ref_name }}" in
             development) echo "environment=development" >> "$GITHUB_OUTPUT" ;;
+            ci-cd) echo "environment=development" >> "$GITHUB_OUTPUT" ;;
             # staging)    echo "environment=staging"    >> "$GITHUB_OUTPUT" ;;
             # production) echo "environment=production" >> "$GITHUB_OUTPUT" ;;
             *) echo "::error::No environment mapping for branch '${{ github.ref_name }}'"; exit 1 ;;
