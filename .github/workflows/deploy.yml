@@ -1,20 +1,18 @@
 name: Deploy (Docker / GHCR / multi-env)
 
-# One workflow, many environments. The branch selects a GitHub Environment; GitHub injects
-# that environment's secret set. App config follows a three-way split:
+# One workflow, many environments. The branch selects a GitHub Environment; GitHub supplies that
+# environment's secrets. Config model:
 #
-#   1. Committed appsettings.Production.json (in the image) — environment-invariant NON-SECRET
-#      config: cookie settings, JWT issuer/audience/expiry, SMS ApiUrl/FromNumber,
-#      DataSeedSettings (except the seed password). Loaded on every server (all run Production).
-#   2. GitHub Environment SECRETS — written into the server .env and injected as env vars,
-#      overriding the blank placeholders in appsettings.Production.json:
-#        ConnectionStrings__DefaultConnection, JwtSettings__Key, SmsSettings__Token,
-#        Sentry__Dsn, MSSQL_SA_PASSWORD, DataSeedSettings__SeedUserPassword,
-#        CLOUDFLARE_TUNNEL_TOKEN (consumed by the cloudflared service in compose)
-#      Plus deploy-only secrets (NOT written to .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
-#   3. GitHub Environment VARIABLES — written to .env: Cors__AllowedOrigins__0 [__1 ...]
-#      (per-environment CORS origins) and UPLOADS_HOST_PATH (compose bind mount).
-#      Plus deploy-only: DEPLOY_DIR (cd target, NOT written to .env).
+#   - Committed appsettings.Production.json (in the image) — environment-invariant NON-SECRET config
+#     (cookies, JWT issuer/audience/expiry, SMS ApiUrl/FromNumber, DataSeedSettings except the seed
+#     password). No secrets, no CORS. Loaded on every server (all run Production).
+#   - GitHub Environment SECRET `ENV_FILE` — the entire server .env for that environment, verbatim:
+#     every app secret, plus CORS origins (Cors__AllowedOrigins__N), MSSQL_SA_PASSWORD,
+#     UPLOADS_HOST_PATH and CLOUDFLARE_TUNNEL_TOKEN. The secret name is identical in every
+#     environment; injected env vars override the blank placeholders in appsettings.Production.json.
+#   - GitHub Environment VARIABLE `DEPLOY_DIR` — server path to write .env into / run compose from
+#     (needed before .env exists, so it stays a separate variable).
+#   - Deploy-only SECRETS (not in .env): DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY.
 #
 # ASPNETCORE_ENVIRONMENT is pinned to Production in docker-compose.deploy.yml, not injected.
 # GITHUB_TOKEN is automatic (GHCR push + server-side pull). No PAT.
@@ -94,36 +92,19 @@ jobs:
         # Needed so we can ship the repo's compose file to the server this run.
         uses: actions/checkout@v4
 
-      - name: Assemble .env from this environment's secrets and variables
+      - name: Encode .env from the ENV_FILE secret
         id: dotenv
         env:
-          SECRETS_JSON: ${{ toJSON(secrets) }}
-          VARS_JSON: ${{ toJSON(vars) }}
+          ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
           set -euo pipefail
-          # Keep app config: keys with "__" (ASP.NET nesting) plus the flat keys listed below. This
-          # drops deploy plumbing (DEPLOY_*, github_token) and any unrelated repo secret/var, none of
-          # which use "__". Secrets fill the blank values in appsettings.Production.json; CORS origins
-          # (Cors__AllowedOrigins__N) and UPLOADS_HOST_PATH are non-secret env-provisioned variables;
-          # CLOUDFLARE_TUNNEL_TOKEN is a secret consumed by the cloudflared service in compose.
-          KEEP='^[^=]*__[^=]*=|^(MSSQL_SA_PASSWORD|UPLOADS_HOST_PATH|CLOUDFLARE_TUNNEL_TOKEN)='
-          {
-            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$SECRETS_JSON"
-            jq -r 'to_entries[] | "\(.key)=\(.value)"' <<<"$VARS_JSON"
-          } | grep -E "$KEEP" > deploy.env || true
-
-          # Fail loudly rather than deploy a half-configured container; the app's ValidateOnStart
-          # covers the rest once it boots. CORS is required here since it no longer lives in appsettings.
-          require() { grep -q "^$1=." deploy.env || { echo "::error::Missing required key: $1"; exit 1; }; }
-          require ConnectionStrings__DefaultConnection
-          require JwtSettings__Key
-          require MSSQL_SA_PASSWORD
-          require UPLOADS_HOST_PATH
-          require Cors__AllowedOrigins__0
-          require CLOUDFLARE_TUNNEL_TOKEN
-
-          # base64 so the blob survives transit and never prints; mask it belt-and-braces.
-          B64="$(base64 -w0 deploy.env)"
+          # The entire .env for this environment is one secret, ENV_FILE, shipped verbatim. The secret
+          # name is identical across environments; GitHub supplies the resolved environment's value.
+          if [ -z "${ENV_FILE:-}" ]; then
+            echo "::error::ENV_FILE secret is empty or unset for this environment"; exit 1
+          fi
+          # base64 so the multi-line blob survives transit and never prints; mask it belt-and-braces.
+          B64="$(printf '%s' "$ENV_FILE" | base64 -w0)"
           echo "::add-mask::$B64"
           echo "env_b64=$B64" >> "$GITHUB_OUTPUT"
 
@@ -152,8 +133,9 @@ jobs:
             # Ship the repo's compose file every deploy so compose changes land by commit, not by hand.
             echo "$COMPOSE_B64" | base64 -d > docker-compose.deploy.yml.tmp
             mv -f docker-compose.deploy.yml.tmp docker-compose.deploy.yml
-            # Write .env atomically; never echo its contents.
+            # Write .env atomically; never echo its contents. Guard against an empty decode.
             echo "$ENV_B64" | base64 -d > .env.tmp
+            test -s .env.tmp || { echo ".env is empty after decode"; exit 1; }
             mv -f .env.tmp .env
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker compose -f docker-compose.deploy.yml pull
