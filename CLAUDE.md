@@ -6,6 +6,10 @@ This file is the operating contract for every backend session. It is **thin and 
 
 ---
 
+## Recon before constraint-writing
+
+A data symptom is not a code bug until recon confirms it. Before scoping a fix that adds a constraint, gate, or guard, run a read-only audit of the actual code path. Bad rows in a list often trace to seed/import data that bypassed the service layer, not to a missing rule in the live write path — and "fixing" the already-correct path wastes a session and risks regressions. Recon first; let the audit, not the symptom, define the fix.
+
 ## Source-of-truth documents
 
 | Document                           | When to read                                                            | What                                                                                                                                                              |
