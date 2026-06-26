@@ -7,5 +7,8 @@ namespace Ombor.Application.Interfaces;
 /// </summary>
 public interface IOrganizationSetupService
 {
-    Task SeedStarterDataAsync(int organizationId);
+    /// <param name="language">
+    /// The user's registration language (a supported code, e.g. <c>ru</c>); determines the starter names.
+    /// </param>
+    Task SeedStarterDataAsync(int organizationId, string language);
 }

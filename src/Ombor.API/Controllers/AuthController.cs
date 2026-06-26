@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Localization;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
 
@@ -19,11 +22,18 @@ public class AuthController(
 {
     private const string RefreshTokenCookieName = "ombor.refreshToken";
 
+    /// <summary>The header carrying the user's interface language on the registration flow.</summary>
+    private const string LanguageHeaderName = "X-Ombor-Language";
+
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegisterResponse>> RegisterAsync([FromBody] RegisterRequest request)
     {
+        // Reject a missing/unsupported language before an OTP is sent; the value is persisted to
+        // User.Language and drives the starter-data names at verification.
+        ResolveLanguageOrThrow();
+
         var result = await service.RegisterAsync(request);
         return Ok(result);
     }
@@ -33,7 +43,7 @@ public class AuthController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<VerifyOtpResponse>> SmsVerificationAsync([FromBody] SmsVerificationRequest request)
     {
-        var result = await service.VerifyRegistrationOtpAsync(request);
+        var result = await service.VerifyRegistrationOtpAsync(request, ResolveLanguageOrThrow());
 
         if (!result.Success)
         {
@@ -108,6 +118,27 @@ public class AuthController(
         ClearRefreshTokenCookie();
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Reads and validates the interface-language header. Throws a <see cref="ValidationException"/>
+    /// (→ 400) when it is missing or not one of the supported languages — never falls back to a default.
+    /// </summary>
+    private string ResolveLanguageOrThrow()
+    {
+        var language = Request.Headers[LanguageHeaderName].ToString();
+
+        if (!SupportedLanguages.IsSupported(language))
+        {
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    LanguageHeaderName,
+                    $"The '{LanguageHeaderName}' header is required and must be one of: {string.Join(", ", SupportedLanguages.All)}."),
+            ]);
+        }
+
+        return language;
     }
 
     private void SetRefreshTokenCookie(string refreshToken)

@@ -50,7 +50,7 @@ internal sealed class AuthService(
         return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
     }
 
-    public async Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request)
+    public async Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request, string language)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -82,6 +82,8 @@ internal sealed class AuthService(
             PasswordHash = passwordHash.Hash,
             PasswordSalt = passwordHash.Salt,
             IsPhoneNumberConfirmed = true,
+            // The interface language chosen at registration (validated upstream from the request header).
+            Language = language,
             OrganizationId = organization.Id,
             Organization = null! // To be set by EF Core
         };
@@ -89,8 +91,8 @@ internal sealed class AuthService(
         context.Users.Add(newUser);
         await context.SaveChangesAsync();
 
-        // Seed the organization's ordinary starter records (rule 42) so it can transact immediately.
-        await organizationSetupService.SeedStarterDataAsync(organization.Id);
+        // Seed the organization's ordinary starter records (rule 42), named in the registration language.
+        await organizationSetupService.SeedStarterDataAsync(organization.Id, language);
 
         await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
         await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
