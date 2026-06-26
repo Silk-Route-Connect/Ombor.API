@@ -45,7 +45,7 @@ internal sealed class AuthService(
         );
 
         // disable for testing
-        // await smsService.SendMessageAsync(message);
+        await smsService.SendMessageAsync(message);
 
         return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
     }
