@@ -32,7 +32,7 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .WithMany()
             .HasForeignKey(t => t.WarehouseId)
             .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired(false);
+            .IsRequired();
 
         builder
             .HasOne(t => t.OriginalTransaction)

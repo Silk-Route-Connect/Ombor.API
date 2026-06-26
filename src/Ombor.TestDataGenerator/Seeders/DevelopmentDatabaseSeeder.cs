@@ -35,12 +35,9 @@ internal sealed class DevelopmentDatabaseSeeder(
             await AddPartnersAsync(context);
             await AddTemplatesAsync(context);
             await AddEmployeesAsync(context);
-            await AddWarehousesAsync(context);
+            await EnsureWarehousesAsync(context);
             await AddWalletsAsync(context);
-            await AddSalesAsync(context);
-            await AddSuppliesAsync(context);
-            await AddSaleRefundsAsync(context);
-            await AddSupplyRefundsAsync(context);
+            await SeedTransactionsAsync(context);
             await AddPaymentsAsync(context);
             await AddOrdersAsync(context);
         }
@@ -177,141 +174,6 @@ internal sealed class DevelopmentDatabaseSeeder(
             .ToArray();
 
         context.Employees.AddRange(employees);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task AddWarehousesAsync(IApplicationDbContext context)
-    {
-        if (context.Warehouses.Any())
-        {
-            return;
-        }
-
-        var products = context.Products
-                .Select(x => x.Id)
-                .ToArray();
-
-        var warehouses = WarehouseGenerator.Generate(
-            products,
-            seedSettings.NumberOfItemsPerWarehouse,
-            seedSettings.NumberOfWarehouses,
-            seedSettings.Locale)
-            .DistinctBy(x => x.Name)
-            .ToArray();
-
-        context.Warehouses.AddRange(warehouses);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task AddSalesAsync(IApplicationDbContext context)
-    {
-        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Sale))
-        {
-            return;
-        }
-
-        var allSales = new List<TransactionRecord>();
-        var products = context.Products.ToArray();
-        var partners = context.Partners
-            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
-            .ToArray();
-
-        foreach (var partner in partners)
-        {
-            var sales = TransactionGenerator.Generate(
-                partner.Id,
-                Domain.Enums.TransactionType.Sale,
-                products,
-                seedSettings.NumberOfMaxTransactionsPerPartner);
-
-            allSales.AddRange(sales);
-        }
-
-        context.Transactions.AddRange(allSales);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task AddSuppliesAsync(IApplicationDbContext context)
-    {
-        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.Supply))
-        {
-            return;
-        }
-
-        var allSales = new List<TransactionRecord>();
-        var products = context.Products.ToArray();
-        var partners = context.Partners
-            .Where(x => x.Type != Domain.Enums.PartnerType.Customer)
-            .ToArray();
-
-        foreach (var partner in partners)
-        {
-            var sales = TransactionGenerator.Generate(
-                partner.Id,
-                Domain.Enums.TransactionType.Supply,
-                products,
-                seedSettings.NumberOfMaxTransactionsPerPartner);
-
-            allSales.AddRange(sales);
-        }
-
-        context.Transactions.AddRange(allSales);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task AddSaleRefundsAsync(IApplicationDbContext context)
-    {
-        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.SaleRefund))
-        {
-            return;
-        }
-
-        var allSales = new List<TransactionRecord>();
-        var products = context.Products.ToArray();
-        var partners = context.Partners
-            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
-            .ToArray();
-
-        foreach (var partner in partners)
-        {
-            var sales = TransactionGenerator.Generate(
-                partner.Id,
-                Domain.Enums.TransactionType.SaleRefund,
-                products,
-                seedSettings.NumberOfMaxTransactionsPerPartner);
-
-            allSales.AddRange(sales);
-        }
-
-        context.Transactions.AddRange(allSales);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task AddSupplyRefundsAsync(IApplicationDbContext context)
-    {
-        if (context.Transactions.Any(x => x.Type == Domain.Enums.TransactionType.SupplyRefund))
-        {
-            return;
-        }
-
-        var allSales = new List<TransactionRecord>();
-        var products = context.Products.ToArray();
-        var partners = context.Partners
-            .Where(x => x.Type != Domain.Enums.PartnerType.Supplier)
-            .ToArray();
-
-        foreach (var partner in partners)
-        {
-            var sales = TransactionGenerator.Generate(
-                partner.Id,
-                Domain.Enums.TransactionType.SupplyRefund,
-                products,
-                seedSettings.NumberOfMaxTransactionsPerPartner);
-
-            allSales.AddRange(sales);
-        }
-
-        context.Transactions.AddRange(allSales);
         await context.SaveChangesAsync();
     }
 

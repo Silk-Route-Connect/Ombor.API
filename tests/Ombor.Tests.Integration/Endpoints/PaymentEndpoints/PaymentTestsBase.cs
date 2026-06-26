@@ -52,6 +52,7 @@ public abstract class PaymentTestsBase(TestingWebApplicationFactory factory, ITe
             PartnerId = partnerId,
             Partner = null!,
             Type = TransactionType.Sale,
+            WarehouseId = await EnsureWarehouseAsync(),
             DateUtc = DateTimeOffset.UtcNow,
             TotalDue = total,
             TotalPaid = paid,

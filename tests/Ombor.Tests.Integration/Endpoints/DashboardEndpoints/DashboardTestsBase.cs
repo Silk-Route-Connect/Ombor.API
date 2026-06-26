@@ -119,6 +119,7 @@ public abstract class DashboardTestsBase(TestingWebApplicationFactory factory, I
             PartnerId = partnerId,
             Partner = null!,
             Type = type,
+            WarehouseId = await EnsureWarehouseAsync(),
             Status = status,
             TotalDue = totalDue,
             TotalPaid = totalPaid,

@@ -120,11 +120,23 @@ public abstract class DebtTestsBase(TestingWebApplicationFactory factory, ITestO
             ? TransactionStatus.Open
             : totalPaid < totalDue ? TransactionStatus.PartiallyPaid : TransactionStatus.Closed;
 
+        // Every transaction carries a required warehouse FK; reuse one in this context's organization or
+        // create a throwaway (this also runs against another organization's context for scoping tests).
+        var warehouseId = await context.Warehouses.Select(w => w.Id).FirstOrDefaultAsync();
+        if (warehouseId == 0)
+        {
+            var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };
+            context.Warehouses.Add(warehouse);
+            await context.SaveChangesAsync();
+            warehouseId = warehouse.Id;
+        }
+
         var transaction = new TransactionRecord
         {
             PartnerId = partnerId,
             Partner = null!,
             Type = type,
+            WarehouseId = warehouseId,
             Status = status,
             TotalDue = totalDue,
             TotalPaid = totalPaid,

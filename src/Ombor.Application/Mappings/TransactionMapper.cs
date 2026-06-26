@@ -29,7 +29,8 @@ internal sealed class TransactionMapper : ITransactionMapper
         return new TransactionRecord
         {
             PartnerId = request.PartnerId,
-            WarehouseId = request.WarehouseId,
+            // Non-null is guaranteed upstream: the service rejects a missing warehouse before mapping.
+            WarehouseId = request.WarehouseId!.Value,
             OriginalTransactionId = request.OriginalTransactionId,
             RefundReason = request.RefundReason,
             Notes = request.Notes,

@@ -79,8 +79,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             o.Id, o.DateUtc, MovementKinds.Opening, productId, string.Empty, string.Empty, o.WarehouseId, o.WarehouseName, null, null, o.Quantity)));
 
         var transactionLines = await context.TransactionLines
-            .Where(l => l.ProductId == productId && l.Transaction.WarehouseId != null)
-            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, WarehouseId = l.Transaction.WarehouseId!.Value, WarehouseName = l.Transaction.Warehouse!.Name, l.Quantity })
+            .Where(l => l.ProductId == productId)
+            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.Transaction.WarehouseId, WarehouseName = l.Transaction.Warehouse!.Name, l.Quantity })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
             l.Id, l.DateUtc, KindOf(l.Type), productId, string.Empty, string.Empty, l.WarehouseId, l.WarehouseName, null, null, SignedOf(l.Type, (int)l.Quantity))));

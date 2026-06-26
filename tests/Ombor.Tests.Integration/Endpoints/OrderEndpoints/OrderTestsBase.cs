@@ -90,6 +90,7 @@ public abstract class OrderTestsBase(
             PartnerId = partnerId,
             Partner = null!,
             Type = TransactionType.Sale,
+            WarehouseId = await EnsureWarehouseAsync(),
             DateUtc = DateTimeOffset.UtcNow,
             TotalDue = due,
             TotalPaid = 0m,

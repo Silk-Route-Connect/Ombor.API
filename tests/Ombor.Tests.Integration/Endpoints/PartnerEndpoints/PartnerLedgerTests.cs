@@ -91,6 +91,7 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
             PartnerId = partnerId,
             Partner = null!,
             Type = type,
+            WarehouseId = await EnsureWarehouseAsync(),
             DateUtc = new DateTimeOffset(2026, 2, 1, 0, 0, 0, TimeSpan.Zero),
             TotalDue = due,
             TotalPaid = paid,

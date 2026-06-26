@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using Bogus;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
+using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Builders;
 using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Common.Interfaces;
@@ -52,6 +54,29 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
 
     protected static string GetNotFoundErrorMessage(int id, string typeName)
         => $"{typeName} with ID {id} was not found.";
+
+    /// <summary>
+    /// Returns a warehouse id for the current organization, reusing a seeded one or creating a throwaway
+    /// when none exist. Every transaction carries a required warehouse FK, so directly-planted transaction
+    /// rows need a real warehouse to attach to.
+    /// </summary>
+    protected async Task<int> EnsureWarehouseAsync()
+    {
+        var existing = await _context.Warehouses
+            .Select(w => w.Id)
+            .FirstOrDefaultAsync();
+
+        if (existing != 0)
+        {
+            return existing;
+        }
+
+        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };
+        _context.Warehouses.Add(warehouse);
+        await _context.SaveChangesAsync();
+
+        return warehouse.Id;
+    }
 
     private static ApiClient CreateApiClient(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     {

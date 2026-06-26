@@ -102,6 +102,7 @@ public abstract class TransactionsTestsBase(
             PartnerId = partnerId,
             Partner = null!,
             Type = type,
+            WarehouseId = await EnsureWarehouseAsync(),
             DateUtc = DateTimeOffset.UtcNow,
             TotalDue = due,
             TotalPaid = paid,
