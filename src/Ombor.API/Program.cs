@@ -43,7 +43,10 @@ try
 
     app.UseStaticFiles();
 
-    await app.UseDatabaseSeederAsync();
+    if (!app.Environment.IsProduction())
+    {
+        await app.UseDatabaseSeederAsync();
+    }
 
     SentrySdk.CaptureMessage("API started...");
 
