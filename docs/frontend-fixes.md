@@ -22,7 +22,7 @@ After re-pointing at the new API, regenerating the API client/types from the liv
 - **Payments & Debts** — 🔴 new `GET /api/debts` shape; `GET /partners/{id}/payments` removed; `GET /transactions/{id}/payments` reshaped. 🟢 allocation rows add `transactionType` (clickable settlement links). → _Debts_, _Removed … payment endpoints_
 - **Partners** — 🔴 `openingBalance` (not `balance`); reshaped `PartnerDto`; new `/ledger`. 🟢 ledger entries add `walletName`/`walletType` (payment rows). → _Partners_
 - **Products & Categories** — 🔴 no `quantityInStock`; computed `totalStock`/`averageCost`; reshaped `warehouseItems`. → _Products_
-- **Warehouses & stock** — 🔴 `/api/inventories` → `/api/warehouses` hard cutover; reshaped DTO; new `/stock` + `/movements`; archive-not-delete. → _Warehouses_, _Stock movements_
+- **Warehouses & stock** — 🔴 `/api/inventories` → `/api/warehouses` hard cutover; reshaped DTO; new `/stock` + `/movements`; movement `kind` is now a typed `MovementKind` enum with `"Refund"` split into `SaleRefund`/`SupplyRefund`; archive-not-delete. → _Warehouses_, _Stock movements_
 - **Stock Adjustments** — 🟢 now real (`/api/stock-adjustments`). → _Stock Adjustments_
 - **Transfers** — 🔴 DTO reshaped (drops `status`; `notes`→`note`, `dateUtc`→`date`; adds `createdBy`). → _Transfers_
 - **Orders** — 🔴 `discountType` names; `deliveryAddress` is a string; total field is `total`; state endpoints return `200 + OrderDto`; `warehouseId` tri-state on PUT. → _Orders_
@@ -230,13 +230,19 @@ different shape), build it against the following — and note that **Transaction
 
 - **`GET /api/warehouses/{id}/movements`** → `WarehouseMovement[]` (newest-first):
   `{ id, date, kind, productId, productName, measurement, counterparty, note, quantity, balanceAfter }`.
-  `kind ∈ Opening | Supply | Sale | Refund | Adjustment | Transfer`; `quantity` is **signed** (+ in, − out);
-  `balanceAfter` is the product's running stock **in this warehouse**. `counterparty` = the partner (sale/
-  supply/refund) or the other warehouse (transfer); `null` otherwise.
+  `quantity` is **signed** (+ in, − out); `balanceAfter` is the product's running stock **in this warehouse**.
+  `counterparty` = the partner (sale/supply/refund) or the other warehouse (transfer); `null` otherwise.
 - **`GET /api/products/{id}/movements`** → `ProductMovement[]` (newest-first):
   `{ id, productId, date, kind, warehouseId, warehouseName, quantity, balanceAfter }`. `balanceAfter` is the
   product's running **total stock across warehouses** — a transfer appears as **two** rows (send at the source,
   receive at the destination) that net to zero there.
+- 🔴 **`kind` is now a typed enum (`MovementKind`), and the two refunds are split.** Both movement endpoints
+  emit `kind ∈ "Opening" | "Supply" | "Sale" | "SaleRefund" | "SupplyRefund" | "Adjustment" | "Transfer"`
+  (a string enum in the OpenAPI). The old generic **`"Refund"`** is gone — a returned **sale** is `"SaleRefund"`
+  (stock-in) and a returned **supply** is `"SupplyRefund"` (stock-out). *Reason:* this is an audit-facing ledger,
+  so `kind` is sourced from the actual event/transaction type — **stop inferring the refund type from the
+  quantity sign**. Update the label map to key on the seven values; the `+/−` sign now only conveys stock
+  direction, never identity.
 - 404 if the warehouse/product doesn't exist.
 
 ## Debts (M6a) — now REAL (was mocked)

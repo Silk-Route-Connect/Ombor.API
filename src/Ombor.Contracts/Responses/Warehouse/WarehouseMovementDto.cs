@@ -1,3 +1,5 @@
+using Ombor.Contracts.Enums;
+
 namespace Ombor.Contracts.Responses.Warehouse;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace Ombor.Contracts.Responses.Warehouse;
 /// </summary>
 /// <param name="Id">The source event id.</param>
 /// <param name="Date">When the movement happened.</param>
-/// <param name="Kind">Opening, Supply, Sale, Refund, Adjustment, or Transfer.</param>
+/// <param name="Kind">The specific event type the movement came from — sourced from the underlying event, not the stock direction.</param>
 /// <param name="ProductId">The product moved.</param>
 /// <param name="ProductName">The product name.</param>
 /// <param name="Measurement">The product's unit of measurement.</param>
@@ -16,7 +18,7 @@ namespace Ombor.Contracts.Responses.Warehouse;
 public sealed record WarehouseMovementDto(
     int Id,
     DateTimeOffset Date,
-    string Kind,
+    MovementKind Kind,
     int ProductId,
     string ProductName,
     string Measurement,

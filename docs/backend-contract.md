@@ -144,7 +144,8 @@ UpdateProductRequest = CreateProductRequest & { id; imagesToDelete?: number[] }
 
 ProductTransaction { id; productId; transactionType: TransactionType; partnerId; partnerName;
   date; quantity /*signed*/; unitPrice; discount }
-ProductMovement    { id; productId; date; kind: TransactionType; inventoryId; inventoryName;
+MovementKind       = "Opening"|"Supply"|"Sale"|"SaleRefund"|"SupplyRefund"|"Adjustment"|"Transfer"
+ProductMovement    { id; productId; date; kind: MovementKind; inventoryId; inventoryName;
   quantity /*signed delta*/; balanceAfter /*⚙ running total across warehouses*/ }
 ```
 
@@ -171,8 +172,7 @@ Warehouse { id; name; location: string|null;
   isArchived }
 WarehouseStockItem { productId; productName; sku; categoryName: string|null;
   measurement; quantity; averageCost /*⚙ warehouse-local WAC*/; value /*⚙*/ }
-WarehouseMovementKind = "Opening"|"Supply"|"Sale"|"Refund"|"Adjustment"|"Transfer"
-WarehouseMovement { id; date; kind; productId; productName; measurement;
+WarehouseMovement { id; date; kind: MovementKind /*§4 — sourced from the event, not the stock direction*/; productId; productName; measurement;
   counterparty: string|null; note: string|null; quantity /*signed*/;
   balanceAfter /*⚙ per-product per-warehouse running balance*/ }
 CreateWarehouseRequest { name; location: string|null }

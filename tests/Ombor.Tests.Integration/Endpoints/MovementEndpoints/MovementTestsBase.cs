@@ -82,10 +82,12 @@ public abstract class MovementTestsBase(TestingWebApplicationFactory factory, IT
             new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },
             HttpStatusCode.OK);
 
-    protected async Task PostTransactionAsync(CreateTransactionRequest request)
+    protected async Task<int> PostTransactionAsync(CreateTransactionRequest request)
     {
         var form = request.ToMultipartFormData();
-        await _client.PostAsync<TransactionDto>(Routes.Transaction, form, HttpStatusCode.Created);
+        var transaction = await _client.PostAsync<TransactionDto>(Routes.Transaction, form, HttpStatusCode.Created);
+
+        return transaction.Id;
     }
 
     protected Task AddDecreaseAdjustmentAsync(int warehouseId, int productId, int quantity, string reason = "Damage") =>

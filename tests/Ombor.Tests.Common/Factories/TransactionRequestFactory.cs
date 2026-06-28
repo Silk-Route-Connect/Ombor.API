@@ -37,6 +37,22 @@ public static class TransactionRequestFactory
         DateOnly? dueDate = null)
         => Build(partnerId, TransactionType.Supply, productId, warehouseId, due, walletId, paidAmount, overpayment, settlements, dueDate);
 
+    /// <summary>
+    /// Builds a refund transaction request (single line, quantity 1) against an original transaction.
+    /// Use <see cref="TransactionType.SaleRefund"/> or <see cref="TransactionType.SupplyRefund"/> for <paramref name="type"/>.
+    /// </summary>
+    public static CreateTransactionRequest Refund(
+        TransactionType type,
+        int partnerId,
+        int productId,
+        int warehouseId,
+        int originalTransactionId,
+        decimal due,
+        string refundReason = "Returned")
+        => Build(partnerId, type, productId, warehouseId, due, walletId: null, paidAmount: 0m,
+            OverpaymentHandling.Change, settlements: null, dueDate: null,
+            originalTransactionId: originalTransactionId, refundReason: refundReason);
+
     private static CreateTransactionRequest Build(
         int partnerId,
         TransactionType type,
@@ -47,7 +63,9 @@ public static class TransactionRequestFactory
         decimal paidAmount,
         OverpaymentHandling overpayment,
         SettlementInput[]? settlements,
-        DateOnly? dueDate)
+        DateOnly? dueDate,
+        int? originalTransactionId = null,
+        string? refundReason = null)
     {
         var lines = new[]
         {
@@ -70,6 +88,8 @@ public static class TransactionRequestFactory
             Overpayment: overpayment,
             Attachments: null!,
             WarehouseId: warehouseId,
+            OriginalTransactionId: originalTransactionId,
+            RefundReason: refundReason,
             DueDate: dueDate);
     }
 }

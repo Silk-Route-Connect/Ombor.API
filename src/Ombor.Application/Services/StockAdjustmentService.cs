@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.StockAdjustment;
 using Ombor.Contracts.Responses.StockAdjustment;
 using Ombor.Domain.Entities;
@@ -49,7 +50,7 @@ internal sealed class StockAdjustmentService(
         foreach (var warehouseId in adjustments.Select(a => a.WarehouseId).Distinct())
         {
             var movements = await movementService.GetWarehouseMovementsAsync(warehouseId);
-            foreach (var movement in movements.Where(m => m.Kind == MovementKinds.Adjustment))
+            foreach (var movement in movements.Where(m => m.Kind == MovementKind.Adjustment))
             {
                 balanceByAdjustmentId[movement.Id] = movement.BalanceAfter;
             }
