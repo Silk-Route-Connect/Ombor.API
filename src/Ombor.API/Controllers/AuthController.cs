@@ -126,7 +126,7 @@ public class AuthController(
     /// </summary>
     private string ResolveLanguageOrThrow()
     {
-        var language = "ru";
+        var language = Request.Headers[LanguageHeaderName].ToString();
 
         if (!SupportedLanguages.IsSupported(language))
         {
