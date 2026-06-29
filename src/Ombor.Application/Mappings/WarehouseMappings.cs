@@ -6,7 +6,9 @@ namespace Ombor.Application.Mappings;
 
 public static class WarehouseMappings
 {
-    public static WarehouseDto ToDto(this Warehouse warehouse)
+    // isDeletable is referential state the entity alone can't know (it spans other tables), so the
+    // caller computes it and passes it in — totals stay a pure projection of the warehouse's own items.
+    public static WarehouseDto ToDto(this Warehouse warehouse, bool isDeletable)
     {
         var items = warehouse.WarehouseItems;
 
@@ -17,7 +19,8 @@ public static class WarehouseMappings
             ProductCount: items.Count,
             TotalUnits: items.Sum(i => i.Quantity),
             StockValue: items.Sum(i => i.Quantity * i.AverageCost),
-            IsArchived: warehouse.IsArchived);
+            IsArchived: warehouse.IsArchived,
+            IsDeletable: isDeletable);
     }
 
     public static WarehouseStockItemDto ToStockItemDto(this WarehouseItem item)

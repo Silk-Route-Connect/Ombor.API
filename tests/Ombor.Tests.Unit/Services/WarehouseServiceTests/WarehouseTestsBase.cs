@@ -16,6 +16,14 @@ public abstract class WarehouseTestsBase : ServiceTestsBase
         _defaultWarehouses = GenerateRandomWarehouses();
         SetupWarehouses(_defaultWarehouses);
 
+        // Empty reference sets so the IsDeletable computation (which probes these tables) never hits a
+        // null mock; individual tests override them to make a warehouse referenced.
+        SetupOpeningStocks([]);
+        SetupStockAdjustments([]);
+        SetupTransactions([]);
+        SetupTransfers([]);
+        SetupOrders([]);
+
         _service = new WarehouseService(
             _mockContext.Object,
             _mockValidator.Object,

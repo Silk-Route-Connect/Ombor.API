@@ -140,4 +140,16 @@ public sealed class WarehousesController(
 
         return Ok(response);
     }
+
+    /// <summary>Hard-deletes an unreferenced warehouse; a referenced warehouse is rejected with 409 (archive instead).</summary>
+    [HttpDelete("{id:int:min(1)}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<ActionResult> DeleteAsync([FromRoute] DeleteWarehouseRequest request)
+    {
+        await warehouseService.DeleteAsync(request);
+
+        return NoContent();
+    }
 }

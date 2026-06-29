@@ -47,6 +47,15 @@ public sealed class WarehouseValidator(IApplicationDbContext context)
         WarehouseAssertionHelper.AssertEquivalent(warehouse, response);
     }
 
+    public async Task ValidateDeleteAsync(int warehouseId)
+    {
+        var warehouse = await context.Warehouses
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == warehouseId);
+
+        Assert.Null(warehouse);
+    }
+
     private async Task<Warehouse?> GetWithItemsAsync(int warehouseId) =>
         await context.Warehouses
             .AsNoTracking()

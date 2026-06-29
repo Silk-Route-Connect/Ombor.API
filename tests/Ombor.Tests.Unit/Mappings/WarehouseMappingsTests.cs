@@ -43,7 +43,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act
-        var response = warehouse.ToDto();
+        var response = warehouse.ToDto(isDeletable: false);
 
         // Assert
         Assert.Equal(warehouse.Id, response.Id);
@@ -53,6 +53,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         Assert.Equal(3, response.ProductCount);
         Assert.Equal(17, response.TotalUnits); // 10 + 5 + 2
         Assert.Equal(2_100m, response.StockValue); // 10*100 + 5*200 + 2*50
+        Assert.False(response.IsDeletable);
     }
 
     [Fact]
@@ -69,13 +70,14 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act
-        var response = warehouse.ToDto();
+        var response = warehouse.ToDto(isDeletable: true);
 
         // Assert
         Assert.Equal(0, response.ProductCount);
         Assert.Equal(0, response.TotalUnits);
         Assert.Equal(0m, response.StockValue);
         Assert.False(response.IsArchived);
+        Assert.True(response.IsDeletable);
     }
 
     [Fact]

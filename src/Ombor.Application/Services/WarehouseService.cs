@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,19 @@ internal sealed class WarehouseService(
     IRequestValidator validator,
     ICurrentUserAccessor currentUser) : IWarehouseService
 {
+    // A warehouse is "referenced" when any record links to it: stock (any item row, even zero-quantity),
+    // an opening/adjustment movement, a transaction, a transfer on either side, or an order. Such a
+    // warehouse is archive-only — hard-deleting it would orphan that history (rule 32). Archiving never
+    // clears this: residual stock still counts (rule 31). This single predicate is the source of truth
+    // for both the served IsDeletable flag and the delete guard, so the two can never diverge.
+    private Expression<Func<Warehouse, bool>> IsReferenced => warehouse =>
+        warehouse.WarehouseItems.Any() ||
+        context.OpeningStocks.Any(x => x.WarehouseId == warehouse.Id) ||
+        context.StockAdjustments.Any(x => x.WarehouseId == warehouse.Id) ||
+        context.Transactions.Any(x => x.WarehouseId == warehouse.Id) ||
+        context.Transfers.Any(x => x.FromWarehouseId == warehouse.Id || x.ToWarehouseId == warehouse.Id) ||
+        context.Orders.Any(x => x.WarehouseId == warehouse.Id);
+
     public async Task<WarehouseDto[]> GetAsync(GetWarehousesRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -35,7 +49,9 @@ internal sealed class WarehouseService(
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
-        return [.. warehouses.Select(x => x.ToDto())];
+        var referencedIds = await GetReferencedIdsAsync([.. warehouses.Select(x => x.Id)]);
+
+        return [.. warehouses.Select(x => x.ToDto(isDeletable: !referencedIds.Contains(x.Id)))];
     }
 
     public async Task<WarehouseDto> GetByIdAsync(GetWarehouseByIdRequest request)
@@ -44,7 +60,7 @@ internal sealed class WarehouseService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        return entity.ToDto();
+        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
     }
 
     public async Task<WarehouseStockItemDto[]> GetStockAsync(GetWarehouseByIdRequest request)
@@ -75,7 +91,8 @@ internal sealed class WarehouseService(
         context.Warehouses.Add(entity);
         await context.SaveChangesAsync();
 
-        return entity.ToDto();
+        // A freshly created warehouse has no references yet, so it is always deletable.
+        return entity.ToDto(isDeletable: true);
     }
 
     public async Task<WarehouseDto> UpdateAsync(UpdateWarehouseRequest request)
@@ -88,7 +105,7 @@ internal sealed class WarehouseService(
         entity.ApplyUpdate(request);
         await context.SaveChangesAsync();
 
-        return entity.ToDto();
+        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
     }
 
     public async Task<WarehouseDto> ArchiveAsync(int id)
@@ -97,7 +114,7 @@ internal sealed class WarehouseService(
         entity.IsArchived = true;
         await context.SaveChangesAsync();
 
-        return entity.ToDto();
+        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
     }
 
     public async Task<WarehouseDto> RestoreAsync(int id)
@@ -106,7 +123,25 @@ internal sealed class WarehouseService(
         entity.IsArchived = false;
         await context.SaveChangesAsync();
 
-        return entity.ToDto();
+        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
+    }
+
+    public async Task DeleteAsync(DeleteWarehouseRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var entity = await GetOrThrowAsync(request.Id);
+
+        // Referenced warehouses can't be hard-deleted (rule 32: 409, the UI steers to archive). Blocking
+        // here also prevents the WarehouseItem cascade from silently wiping stock rows on delete.
+        if (await IsReferencedAsync(entity.Id))
+        {
+            throw new ConflictException(
+                "Warehouse cannot be deleted because other records reference it. Archive it instead.");
+        }
+
+        context.Warehouses.Remove(entity);
+        await context.SaveChangesAsync();
     }
 
     public async Task<WarehouseDto> AddOpeningStockAsync(AddOpeningStockRequest request)
@@ -173,6 +208,28 @@ internal sealed class WarehouseService(
                     $"A warehouse named '{name}' already exists."),
             ]);
         }
+    }
+
+    private Task<bool> IsReferencedAsync(int id) =>
+        context.Warehouses
+            .Where(x => x.Id == id)
+            .Where(IsReferenced)
+            .AnyAsync();
+
+    private async Task<HashSet<int>> GetReferencedIdsAsync(int[] ids)
+    {
+        if (ids.Length == 0)
+        {
+            return [];
+        }
+
+        var referenced = await context.Warehouses
+            .Where(x => ids.Contains(x.Id))
+            .Where(IsReferenced)
+            .Select(x => x.Id)
+            .ToArrayAsync();
+
+        return [.. referenced];
     }
 
     private async Task<Warehouse> GetOrThrowAsync(int id) =>

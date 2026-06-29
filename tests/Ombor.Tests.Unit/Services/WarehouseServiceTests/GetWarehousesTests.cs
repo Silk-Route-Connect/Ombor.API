@@ -75,7 +75,8 @@ public sealed class GetWarehousesTests : WarehouseTestsBase
             WarehouseAssertionHelper.AssertEquivalent(expected, actual);
         });
 
-        _mockContext.Verify(mock => mock.Warehouses, Times.Once);
+        // Warehouses is hit twice: once to list, once for the IsDeletable reference check.
+        _mockContext.Verify(mock => mock.Warehouses, Times.Exactly(2));
 
         VerifyNoOtherCalls();
     }

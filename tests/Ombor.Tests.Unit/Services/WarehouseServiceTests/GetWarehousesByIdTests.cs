@@ -26,7 +26,8 @@ public sealed class GetWarehousesByIdTests : WarehouseTestsBase
         WarehouseAssertionHelper.AssertEquivalent(warehouse, response);
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
-        _mockContext.Verify(mock => mock.Warehouses, Times.Once);
+        // Warehouses is hit twice: once to load the entity, once for the IsDeletable reference check.
+        _mockContext.Verify(mock => mock.Warehouses, Times.Exactly(2));
 
         VerifyNoOtherCalls();
     }

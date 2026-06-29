@@ -39,6 +39,15 @@ public interface IWarehouseService
     Task<WarehouseDto> RestoreAsync(int id);
 
     /// <summary>
+    /// Hard-deletes a warehouse that has no referential history. Referenced warehouses are archive-only
+    /// (rule 32) and rejected with a 409 instead.
+    /// </summary>
+    /// <exception cref="ValidationException">If validation fails.</exception>
+    /// <exception cref="EntityNotFoundException{Warehouse}">If no warehouse with the given ID exists.</exception>
+    /// <exception cref="ConflictException">If the warehouse is referenced by stock, movements, transfers, transactions, or orders.</exception>
+    Task DeleteAsync(DeleteWarehouseRequest request);
+
+    /// <summary>
     /// Records the opening (initial) stock of a warehouse as an auditable stock-in event, creating a
     /// warehouse item per product with its initial weighted-average cost.
     /// </summary>

@@ -8,6 +8,7 @@ namespace Ombor.Contracts.Responses.Warehouse;
 /// <param name="TotalUnits">Total units on hand across all products.</param>
 /// <param name="StockValue">Total stock value (Σ quantity × average cost).</param>
 /// <param name="IsArchived">Whether the warehouse is archived (still counts in totals).</param>
+/// <param name="IsDeletable">True when no other record references the warehouse (otherwise DELETE returns 409).</param>
 public sealed record WarehouseDto(
     int Id,
     string Name,
@@ -15,4 +16,5 @@ public sealed record WarehouseDto(
     int ProductCount,
     int TotalUnits,
     decimal StockValue,
-    bool IsArchived);
+    bool IsArchived,
+    bool IsDeletable);
