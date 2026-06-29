@@ -22,10 +22,10 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
 
         var openings = await context.OpeningStocks
             .Where(o => o.WarehouseId == warehouseId)
-            .Select(o => new { o.Id, o.DateUtc, o.ProductId, ProductName = o.Product.Name, o.Product.Measurement, o.Quantity })
+            .Select(o => new { o.Id, o.DateUtc, o.ProductId, ProductName = o.Product.Name, o.Product.Measurement, o.Quantity, o.Note })
             .ToListAsync();
         movements.AddRange(openings.Select(o => new Raw(
-            o.Id, o.DateUtc, MovementKind.Opening, o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, null, o.Quantity)));
+            o.Id, o.DateUtc, MovementKind.Opening, o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, o.Note, o.Quantity)));
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.Transaction.WarehouseId == warehouseId)

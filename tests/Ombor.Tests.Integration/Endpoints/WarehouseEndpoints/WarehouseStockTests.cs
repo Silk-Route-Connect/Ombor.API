@@ -1,3 +1,6 @@
+using System.Net;
+using Microsoft.EntityFrameworkCore;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Warehouse;
 using Ombor.Contracts.Responses.Warehouse;
 using Ombor.Tests.Integration.Helpers;
@@ -8,6 +11,36 @@ namespace Ombor.Tests.Integration.Endpoints.WarehouseEndpoints;
 public class WarehouseStockTests(
     TestingWebApplicationFactory factory, ITestOutputHelper outputHelper) : WarehouseTestsBase(factory, outputHelper)
 {
+    [Fact]
+    public async Task OpeningStock_ShouldPersistNote_AndSurfaceItInMovements_AndAcceptZeroUnitCost()
+    {
+        // Arrange — opening stock with an audit note and a zero unit cost (canon-valid: free/sample stock).
+        var warehouse = await CreateWarehouseAsync();
+        var product = await CreateProductAsync();
+        const string note = "Initial count after stocktake";
+
+        var request = new AddOpeningStockRequest(
+            warehouse.Id,
+            [new OpeningStockLine(product.Id, Quantity: 7, UnitCost: 0m)],
+            Note: note);
+
+        // Act — zero unit cost is accepted (200, not 400).
+        await _client.PostAsync<WarehouseDto>(
+            $"{GetUrl(warehouse.Id)}/opening-stock", request, HttpStatusCode.OK);
+
+        // Assert — the note is persisted on the opening-stock event...
+        var stored = await _context.OpeningStocks
+            .AsNoTracking()
+            .Where(o => o.WarehouseId == warehouse.Id)
+            .ToListAsync();
+        Assert.All(stored, o => Assert.Equal(note, o.Note));
+
+        // ...and surfaces in the warehouse movements ledger (rules 22/26 — the audit note is not dropped).
+        var movements = await _client.GetAsync<WarehouseMovementDto[]>($"{GetUrl(warehouse.Id)}/movements");
+        var opening = Assert.Single(movements, m => m.Kind == MovementKind.Opening && m.ProductId == product.Id);
+        Assert.Equal(note, opening.Note);
+    }
+
     [Fact]
     public async Task OpeningStock_ShouldComputeWarehouseTotals_AndExposePerProductStock()
     {

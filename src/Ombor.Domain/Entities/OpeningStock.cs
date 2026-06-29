@@ -18,6 +18,9 @@ public class OpeningStock : EntityBase, IOrganizationScoped, IAuditable
     /// <summary>The opening unit cost — sets the initial weighted-average cost.</summary>
     public decimal UnitCost { get; set; }
 
+    /// <summary>Optional free-text audit note captured when the opening stock was recorded.</summary>
+    public string? Note { get; set; }
+
     /// <summary>The user who recorded the opening stock; null for seed/system rows.</summary>
     public int? CreatedById { get; set; }
     public virtual User? CreatedByUser { get; set; }

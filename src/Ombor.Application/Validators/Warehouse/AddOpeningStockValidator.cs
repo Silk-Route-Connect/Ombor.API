@@ -15,6 +15,10 @@ public sealed class AddOpeningStockValidator : AbstractValidator<AddOpeningStock
             .NotEmpty()
             .WithMessage("Opening stock must contain at least one item.");
 
+        RuleFor(x => x.Note)
+            .MaximumLength(ValidationConstants.MaxStringLength)
+            .When(x => x.Note is not null);
+
         RuleForEach(x => x.Items)
             .ChildRules(item =>
             {

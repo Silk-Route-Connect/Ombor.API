@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
@@ -5,11 +6,19 @@ using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Endpoints.WarehouseEndpoints;
 
-public abstract class WarehouseTestsBase(
-    TestingWebApplicationFactory factory,
-    ITestOutputHelper outputHelper) : EndpointTestsBase(factory, outputHelper)
+public abstract class WarehouseTestsBase : EndpointTestsBase
 {
     protected readonly string _searchTerm = "Warehouse 123";
+
+    protected WarehouseTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
+        : base(factory, outputHelper)
+    {
+        // The integration tests share one long-lived DbContext (DatabaseFixture.Context) across the whole
+        // collection, so entities one test plants stay in its change tracker and collide by key with the
+        // next test's inserts ("instance ... already being tracked"). Reset the tracker at the start of
+        // each test so every test runs against a clean unit of work.
+        ((DbContext)_context).ChangeTracker.Clear();
+    }
 
     protected override string GetUrl()
         => Routes.Warehouse;

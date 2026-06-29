@@ -179,6 +179,7 @@ internal sealed class WarehouseService(
                 Product = null!,
                 Quantity = item.Quantity,
                 UnitCost = item.UnitCost,
+                Note = request.Note,
                 CreatedById = createdById,
             });
         }
