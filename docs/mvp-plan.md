@@ -1,7 +1,7 @@
 # Ombor — MVP plan
 
-**Status:** canon. Rebuilt 2026-06-11, reconciled against `business-rules.md` (2026-06-11) and the completed Design refactoring. Supersedes the April mvp-plan (which predated wallets, the payment source/allocation model, StockAdjustment, multi-user, and UZS-only).
-**Last updated:** 2026-06-11
+**Status:** canon. Rebuilt 2026-06-11, reconciled against `business-rules.md` and the completed Design refactoring. Supersedes the April mvp-plan (which predated wallets, the payment source/allocation model, StockAdjustment, multi-user, and UZS-only).
+**Last updated:** 2026-06-26
 
 Defines what ships in v1. Anything not listed is deferred — adding to this list requires an explicit decision (rule 36). Behavior is specified by `business-rules.md`; reasoning by `product-brief.md`; this doc only states scope and done-ness. When this doc and a rule conflict, the rule wins.
 
@@ -17,7 +17,8 @@ Defines what ships in v1. Anything not listed is deferred — adding to this lis
 - **Immutability UX:** no edit/delete affordances on transactions, payments, payroll, adjustments, transfers; correction flows instead (rule 1).
 - **Computed balances served by the backend** (rule 12).
 - **Hard-block negative stock** (rule 20).
-- **Archive, never delete** for Product, Partner, Wallet, Warehouse (rules 29–32).
+- **Archive, never delete** for Product, Partner, Wallet, Warehouse, except a never-referenced record, which is hard-deletable; referenced records are archive-only (rules 29–32).
+- **User-facing entity ids** are formatted client-side as «№123» via a shared id formatter — the raw numeric id is never exposed ad hoc, the «№» prefix is never assembled inline. No persisted human numbering in MVP (see Deferred).
 - Designed screens implemented per the frontend `docs/design-handoff.md` locked patterns.
 - List pages carry an «Экспорт» action (title level): client-side CSV of the current filtered/sorted view. No backend involvement; distinct from the cut org-wide data export.
 
@@ -27,7 +28,7 @@ Defines what ships in v1. Anything not listed is deferred — adding to this lis
 
 ### 1. Auth
 
-Registration, login, OTP verification, password reset. Multi-user per tenant.
+Registration, login, OTP verification, password reset. Multi-user per tenant. Registration captures the user's interface language; organization setup seeds its starter records in that language (rule 42).
 _Done:_ a business registers, verifies, logs in; a second user joins the same tenant; a user resets a forgotten password. _(Design: built — two-panel surface; OTP 4-digit; register collects Имя+Фамилия, email/Telegram dropped; password reset mocked pending backend.)_
 
 ### 2. Dashboard
@@ -37,12 +38,12 @@ _Done:_ numbers reconcile with the underlying module pages for the same period. 
 
 ### 3. Products & Categories
 
-Product CRUD per Domain model (prices interpreted by type; retail price dormant — no UI). Multiple images. Archive/restore. Search by name/SKU, Cyrillic↔Latin parity. Category CRUD; a starter category is seeded at tenant setup (rule 42, ordinary entity). The product form pre-selects the category when the tenant has exactly one. 1–3 warehouses; per-warehouse stock (InventoryItem: quantity + WAC); opening-stock entry flow (audited stock-in with unit costs — rule 22); archive with totals preserved (rule 31).
-_Done:_ full lifecycle incl. archive; WAC visible and correct after supplies at different prices.
+Product CRUD per Domain model (prices interpreted by type; retail price dormant — no UI). Multiple images. Archive/restore. Search by name/SKU, Cyrillic↔Latin parity. Category CRUD; a starter category is seeded at tenant setup (rule 42, ordinary entity). The product form pre-selects the category when the tenant has exactly one. 1–3 warehouses; per-warehouse stock (InventoryItem: quantity + WAC); opening-stock entry flow (audited stock-in with unit costs — rule 22) — **multi-row: several products entered in one submission against a single warehouse; the product picker excludes products already stocked in that warehouse (a product already present is corrected through Stock Adjustments, not re-opened)**; archive with totals preserved (rule 31).
+_Done:_ full lifecycle incl. archive; WAC visible and correct after supplies at different prices; opening stock for several products entered in one modal.
 
 ### 4. Warehouses & stock view
 
-1–3 warehouses; per-warehouse stock (InventoryItem: quantity + WAC); archive with totals preserved (rule 31).
+1–3 warehouses; per-warehouse stock (InventoryItem: quantity + WAC); opening-stock entry on the warehouse detail (multi-row, excludes already-stocked products — see §3); archive with totals preserved (rule 31).
 _Done:_ stock view matches event history per warehouse.
 
 ### 5. Stock Adjustments
@@ -57,12 +58,12 @@ _Done:_ both warehouse balances correct after transfer; transfer visible in both
 
 ### 7. Partners
 
-CRUD per Domain model; opening balance as one-time immutable event at creation; full-page detail with ledger (chronological event log explaining every balance change), balance with natural-language label; archive/restore. System partner «Розничный покупатель» present, non-editable (rule 39).
+CRUD per Domain model; opening balance as one-time immutable event at creation; full-page detail with ledger (chronological event log explaining every balance change), balance with natural-language label; archive/restore. An ordinary starter partner is seeded at organization setup (rule 42) — type `Both`, editable/archivable/deletable like any other, with no system flag; walk-in retail is handled by a partner the user names and reuses (rule 39).
 _Done:_ any partner balance is fully explainable from the visible ledger.
 
 ### 8. Sales & POS (New Sale)
 
-Sale entry with lines, line-level discounts (% or fixed, rules 37–38), warehouse, partner, notes, attachments; POS-style New Sale defaulting to the walk-in partner; integrated payment section; overpayment settlement modal (change return default, settle-other-debts opt-in, advance only at zero debt — rule 40).
+Sale entry with lines, line-level discounts (% or fixed, rules 37–38), warehouse, partner, notes, attachments; POS-style New Sale with an **empty partner picker — partner selection is required on submit, there is no default walk-in partner** (rule 39, design-handoff #9); integrated payment section; overpayment settlement modal (change return default, settle-other-debts opt-in, advance only at zero debt — rule 40).
 _Done:_ a credit sale creates a receivable; a paid sale settles via correct allocations; stock decremented at WAC.
 
 ### 9. Supplies (New Supply)
@@ -77,8 +78,8 @@ _Done:_ over-refund impossible; refunds adjust stock and balances correctly.
 
 ### 11. Orders
 
-Order lifecycle per Domain model state machine; warehouse chosen at delivery confirmation; auto-promotion to Sale on Delivered; no stock reservation while pending.
-_Done:_ a Delivered order becomes a Sale against the chosen warehouse; promotion fails cleanly on insufficient stock.
+Order lifecycle per Domain model state machine; warehouse optionally pre-selected at creation (auto-filled for single-warehouse orgs) and required + stock-validated at delivery confirmation; auto-promotion to Sale on Delivered; no stock reservation while pending.
+_Done:_ a Delivered order becomes a Sale against the confirmed warehouse; promotion is blocked when no warehouse is confirmed; promotion fails cleanly on insufficient stock.
 
 ### 12. Templates
 
@@ -122,17 +123,20 @@ _Done:_ a second user joins and works; a deactivated user cannot log in but stay
 - **Reports module** (profit/analytics/trends) — **v2**; dashboard KPIs are the only v1 analytics surface.
 - **Roles & permissions** — v2 (rule 35).
 - **Multi-currency** — dedicated future effort (rule 33).
+- **Persisted per-type human-facing numbering** (per-org Sale / Supply / Order / Payment sequences, search-by-number on the backend) — **v2**. MVP displays the internal id client-side as «№123»; no persisted sequence, search/filter stays client-side.
 - **POS receipt printing / fiscal hardware** — pending design-partner demand.
 - **Mobile read-only companion** — post-MVP; v1 is web-only.
 - **Приёмка (goods acceptance) as a standalone entity** — cut; supplies are recorded directly.
 - **Negative stock allowance** — revisit on design-partner pushback.
 - **Cycle-count / physical-inventory reconciliation; Decrease↔Increase linkage** — v2 (rules 24–25).
+- **Bulk data-import wizard** (onboarding hundreds of products/stock rows at once) — required before public launch, scoped separately; not a design-partner blocker. The multi-row opening-stock modal handles tens of products, not hundreds.
 - **Telegram order capture; e-commerce surfaces** — out (enum `OrderSource.Telegram` stays dormant).
-- **Onboarding / data import wizard** — required before public launch, scoped separately; not a design-partner blocker.
 - **Retail-price features** — dormant field only.
 - **Cashbox machinery** (shift reconciliation, register counts) — deferred.
 - **Org-wide data export (full CSV archive, Settings)** — cut from MVP; revisit at v2 planning. Other exports are acceptable.
 - **Currency machinery cleanup** — post-MVP (frozen meanwhile).
+- **Fractional / decimal stock quantity** — v2; MVP stock is integer base units (rule 21). The `UnitOfMeasurement` enum labels the unit; it doesn't imply fractional storage. Revisit trigger: a design partner needing loose-weight selling in their trial.
+- **Standalone-payment debt-settlement semantics** (direction × debt-position, allocation ordering across mixed open items incl. refunds) **and the partner-page "pay debts" button** — v2 (business-rules DR-05 scope note). The standalone payment modal ships as-is functionally in MVP; guided overpayment settlement (design-handoff #5–6) is unaffected.
 
 ---
 

@@ -1,7 +1,7 @@
 # Ombor — business rules
 
 **Status:** active decision record — current best thinking, revisable when we learn better; not a frozen spec. Supersedes `rules.md` and the domain-model / enum sections of `claude-context.md`.
-**Last updated:** 2026-06-13
+**Last updated:** 2026-06-30
 
 The spec the implementation follows: hard rules first, then the domain model they constrain, then the consolidated enum reference. Pair with `mvp-plan.md` for feature scope and `product-brief.md` for vision and reasoning. When a rule and a feature description conflict, the rule wins; when a decision changes, change the rule — don't work around it silently.
 
@@ -35,6 +35,8 @@ These must never be violated. If implementation requires breaking one, stop and 
     - Deposit / Withdrawal: derived when the partner is a single type (Customer or Supplier); user-set when the partner is Both.
     - General: always user-set.
 
+> **Scope note — DR-05 (deferred, candidate V2).** The standalone (non-guided) payment flow's **debt-settlement semantics** are not fully defined in MVP and are deferred to a dedicated round. Specifically: allocation behavior across **direction × partner-debt-position**, and allocation **ordering** across mixed open items (e.g. a partner with N unpaid sales _and_ N unpaid refunds — which settles first?), including the direction-vs-debt mismatch case (an Expense to a partner who owes _us_). This is a core-model question, not polish — the ordering ambiguity exists even for single-type partners — and settling it under time pressure risks baking wrong assumptions into the debt-audit differentiator. **MVP scope:** the standalone payment modal stays **functionally as-is**; only its visual/UX issues are fixed. No removal of Transaction-type, no separate "Pay debts" button, no allocation rework. The partner-page Payment button (settle a partner's debts from their detail page) remains a **V2** item — deferred, _not_ reversed. Rule 40 (advance gating / overpayment default) still governs where it already applies.
+
 ### C. Wallets
 
 15. **Wallet balance is computed, not stored** — opening balance + Wallet-type payment components + inter-wallet transfers. Advance-source components never affect a wallet balance. **A Wallet component is recorded net of any change returned**: a customer who tenders 1000 to settle 600 and takes 400 back produces a Wallet component of 600, not 1000 — so a ChangeReturn allocation needs no separate wallet effect.
@@ -46,7 +48,7 @@ These must never be violated. If implementation requires breaking one, stop and 
 18. **Weighted-average cost is stored on InventoryItem**, updated atomically on every stock-in event (Supply, transfer receipt, SaleRefund, StockAdjustment increase, opening stock). Formula: `((existing_qty × existing_cost) + (incoming_qty × incoming_cost)) / (existing_qty + incoming_qty)`. It is a stored field, not a view (sequential calculation, not aggregable).
 19. **Stock always leaves at WAC.** A Sale's stock-out is COGS; a StockAdjustment decrease is loss, reported as a distinct line separate from COGS.
 20. **Hard-block negative stock** at write time. A StockAdjustment decrease cannot take stock below zero.
-21. **Stock moves in base units.** A line entered in packages decrements base units (package count × package size). The entered package count is retained on the line for audit.
+21. **Stock moves in whole base units.** A line entered in packages decrements base units (package count × package size). The entered package count is retained on the line for audit. **Quantity is an integer number of base units throughout MVP** — InventoryItem, opening stock, StockAdjustment, OrderLine, and transfers all store whole numbers. `UnitOfMeasurement` (including Kilogram, Ton, Gram) **labels the unit; it does not imply fractional storage** — a «1кг» bag is one base unit, not 1.0 kg loose. Fractional / decimal quantity is a dedicated **V2** effort: it requires converting the on-hand quantity type to decimal across the dispute-grade stock core (read models, DTOs, migrations, WAC and negative-stock invariants) and is not justified without a confirmed design-partner requirement. **Trigger to revisit:** a design partner needing loose-weight selling during their trial.
 22. **Product creation never moves stock.** A product is always created at zero quantity — it is a definition, nothing more. All initial stock enters through the **warehouse opening-stock flow:** an audited stock-in event with per-product quantity and unit cost, scoped to a warehouse. Products expose stock only as served read models — per-warehouse InventoryItems and the aggregates `totalStock` / value-weighted `averageCost`.
 
 ### E. Stock adjustments
@@ -66,7 +68,7 @@ These must never be violated. If implementation requires breaking one, stop and 
 29. **Archive (soft-delete via `IsDeleted`) is allowed for Product, Partner, Wallet, and Warehouse only.** No other entities archive in MVP.
 30. **Archiving is never blocked by existing references.** Archive is not delete; references continue to resolve to the archived entity.
 31. **An archived wallet or warehouse that still holds a balance or stock still counts in totals.**
-32. **Never hard-delete an entity with referential history.**
+32. **Never hard-delete an entity with referential history.** For a **warehouse** specifically, referential history means **any** of: stock (InventoryItem), an opening-stock event, a stock adjustment, a transaction, a transfer (as source **or** destination), **or an order**. A warehouse with none of these is deletable under the normal rules (rule 42); one with any of these is delete-blocked and archive-only. The served `isDeletable` flag and the delete guard must derive from a **single reference predicate** so they cannot drift. (Mirror this pattern for any other deletable entity: the served deletability flag and the enforcing guard share one definition.)
 
 ### H. Currency
 
@@ -120,7 +122,7 @@ These must never be violated. If implementation requires breaking one, stop and 
 - **PaymentComponent (source)** — `SourceType ∈ {Wallet, Advance}` + amount. Wallet draws real cash from a wallet; Advance draws against the partner's advance claim.
 - **PaymentAllocation (destination)** — `AllocationType ∈ {TransactionSettlement, AdvanceCredit, ChangeReturn}`. Settlement points at a transaction; AdvanceCredit parks money as a partner claim that stays in the wallet; ChangeReturn is a stored audit memo for cash handed straight back, counted in neither wallet nor partner balance.
 
-Payment types: Transaction, Deposit, Withdrawal, Payroll, General. The settlement UI lists outstanding transactions, offers one-click auto-allocation in chronological order, manual per-transaction distribution, or leave-as-advance.
+Payment types: Transaction, Deposit, Withdrawal, Payroll, General. The settlement UI lists outstanding transactions, offers one-click auto-allocation in chronological order, manual per-transaction distribution, or leave-as-advance. _(The full standalone-flow settlement semantics — direction × debt-position and allocation ordering — are deferred per the DR-05 scope note above.)_
 
 **Advance** — money held for a partner, not tied to a transaction, sourced from overpayment or a standalone Deposit. It is a **claim on cash that physically sits in a wallet**, not a separate money location.
 
@@ -133,9 +135,9 @@ _Worked example (change returned):_ customer owes 600, hands over 1000 cash, tak
 
 **Wallet** — a money location (`WalletType ∈ {Cash, Card, Bank}`). Balance computed: opening balance + Wallet-type components + inter-wallet transfers. Archivable; an archived wallet still holding money still counts in totals.
 
-**Inventory (warehouse)** — 1–3 per business. Holds InventoryItems. Archivable; an archived warehouse still holding stock still counts in totals.
+**Inventory (warehouse)** — 1–3 per business. Holds InventoryItems. Archivable; an archived warehouse still holding stock still counts in totals. Deletable only when it has no referential history (rule 32).
 
-**InventoryItem** — product + quantity + weighted-average cost, scoped to a warehouse. Sole source of truth for stock.
+**InventoryItem** — product + quantity + weighted-average cost, scoped to a warehouse. Sole source of truth for stock. Quantity is a whole number of base units (rule 21).
 
 **Stock-in events** (increase inventory, update WAC): opening stock, Supply, transfer receipt, SaleRefund, StockAdjustment increase.
 **Stock-out events** (decrease inventory, leave at WAC): Sale, SupplyRefund, transfer send, StockAdjustment decrease.
@@ -169,3 +171,13 @@ Consolidated. This is the authoritative list.
 - **UnitOfMeasurement:** Gram, Kilogram, Ton, Piece, Box, Unit, None
 
 **Removed enums:** `PaymentMethod` (Cash / Card / Bank / AccountBalance) — Cash/Card/Bank move to `WalletType`; AccountBalance becomes the `Advance` source type.
+
+---
+
+## Display labels (reference)
+
+Not rules — canonical UI label mappings, recorded so renderers don't re-derive them. Russian primary.
+
+- **PartnerType.Both** → «Клиент + Поставщик» (raw "Both" is never shown).
+- **PaymentType:** Transaction → «Оплата» · Deposit → «Депозит» · Withdrawal → «Вывод» · Payroll → «Зарплата» · General → «Общий».
+- **Entity numbers** render only via `formatEntityId` («№123»); there is no persisted entity number in MVP — the display number derives from the id. Never hand-roll a local `#id` / `№id` prefix at a call site.
