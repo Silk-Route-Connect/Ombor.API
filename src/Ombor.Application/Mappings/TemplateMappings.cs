@@ -1,4 +1,5 @@
-﻿using Ombor.Contracts.Requests.Template;
+﻿using Ombor.Application.Extensions;
+using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -24,7 +25,8 @@ internal static class TemplateMappings
             PartnerName: template.Partner.Name,
             Name: template.Name,
             Type: template.Type.ToString(),
-            Items: items);
+            Items: items,
+            LastUsedAt: template.LastUsedAt);
     }
 
     public static CreateTemplateResponse ToCreateResponse(this Template template)
@@ -85,6 +87,7 @@ internal static class TemplateMappings
                 existing.Quantity = requestItem.Quantity;
                 existing.UnitPrice = requestItem.UnitPrice;
                 existing.DiscountAmount = requestItem.Discount;
+                existing.DiscountType = requestItem.DiscountType.ToDomainDiscountType();
                 keptIds.Add(existing.Id);
             }
             else
@@ -96,6 +99,7 @@ internal static class TemplateMappings
                     Quantity = requestItem.Quantity,
                     UnitPrice = requestItem.UnitPrice,
                     DiscountAmount = requestItem.Discount,
+                    DiscountType = requestItem.DiscountType.ToDomainDiscountType(),
                     Product = null!,
                     Template = null!,
                 });
@@ -131,6 +135,7 @@ internal static class TemplateMappings
             Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
+            DiscountType = item.DiscountType.ToDomainDiscountType(),
             Product = null!, // Will be set by EF
             Template = null! // Will be set by EF
         };
@@ -143,6 +148,7 @@ internal static class TemplateMappings
             Quantity = item.Quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
+            DiscountType = item.DiscountType.ToDomainDiscountType(),
             Product = null!, // Will be set by EF
             Template = null! // Will be set by EF
         };
@@ -163,11 +169,14 @@ internal static class TemplateMappings
             Id: item.Id,
             ProductId: item.ProductId,
             ProductName: item.Product.Name,
+            Sku: item.Product.SKU,
+            Measurement: item.Product.Measurement.ToString(),
             TemplateId: item.TemplateId,
             TemplateName: item.Template.Name,
             Quantity: item.Quantity,
             UnitPrice: item.UnitPrice,
-            Discount: item.DiscountAmount);
+            Discount: item.DiscountAmount,
+            DiscountType: item.DiscountType.ToString());
     }
 
     public static TemplateType ToDomain(this Contracts.Enums.TemplateType type)

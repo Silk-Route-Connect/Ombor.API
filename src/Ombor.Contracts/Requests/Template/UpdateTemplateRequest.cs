@@ -14,4 +14,5 @@ public sealed record UpdateTemplateItem(
     int ProductId,
     int Quantity,
     decimal UnitPrice,
-    decimal Discount);
+    decimal Discount,
+    DiscountType DiscountType = DiscountType.Fixed);

@@ -63,6 +63,31 @@ public abstract class TemplateTestsBase(
         return partner;
     }
 
+    protected async Task<int> CreateProductAsync()
+    {
+        var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+
+        var product = new Product
+        {
+            Name = $"Product {Guid.NewGuid():N}",
+            SKU = $"SKU-{Guid.NewGuid():N}",
+            SalePrice = 100m,
+            SupplyPrice = 50m,
+            RetailPrice = 90m,
+            LowStockThreshold = 10,
+            Measurement = UnitOfMeasurement.Kilogram,
+            Type = ProductType.All,
+            CategoryId = category.Id,
+            Category = null!,
+        };
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return product.Id;
+    }
+
     private static List<TemplateItem> GetItems() =>
         Enumerable.Range(1, 5)
         .Select(i => new TemplateItem

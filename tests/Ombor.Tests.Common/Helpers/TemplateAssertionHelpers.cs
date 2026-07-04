@@ -30,6 +30,7 @@ public static class TemplateAssertionHelpers
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Partner.Name, actual.PartnerName);
+        Assert.Equal(expected.LastUsedAt, actual.LastUsedAt);
         AssertEquivalent([.. expected.Items], actual.Items);
     }
 
@@ -118,12 +119,15 @@ public static class TemplateAssertionHelpers
     {
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.Product.Name, actual.ProductName);
+        Assert.Equal(expected.Product.SKU, actual.Sku);
+        Assert.Equal(expected.Product.Measurement.ToString(), actual.Measurement);
         Assert.Equal(expected.ProductId, actual.ProductId);
         Assert.Equal(expected.Template.Name, actual.TemplateName);
         Assert.Equal(expected.TemplateId, actual.TemplateId);
         Assert.Equal(expected.Quantity, actual.Quantity);
         Assert.Equal(expected.UnitPrice, actual.UnitPrice);
         Assert.Equal(expected.DiscountAmount, actual.Discount);
+        Assert.Equal(expected.DiscountType.ToString(), actual.DiscountType);
     }
 
     private static void AssertEquivalent(UpdateTemplateItem[] expected, TemplateItemDto[] actual)

@@ -12,4 +12,5 @@ public sealed record CreateTemplateItem(
     int ProductId,
     int Quantity,
     decimal UnitPrice,
-    decimal Discount);
+    decimal Discount,
+    DiscountType DiscountType = DiscountType.Fixed);
