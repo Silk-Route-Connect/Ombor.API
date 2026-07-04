@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi.Models;
 using Ombor.API.ExceptionHandlers;
 using Ombor.API.Filters;
+using Ombor.Contracts.Serialization;
 
 namespace Ombor.API.Extensions;
 
@@ -43,7 +44,7 @@ internal static class DependencyInjection
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.Converters.Add(new ValidatingStringEnumConverter());
             });
 
         return services;
@@ -52,6 +53,7 @@ internal static class DependencyInjection
     private static IServiceCollection AddErrorHandlers(this IServiceCollection services)
     {
         services.AddExceptionHandler<ValidationExceptionHandler>();
+        services.AddExceptionHandler<InvalidEnumExceptionHandler>();
         services.AddExceptionHandler<EntityNotFoundExceptionHandler>();
         services.AddExceptionHandler<ConflictExceptionHandler>();
         services.AddExceptionHandler<InvalidOrderStateTransitionExceptionHandler>();

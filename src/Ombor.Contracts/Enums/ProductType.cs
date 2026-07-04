@@ -5,7 +5,7 @@ namespace Ombor.Contracts.Enums;
 /// <summary>
 /// Enumeration of supported product types
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum ProductType
 {
     /// <summary>Product is for sale.</summary>

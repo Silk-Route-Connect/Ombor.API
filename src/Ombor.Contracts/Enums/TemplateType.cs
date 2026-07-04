@@ -5,7 +5,7 @@ namespace Ombor.Contracts.Enums;
 /// <summary>
 /// Enumeration for supported types of the Template.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum TemplateType
 {
     /// <summary>Template for Sale.</summary>

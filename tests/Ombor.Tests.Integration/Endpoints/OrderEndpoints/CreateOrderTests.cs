@@ -123,4 +123,25 @@ public sealed class CreateOrderTests(TestingWebApplicationFactory factory, ITest
         var problem = await _client.PostAsync<ValidationProblemDetails>(Routes.Order, body, HttpStatusCode.BadRequest);
         Assert.NotNull(problem);
     }
+
+    [Fact]
+    public async Task PostAsync_ShouldReturnBadRequest_WhenSourceEnumInvalid()
+    {
+        // Arrange — a body valid except for an unparseable OrderSource. The invalid enum must surface as a
+        // 400 ValidationProblemDetails, not a 500 (delta §10 / F-017): the binding failure is swallowed into
+        // model state, so without the model-state filter the action would run with a null request and 500.
+        var customerId = await CreateCustomerAsync();
+        var productId = await CreateProductAsync();
+        var body = new
+        {
+            customerId,
+            source = "NotARealSource",
+            deliveryAddress = "Test address",
+            lines = new[] { new { productId, quantity = 1, unitPrice = 100m, discount = (decimal?)null, discountType = "Fixed" } },
+        };
+
+        // Act + Assert
+        var problem = await _client.PostAsync<ValidationProblemDetails>(Routes.Order, body, HttpStatusCode.BadRequest);
+        Assert.NotNull(problem);
+    }
 }

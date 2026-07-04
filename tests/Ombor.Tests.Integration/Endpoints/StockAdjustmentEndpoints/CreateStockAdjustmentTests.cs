@@ -107,4 +107,22 @@ public sealed class CreateStockAdjustmentTests(TestingWebApplicationFactory fact
             HttpStatusCode.BadRequest);
         Assert.NotNull(problem);
     }
+
+    [Fact]
+    public async Task ShouldReturnBadRequest_WhenDirectionEnumInvalid()
+    {
+        // Arrange — StockAdjustmentDirection carries a type-level [JsonConverter], so it bypasses the globally
+        // registered enum converter. An unparseable value must still be a 400, proving the model-state filter
+        // covers attributed enums too (delta §10, systemic).
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 10);
+
+        // Act + Assert
+        var problem = await _client.PostAsync<ValidationProblemDetails>(
+            Routes.StockAdjustment,
+            new { warehouseId, productId, direction = "NotADirection", quantity = 1, reason = "Damage" },
+            HttpStatusCode.BadRequest);
+        Assert.NotNull(problem);
+    }
 }

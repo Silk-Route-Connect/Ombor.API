@@ -5,7 +5,7 @@ namespace Ombor.Contracts.Enums;
 /// <summary>
 /// Enumeration of supported units of measurement for products.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum UnitOfMeasurement
 {
     /// <summary>The gram unit.</summary>

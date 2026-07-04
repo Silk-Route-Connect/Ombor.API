@@ -5,7 +5,7 @@ namespace Ombor.Contracts.Enums;
 /// <summary>
 /// How a transaction line's discount value is interpreted (business-rules rule 37).
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum DiscountType
 {
     /// <summary>Discount is a percentage of the line gross (<c>unitPrice × quantity × discount / 100</c>).</summary>

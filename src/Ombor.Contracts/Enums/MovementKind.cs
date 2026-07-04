@@ -7,7 +7,7 @@ namespace Ombor.Contracts.Enums;
 /// movement ledgers. A closed set sourced from the underlying event/transaction type — never inferred
 /// from the stock direction — so an audit consumer can rely on it without guessing from the quantity sign.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum MovementKind
 {
     /// <summary>Initial stock recorded when a product is first stocked in a warehouse.</summary>

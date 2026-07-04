@@ -5,7 +5,7 @@ namespace Ombor.Contracts.Enums;
 /// <summary>
 /// What to do with a payment amount that exceeds the debt it settles (business-rules rules 15, 40).
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
+[JsonConverter(typeof(Serialization.ValidatingStringEnumConverter))]
 public enum OverpaymentHandling
 {
     /// <summary>Hand the excess back as cash; recorded as a change-return memo, excluded from balances (rule 15).</summary>
