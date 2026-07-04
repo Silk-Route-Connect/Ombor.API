@@ -95,6 +95,42 @@ public abstract class TransactionsTestsBase(
         await _context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Plants a transaction row directly (bypassing the create pipeline) so read-model tests can pin an exact
+    /// type, settlement status, due date, and refund link. TotalPaid is derived to be consistent with the status.
+    /// </summary>
+    protected async Task<int> SeedTransactionAsync(
+        int partnerId,
+        TransactionType type = TransactionType.Sale,
+        TransactionStatus status = TransactionStatus.Open,
+        DateOnly? dueDate = null,
+        int? originalTransactionId = null)
+    {
+        var transaction = new TransactionRecord
+        {
+            PartnerId = partnerId,
+            Partner = null!,
+            Type = type,
+            WarehouseId = await EnsureWarehouseAsync(),
+            DateUtc = DateTimeOffset.UtcNow,
+            DueDate = dueDate,
+            TotalDue = 10_000m,
+            TotalPaid = status switch
+            {
+                TransactionStatus.Closed => 10_000m,
+                TransactionStatus.PartiallyPaid => 4_000m,
+                _ => 0m,
+            },
+            Status = status,
+            OriginalTransactionId = originalTransactionId,
+            RefundReason = originalTransactionId is null ? null : "Test refund",
+        };
+        _context.Transactions.Add(transaction);
+        await _context.SaveChangesAsync();
+
+        return transaction.Id;
+    }
+
     protected async Task<int> CreateOpenTransactionAsync(int partnerId, decimal due, decimal paid, TransactionType type = TransactionType.Sale)
     {
         var openTransaction = new TransactionRecord

@@ -24,25 +24,46 @@ internal sealed class TransactionService(
     private const string AttachmentsSubfolder = "transactions";
 
 
-    public Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
+    public async Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
     {
         var query = GetQuery(request);
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        return query
+        // The served number and the due-date-driven Overdue status are plain C# (untranslatable to SQL), so
+        // project the raw columns at the DB then map in memory — the shape DebtService already uses.
+        var rows = await query
             .OrderByDescending(x => x.DateUtc)
-            .Select(x => new TransactionDto(
+            .Select(x => new
+            {
                 x.Id,
+                x.Type,
+                x.Status,
+                x.DueDate,
                 x.PartnerId,
-                x.Partner.Name,
+                PartnerName = x.Partner.Name,
                 x.DateUtc,
-                x.Type.ToString(),
-                x.Status.ToString(),
                 x.TotalDue,
                 x.TotalPaid,
-                x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)),
+                Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
                 x.OriginalTransactionId,
-                x.RefundReason))
+                x.RefundReason,
+            })
             .ToArrayAsync();
+
+        return [.. rows.Select(x => new TransactionDto(
+            x.Id,
+            x.Type.ToProvisionalNumber(x.Id),
+            x.PartnerId,
+            x.PartnerName,
+            x.DateUtc,
+            x.Type.ToString(),
+            x.Status.ToEffectiveStatusName(x.DueDate, today),
+            x.TotalDue,
+            x.TotalPaid,
+            x.Lines,
+            x.OriginalTransactionId,
+            x.Type.ToOriginalProvisionalNumber(x.OriginalTransactionId),
+            x.RefundReason))];
     }
 
     public async Task<TransactionDto> GetByIdAsync(GetTransactionByIdRequest request)
@@ -63,6 +84,8 @@ internal sealed class TransactionService(
     public async Task<TransactionDetailDto> GetDetailByIdAsync(GetTransactionByIdRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
         var row = await context.Transactions
             .AsNoTracking()
@@ -110,7 +133,7 @@ internal sealed class TransactionService(
             row.Type.ToProvisionalNumber(row.Id),
             row.Type.ToString(),
             row.Type.ToDebtDirection(),
-            row.Status.ToString(),
+            row.Status.ToEffectiveStatusName(row.DueDate, today),
             row.DateUtc,
             row.DueDate,
             row.PartnerId,
@@ -128,6 +151,7 @@ internal sealed class TransactionService(
             row.CreatedBy,
             row.Notes,
             row.OriginalTransactionId,
+            row.Type.ToOriginalProvisionalNumber(row.OriginalTransactionId),
             row.RefundReason);
     }
 
@@ -475,8 +499,21 @@ internal sealed class TransactionService(
 
         if (request.Status.HasValue)
         {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var domainStatus = request.Status.Value.ToDomainStatus();
-            query = query.Where(x => x.Status == domainStatus);
+
+            // Overdue is computed on read (a non-closed transaction past its due date), so it overrides the stored
+            // Open/PartiallyPaid value. The filter mirrors that: ?status=Overdue selects those rows, and
+            // ?status=Open|PartiallyPaid must exclude the ones now showing as Overdue. Closed is never overdue.
+            query = domainStatus switch
+            {
+                Domain.Enums.TransactionStatus.Overdue => query.Where(x =>
+                    x.Status != Domain.Enums.TransactionStatus.Closed && x.DueDate != null && x.DueDate < today),
+                Domain.Enums.TransactionStatus.Closed => query.Where(x =>
+                    x.Status == Domain.Enums.TransactionStatus.Closed),
+                _ => query.Where(x =>
+                    x.Status == domainStatus && !(x.DueDate != null && x.DueDate < today)),
+            };
         }
 
         if (request.Type.HasValue)

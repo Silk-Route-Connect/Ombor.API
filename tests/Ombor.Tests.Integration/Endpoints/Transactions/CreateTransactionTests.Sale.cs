@@ -41,6 +41,27 @@ public partial class CreateTransactionTests
         Assert.Equal(10_000m, allocation.Amount);
     }
 
+    [Fact]
+    public async Task CreateAsync_ShouldReturnProvisionalNumberAndComputedStatus()
+    {
+        // Arrange
+        var partnerId = await CreatePartnerAsync();
+        var walletId = await CreateWalletAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+
+        var request = TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 10_000m);
+
+        // Act
+        var created = await PostTransactionAsync(request);
+
+        // Assert — the create (mapper) path serves the document number, the computed status, and no refund link.
+        Assert.Equal($"S-{created.Id}", created.Number);
+        Assert.Equal("Closed", created.Status);
+        Assert.Null(created.OriginalTransactionNumber);
+    }
+
     [Theory]
     [InlineData(10_000, 4_000, 6_000)]
     [InlineData(10_000, 7_500, 2_500)]

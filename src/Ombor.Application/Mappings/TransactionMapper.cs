@@ -48,18 +48,22 @@ internal sealed class TransactionMapper : ITransactionMapper
 
     public TransactionDto ToDto(TransactionRecord transaction)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
         return new TransactionDto(
             transaction.Id,
+            transaction.Type.ToProvisionalNumber(transaction.Id),
             transaction.PartnerId,
             transaction.Partner.Name,
             transaction.DateUtc,
             transaction.Type.ToString(),
-            transaction.Status.ToString(),
+            transaction.Status.ToEffectiveStatusName(transaction.DueDate, today),
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
                 x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total)),
             transaction.OriginalTransactionId,
+            transaction.Type.ToOriginalProvisionalNumber(transaction.OriginalTransactionId),
             transaction.RefundReason);
     }
 }

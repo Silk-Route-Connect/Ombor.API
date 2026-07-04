@@ -26,6 +26,34 @@ internal static class TransactionExtensions
     public static string ToDebtDirection(this TransactionType type) =>
         type is TransactionType.Sale or TransactionType.SupplyRefund ? DebtDirections.Receivable : DebtDirections.Payable;
 
+    // A non-closed transaction whose due date has passed is Overdue (rule 2). Computed on read so the served
+    // status never drifts; never persisted. Overdue overrides Open/PartiallyPaid; a Closed row is never overdue.
+    public static bool IsOverdue(this TransactionStatus stored, DateOnly? dueDate, DateOnly today) =>
+        stored != TransactionStatus.Closed && dueDate is { } due && due < today;
+
+    // The status name served to clients: the stored value, or "Overdue" when the due date has passed.
+    public static string ToEffectiveStatusName(this TransactionStatus stored, DateOnly? dueDate, DateOnly today) =>
+        stored.IsOverdue(dueDate, today) ? nameof(TransactionStatus.Overdue) : stored.ToString();
+
+    // A refund's original is always the matching forward transaction (SaleRefund→Sale, SupplyRefund→Supply, rule 3),
+    // so the original's provisional number is derivable from the refund's own type — no need to load the original row.
+    public static string? ToOriginalProvisionalNumber(this TransactionType refundType, int? originalTransactionId)
+    {
+        if (originalTransactionId is not { } id)
+        {
+            return null;
+        }
+
+        TransactionType? originalType = refundType switch
+        {
+            TransactionType.SaleRefund => TransactionType.Sale,
+            TransactionType.SupplyRefund => TransactionType.Supply,
+            _ => null,
+        };
+
+        return originalType?.ToProvisionalNumber(id);
+    }
+
     public static void AddPayment(this TransactionRecord transaction, decimal amount)
     {
         ArgumentNullException.ThrowIfNull(transaction);

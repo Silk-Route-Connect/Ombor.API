@@ -19,6 +19,9 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
     private const long AttachmentSizeBytes = 2_048;
     private const string AttachmentUrl = "/files/transactions/originals/receipt.pdf";
 
+    // A future due date keeps this shape-focused sale PartiallyPaid (not Overdue) regardless of when the test runs.
+    private static readonly DateOnly SettledSaleDueDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(30);
+
     [Fact]
     public async Task GetById_ShouldReturnFullDetail_WithLinesAndSettlingPayments()
     {
@@ -39,7 +42,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         Assert.Equal("PartiallyPaid", detail.Status);
         Assert.Equal(partnerId, detail.PartnerId);
         Assert.Equal(warehouseId, detail.WarehouseId);
-        Assert.Equal(new DateOnly(2026, 7, 1), detail.DueDate);
+        Assert.Equal(SettledSaleDueDate, detail.DueDate);
         Assert.Equal(10_000m, detail.TotalDue);
         Assert.Equal(4_000m, detail.TotalPaid);
         Assert.Equal(6_000m, detail.Remaining);
@@ -74,6 +77,39 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         await _client.GetAsync<ProblemDetails>(GetUrl(NonExistentEntityId), HttpStatusCode.NotFound);
     }
 
+    [Fact]
+    public async Task GetById_ShouldComputeOverdue_ForPastDueTransaction()
+    {
+        // Arrange — an Open sale two days past due.
+        var partnerId = await CreatePartnerAsync();
+        var id = await SeedTransactionAsync(partnerId, TransactionType.Sale, TransactionStatus.Open,
+            dueDate: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2));
+
+        // Act
+        var detail = await _client.GetAsync<TransactionDetailDto>(GetUrl(id));
+
+        // Assert
+        Assert.Equal("Overdue", detail.Status);
+    }
+
+    [Fact]
+    public async Task GetById_ShouldServeOriginalTransactionNumber_ForRefund()
+    {
+        // Arrange — a Sale and a SaleRefund that reverses it.
+        var partnerId = await CreatePartnerAsync();
+        var saleId = await SeedTransactionAsync(partnerId, TransactionType.Sale, TransactionStatus.Closed);
+        var refundId = await SeedTransactionAsync(partnerId, TransactionType.SaleRefund, TransactionStatus.Open, originalTransactionId: saleId);
+
+        // Act
+        var refund = await _client.GetAsync<TransactionDetailDto>(GetUrl(refundId));
+        var sale = await _client.GetAsync<TransactionDetailDto>(GetUrl(saleId));
+
+        // Assert — the refund carries the original's document number; a non-refund has none.
+        Assert.Equal(saleId, refund.OriginalTransactionId);
+        Assert.Equal($"S-{saleId}", refund.OriginalTransactionNumber);
+        Assert.Null(sale.OriginalTransactionNumber);
+    }
+
     private async Task<(int transactionId, string walletName)> SeedSettledSaleAsync(int partnerId, int warehouseId, int productId)
     {
         // The author resolves to a display name on read; org 1 exists (seeded host), so the FK holds.
@@ -96,7 +132,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
             Type = TransactionType.Sale,
             WarehouseId = warehouseId,
             DateUtc = DateTimeOffset.UtcNow,
-            DueDate = new DateOnly(2026, 7, 1),
+            DueDate = SettledSaleDueDate,
             TotalDue = 10_000m,
             TotalPaid = 4_000m,
             Status = TransactionStatus.PartiallyPaid,

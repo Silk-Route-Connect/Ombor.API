@@ -27,7 +27,8 @@ namespace Ombor.Contracts.Responses.Transaction;
 /// <param name="Attachments">Files uploaded with the transaction (receipts, scans); empty when none.</param>
 /// <param name="CreatedBy">The author's display name for the audit card; null for seed/system rows.</param>
 /// <param name="Notes">The free-text note captured at creation, if any.</param>
-/// <param name="OriginalTransactionId">For refunds, the transaction this one reverses; otherwise null.</param>
+/// <param name="OriginalTransactionId">For refunds, the id of the transaction this one reverses; otherwise null.</param>
+/// <param name="OriginalTransactionNumber">For refunds, the document number of the transaction this one reverses; otherwise null.</param>
 /// <param name="RefundReason">For refunds, why it was issued; otherwise null.</param>
 public sealed record TransactionDetailDto(
     int Id,
@@ -52,6 +53,7 @@ public sealed record TransactionDetailDto(
     string? CreatedBy,
     string? Notes,
     int? OriginalTransactionId,
+    string? OriginalTransactionNumber,
     string? RefundReason);
 
 /// <summary>
