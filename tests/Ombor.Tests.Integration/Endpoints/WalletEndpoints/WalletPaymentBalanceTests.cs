@@ -39,6 +39,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
         Assert.Equal("In", op.Direction);
         Assert.Equal(5_000m, op.Amount);
         Assert.Equal(5_000m, op.BalanceAfter);
+        Assert.Equal(partnerId, op.PartnerId); // a partner payment row carries the partner id for deep-linking
     }
 
     [Fact]
@@ -64,6 +65,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
         Assert.Equal("Out", op.Direction);
         Assert.Equal(4_000m, op.Amount);
         Assert.Equal(6_000m, op.BalanceAfter);
+        Assert.Null(op.PartnerId); // a partner-less general expense has no partner to link
     }
 
     [Fact]
@@ -91,6 +93,57 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
         Assert.Equal("Transfer", ops[0].Kind); // newest first — the transfer happened last
         Assert.Equal(1_300m, ops[0].BalanceAfter);
         Assert.Equal(1_500m, ops[1].BalanceAfter); // after the deposit, before the transfer
+        Assert.Null(ops[0].PartnerId);             // a transfer row links the other wallet, not a partner
+        Assert.Equal(partnerId, ops[1].PartnerId); // the deposit row carries the partner id
+    }
+
+    [Fact]
+    public async Task Operations_EmployeePaymentRow_HasPartyButNullPartnerId()
+    {
+        // Arrange — a payroll payment is tied to an employee, not a partner: the ledger shows the employee's
+        // name as the party but has no partner to deep-link to (PartnerId is null even though Party is set).
+        var walletId = await CreateWalletAsync(openingBalance: 10_000m);
+
+        var employee = new Employee
+        {
+            FullName = "Dilnoza Rustamova",
+            Position = "Cashier",
+            Salary = 3_000m,
+            Status = Ombor.Domain.Enums.EmployeeStatus.Active,
+            DateOfEmployment = new DateOnly(2026, 1, 1),
+        };
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+        var payment = new Payment
+        {
+            Number = $"P-{Guid.NewGuid():N}",
+            Type = Ombor.Domain.Enums.PaymentType.Payroll,
+            Direction = Ombor.Domain.Enums.PaymentDirection.Expense,
+            DateUtc = DateTimeOffset.UtcNow,
+            EmployeeId = employee.Id,
+            WalletId = walletId,
+            Period = "2026-06",
+            Salary = 3_000m,
+        };
+        payment.Components.Add(new PaymentComponent
+        {
+            Payment = payment,
+            SourceType = Ombor.Domain.Enums.PaymentSourceType.Wallet,
+            WalletId = walletId,
+            Amount = 3_000m,
+        });
+        _context.Payments.Add(payment);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var ops = await _client.GetAsync<WalletOperationDto[]>($"{GetUrl(walletId)}/operations");
+
+        // Assert
+        var op = Assert.Single(ops);
+        Assert.Equal("Expense", op.Kind);
+        Assert.Equal(employee.FullName, op.Party);
+        Assert.Null(op.PartnerId);
     }
 
     private async Task<int> CreatePartnerAsync()

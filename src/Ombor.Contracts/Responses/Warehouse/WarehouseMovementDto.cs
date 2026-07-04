@@ -12,6 +12,8 @@ namespace Ombor.Contracts.Responses.Warehouse;
 /// <param name="ProductName">The product name.</param>
 /// <param name="Measurement">The product's unit of measurement.</param>
 /// <param name="Counterparty">The partner or other warehouse involved, if any.</param>
+/// <param name="CounterpartyWarehouseId">For a transfer row, the id of the other warehouse (deep-link target); otherwise null.</param>
+/// <param name="CounterpartyPartnerId">For a sale/supply/refund row, the id of the partner (deep-link target); otherwise null.</param>
 /// <param name="Note">Optional note.</param>
 /// <param name="Quantity">The signed quantity delta (positive = in, negative = out).</param>
 /// <param name="BalanceAfter">The product's stock in this warehouse after the movement.</param>
@@ -23,6 +25,8 @@ public sealed record WarehouseMovementDto(
     string ProductName,
     string Measurement,
     string? Counterparty,
+    int? CounterpartyWarehouseId,
+    int? CounterpartyPartnerId,
     string? Note,
     int Quantity,
     int BalanceAfter);

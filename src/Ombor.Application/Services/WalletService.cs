@@ -174,6 +174,7 @@ internal sealed class WalletService(
                 c.Payment.Number,
                 c.Payment.Type,
                 c.Payment.Direction,
+                c.Payment.PartnerId,
                 Party = c.Payment.Partner != null
                     ? c.Payment.Partner.Name
                     : (c.Payment.Employee != null ? c.Payment.Employee.FullName : null),
@@ -192,6 +193,7 @@ internal sealed class WalletService(
                 Direction: isIncoming ? "In" : "Out",
                 PaymentNumber: null,
                 Party: isIncoming ? t.FromName : t.ToName,
+                PartnerId: null,
                 Amount: t.Amount,
                 BalanceAfter: 0m,
                 TransferId: t.Id,
@@ -208,6 +210,7 @@ internal sealed class WalletService(
                 Direction: isIncoming ? "In" : "Out",
                 PaymentNumber: p.Number,
                 Party: p.Party,
+                PartnerId: p.PartnerId,
                 Amount: p.Amount,
                 BalanceAfter: 0m,
                 TransferId: null,

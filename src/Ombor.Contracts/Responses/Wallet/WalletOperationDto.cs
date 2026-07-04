@@ -9,6 +9,7 @@ namespace Ombor.Contracts.Responses.Wallet;
 /// <param name="Direction">Whether money came In or went Out.</param>
 /// <param name="PaymentNumber">Human-friendly payment number, when the event is a payment.</param>
 /// <param name="Party">The counterparty (partner / other wallet), when applicable.</param>
+/// <param name="PartnerId">The partner id for a partner payment row (deep-link target); null for transfers and for employee-party (payroll/expense) rows, even though <see cref="Party"/> is then set.</param>
 /// <param name="Amount">The amount moved (positive magnitude).</param>
 /// <param name="BalanceAfter">Computed running balance after this event.</param>
 /// <param name="TransferId">The transfer this row belongs to, when the event is a transfer.</param>
@@ -20,6 +21,7 @@ public sealed record WalletOperationDto(
     string Direction,
     string? PaymentNumber,
     string? Party,
+    int? PartnerId,
     decimal Amount,
     decimal BalanceAfter,
     int? TransferId,

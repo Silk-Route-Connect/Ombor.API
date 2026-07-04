@@ -29,10 +29,11 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.Transaction.WarehouseId == warehouseId)
-            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, Partner = l.Transaction.Partner.Name, l.Transaction.RefundReason })
+            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, Partner = l.Transaction.Partner.Name, l.Transaction.PartnerId, l.Transaction.RefundReason })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
-            l.Id, l.DateUtc, KindOf(l.Type), l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty, l.Partner, l.RefundReason, SignedOf(l.Type, (int)l.Quantity))));
+            l.Id, l.DateUtc, KindOf(l.Type), l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty, l.Partner, l.RefundReason, SignedOf(l.Type, (int)l.Quantity),
+            CounterpartyPartnerId: l.PartnerId)));
 
         var adjustments = await context.StockAdjustments
             .Where(a => a.WarehouseId == warehouseId)
@@ -51,7 +52,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             var isSend = l.FromWarehouseId == warehouseId;
             return new Raw(
                 l.Id, l.DateUtc, MovementKind.Transfer, l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty,
-                isSend ? l.ToName : l.FromName, l.Notes, isSend ? -(int)l.Quantity : (int)l.Quantity);
+                isSend ? l.ToName : l.FromName, l.Notes, isSend ? -(int)l.Quantity : (int)l.Quantity,
+                CounterpartyWarehouseId: isSend ? l.ToWarehouseId : l.FromWarehouseId);
         }));
 
         // Running balance per product within this warehouse (reconciles to WarehouseItem.Quantity).
@@ -60,7 +62,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         return [.. withBalance
             .Select(x => new WarehouseMovementDto(
                 x.Movement.Id, x.Movement.Date, x.Movement.Kind, x.Movement.ProductId, x.Movement.ProductName,
-                x.Movement.Measurement, x.Movement.Counterparty, x.Movement.Note, x.Movement.Quantity, x.Balance))];
+                x.Movement.Measurement, x.Movement.Counterparty, x.Movement.CounterpartyWarehouseId, x.Movement.CounterpartyPartnerId,
+                x.Movement.Note, x.Movement.Quantity, x.Balance))];
     }
 
     public async Task<ProductMovementDto[]> GetProductMovementsAsync(int productId)
@@ -154,6 +157,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
     private static int SignedOf(TransactionType type, int quantity)
         => type is TransactionType.Supply or TransactionType.SaleRefund ? quantity : -quantity;
 
+    // CounterpartyWarehouseId/CounterpartyPartnerId are set only on the warehouse-ledger rows that have a link
+    // target (transfers / transactions); the product ledger and the opening/adjustment rows leave them null.
     private sealed record Raw(
         int Id,
         DateTimeOffset Date,
@@ -165,5 +170,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         string WarehouseName,
         string? Counterparty,
         string? Note,
-        int Quantity);
+        int Quantity,
+        int? CounterpartyWarehouseId = null,
+        int? CounterpartyPartnerId = null);
 }

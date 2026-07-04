@@ -41,7 +41,21 @@ public sealed class MovementLedgerTests(TestingWebApplicationFactory factory, IT
         var transfer = movements.Single(m => m.Kind == MovementKind.Transfer);
         Assert.Equal(-20, transfer.Quantity);
         Assert.False(string.IsNullOrEmpty(transfer.Counterparty)); // the destination warehouse name
-        Assert.False(string.IsNullOrEmpty(movements.Single(m => m.Kind == MovementKind.Supply).Counterparty)); // the partner name
+        var supply = movements.Single(m => m.Kind == MovementKind.Supply);
+        Assert.False(string.IsNullOrEmpty(supply.Counterparty)); // the partner name
+
+        // Deep-link ids sit next to the counterparty name: a transfer carries the other warehouse's id, a
+        // sale/supply/refund carries the partner's id, and neither is set on the opening/adjustment rows.
+        Assert.Equal(destination, transfer.CounterpartyWarehouseId);
+        Assert.Null(transfer.CounterpartyPartnerId);
+        Assert.Equal(partner, supply.CounterpartyPartnerId);
+        Assert.Null(supply.CounterpartyWarehouseId);
+        var opening = movements.Single(m => m.Kind == MovementKind.Opening);
+        Assert.Null(opening.CounterpartyWarehouseId);
+        Assert.Null(opening.CounterpartyPartnerId);
+        var adjustment = movements.Single(m => m.Kind == MovementKind.Adjustment);
+        Assert.Null(adjustment.CounterpartyWarehouseId);
+        Assert.Null(adjustment.CounterpartyPartnerId);
 
         // Newest-first: the transfer was the last event.
         Assert.Equal(MovementKind.Transfer, movements[0].Kind);
