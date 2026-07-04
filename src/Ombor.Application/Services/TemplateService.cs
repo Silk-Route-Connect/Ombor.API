@@ -31,16 +31,6 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
         return template.ToDto();
     }
 
-    public async Task<TemplateDto> MarkUsedAsync(int id)
-    {
-        var template = await GetOrThrowAsync(id);
-
-        template.LastUsedAt = DateTimeOffset.UtcNow;
-        await context.SaveChangesAsync();
-
-        return template.ToDto();
-    }
-
     public async Task<CreateTemplateResponse> CreateAsync(CreateTemplateRequest request)
     {
         await validator.ValidateAndThrowAsync(request);

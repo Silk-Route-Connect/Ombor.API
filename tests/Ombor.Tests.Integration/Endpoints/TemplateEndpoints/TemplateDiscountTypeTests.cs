@@ -1,4 +1,3 @@
-using System.Net;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Responses.Template;
@@ -7,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Endpoints.TemplateEndpoints;
 
-public sealed class TemplateUseAndDiscountTypeTests(
+public sealed class TemplateDiscountTypeTests(
     TestingWebApplicationFactory factory,
     ITestOutputHelper outputHelper) : TemplateTestsBase(factory, outputHelper)
 {
@@ -33,21 +32,5 @@ public sealed class TemplateUseAndDiscountTypeTests(
         // Assert — the create response and a fresh read both preserve the requested discount type.
         Assert.Equal(discountType.ToString(), Assert.Single(created.Items).DiscountType);
         Assert.Equal(discountType.ToString(), Assert.Single(fetched.Items).DiscountType);
-    }
-
-    [Fact]
-    public async Task Use_ShouldStampLastUsedAt()
-    {
-        // Arrange — a freshly created template has never been used.
-        var partner = await CreatePartnerAsync($"Partner use {Guid.NewGuid()}");
-        var template = await CreateTemplateAsync(partner);
-        Assert.Null((await _client.GetAsync<TemplateDto>(GetUrl(template.Id))).LastUsedAt);
-
-        // Act — loading it into a transaction stamps LastUsedAt.
-        var used = await _client.PostAsync<TemplateDto>($"{GetUrl(template.Id)}/use", new { }, HttpStatusCode.OK);
-
-        // Assert — stamped on the response and persisted for the next read.
-        Assert.NotNull(used.LastUsedAt);
-        Assert.NotNull((await _client.GetAsync<TemplateDto>(GetUrl(template.Id))).LastUsedAt);
     }
 }

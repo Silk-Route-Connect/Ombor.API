@@ -31,12 +31,6 @@ public class Template : AuditableEntity, IOrganizationScoped
     public virtual required Partner Partner { get; set; }
 
     /// <summary>
-    /// When the template was last loaded into a transaction; null until it is first used. Stamped by the
-    /// "use" action so the list can show how recently each template was applied.
-    /// </summary>
-    public DateTimeOffset? LastUsedAt { get; set; }
-
-    /// <summary>
     /// Gets or sets items of the <see cref="Template"/>
     /// </summary>
     public virtual List<TemplateItem> Items { get; set; } = [];

@@ -27,14 +27,6 @@ public class TemplatesController(ITemplateService templateService) : ControllerB
         return Ok(response);
     }
 
-    [HttpPost("{id:int:min(1)}/use")]
-    public async Task<ActionResult<TemplateDto>> UseAsync([FromRoute] int id)
-    {
-        var response = await templateService.MarkUsedAsync(id);
-
-        return Ok(response);
-    }
-
     [HttpPost]
     public async Task<ActionResult<CreateTemplateResponse>> PostAsync(
         [FromBody] CreateTemplateRequest request)

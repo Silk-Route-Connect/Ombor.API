@@ -25,8 +25,7 @@ internal static class TemplateMappings
             PartnerName: template.Partner.Name,
             Name: template.Name,
             Type: template.Type.ToString(),
-            Items: items,
-            LastUsedAt: template.LastUsedAt);
+            Items: items);
     }
 
     public static CreateTemplateResponse ToCreateResponse(this Template template)

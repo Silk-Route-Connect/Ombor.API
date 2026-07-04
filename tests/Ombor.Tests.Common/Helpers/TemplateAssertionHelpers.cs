@@ -30,7 +30,6 @@ public static class TemplateAssertionHelpers
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.PartnerId, actual.PartnerId);
         Assert.Equal(expected.Partner.Name, actual.PartnerName);
-        Assert.Equal(expected.LastUsedAt, actual.LastUsedAt);
         AssertEquivalent([.. expected.Items], actual.Items);
     }
 
