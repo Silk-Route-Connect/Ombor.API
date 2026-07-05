@@ -79,6 +79,7 @@ Run-on-demand, not a long-running daemon. Dev DB persists across restarts (seede
 - **Build passes; full test suite passes.** Both are required — a change isn't done until `dotnet test` is green.
 - New behavior is covered per the test philosophy: **heavy integration tests** on the money/stock invariants (WAC, source=allocation, atomicity, negative-stock blocks, organization isolation), **thin focused unit tests** elsewhere. Use `Ombor.TestDataGenerator` for setup.
 - XML docs on DTOs and public classes. Comments only where they explain a **decision, reason, or tricky part** — never narrate what the code does.
+- **Run the full suite as one batch, not isolation-only, and assert behavior.** Shared-context bleed between tests can hide failures that surface only in a full-batch run (the EndpointTestsBase shared-DbContext lesson) — a green isolated test is not proof. Verify the new behavior actually changed, not just that it compiles and green-passes.
 
 ## Git rules
 
