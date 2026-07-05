@@ -14,7 +14,6 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="Barcode">An optional barcode string.</param>
 /// <param name="SalePrice">The sale price (must be &gt; 0).</param>
 /// <param name="SupplyPrice">The cost price (must be &gt; 0).</param>
-/// <param name="RetailPrice">The suggested retail price (must be &gt; 0).</param>
 /// <param name="QuantityInStock">The initial stock quantity (must be ≥ 0).</param>
 /// <param name="LowStockThreshold">The low‑stock threshold (must be ≥ 0).</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
@@ -29,7 +28,6 @@ public sealed record CreateProductRequest(
     string? Barcode,
     decimal SalePrice,
     decimal SupplyPrice,
-    decimal RetailPrice,
     int LowStockThreshold,
     UnitOfMeasurement Measurement,
     ProductType Type,

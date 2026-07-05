@@ -13,7 +13,6 @@ public static class ProductExtensions
         product.Barcode == request.Barcode &&
         product.SalePrice == request.SalePrice &&
         product.SupplyPrice == request.SupplyPrice &&
-        product.RetailPrice == request.RetailPrice &&
         product.LowStockThreshold == request.LowStockThreshold &&
         IsMeasurementEqual(product.Measurement, request.Measurement) &&
         IsTypeEqual(product.Type, request.Type) &&

@@ -129,7 +129,7 @@ ProductInventoryItem { inventoryId; inventoryName; quantity; averageCost }   // 
 Product {
   id; categoryId: number|null; categoryName: string|null;
   name; sku; description?; barcode?;
-  salePrice; supplyPrice; retailPrice;            // retailPrice dormant
+  salePrice; supplyPrice;                          // retailPrice removed from the contract; kept as a dormant DB column only
   measurement: Measurement; type: ProductType;
   lowStockThreshold?: number|null; isLowStock;    // ⚙ isLowStock
   isArchived; packaging?: ProductPackaging; images: ProductImage[];
@@ -138,7 +138,7 @@ Product {
   averageCost: number|null;                        // ⚙ value-weighted WAC; null when no stock
 }
 CreateProductRequest { categoryId: number|null; name; sku; description?; barcode?;
-  salePrice; supplyPrice; retailPrice; measurement; type;
+  salePrice; supplyPrice; measurement; type;
   lowStockThreshold?: number|null; packaging?; attachments?: File[] }
 UpdateProductRequest = CreateProductRequest & { id; imagesToDelete?: number[] }
 

@@ -14,7 +14,6 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="Barcode">The barcode, if any.</param>
 /// <param name="SalePrice">The sale price.</param>
 /// <param name="SupplyPrice">The supply price.</param>
-/// <param name="RetailPrice">The retail price.</param>
 /// <param name="LowStockThreshold">The low‑stock threshold.</param>
 /// <param name="IsLowStock">Whether total stock ≤ threshold.</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Unit”, “Kilogram”).</param>
@@ -35,7 +34,6 @@ public sealed record ProductDto(
     string? Barcode,
     decimal SalePrice,
     decimal SupplyPrice,
-    decimal RetailPrice,
     int LowStockThreshold,
     bool IsLowStock,
     string Measurement,

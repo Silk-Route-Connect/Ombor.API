@@ -41,7 +41,6 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
         Assert.Equal(expected.Barcode, response.Barcode);
         Assert.Equal(expected.SalePrice, response.SalePrice);
         Assert.Equal(expected.SupplyPrice, response.SupplyPrice);
-        Assert.Equal(expected.RetailPrice, response.RetailPrice);
         Assert.Equal(expected.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), response.Measurement);
         Assert.Equal(expected.Type.ToString(), response.Type);
@@ -146,7 +145,6 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                     x.Barcode,
                     x.SalePrice,
                     x.SupplyPrice,
-                    x.RetailPrice,
                     x.LowStockThreshold,
                     totalStock <= x.LowStockThreshold,
                     x.Measurement.ToString(),

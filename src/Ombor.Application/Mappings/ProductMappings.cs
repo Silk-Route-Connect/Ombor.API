@@ -30,7 +30,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            RetailPrice: product.RetailPrice,
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
@@ -53,7 +52,6 @@ internal static class ProductMappings
             Barcode = request.Barcode,
             SalePrice = request.SalePrice,
             SupplyPrice = request.SupplyPrice,
-            RetailPrice = request.RetailPrice,
             LowStockThreshold = request.LowStockThreshold,
             Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
             Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
@@ -83,7 +81,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            RetailPrice: product.RetailPrice,
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
@@ -113,7 +110,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            RetailPrice: product.RetailPrice,
             LowStockThreshold: product.LowStockThreshold,
             IsLowStock: product.TotalStock() <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
@@ -130,7 +126,6 @@ internal static class ProductMappings
         product.Barcode = request.Barcode;
         product.SalePrice = request.SalePrice;
         product.SupplyPrice = request.SupplyPrice;
-        product.RetailPrice = request.RetailPrice;
         product.LowStockThreshold = request.LowStockThreshold;
         product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
         product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());

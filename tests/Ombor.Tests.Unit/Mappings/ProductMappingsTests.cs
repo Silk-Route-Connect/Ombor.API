@@ -44,7 +44,6 @@ public class ProductMappingsTests
             Barcode = "1234567890",
             SalePrice = 9.99m,
             SupplyPrice = 5.00m,
-            RetailPrice = 12.50m,
             LowStockThreshold = 5,
             Measurement = DomainMeasurement.Kilogram,
             Type = DomainType.Supply
@@ -63,7 +62,6 @@ public class ProductMappingsTests
         Assert.Equal("1234567890", dto.Barcode);
         Assert.Equal(9.99m, dto.SalePrice);
         Assert.Equal(5.00m, dto.SupplyPrice);
-        Assert.Equal(12.50m, dto.RetailPrice);
         Assert.Equal(5, dto.LowStockThreshold);
         Assert.Equal(0, dto.TotalStock);
         Assert.Null(dto.AverageCost);
@@ -106,7 +104,6 @@ public class ProductMappingsTests
             Barcode = "0987654321",
             SalePrice = 30m,
             SupplyPrice = 20m,
-            RetailPrice = 35m,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.Box,
             Type = DomainType.All
@@ -125,7 +122,6 @@ public class ProductMappingsTests
         Assert.Equal("0987654321", response.Barcode);
         Assert.Equal(30m, response.SalePrice);
         Assert.Equal(20m, response.SupplyPrice);
-        Assert.Equal(35m, response.RetailPrice);
         Assert.Equal(2, response.LowStockThreshold);
         Assert.True(response.IsLowStock); // created at zero stock
         Assert.Equal("Box", response.Measurement);
@@ -165,7 +161,6 @@ public class ProductMappingsTests
             Barcode = "555444333",
             SalePrice = 25m,
             SupplyPrice = 15m,
-            RetailPrice = 28m,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.Ton,
             Type = DomainType.Sale
@@ -184,7 +179,6 @@ public class ProductMappingsTests
         Assert.Equal("555444333", response.Barcode);
         Assert.Equal(25m, response.SalePrice);
         Assert.Equal(15m, response.SupplyPrice);
-        Assert.Equal(28m, response.RetailPrice);
         Assert.Equal(2, response.LowStockThreshold);
         Assert.True(response.IsLowStock); // no stock loaded → low
         Assert.Equal("Ton", response.Measurement);
@@ -203,7 +197,6 @@ public class ProductMappingsTests
             Barcode: "111222333",
             SalePrice: 10m,
             SupplyPrice: 6m,
-            RetailPrice: 12m,
             LowStockThreshold: 3,
             Packaging: new ProductPackagingDto(10, "Test Package Label", "Test Package Barcode"),
             Measurement: ContractMeasurement.Piece,
@@ -220,7 +213,6 @@ public class ProductMappingsTests
         Assert.Equal("111222333", entity.Barcode);
         Assert.Equal(10m, entity.SalePrice);
         Assert.Equal(6m, entity.SupplyPrice);
-        Assert.Equal(12m, entity.RetailPrice);
         Assert.Equal(3, entity.LowStockThreshold);
         Assert.Equal(DomainMeasurement.Piece, entity.Measurement);
         Assert.Equal(DomainType.Sale, entity.Type);
@@ -246,7 +238,6 @@ public class ProductMappingsTests
             Barcode = "999888777",
             SalePrice = 12m,
             SupplyPrice = 7m,
-            RetailPrice = 14m,
             LowStockThreshold = 2,
             Measurement = DomainMeasurement.None,
             Type = DomainType.Supply
@@ -261,7 +252,6 @@ public class ProductMappingsTests
             Barcode: "777888999",
             SalePrice: 20m,
             SupplyPrice: 10m,
-            RetailPrice: 22m,
             LowStockThreshold: 1,
             Measurement: ContractMeasurement.Ton,
             Type: ContractType.All,
@@ -279,7 +269,6 @@ public class ProductMappingsTests
         Assert.Equal("777888999", product.Barcode);
         Assert.Equal(20m, product.SalePrice);
         Assert.Equal(10m, product.SupplyPrice);
-        Assert.Equal(22m, product.RetailPrice);
         Assert.Equal(1, product.LowStockThreshold);
         Assert.Equal(DomainMeasurement.Ton, product.Measurement);
         Assert.Equal(DomainType.All, product.Type);
@@ -365,7 +354,6 @@ public class ProductMappingsTests
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            RetailPrice: product.RetailPrice,
             LowStockThreshold: product.LowStockThreshold,
             Measurement: ContractMeasurement.None,
             Type: ContractType.All,
