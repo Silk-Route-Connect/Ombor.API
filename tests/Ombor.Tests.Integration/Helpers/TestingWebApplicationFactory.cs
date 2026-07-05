@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
@@ -60,6 +61,11 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 options => options.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .UseSqlServer(_databaseFixture.DatabaseConnectionString));
+
+            // The real SmsService makes a live HTTP call to the provider; swap it for a no-op so the auth
+            // flows (register/forgot-password) can be exercised in tests without sending real messages.
+            services.RemoveAll<ISmsService>();
+            services.AddScoped<ISmsService, FakeSmsService>();
 
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, AuthHandler>("Test", _ => { });

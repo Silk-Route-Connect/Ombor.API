@@ -120,6 +120,33 @@ public class AuthController(
         return NoContent();
     }
 
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+    {
+        var result = await service.ForgotPasswordAsync(request);
+        return Ok(result);
+    }
+
+    [HttpPost("verify-reset-code")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<VerifyResetCodeResponse>> VerifyResetCodeAsync([FromBody] VerifyResetCodeRequest request)
+    {
+        var result = await service.VerifyResetCodeAsync(request);
+        return Ok(result);
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ResetPasswordResponse>> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+    {
+        var result = await service.ResetPasswordAsync(request);
+        return Ok(result);
+    }
+
     /// <summary>
     /// Reads and validates the interface-language header. Throws a <see cref="ValidationException"/>
     /// (→ 400) when it is missing or not one of the supported languages — never falls back to a default.

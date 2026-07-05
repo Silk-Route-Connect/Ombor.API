@@ -18,10 +18,13 @@ internal sealed class AuthService(
     IJwtTokenService tokenService,
     IOtpCodeProvider otpCodeProvider,
     IPasswordHasher passwordHasher,
+    IRequestValidator validator,
     IOrganizationService organizationService,
     IOrganizationSetupService organizationSetupService,
     IOptions<JwtSettings> jwtSettings) : IAuthService
 {
+    private const int ResetCodeLifetimeMinutes = 5;
+
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -214,6 +217,86 @@ internal sealed class AuthService(
             await context.SaveChangesAsync();
         }
     }
+
+    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        // Generic acknowledgement whether or not the number has an account, so the response never reveals
+        // which phone numbers are registered (owner decision). The OTP + SMS only go out for a real user.
+        var user = await context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+        if (user is not null)
+        {
+            var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset, ResetCodeLifetimeMinutes);
+
+            var message = new SmsMessage(
+                request.PhoneNumber,
+                $"Warehouse Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
+                "Warehouse Management");
+
+            await smsService.SendMessageAsync(message);
+        }
+
+        return new ForgotPasswordResponse(
+            "If an account exists for this number, a reset code has been sent.",
+            ResetCodeLifetimeMinutes);
+    }
+
+    public async Task<VerifyResetCodeResponse> VerifyResetCodeAsync(VerifyResetCodeRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var otp = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
+
+        return IsOtpValid(otp, request.Code)
+            ? new VerifyResetCodeResponse(true)
+            : new VerifyResetCodeResponse(false, "The reset code is invalid or has expired.");
+    }
+
+    public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var otp = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
+
+        if (!IsOtpValid(otp, request.Code))
+        {
+            return new ResetPasswordResponse(false, "The reset code is invalid or has expired.");
+        }
+
+        var user = await context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+        if (user is null)
+        {
+            // The OTP is only ever issued for a real account, so a missing user means a stale/forged code.
+            return new ResetPasswordResponse(false, "The reset code is invalid or has expired.");
+        }
+
+        var passwordHash = passwordHasher.HashPassword(request.NewPassword);
+        user.PasswordHash = passwordHash.Hash;
+        user.PasswordSalt = passwordHash.Salt;
+
+        // Force a fresh login everywhere after a password change (owner decision): a session opened before the
+        // reset — including one an attacker may hold — must not survive it.
+        var activeTokens = await context.RefreshTokens
+            .Where(t => t.UserId == user.Id && !t.IsRevoked)
+            .ToListAsync();
+
+        foreach (var token in activeTokens)
+        {
+            token.IsRevoked = true;
+        }
+
+        await context.SaveChangesAsync();
+        await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
+
+        return new ResetPasswordResponse(true, "Your password has been reset.");
+    }
+
+    // A reset OTP is valid when it exists, has not expired, and matches. Purpose-agnostic sibling of TryVerifyOtp.
+    private static bool IsOtpValid(OtpCode? otp, string code) =>
+        otp is not null && DateTime.UtcNow <= otp.ExpiredAt && otp.Code == code;
 
     private static bool TryVerifyOtp(
         SmsVerificationRequest request,
