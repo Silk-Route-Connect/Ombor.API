@@ -43,12 +43,12 @@ internal sealed class AuthService(
         var message = new SmsMessage
         (
             request.PhoneNumber,
-            $"Warehouse Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-            "Warehouse Management"
+            $"Inventory Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
+            "Inventory Management"
         );
 
         // disable for testing
-        await smsService.SendMessageAsync(message);
+        // await smsService.SendMessageAsync(message);
 
         return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
     }
@@ -232,8 +232,8 @@ internal sealed class AuthService(
 
             var message = new SmsMessage(
                 request.PhoneNumber,
-                $"Warehouse Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-                "Warehouse Management");
+                $"Inventory Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
+                "Inventory Management");
 
             await smsService.SendMessageAsync(message);
         }
