@@ -50,7 +50,7 @@ public abstract class StockAdjustmentTestsBase(
         return product.Id;
     }
 
-    protected async Task SeedStockAsync(int warehouseId, int productId, int quantity, decimal averageCost = 50m)
+    protected async Task SeedStockAsync(int warehouseId, int productId, decimal quantity, decimal averageCost = 50m)
     {
         var item = new WarehouseItem
         {
@@ -66,13 +66,13 @@ public abstract class StockAdjustmentTestsBase(
     }
 
     protected Task<StockAdjustmentDto> PostAdjustmentAsync(
-        int warehouseId, int productId, string direction, int quantity, string reason)
+        int warehouseId, int productId, string direction, decimal quantity, string reason)
         => _client.PostAsync<StockAdjustmentDto>(
             Routes.StockAdjustment,
             new { warehouseId, productId, direction, quantity, reason, note = (string?)null });
 
     /// <summary>Records opening stock through the real flow, so it lands as an event the ledger can derive.</summary>
-    protected Task AddOpeningStockAsync(int warehouseId, int productId, int quantity, decimal unitCost) =>
+    protected Task AddOpeningStockAsync(int warehouseId, int productId, decimal quantity, decimal unitCost) =>
         _client.PostAsync<WarehouseDto>(
             $"{Routes.Warehouse}/{warehouseId}/opening-stock",
             new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },

@@ -29,7 +29,7 @@ public sealed record CreateOrderRequest(
 /// <param name="DiscountType">Whether <paramref name="Discount"/> is a percentage or a fixed amount.</param>
 public sealed record CreateOrderLineRequest(
     int ProductId,
-    int Quantity,
+    decimal Quantity,
     decimal UnitPrice,
     decimal? Discount,
     DiscountType DiscountType);

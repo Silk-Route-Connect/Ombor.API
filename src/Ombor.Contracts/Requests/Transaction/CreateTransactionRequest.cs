@@ -49,4 +49,4 @@ public sealed record CreateTransactionLine(
     decimal UnitPrice,
     decimal Discount,
     DiscountType DiscountType,
-    int Quantity);
+    decimal Quantity);

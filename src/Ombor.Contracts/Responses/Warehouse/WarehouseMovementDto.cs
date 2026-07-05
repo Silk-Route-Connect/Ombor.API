@@ -28,5 +28,5 @@ public sealed record WarehouseMovementDto(
     int? CounterpartyWarehouseId,
     int? CounterpartyPartnerId,
     string? Note,
-    int Quantity,
-    int BalanceAfter);
+    decimal Quantity,
+    decimal BalanceAfter);

@@ -20,7 +20,7 @@ public sealed record TemplateItemDto(
     string Measurement,
     int TemplateId,
     string TemplateName,
-    int Quantity,
+    decimal Quantity,
     decimal UnitPrice,
     decimal Discount,
     string DiscountType);

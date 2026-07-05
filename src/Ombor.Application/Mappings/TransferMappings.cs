@@ -22,5 +22,5 @@ internal static class TransferMappings
                 l.Product.Name,
                 l.Product.SKU,
                 l.Product.Measurement.ToString(),
-                (int)l.Quantity))]);
+                l.Quantity))]);
 }

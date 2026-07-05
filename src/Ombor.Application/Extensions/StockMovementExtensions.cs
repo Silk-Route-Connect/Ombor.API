@@ -45,7 +45,7 @@ internal static class StockMovementExtensions
         this IApplicationDbContext context,
         int warehouseId,
         StockMovement movement,
-        IEnumerable<(int ProductId, int Quantity, decimal UnitPrice)> rawLines)
+        IEnumerable<(int ProductId, decimal Quantity, decimal UnitPrice)> rawLines)
     {
         var lines = rawLines
             .GroupBy(x => x.ProductId)

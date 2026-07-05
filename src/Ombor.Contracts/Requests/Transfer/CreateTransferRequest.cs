@@ -16,4 +16,4 @@ public sealed record CreateTransferRequest(
 
 /// <param name="ProductId">The product to move.</param>
 /// <param name="Quantity">The quantity to move (must be &gt; 0).</param>
-public sealed record CreateTransferLine(int ProductId, int Quantity);
+public sealed record CreateTransferLine(int ProductId, decimal Quantity);

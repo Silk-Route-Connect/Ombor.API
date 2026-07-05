@@ -15,4 +15,4 @@ public sealed record AddOpeningStockRequest(
 /// <param name="ProductId">The product being stocked.</param>
 /// <param name="Quantity">The opening quantity (must be &gt; 0).</param>
 /// <param name="UnitCost">The cost per unit, used as the initial weighted-average cost.</param>
-public sealed record OpeningStockLine(int ProductId, int Quantity, decimal UnitCost);
+public sealed record OpeningStockLine(int ProductId, decimal Quantity, decimal UnitCost);

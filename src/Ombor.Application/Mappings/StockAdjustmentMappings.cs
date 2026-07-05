@@ -10,7 +10,7 @@ internal static class StockAdjustmentMappings
     /// The product's stock in this warehouse right after the adjustment — a movement-ledger figure
     /// the caller derives (it isn't stored on the event).
     /// </param>
-    public static StockAdjustmentDto ToDto(this StockAdjustment adjustment, int balanceAfter)
+    public static StockAdjustmentDto ToDto(this StockAdjustment adjustment, decimal balanceAfter)
     {
         if (adjustment.Warehouse is null || adjustment.Product is null)
         {

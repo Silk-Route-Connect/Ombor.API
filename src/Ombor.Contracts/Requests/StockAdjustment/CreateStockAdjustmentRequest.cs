@@ -13,6 +13,6 @@ public sealed record CreateStockAdjustmentRequest(
     int WarehouseId,
     int ProductId,
     StockAdjustmentDirection Direction,
-    int Quantity,
+    decimal Quantity,
     string Reason,
     string? Note);

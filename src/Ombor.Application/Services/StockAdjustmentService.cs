@@ -46,7 +46,7 @@ internal sealed class StockAdjustmentService(
 
         // balanceAfter is the running stock right after each adjustment — reuse the warehouse movement
         // ledger so this list and GET /warehouses/{id}/movements report the same figure for the same event.
-        var balanceByAdjustmentId = new Dictionary<int, int>();
+        var balanceByAdjustmentId = new Dictionary<int, decimal>();
         foreach (var warehouseId in adjustments.Select(a => a.WarehouseId).Distinct())
         {
             var movements = await movementService.GetWarehouseMovementsAsync(warehouseId);
@@ -132,7 +132,7 @@ internal sealed class StockAdjustmentService(
         }
     }
 
-    private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id, int balanceAfter)
+    private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id, decimal balanceAfter)
     {
         var adjustment = await context.StockAdjustments
             .Include(x => x.Warehouse)

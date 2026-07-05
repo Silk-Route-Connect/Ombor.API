@@ -12,7 +12,7 @@ public sealed record UpdateTemplateRequest(
 public sealed record UpdateTemplateItem(
     int Id,
     int ProductId,
-    int Quantity,
+    decimal Quantity,
     decimal UnitPrice,
     decimal Discount,
     DiscountType DiscountType = DiscountType.Fixed);

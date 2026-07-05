@@ -17,7 +17,7 @@ public class WarehouseItem : EntityBase, IOrganizationScoped, IAuditable
     /// <summary>
     /// Gets or sets quantity of the <see cref="WarehouseItem"/>.
     /// </summary>
-    public required int Quantity { get; set; }
+    public required decimal Quantity { get; set; }
 
     /// <summary>
     /// Gets or sets product ID of the <see cref="WarehouseItem"/>.

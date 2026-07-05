@@ -29,6 +29,7 @@ internal sealed class WarehouseItemConfiguration : IEntityTypeConfiguration<Ware
 
         builder
             .Property(x => x.Quantity)
+            .HasQuantityPrecision()
             .IsRequired();
 
         builder

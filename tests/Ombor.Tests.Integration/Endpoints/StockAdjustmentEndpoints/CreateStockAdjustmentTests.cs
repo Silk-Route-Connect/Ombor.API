@@ -109,6 +109,44 @@ public sealed class CreateStockAdjustmentTests(TestingWebApplicationFactory fact
     }
 
     [Fact]
+    public async Task Decrease_ShouldSupportFractionalQuantity_WithoutTruncation()
+    {
+        // Arrange — 2.5 kg on hand (weight-measured product).
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 2.5m, averageCost: 40m);
+
+        // Act — remove 1.25 kg.
+        var dto = await PostAdjustmentAsync(warehouseId, productId, "Decrease", quantity: 1.25m, reason: "Damage");
+
+        // Assert — the fraction survives; adjustment quantity, balanceAfter, and on-hand are exact (not truncated).
+        Assert.Equal(1.25m, dto.Quantity);
+        Assert.Equal(1.25m, dto.BalanceAfter);
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
+        Assert.Equal(1.25m, item.Quantity);
+    }
+
+    [Fact]
+    public async Task Decrease_ShouldBlockBelowZero_WithFractionalAvailable()
+    {
+        // Arrange — only 2.5 kg on hand.
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 2.5m);
+
+        // Act + Assert — removing 3 kg is hard-blocked (rule 20) and nothing changes.
+        await _client.PostAsync<ProblemDetails>(
+            Routes.StockAdjustment,
+            new { warehouseId, productId, direction = "Decrease", quantity = 3m, reason = "Theft" },
+            HttpStatusCode.BadRequest);
+
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
+        Assert.Equal(2.5m, item.Quantity);
+    }
+
+    [Fact]
     public async Task ShouldReturnBadRequest_WhenDirectionEnumInvalid()
     {
         // Arrange — StockAdjustmentDirection carries a type-level [JsonConverter], so it bypasses the globally

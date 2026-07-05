@@ -142,7 +142,7 @@ internal static class ProductMappings
         => Enum.Parse<Domain.Enums.ProductType>(type.ToString());
 
     // Stock is the sum of per-warehouse warehouse items — WarehouseItem is the sole source (rule 17).
-    private static int TotalStock(this Product product)
+    private static decimal TotalStock(this Product product)
         => product.WarehouseItems.Sum(i => i.Quantity);
 
     // Value-weighted average cost across warehouses; null when there is no stock.

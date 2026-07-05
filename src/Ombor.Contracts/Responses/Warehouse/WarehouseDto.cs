@@ -14,7 +14,7 @@ public sealed record WarehouseDto(
     string Name,
     string? Location,
     int ProductCount,
-    int TotalUnits,
+    decimal TotalUnits,
     decimal StockValue,
     bool IsArchived,
     bool IsDeletable);

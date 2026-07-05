@@ -40,6 +40,7 @@ internal sealed class TemplateItemConfiguration : IEntityTypeConfiguration<Templ
 
         builder
             .Property(ti => ti.Quantity)
+            .HasQuantityPrecision()
             .IsRequired();
 
         builder

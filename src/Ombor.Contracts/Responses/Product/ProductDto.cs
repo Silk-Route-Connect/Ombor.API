@@ -43,6 +43,6 @@ public sealed record ProductDto(
     bool IsArchived,
     ProductImageDto[] Images,
     ProductWarehouseItemDto[] WarehouseItems,
-    int TotalStock,
+    decimal TotalStock,
     decimal? AverageCost,
     ProductPackagingDto? Packaging);

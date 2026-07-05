@@ -10,7 +10,7 @@ public sealed record CreateTemplateRequest(
 
 public sealed record CreateTemplateItem(
     int ProductId,
-    int Quantity,
+    decimal Quantity,
     decimal UnitPrice,
     decimal Discount,
     DiscountType DiscountType = DiscountType.Fixed);

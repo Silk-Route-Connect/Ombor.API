@@ -13,7 +13,7 @@ public class OpeningStock : EntityBase, IOrganizationScoped, IAuditable
     public DateTimeOffset DateUtc { get; set; }
 
     /// <summary>The opening quantity.</summary>
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 
     /// <summary>The opening unit cost — sets the initial weighted-average cost.</summary>
     public decimal UnitCost { get; set; }

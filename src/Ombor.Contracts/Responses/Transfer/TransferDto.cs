@@ -34,4 +34,4 @@ public sealed record TransferLineDto(
     string ProductName,
     string Sku,
     string Measurement,
-    int Quantity);
+    decimal Quantity);

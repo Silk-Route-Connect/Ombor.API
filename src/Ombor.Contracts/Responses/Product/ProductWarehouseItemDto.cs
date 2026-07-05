@@ -8,5 +8,5 @@ namespace Ombor.Contracts.Responses.Product;
 public sealed record ProductWarehouseItemDto(
     int WarehouseId,
     string WarehouseName,
-    int Quantity,
+    decimal Quantity,
     decimal AverageCost);

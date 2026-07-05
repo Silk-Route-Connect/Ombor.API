@@ -13,7 +13,7 @@ public class TemplateItem : AuditableEntity, IOrganizationScoped
     /// <summary>
     /// Gets or sets quantity of the <see cref="TemplateItem"/>.
     /// </summary>
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 
     /// <summary>
     /// Gets or sets unit price of the <see cref="TemplateItem"/>.

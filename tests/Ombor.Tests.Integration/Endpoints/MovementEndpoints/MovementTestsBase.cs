@@ -76,7 +76,7 @@ public abstract class MovementTestsBase(TestingWebApplicationFactory factory, IT
         return wallet.Id;
     }
 
-    protected Task AddOpeningStockAsync(int warehouseId, int productId, int quantity, decimal unitCost) =>
+    protected Task AddOpeningStockAsync(int warehouseId, int productId, decimal quantity, decimal unitCost) =>
         _client.PostAsync<WarehouseDto>(
             $"{Routes.Warehouse}/{warehouseId}/opening-stock",
             new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },
@@ -90,13 +90,13 @@ public abstract class MovementTestsBase(TestingWebApplicationFactory factory, IT
         return transaction.Id;
     }
 
-    protected Task AddDecreaseAdjustmentAsync(int warehouseId, int productId, int quantity, string reason = "Damage") =>
+    protected Task AddDecreaseAdjustmentAsync(int warehouseId, int productId, decimal quantity, string reason = "Damage") =>
         _client.PostAsync<StockAdjustmentDto>(
             Routes.StockAdjustment,
             new { warehouseId, productId, direction = "Decrease", quantity, reason, note = (string?)null },
             HttpStatusCode.Created);
 
-    protected Task AddTransferAsync(int fromWarehouseId, int toWarehouseId, int productId, int quantity) =>
+    protected Task AddTransferAsync(int fromWarehouseId, int toWarehouseId, int productId, decimal quantity) =>
         _client.PostAsync<TransferDto>(
             Routes.Transfer,
             new { fromWarehouseId, toWarehouseId, note = (string?)null, lines = new[] { new { productId, quantity } } },

@@ -7,7 +7,7 @@ public class OrderLine : AuditableEntity, IOrganizationScoped
 {
     public int OrganizationId { get; set; }
 
-    public required int Quantity { get; set; }
+    public required decimal Quantity { get; set; }
     public required decimal UnitPrice { get; set; }
     public decimal? Discount { get; set; }
 

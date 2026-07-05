@@ -20,5 +20,5 @@ public sealed record ProductMovementDto(
     MovementKind Kind,
     int WarehouseId,
     string WarehouseName,
-    int Quantity,
-    int BalanceAfter);
+    decimal Quantity,
+    decimal BalanceAfter);

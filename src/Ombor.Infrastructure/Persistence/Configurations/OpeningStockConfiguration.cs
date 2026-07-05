@@ -27,7 +27,7 @@ internal sealed class OpeningStockConfiguration : IEntityTypeConfiguration<Openi
 
         builder.Property(x => x.DateUtc).IsRequired();
 
-        builder.Property(x => x.Quantity).IsRequired();
+        builder.Property(x => x.Quantity).HasQuantityPrecision().IsRequired();
 
         builder.Property(x => x.UnitCost)
             .HasCurrencyPrecision()

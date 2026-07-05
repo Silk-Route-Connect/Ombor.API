@@ -28,6 +28,7 @@ internal sealed class OrderLineConfiguration : IEntityTypeConfiguration<OrderLin
 
         builder
             .Property(ol => ol.Quantity)
+            .HasQuantityPrecision()
             .IsRequired();
 
         builder

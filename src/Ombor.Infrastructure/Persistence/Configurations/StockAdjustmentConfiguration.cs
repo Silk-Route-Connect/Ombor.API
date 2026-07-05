@@ -31,7 +31,7 @@ internal sealed class StockAdjustmentConfiguration : IEntityTypeConfiguration<St
             .HasEnumConversion()
             .IsRequired();
 
-        builder.Property(x => x.Quantity).IsRequired();
+        builder.Property(x => x.Quantity).HasQuantityPrecision().IsRequired();
 
         builder.Property(x => x.Reason)
             .HasMaxLength(ConfigurationConstants.EnumLength)

@@ -17,7 +17,7 @@ public class StockAdjustment : EntityBase, IOrganizationScoped, IAuditable
     public StockAdjustmentDirection Direction { get; set; }
 
     /// <summary>The adjusted quantity as a positive magnitude.</summary>
-    public int Quantity { get; set; }
+    public decimal Quantity { get; set; }
 
     /// <summary>Why the adjustment was made (validated against the per-direction reason set).</summary>
     public required string Reason { get; set; }

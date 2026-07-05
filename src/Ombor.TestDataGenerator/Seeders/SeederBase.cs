@@ -489,8 +489,8 @@ internal abstract class SeederBase(
     }
 
     /// <summary>Stock-out clamped to what's on hand so it never goes negative (rule 20). Returns units moved.</summary>
-    private static int TakeStock(
-        Dictionary<(int, int), WarehouseItem> stock, int warehouseId, int productId, int desiredQuantity)
+    private static decimal TakeStock(
+        Dictionary<(int, int), WarehouseItem> stock, int warehouseId, int productId, decimal desiredQuantity)
     {
         if (!stock.TryGetValue((warehouseId, productId), out var item) || item.Quantity <= 0)
         {

@@ -32,7 +32,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, Partner = l.Transaction.Partner.Name, l.Transaction.PartnerId, l.Transaction.RefundReason })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
-            l.Id, l.DateUtc, KindOf(l.Type), l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty, l.Partner, l.RefundReason, SignedOf(l.Type, (int)l.Quantity),
+            l.Id, l.DateUtc, KindOf(l.Type), l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty, l.Partner, l.RefundReason, SignedOf(l.Type, l.Quantity),
             CounterpartyPartnerId: l.PartnerId)));
 
         var adjustments = await context.StockAdjustments
@@ -52,7 +52,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             var isSend = l.FromWarehouseId == warehouseId;
             return new Raw(
                 l.Id, l.DateUtc, MovementKind.Transfer, l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty,
-                isSend ? l.ToName : l.FromName, l.Notes, isSend ? -(int)l.Quantity : (int)l.Quantity,
+                isSend ? l.ToName : l.FromName, l.Notes, isSend ? -l.Quantity : l.Quantity,
                 CounterpartyWarehouseId: isSend ? l.ToWarehouseId : l.FromWarehouseId);
         }));
 
@@ -87,7 +87,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.Transaction.WarehouseId, WarehouseName = l.Transaction.Warehouse!.Name, l.Quantity })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
-            l.Id, l.DateUtc, KindOf(l.Type), productId, string.Empty, string.Empty, l.WarehouseId, l.WarehouseName, null, null, SignedOf(l.Type, (int)l.Quantity))));
+            l.Id, l.DateUtc, KindOf(l.Type), productId, string.Empty, string.Empty, l.WarehouseId, l.WarehouseName, null, null, SignedOf(l.Type, l.Quantity))));
 
         var adjustments = await context.StockAdjustments
             .Where(a => a.ProductId == productId)
@@ -104,8 +104,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .ToListAsync();
         foreach (var l in transferLines)
         {
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, null, null, -(int)l.Quantity));
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, null, null, (int)l.Quantity));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, null, null, -l.Quantity));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, null, null, l.Quantity));
         }
 
         // Running total stock across all warehouses (reconciles to the product's total stock).
@@ -121,9 +121,9 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
     /// Folds a running balance over the movements oldest→newest (per the <paramref name="bucket"/> key —
     /// per-product for a warehouse ledger, a single bucket for a product ledger), then returns newest-first.
     /// </summary>
-    private static List<(Raw Movement, int Balance)> WithRunningBalance(List<Raw> movements, Func<Raw, int> bucket)
+    private static List<(Raw Movement, decimal Balance)> WithRunningBalance(List<Raw> movements, Func<Raw, int> bucket)
     {
-        var running = new Dictionary<int, int>();
+        var running = new Dictionary<int, decimal>();
 
         var withBalance = movements
             .OrderBy(m => m.Date)
@@ -154,7 +154,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown transaction type."),
     };
 
-    private static int SignedOf(TransactionType type, int quantity)
+    private static decimal SignedOf(TransactionType type, decimal quantity)
         => type is TransactionType.Supply or TransactionType.SaleRefund ? quantity : -quantity;
 
     // CounterpartyWarehouseId/CounterpartyPartnerId are set only on the warehouse-ledger rows that have a link
@@ -170,7 +170,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         string WarehouseName,
         string? Counterparty,
         string? Note,
-        int Quantity,
+        decimal Quantity,
         int? CounterpartyWarehouseId = null,
         int? CounterpartyPartnerId = null);
 }

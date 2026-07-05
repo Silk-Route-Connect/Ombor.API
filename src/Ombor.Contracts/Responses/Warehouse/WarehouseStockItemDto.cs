@@ -15,6 +15,6 @@ public sealed record WarehouseStockItemDto(
     string Sku,
     string? CategoryName,
     string Measurement,
-    int Quantity,
+    decimal Quantity,
     decimal AverageCost,
     decimal Value);

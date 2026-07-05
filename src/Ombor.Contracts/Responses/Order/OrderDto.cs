@@ -58,7 +58,7 @@ public sealed record OrderLineDto(
     string ProductName,
     string Sku,
     string Measurement,
-    int Quantity,
+    decimal Quantity,
     decimal UnitPrice,
     decimal? Discount,
     string DiscountType,

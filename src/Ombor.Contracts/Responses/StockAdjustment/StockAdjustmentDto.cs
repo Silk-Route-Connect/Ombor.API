@@ -27,8 +27,8 @@ public sealed record StockAdjustmentDto(
     string? CategoryName,
     string Measurement,
     string Direction,
-    int Quantity,
+    decimal Quantity,
     string Reason,
     string? Note,
     string? CreatedBy,
-    int BalanceAfter);
+    decimal BalanceAfter);
