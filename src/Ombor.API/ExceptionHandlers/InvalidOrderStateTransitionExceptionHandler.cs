@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Exceptions;
-using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -30,8 +29,7 @@ internal sealed class InvalidOrderStateTransitionExceptionHandler(
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
-        SentrySdk.CaptureException(transitionException);
-
+        // 409s are client errors, not Sentry events — log locally only.
         logger.LogWarning(transitionException, "Invalid order state transition: {Message}", transitionException.Message);
 
         return true;

@@ -1,5 +1,7 @@
+using FluentValidation;
 using Ombor.API.Extensions;
 using Ombor.Application.Extensions;
+using Ombor.Domain.Exceptions;
 using Ombor.Infrastructure.Extensions;
 using Ombor.TestDataGenerator.Extensions;
 
@@ -7,13 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsProduction())
 {
-    builder.WebHost.UseSentry();
+    builder.WebHost.UseSentry(options =>
+    {
+        // 4xx / auth failures are client errors, not server faults — keep them out of the Sentry issue stream.
+        options.SetBeforeSend(static (SentryEvent @event, SentryHint _) =>
+            @event.Exception is ValidationException or EntityNotFoundException or UnauthorizedAccessException
+                ? null
+                : @event);
+    });
 }
 
 try
 {
-    SentrySdk.CaptureMessage("Starting API...");
-
     builder.Services
         .AddApi(builder.Configuration)
         .AddApplication(builder.Configuration)
@@ -44,8 +51,6 @@ try
     app.UseStaticFiles();
 
     await app.UseDatabaseSeederAsync();
-
-    SentrySdk.CaptureMessage("API started...");
 
     await app.RunAsync();
 }

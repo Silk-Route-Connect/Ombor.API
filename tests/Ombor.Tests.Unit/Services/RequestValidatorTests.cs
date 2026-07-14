@@ -17,13 +17,13 @@ public sealed class RequestValidatorTests
     }
 
     [Fact]
-    public async Task ValidateAndThrowAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
+    public async Task ValidateAndThrowAsync_ShouldThrowValidationException_WhenRequestIsNull()
     {
-        // Arrange
+        // Arrange — a null body is a client error (400), not a server fault.
         object request = null!;
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _validator.ValidateAndThrowAsync(request));
+        await Assert.ThrowsAsync<ValidationException>(() => _validator.ValidateAndThrowAsync(request));
     }
 
     [Fact]

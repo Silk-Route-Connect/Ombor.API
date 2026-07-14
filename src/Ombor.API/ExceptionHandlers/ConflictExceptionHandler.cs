@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Exceptions;
-using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -29,8 +28,7 @@ internal sealed class ConflictExceptionHandler(ILogger<ConflictExceptionHandler>
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
-        SentrySdk.CaptureException(conflictException);
-
+        // 409s are client errors, not Sentry events — log locally only.
         logger.LogWarning(conflictException, "Conflict: {Message}", conflictException.Message);
 
         return true;
