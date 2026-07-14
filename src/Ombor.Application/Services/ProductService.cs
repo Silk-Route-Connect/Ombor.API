@@ -31,7 +31,9 @@ internal sealed class ProductService(
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
-        return [.. products.Select(x => x.ToDto())];
+        var referencedIds = await GetReferencedProductIdsAsync();
+
+        return [.. products.Select(x => x.ToDto() with { IsDeletable = !referencedIds.Contains(x.Id) })];
     }
 
     public async Task<ProductDto> GetByIdAsync(GetProductByIdRequest request)
@@ -40,8 +42,24 @@ internal sealed class ProductService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        return entity.ToDto();
+        return entity.ToDto() with { IsDeletable = !await IsProductReferencedAsync(entity.Id) };
     }
+
+    // A product is deletable only until transaction or order history references it (rule 32 / DR-20);
+    // the same predicate backs both the served IsDeletable flag and the delete guard, so they can't drift.
+    private async Task<HashSet<int>> GetReferencedProductIdsAsync()
+    {
+        var ids = await context.TransactionLines.Select(l => l.ProductId)
+            .Concat(context.OrderLines.Select(l => l.ProductId))
+            .Distinct()
+            .ToArrayAsync();
+
+        return [.. ids];
+    }
+
+    private async Task<bool> IsProductReferencedAsync(int id)
+        => await context.TransactionLines.AnyAsync(l => l.ProductId == id)
+           || await context.OrderLines.AnyAsync(l => l.ProductId == id);
 
     public async Task<ProductTransactionDto[]> GetTransactionsAsync(GetProductTransactionsRequest request)
     {
@@ -104,13 +122,9 @@ internal sealed class ProductService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        var isReferenced =
-            await context.TransactionLines.AnyAsync(x => x.ProductId == entity.Id) ||
-            await context.OrderLines.AnyAsync(x => x.ProductId == entity.Id);
-
-        if (isReferenced)
+        if (await IsProductReferencedAsync(entity.Id))
         {
-            throw new ValidationException(
+            throw new ConflictException(
                 "Product cannot be deleted because it is referenced by transaction or order history. Archive it instead.");
         }
 

@@ -133,6 +133,7 @@ public sealed class ProductsController(
     [HttpDelete("{id:int:min(1)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> DeleteAsync(
         [FromRoute] DeleteProductRequest request)
     {

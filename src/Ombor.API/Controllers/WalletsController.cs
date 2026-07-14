@@ -131,4 +131,16 @@ public sealed class WalletsController(IWalletService walletService) : Controller
 
         return NoContent();
     }
+
+    /// <summary>Hard-deletes an unreferenced wallet; a referenced wallet is rejected with 409 (archive instead).</summary>
+    [HttpDelete("{id:int:min(1)}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+    {
+        await walletService.DeleteAsync(id);
+
+        return NoContent();
+    }
 }

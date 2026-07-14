@@ -13,6 +13,7 @@ namespace Ombor.Contracts.Responses.Wallet;
 /// <param name="IsArchived">Whether the wallet is archived.</param>
 /// <param name="CreatedBy">Who created the wallet.</param>
 /// <param name="CreatedAt">When the wallet was created.</param>
+/// <param name="IsDeletable">Whether the wallet can be hard-deleted (false once a payment or transfer references it); otherwise DELETE returns 409.</param>
 public sealed record WalletDto(
     int Id,
     string Name,
@@ -23,4 +24,5 @@ public sealed record WalletDto(
     decimal OpeningBalance,
     bool IsArchived,
     string? CreatedBy,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    bool IsDeletable = false);

@@ -11,6 +11,7 @@ public interface IWalletService
     Task<WalletDto> UpdateAsync(UpdateWalletRequest request);
     Task ArchiveAsync(int id);
     Task RestoreAsync(int id);
+    Task DeleteAsync(int id);
 
     Task<WalletTransferDto> CreateTransferAsync(CreateWalletTransferRequest request);
     Task<WalletOperationDto[]> GetOperationsAsync(int walletId);

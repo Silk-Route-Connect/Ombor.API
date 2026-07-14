@@ -24,6 +24,7 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="TotalStock">Total stock summed across warehouses (rule 17).</param>
 /// <param name="AverageCost">Value-weighted average cost across warehouses; null when there is no stock.</param>
 /// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
+/// <param name="IsDeletable">Whether the product can be hard-deleted (false once referenced by transaction/order history); otherwise DELETE returns 409.</param>
 public sealed record ProductDto(
     int Id,
     int CategoryId,
@@ -43,4 +44,5 @@ public sealed record ProductDto(
     ProductWarehouseItemDto[] WarehouseItems,
     decimal TotalStock,
     decimal? AverageCost,
-    ProductPackagingDto? Packaging);
+    ProductPackagingDto? Packaging,
+    bool IsDeletable = false);

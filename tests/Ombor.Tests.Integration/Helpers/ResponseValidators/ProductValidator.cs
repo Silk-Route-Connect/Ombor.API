@@ -127,6 +127,12 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
+        // Mirror the service: a product is deletable until transaction/order history references it (DR-20).
+        var referencedIds = (await context.TransactionLines.Select(l => l.ProductId)
+            .Concat(context.OrderLines.Select(l => l.ProductId))
+            .Distinct()
+            .ToArrayAsync()).ToHashSet();
+
         return products
             .Select(x =>
             {
@@ -154,7 +160,8 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
                     x.WarehouseItems.Select(item => new ProductWarehouseItemDto(item.WarehouseId, item.Warehouse.Name, item.Quantity, item.AverageCost)).ToArray(),
                     totalStock,
                     averageCost,
-                    x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode));
+                    x.Packaging.Size == 0 ? null : new ProductPackagingDto(x.Packaging.Size, x.Packaging.Label, x.Packaging.Barcode),
+                    IsDeletable: !referencedIds.Contains(x.Id));
             })
             .ToArray();
     }
