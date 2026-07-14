@@ -178,7 +178,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 _ => "payment",
             };
 
-            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number, null, "done", p.WalletName, p.WalletType));
+            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number?.ToString(), null, "done", p.WalletName, p.WalletType));
         }
 
         // Fold the running balance oldest→newest (final value reconciles to PartnerBalance.Total), then newest-first.

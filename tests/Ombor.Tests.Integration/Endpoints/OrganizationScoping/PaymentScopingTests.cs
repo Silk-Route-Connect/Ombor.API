@@ -69,7 +69,7 @@ public sealed class PaymentScopingTests : IClassFixture<TestingWebApplicationFac
 
         var payment = new Payment
         {
-            Number = $"PAY-{Guid.NewGuid():N}",
+            Number = null,
             Type = PaymentType.General,
             Direction = PaymentDirection.Income,
             DateUtc = DateTimeOffset.UtcNow,

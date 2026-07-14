@@ -117,7 +117,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
 
         var payment = new Payment
         {
-            Number = $"P-{Guid.NewGuid():N}",
+            Number = null,
             Type = Ombor.Domain.Enums.PaymentType.Payroll,
             Direction = Ombor.Domain.Enums.PaymentDirection.Expense,
             DateUtc = DateTimeOffset.UtcNow,

@@ -21,7 +21,7 @@ internal static class OrderGenerator
             Longitude = (decimal)f.Address.Longitude(),
         })
         .RuleFor(x => x.Status, f => f.Random.Enum<Domain.Enums.OrderStatus>())
-        .RuleFor(x => x.OrderNumber, f => f.Random.Guid().ToString("N").ToUpperInvariant()[..10])
+        // OrderNumber is left null on seeded rows; production orders are numbered by the allocator.
         .RuleFor(x => x.Notes, f => f.Lorem.Sentence())
         .RuleFor(x => x.Lines, _ => GetLines(products))
         .RuleFor(x => x.TotalAmount, (_, order) => order.Lines.Sum(line => line.TotalPrice));

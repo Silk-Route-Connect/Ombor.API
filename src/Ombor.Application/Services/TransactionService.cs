@@ -18,7 +18,8 @@ internal sealed class TransactionService(
     ITransactionMapper mapper,
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
-    IFileService fileService) : ITransactionService
+    IFileService fileService,
+    INumberSequenceAllocator allocator) : ITransactionService
 {
     // Uploaded transaction files land here (originals + thumbnails under their standard sections).
     private const string AttachmentsSubfolder = "transactions";
@@ -36,6 +37,7 @@ internal sealed class TransactionService(
             .Select(x => new
             {
                 x.Id,
+                x.Number,
                 x.Type,
                 x.Status,
                 x.DueDate,
@@ -46,13 +48,14 @@ internal sealed class TransactionService(
                 x.TotalPaid,
                 Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
                 x.OriginalTransactionId,
+                OriginalNumber = x.OriginalTransaction != null ? x.OriginalTransaction.Number : null,
                 x.RefundReason,
             })
             .ToArrayAsync();
 
         return [.. rows.Select(x => new TransactionDto(
             x.Id,
-            x.Type.ToProvisionalNumber(x.Id),
+            x.Number.ToString(),
             x.PartnerId,
             x.PartnerName,
             x.DateUtc,
@@ -62,7 +65,7 @@ internal sealed class TransactionService(
             x.TotalPaid,
             x.Lines,
             x.OriginalTransactionId,
-            x.Type.ToOriginalProvisionalNumber(x.OriginalTransactionId),
+            x.OriginalNumber?.ToString(),
             x.RefundReason))];
     }
 
@@ -73,6 +76,8 @@ internal sealed class TransactionService(
             .Include(x => x.Partner)
             .Include(x => x.Lines)
             .ThenInclude(x => x.Product)
+            // Load the original so a refund can serve its original document number.
+            .Include(x => x.OriginalTransaction)
             .IgnoreAutoIncludes()
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.Id)
@@ -93,6 +98,7 @@ internal sealed class TransactionService(
             .Select(t => new
             {
                 t.Id,
+                t.Number,
                 t.Type,
                 t.Status,
                 t.DateUtc,
@@ -106,6 +112,7 @@ internal sealed class TransactionService(
                 t.TotalDue,
                 t.TotalPaid,
                 t.OriginalTransactionId,
+                OriginalNumber = t.OriginalTransaction != null ? t.OriginalTransaction.Number : null,
                 t.RefundReason,
                 t.Notes,
                 CreatedBy = t.CreatedByUser != null ? t.CreatedByUser.FirstName + " " + t.CreatedByUser.LastName : null,
@@ -120,7 +127,7 @@ internal sealed class TransactionService(
                     .Where(a => a.Type == PaymentAllocationType.TransactionSettlement)
                     .OrderByDescending(a => a.Payment.DateUtc)
                     .Select(a => new TransactionPaymentDto(
-                        a.Id, t.Id, a.Amount, a.Payment.Number,
+                        a.Id, t.Id, a.Amount, a.Payment.Number.ToString(),
                         a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,
                         a.Payment.Wallet != null ? a.Payment.Wallet.Type.ToString() : null,
                         a.Payment.Notes, a.Payment.DateUtc)).ToArray(),
@@ -130,7 +137,7 @@ internal sealed class TransactionService(
 
         return new TransactionDetailDto(
             row.Id,
-            row.Type.ToProvisionalNumber(row.Id),
+            row.Number.ToString(),
             row.Type.ToString(),
             row.Type.ToDebtDirection(),
             row.Status.ToEffectiveStatusName(row.DueDate, today),
@@ -151,7 +158,7 @@ internal sealed class TransactionService(
             row.CreatedBy,
             row.Notes,
             row.OriginalTransactionId,
-            row.Type.ToOriginalProvisionalNumber(row.OriginalTransactionId),
+            row.OriginalNumber?.ToString(),
             row.RefundReason);
     }
 
@@ -171,6 +178,7 @@ internal sealed class TransactionService(
                 request.WarehouseId!.Value,
                 request.Type.ToDomainType().ToStockMovement(),
                 request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+            transactionEntity.Number = await allocator.AllocateAsync(NumberSeriesType.Transaction);
             context.Transactions.Add(transactionEntity);
             await AddAttachmentsAsync(request, transactionEntity);
             await context.SaveChangesAsync();
@@ -188,6 +196,10 @@ internal sealed class TransactionService(
                 .Include(x => x.Product)
                 .Where(x => x.TransactionId == transactionEntity.Id)
                 .ToArrayAsync();
+            // Load the original so a refund's response carries its original document number.
+            transactionEntity.OriginalTransaction = transactionEntity.OriginalTransactionId is int originalId
+                ? await context.Transactions.FirstOrDefaultAsync(x => x.Id == originalId)
+                : null;
 
             return mapper.ToDto(transactionEntity);
         }
@@ -257,13 +269,11 @@ internal sealed class TransactionService(
             }
         }
 
-        // Minted eagerly here rather than via the retry helper: this runs inside the create's explicit
-        // transaction (stock + money atomicity), where re-saving after a collision would replay the
-        // AddPayment updates. The unique (OrganizationId, Number) index still guarantees no duplicate — a
-        // rare concurrent collision rolls the whole transaction back cleanly.
+        // Allocated inside the create's explicit transaction (stock + money atomicity): the allocator's
+        // row lock serializes concurrent payment numbers, and a rollback here releases the number cleanly.
         var payment = new Payment
         {
-            Number = await context.NextPaymentNumberAsync(),
+            Number = await allocator.AllocateAsync(NumberSeriesType.Payment),
             Type = PaymentType.Transaction,
             Direction = direction,
             DateUtc = DateTimeOffset.UtcNow,

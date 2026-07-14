@@ -99,6 +99,8 @@ public static class DependencyInjection
 
         services.AddScoped<ICurrentUserAccessor, HttpContextCurrentUserAccessor>();
 
+        services.AddScoped<INumberSequenceAllocator, NumberSequenceAllocator>();
+
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
 
         services.AddTransient<IFileStorage, LocalFileStorage>();

@@ -101,8 +101,8 @@ public sealed class PaymentLedgerIntegrityTests(TestingWebApplicationFactory fac
             Amount: 5_000m, Description: null, Period: null,
             Settlements: [new SettlementInput(secondSaleId, 5_000m)]));
 
-        Assert.StartsWith("P-", first.Number);
-        Assert.StartsWith("P-", second.Number);
+        Assert.True(int.TryParse(first.Number, out _)); // bare sequential number, no "P-" prefix
+        Assert.True(int.TryParse(second.Number, out _));
         Assert.NotEqual(first.Number, second.Number);
     }
 }

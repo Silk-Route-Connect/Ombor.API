@@ -117,7 +117,7 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
 
         var payment = new Payment
         {
-            Number = $"P-{Guid.NewGuid():N}",
+            Number = null,
             Type = PaymentType.Transaction,
             Direction = direction,
             DateUtc = new DateTimeOffset(2026, 2, 5, 0, 0, 0, TimeSpan.Zero),

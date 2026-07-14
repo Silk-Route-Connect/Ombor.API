@@ -50,11 +50,10 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
 
         builder
             .Property(p => p.Number)
-            .HasMaxLength(ConfigurationConstants.EnumLength)
             .IsRequired(false);
 
         // The payment number is the dispute trail's human handle: unique per organization so concurrent
-        // creates can't mint the same «P-n» (filtered to skip the nullable column's single-NULL rule).
+        // creates can't mint the same value (filtered to skip the nullable column's single-NULL rule).
         builder
             .HasIndex(p => new { p.OrganizationId, p.Number })
             .IsUnique()

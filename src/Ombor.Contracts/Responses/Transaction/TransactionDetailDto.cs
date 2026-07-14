@@ -7,7 +7,7 @@ namespace Ombor.Contracts.Responses.Transaction;
 /// payments that settled it. All money figures are server-computed (rule 2).
 /// </summary>
 /// <param name="Id">The transaction id.</param>
-/// <param name="Number">Human-friendly number (provisional, derived from type + id — matches the debts read model).</param>
+/// <param name="Number">Human-facing document number, sequential per organization (matches the list and debts read models).</param>
 /// <param name="Type">Sale, Supply, SaleRefund or SupplyRefund.</param>
 /// <param name="Direction">"Receivable" (the partner owes us) or "Payable" (we owe the partner) — the money direction, same split as the debts read model. Distinct from <see cref="Type"/>, which drives the sale/supply detail route.</param>
 /// <param name="Status">Settlement status (Open, PartiallyPaid, Closed).</param>

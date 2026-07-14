@@ -16,6 +16,7 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
             .Select(t => new
             {
                 t.Id,
+                t.Number,
                 t.Type,
                 t.DateUtc,
                 t.DueDate,
@@ -33,7 +34,7 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
         return [.. rows
             .Select(r => new DebtDto(
                 r.Id,
-                r.Type.ToProvisionalNumber(r.Id),
+                r.Number.ToString(),
                 r.Type.ToDebtDirection(),
                 r.Type.ToString(),
                 r.PartnerId,
