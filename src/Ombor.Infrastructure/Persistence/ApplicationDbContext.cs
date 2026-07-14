@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Common;
@@ -9,8 +10,11 @@ namespace Ombor.Infrastructure.Persistence;
 internal class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
     IOrganizationAccessor organizationAccessor)
-    : DbContext(options), IApplicationDbContext
+    : DbContext(options), IApplicationDbContext, IDataProtectionKeyContext
 {
+    /// <summary>Persisted Data Protection key ring, so keys survive restarts and are shared across instances.</summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<ProductImage> ProductImages { get; set; }

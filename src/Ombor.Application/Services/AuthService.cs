@@ -71,39 +71,57 @@ internal sealed class AuthService(
             return new VerifyOtpResponse();
         }
 
-        var organization = await organizationService.CreateAsync(registerRequest.OrganizationName);
-
         var passwordHash = passwordHasher.HashPassword(registerRequest.Password);
 
-        var newUser = new User
+        // Org + user + starter data + refresh token are one account: a mid-way failure must not leave an
+        // orphan organization (which a retry can't reuse). Commit them atomically.
+        User newUser;
+        string refreshToken;
+        await using (var transaction = await context.Database.BeginTransactionAsync())
         {
-            FirstName = registerRequest.FirstName,
-            LastName = registerRequest.LastName,
-            TelegramAccount = registerRequest.TelegramAccount,
-            PhoneNumber = registerRequest.PhoneNumber,
-            Email = registerRequest.Email,
-            PasswordHash = passwordHash.Hash,
-            PasswordSalt = passwordHash.Salt,
-            IsPhoneNumberConfirmed = true,
-            // The interface language chosen at registration (validated upstream from the request header).
-            Language = language,
-            OrganizationId = organization.Id,
-            Organization = null! // To be set by EF Core
-        };
+            try
+            {
+                var organization = await organizationService.CreateAsync(registerRequest.OrganizationName);
 
-        context.Users.Add(newUser);
-        await context.SaveChangesAsync();
+                newUser = new User
+                {
+                    FirstName = registerRequest.FirstName,
+                    LastName = registerRequest.LastName,
+                    TelegramAccount = registerRequest.TelegramAccount,
+                    PhoneNumber = registerRequest.PhoneNumber,
+                    Email = registerRequest.Email,
+                    PasswordHash = passwordHash.Hash,
+                    PasswordSalt = passwordHash.Salt,
+                    IsPhoneNumberConfirmed = true,
+                    // The interface language chosen at registration (validated upstream from the request header).
+                    Language = language,
+                    OrganizationId = organization.Id,
+                    Organization = null! // To be set by EF Core
+                };
 
-        // Seed the organization's ordinary starter records (rule 42), named in the registration language.
-        await organizationSetupService.SeedStarterDataAsync(organization.Id, language);
+                context.Users.Add(newUser);
+                await context.SaveChangesAsync();
 
+                // Seed the organization's ordinary starter records (rule 42), named in the registration language.
+                await organizationSetupService.SeedStarterDataAsync(organization.Id, language);
+
+                refreshToken = tokenService.GenerateRefreshToken();
+                await SaveRefreshTokenAsync(newUser, refreshToken);
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        // Clear the OTP only after the account is durably committed, so a failed attempt can be retried.
         await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
         await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
 
         var accessToken = tokenService.GenerateAccessToken(newUser);
-        var refreshToken = tokenService.GenerateRefreshToken();
-
-        await SaveRefreshTokenAsync(newUser, refreshToken);
 
         return new VerifyOtpResponse(refreshToken, accessToken);
     }
@@ -182,8 +200,10 @@ internal sealed class AuthService(
        await context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber)
        ?? throw new EntityNotFoundException<User>(phoneNumber);
 
+    // Bypasses the organization query filter: refresh is anonymous (no org claim) and the user is fetched by
+    // its own id. Without this, a stray org context filters the required User out and token refresh fails.
     private async Task<User> GetOrThrowAsync(int id) =>
-       await context.Users.FirstOrDefaultAsync(x => x.Id == id)
+       await context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id)
        ?? throw new EntityNotFoundException<User>(id);
 
     private void VerifyPassword(User user, string password)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,20 @@ public static class DependencyInjection
         .AddDatabase(configuration)
         .AddAuthentication(configuration)
         .AddInMemoryCache()
+        .AddKeyPersistence()
         .AddServices();
+
+    private static IServiceCollection AddKeyPersistence(this IServiceCollection services)
+    {
+        // Persist the Data Protection key ring in SQL Server instead of the default ephemeral store, and pin a
+        // fixed application name, so keys survive restarts and are shared across instances.
+        services
+            .AddDataProtection()
+            .PersistKeysToDbContext<ApplicationDbContext>()
+            .SetApplicationName("Ombor");
+
+        return services;
+    }
 
     private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {

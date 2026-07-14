@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Infrastructure.Services;
 
@@ -51,13 +52,25 @@ internal sealed class SmsService(
             "application/json"
         );
 
-        using var response = await client.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
+        HttpResponseMessage response;
+        try
         {
-            var error = await response.Content.ReadAsStringAsync();
+            response = await client.SendAsync(request);
+        }
+        catch (HttpRequestException ex)
+        {
+            // Network/DNS failure reaching the provider — surface as a retryable outage, not a 500.
+            throw new SmsDeliveryException("SMS provider is temporarily unavailable.", ex);
+        }
 
-            throw new HttpRequestException($"SMS provider request failed with status {(int)response.StatusCode} {response.ReasonPhrase}. Response: {error}");
+        using (response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+
+                throw new SmsDeliveryException($"SMS provider request failed with status {(int)response.StatusCode} {response.ReasonPhrase}. Response: {error}");
+            }
         }
     }
 }
