@@ -19,6 +19,14 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
             .NotEmpty()
             .WithMessage("Transaction must contain at least one line item.");
 
+        // Guard each line's discount type: an omitted/0/invalid value would otherwise fail deep in the enum
+        // mapper as a 500. This mirrors the order-line validator and returns a clean 400 instead.
+        RuleForEach(x => x.Lines)
+            .ChildRules(line => line
+                .RuleFor(l => l.DiscountType)
+                .IsInEnum()
+                .WithMessage("Invalid discount type."));
+
         RuleFor(x => x.PaidAmount)
             .GreaterThanOrEqualTo(0m)
             .WithMessage("Paid amount cannot be negative.");

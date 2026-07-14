@@ -62,6 +62,23 @@ public partial class CreateTransactionTests
         Assert.Null(created.OriginalTransactionNumber);
     }
 
+    [Fact]
+    public async Task CreateAsync_ShouldReturnBadRequest_ForInvalidLineDiscountType()
+    {
+        // Arrange — a valid Sale, but the line carries an out-of-range discount type (what an omitted value
+        // deserializes to). This must be a clean 400 from validation, not a 500 from the enum mapper.
+        var partnerId = await CreatePartnerAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+
+        var request = TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due: 5_000m, walletId: null, paidAmount: 0m);
+        request = request with { Lines = [request.Lines[0] with { DiscountType = (Ombor.Contracts.Enums.DiscountType)0 }] };
+
+        // Act + Assert
+        await PostTransactionExpectingBadRequestAsync(request);
+    }
+
     [Theory]
     [InlineData(10_000, 4_000, 6_000)]
     [InlineData(10_000, 7_500, 2_500)]
