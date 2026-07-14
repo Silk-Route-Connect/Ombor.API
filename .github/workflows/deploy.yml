@@ -29,6 +29,12 @@ permissions:
   contents: read
   packages: write
 
+# Serialize deploys per branch so overlapping pushes can't repoint the shared ':latest' tag to an older
+# commit — the last-pushed commit deploys last. Don't cancel an in-flight deploy mid-SSH.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   setup:
     name: Resolve environment from branch

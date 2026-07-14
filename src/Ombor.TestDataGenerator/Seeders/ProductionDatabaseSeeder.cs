@@ -102,7 +102,9 @@ internal sealed class ProductionDatabaseSeeder(
         var fileNames = nameMap.Keys.ToArray();
         if (fileNames.Length == 0)
         {
-            throw new InvalidOperationException("No seed images were loaded.");
+            // Product images are decorative seed data — a missing/empty image source must not abort the
+            // whole seed (and app startup). Skip image seeding instead of throwing.
+            return;
         }
 
         var productIds = context.Products.Select(p => p.Id).ToArray();
