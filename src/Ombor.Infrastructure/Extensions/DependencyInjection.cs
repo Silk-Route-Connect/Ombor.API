@@ -28,7 +28,10 @@ public static class DependencyInjection
 
         services.AddDbContext<IApplicationDbContext, ApplicationDbContext>((serviceProvider, options) =>
             options
-                .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                // Split multi-collection includes into separate queries to avoid cartesian-explosion warnings.
+                .UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    sql => sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
                 .AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>()));
 
         return services;
