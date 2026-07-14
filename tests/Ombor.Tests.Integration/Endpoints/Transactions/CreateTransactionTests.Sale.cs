@@ -230,4 +230,32 @@ public partial class CreateTransactionTests
         var openSale = await _context.Transactions.FirstAsync(t => t.Id == openSaleId);
         Assert.Equal(TransactionStatus.Closed, openSale.Status);
     }
+
+    [Fact]
+    public async Task CreateAsync_ShouldCollapseDuplicateSettlementRows_ForOneTransaction()
+    {
+        // Arrange — an open receivable that will be named twice in the same request's settlements.
+        var partnerId = await CreatePartnerAsync();
+        var openSaleId = await CreateOpenTransactionAsync(partnerId, due: 10_000m, paid: 0m, TransactionType.Sale);
+
+        var walletId = await CreateWalletAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+
+        // Pay 15k: 5k closes this Sale; two 5k rows for the open Sale must collapse to one 10k settlement,
+        // not double-apply (which would 500 on the second AddPayment) or overpay.
+        var request = TransactionRequestFactory.Sale(
+            partnerId, productId, warehouseId, due: 5_000m, walletId, paidAmount: 15_000m,
+            OverpaymentHandling.Change,
+            settlements: [new SettlementInput(openSaleId, 5_000m), new SettlementInput(openSaleId, 5_000m)]);
+
+        // Act
+        await PostTransactionAsync(request);
+
+        // Assert — the open Sale is settled exactly once.
+        var openSale = await _context.Transactions.FirstAsync(t => t.Id == openSaleId);
+        Assert.Equal(10_000m, openSale.TotalPaid);
+        Assert.Equal(TransactionStatus.Closed, openSale.Status);
+    }
 }

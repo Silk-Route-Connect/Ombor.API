@@ -53,6 +53,13 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasMaxLength(ConfigurationConstants.EnumLength)
             .IsRequired(false);
 
+        // The payment number is the dispute trail's human handle: unique per organization so concurrent
+        // creates can't mint the same «P-n» (filtered to skip the nullable column's single-NULL rule).
+        builder
+            .HasIndex(p => new { p.OrganizationId, p.Number })
+            .IsUnique()
+            .HasFilter("[Number] IS NOT NULL");
+
         builder
             .Property(p => p.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
