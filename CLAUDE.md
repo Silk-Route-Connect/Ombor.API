@@ -75,7 +75,7 @@ Run-on-demand, not a long-running daemon. Dev DB persists across restarts (seede
 3. **Negative stock is impossible** (rule 20): sale lines, decrease adjustments, transfer lines, and order delivery are hard-blocked below zero, returning 400 ValidationProblemDetails with available-vs-requested detail.
 4. **Atomicity:** stock + money + ledgers move in one transaction; a transfer updates both warehouses atomically. Partial application must be impossible.
 5. **Organization scoping is enforced by the shared mechanism, not per-endpoint filters** (rule 34) — a new endpoint cannot silently skip it. The entity is `Organization`/`OrganizationId`.
-6. **Soft-archive, never hard-delete** for Product/Partner/Wallet/Warehouse (rules 29–32); archived rows with residual money/stock still count in totals. The only true DELETE is reference-gated (Partner, Category) → 409 when referenced.
+6. **Archive is the default; the only hard-delete is reference-gated** (rules 29–32, DR-20). Product/Partner/Wallet/Warehouse (and Category) each serve `IsDeletable` and expose a DELETE that returns **409 when referenced** — archive instead — deleting only when unreferenced. Archived rows with residual money/stock still count in totals.
 7. **UZS-only** (rule 33): no currency/exchange-rate fields on new contracts. The legacy currency machinery is frozen — not used, not extended.
 8. **No scope additions** beyond `mvp-plan.md` without an explicit decision (rule 36). Surface; don't build.
 
