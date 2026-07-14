@@ -320,6 +320,13 @@ internal sealed class TransactionService(
             ? request.PaidAmount - excess
             : request.PaidAmount;
 
+        // DR-25: a money-out transaction (Supply / SaleRefund) may not overdraw the source wallet (parity with
+        // negative stock, rule 20). This runs inside the create transaction, so a block rolls the stock move back.
+        if (direction == PaymentDirection.Expense)
+        {
+            await context.EnsureWalletCanCoverAsync(walletId, sourceAmount);
+        }
+
         payment.Components.Add(new PaymentComponent
         {
             Payment = payment,
