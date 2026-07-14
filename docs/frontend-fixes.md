@@ -1,5 +1,8 @@
 # Frontend fixes — backend-driven
 
+**Status:** historical queue — written for the M0–M7 redesign, consumed by the 2026-07-05 contract alignment. The live FE↔DTO divergence list is `Ombor.Web/docs/frontend-gaps.md` (F-items); treat items below as applied unless frontend-gaps says otherwise.
+**Last updated:** 2026-07-14 (status header added; content frozen).
+
 Running list of changes the **frontend** must make to match the redesigned backend. These are
 backend/frontend contract mismatches discovered while building the backend; the backend is the
 source of truth here (it conforms to `business-rules.md` and the corrected `backend-contract.md`),
