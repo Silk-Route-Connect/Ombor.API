@@ -1,11 +1,24 @@
-﻿using System.Text.RegularExpressions;
-
 namespace Ombor.Application.Validators;
 
 internal static class ValidationHelpers
 {
-    private const string UzPhonePattern = @"^(?:\+998-?)?(?:9\d{8}|9\d-\d{3}-\d{2}-\d{2}|9\d{2}-\d{3}-\d{3})$";
+    // Uzbek numbers are 9 national digits (e.g. 90 123 45 67); with the +998 country code, 12.
+    private const int NationalNumberLength = 9;
+    private const int WithCountryCodeLength = 12;
 
-    public static bool IsValidPhoneNumber(string phoneNumber) =>
-        Regex.IsMatch(phoneNumber, UzPhonePattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
+    // Policy (F): accept any Uzbek number under +998, validating length only — not the operator prefix —
+    // so landlines and every mobile operator pass. Formatting characters (+, spaces, dashes) are ignored.
+    // Length-based rather than prefix-stripping: a national mobile can itself start with "998".
+    public static bool IsValidPhoneNumber(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return false;
+        }
+
+        var digits = new string(phoneNumber.Where(char.IsDigit).ToArray());
+
+        return digits.Length == NationalNumberLength
+            || (digits.Length == WithCountryCodeLength && digits.StartsWith("998", StringComparison.Ordinal));
+    }
 }
