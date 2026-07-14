@@ -7,7 +7,8 @@ public class Order : AuditableEntity, IOrganizationScoped
 {
     public int OrganizationId { get; set; }
 
-    public required string OrderNumber { get; set; }
+    /// <summary>Human-facing order number, sequential per organization. Server-assigned; null only on synthetic seed/test rows.</summary>
+    public int? OrderNumber { get; set; }
     public string? Notes { get; set; }
     public required decimal TotalAmount { get; set; }
     public required DateTimeOffset DateUtc { get; set; }

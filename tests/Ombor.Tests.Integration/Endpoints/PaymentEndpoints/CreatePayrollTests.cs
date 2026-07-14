@@ -33,7 +33,7 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
         Assert.Equal(employeeId, payroll.EmployeeId);
         Assert.Equal("2026-06", payroll.Period);
         Assert.Equal(5_000_000m, payroll.Salary); // snapshot of the employee's salary
-        Assert.StartsWith("P-", payroll.Number);
+        Assert.True(int.TryParse(payroll.Number, out _)); // bare sequential number, no "P-" prefix
 
         var source = Assert.Single(payroll.Sources);
         Assert.Equal("Wallet", source.SourceType);

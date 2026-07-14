@@ -49,7 +49,7 @@ public sealed class WalletDeleteGatingTests(TestingWebApplicationFactory factory
     {
         var payment = new Payment
         {
-            Number = $"P-{Guid.NewGuid():N}",
+            Number = null,
             Type = PaymentType.General,
             Direction = PaymentDirection.Expense,
             DateUtc = DateTimeOffset.UtcNow,

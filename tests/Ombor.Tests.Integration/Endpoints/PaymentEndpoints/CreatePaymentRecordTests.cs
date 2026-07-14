@@ -38,7 +38,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
         Assert.Equal(saleId, allocation.TransactionId);
         Assert.Equal("Sale", allocation.TransactionType); // lets the frontend route a settlement row to the sale detail page
         Assert.Equal(10_000m, allocation.Amount);
-        Assert.StartsWith("P-", payment.Number);
+        Assert.True(int.TryParse(payment.Number, out _)); // bare sequential number, no "P-" prefix
 
         // Assert — the sale is now fully paid.
         var sale = await _context.Transactions.AsNoTracking().FirstAsync(t => t.Id == saleId);

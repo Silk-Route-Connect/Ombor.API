@@ -50,7 +50,7 @@ public sealed class OrderExtensionsTests
 
     private static Order NewOrder(OrderStatus status) => new()
     {
-        OrderNumber = "TEST",
+        OrderNumber = 1,
         TotalAmount = 0m,
         DateUtc = DateTimeOffset.UtcNow,
         CustomerId = 1,

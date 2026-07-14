@@ -32,22 +32,6 @@ public sealed class TransactionExtensionsTests
     public void ToEffectiveStatusName_OverridesWithOverdue(TransactionStatus stored, string? dueDate, string expected)
         => Assert.Equal(expected, stored.ToEffectiveStatusName(Parse(dueDate), Today));
 
-    [Theory]
-    [InlineData(TransactionType.SaleRefund, 42, "S-42")]     // a SaleRefund reverses a Sale
-    [InlineData(TransactionType.SupplyRefund, 7, "SP-7")]    // a SupplyRefund reverses a Supply
-    public void ToOriginalProvisionalNumber_DerivesFromRefundType(TransactionType refundType, int originalId, string expected)
-        => Assert.Equal(expected, refundType.ToOriginalProvisionalNumber(originalId));
-
-    [Theory]
-    [InlineData(TransactionType.Sale)]
-    [InlineData(TransactionType.Supply)]
-    public void ToOriginalProvisionalNumber_IsNull_ForNonRefundType(TransactionType type)
-        => Assert.Null(type.ToOriginalProvisionalNumber(99));
-
-    [Fact]
-    public void ToOriginalProvisionalNumber_IsNull_WhenNoOriginalId()
-        => Assert.Null(TransactionType.SaleRefund.ToOriginalProvisionalNumber(null));
-
     private static DateOnly? Parse(string? value)
         => value is null ? null : DateOnly.ParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 }

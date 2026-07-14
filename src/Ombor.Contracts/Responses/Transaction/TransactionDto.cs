@@ -4,7 +4,7 @@
 /// A transaction as it appears in the Sales/Supplies list.
 /// </summary>
 /// <param name="Id">The transaction id.</param>
-/// <param name="Number">Human-friendly document number (provisional, derived from type + id — matches the detail view and the debts read model).</param>
+/// <param name="Number">Human-facing document number, sequential per organization. Rendered bare (the «№» prefix is added client-side).</param>
 /// <param name="PartnerId">The partner this transaction is with.</param>
 /// <param name="PartnerName">The partner's name.</param>
 /// <param name="Date">When the transaction occurred.</param>

@@ -15,7 +15,8 @@ namespace Ombor.Application.Services;
 internal sealed class OrderService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    ICurrentUserAccessor currentUser) : IOrderService
+    ICurrentUserAccessor currentUser,
+    INumberSequenceAllocator allocator) : IOrderService
 {
     public async Task<OrderDto> CreateAsync(CreateOrderRequest request)
     {
@@ -31,8 +32,14 @@ internal sealed class OrderService(
             Order = entity,
         });
 
+        // Allocate the number and insert in one transaction so a rolled-back create leaves no gap (rule 4).
+        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
+
+        entity.OrderNumber = await allocator.AllocateAsync(Ombor.Domain.Enums.NumberSeriesType.Order);
         context.Orders.Add(entity);
         await context.SaveChangesAsync();
+
+        await databaseTransaction.CommitAsync();
 
         return await GetProjectedOrThrowAsync(entity.Id);
     }
@@ -148,6 +155,7 @@ internal sealed class OrderService(
                 TotalPaid = 0m,
                 Status = Domain.Enums.TransactionStatus.Open,
             };
+            sale.Number = await allocator.AllocateAsync(Ombor.Domain.Enums.NumberSeriesType.Transaction);
             context.Transactions.Add(sale);
             await context.SaveChangesAsync();
 
@@ -219,8 +227,11 @@ internal sealed class OrderService(
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
             var term = request.SearchTerm;
+            // The order number is an integer now, so it matches exactly (not as a substring); notes and
+            // customer name stay substring searches.
+            var numberTerm = int.TryParse(term, out var parsed) ? parsed : (int?)null;
             query = query.Where(x =>
-                x.OrderNumber.Contains(term) ||
+                (numberTerm != null && x.OrderNumber == numberTerm) ||
                 (x.Notes != null && x.Notes.Contains(term)) ||
                 x.Customer.Name.Contains(term));
         }

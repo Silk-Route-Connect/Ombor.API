@@ -151,7 +151,7 @@ public sealed class OrderMappingsTests
 
     private static Order NewOrder(Partner? customer) => new()
     {
-        OrderNumber = "ORD",
+        OrderNumber = 1,
         TotalAmount = 0m,
         DateUtc = DateTimeOffset.UtcNow,
         Status = OrderStatus.Pending,

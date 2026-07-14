@@ -227,7 +227,7 @@ internal sealed class WalletService(
                 Date: p.DateUtc,
                 Kind: OperationKind(p.Type, isIncoming),
                 Direction: isIncoming ? "In" : "Out",
-                PaymentNumber: p.Number,
+                PaymentNumber: p.Number?.ToString(),
                 Party: p.Party,
                 PartnerId: p.PartnerId,
                 Amount: p.Amount,

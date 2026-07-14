@@ -47,6 +47,7 @@ internal class ApplicationDbContext(
     public virtual DbSet<StockAdjustment> StockAdjustments { get; set; }
     public virtual DbSet<OpeningStock> OpeningStocks { get; set; }
     public virtual DbSet<AuditEntry> AuditEntries { get; set; }
+    public virtual DbSet<NumberSequence> NumberSequences { get; set; }
 
     /// <summary>
     /// Organization every <see cref="IOrganizationScoped"/> query is filtered by. Zero means

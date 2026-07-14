@@ -36,7 +36,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
 
         // Assert — header (number/direction match the debts read model the row deep-links from)
         Assert.Equal(transactionId, detail.Id);
-        Assert.Equal($"S-{transactionId}", detail.Number);
+        Assert.Equal((SeededDocumentNumberOffset + transactionId).ToString(), detail.Number);
         Assert.Equal("Sale", detail.Type);
         Assert.Equal("Receivable", detail.Direction);
         Assert.Equal("PartiallyPaid", detail.Status);
@@ -106,7 +106,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
 
         // Assert — the refund carries the original's document number; a non-refund has none.
         Assert.Equal(saleId, refund.OriginalTransactionId);
-        Assert.Equal($"S-{saleId}", refund.OriginalTransactionNumber);
+        Assert.Equal(sale.Number, refund.OriginalTransactionNumber);
         Assert.Null(sale.OriginalTransactionNumber);
     }
 
@@ -161,6 +161,10 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
 
+        // Give the seeded sale a document number (high offset, clear of live allocator values) so the served detail carries one.
+        transaction.Number = SeededDocumentNumberOffset + transaction.Id;
+        await _context.SaveChangesAsync();
+
         var wallet = new Wallet
         {
             Name = $"Wallet {Guid.NewGuid():N}",
@@ -173,7 +177,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
 
         var payment = new Payment
         {
-            Number = $"P-{Guid.NewGuid():N}",
+            Number = null,
             Type = PaymentType.Transaction,
             Direction = PaymentDirection.Income,
             DateUtc = DateTimeOffset.UtcNow,

@@ -21,7 +21,7 @@ internal static class OrderMappings
         {
             CustomerId = request.CustomerId,
             DateUtc = DateTime.UtcNow,
-            OrderNumber = Guid.NewGuid().ToString("N").ToUpperInvariant()[..10],
+            // OrderNumber is server-assigned by the number allocator in OrderService.CreateAsync.
             TotalAmount = totalAmount,
             Lines = lines,
             Status = Domain.Enums.OrderStatus.Pending,
@@ -51,7 +51,7 @@ internal static class OrderMappings
             CustomerName: order.Customer.Name,
             CustomerType: order.Customer.Type.ToString(),
             CustomerBalance: customerBalance,
-            OrderNumber: order.OrderNumber,
+            OrderNumber: order.OrderNumber.ToString(),
             Notes: order.Notes,
             Total: order.TotalAmount,
             Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),

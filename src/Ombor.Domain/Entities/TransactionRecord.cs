@@ -7,6 +7,12 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 
+    /// <summary>
+    /// Human-facing document number, one sequence per organization shared across all transaction
+    /// sub-types (Sale/Supply/refunds). Null only on synthetic seed/test rows.
+    /// </summary>
+    public int? Number { get; set; }
+
     public decimal TotalDue { get; set; }
     public decimal TotalPaid { get; set; }
     public DateTimeOffset DateUtc { get; set; }
