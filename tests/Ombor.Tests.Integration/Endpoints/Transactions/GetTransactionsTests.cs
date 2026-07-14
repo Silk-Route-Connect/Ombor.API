@@ -23,7 +23,7 @@ public sealed class GetTransactionsTests(TestingWebApplicationFactory factory, I
 
         // Assert — the list now serves the document number (was the id fallback) and it matches the detail view.
         var row = Assert.Single(list, t => t.Id == id);
-        Assert.Equal($"S-{id}", row.Number);
+        Assert.Equal((SeededDocumentNumberOffset + id).ToString(), row.Number);
         Assert.Equal(detail.Number, row.Number);
     }
 
@@ -81,7 +81,7 @@ public sealed class GetTransactionsTests(TestingWebApplicationFactory factory, I
         // Assert — the refund carries the original's document number; a non-refund has none.
         var refund = Assert.Single(list, t => t.Id == refundId);
         Assert.Equal(saleId, refund.OriginalTransactionId);
-        Assert.Equal($"S-{saleId}", refund.OriginalTransactionNumber);
+        Assert.Equal((SeededDocumentNumberOffset + saleId).ToString(), refund.OriginalTransactionNumber);
         Assert.Null(Assert.Single(list, t => t.Id == saleId).OriginalTransactionNumber);
     }
 

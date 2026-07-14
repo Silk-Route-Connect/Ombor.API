@@ -42,7 +42,7 @@ public partial class CreateTransactionTests
     }
 
     [Fact]
-    public async Task CreateAsync_ShouldReturnProvisionalNumberAndComputedStatus()
+    public async Task CreateAsync_ShouldReturnDocumentNumberAndComputedStatus()
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
@@ -56,10 +56,29 @@ public partial class CreateTransactionTests
         // Act
         var created = await PostTransactionAsync(request);
 
-        // Assert — the create (mapper) path serves the document number, the computed status, and no refund link.
-        Assert.Equal($"S-{created.Id}", created.Number);
+        // Assert — the create (mapper) path serves the persisted bare document number, the computed status, and no refund link.
+        Assert.True(int.TryParse(created.Number, out _));
         Assert.Equal("Closed", created.Status);
         Assert.Null(created.OriginalTransactionNumber);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldShareOneNumberSeries_AcrossTransactionSubTypes()
+    {
+        // Arrange
+        var partnerId = await CreatePartnerAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+
+        // Act — a Sale, then a Supply (a different sub-type), created back to back in the same organization.
+        var sale = await PostTransactionAsync(
+            TransactionRequestFactory.Sale(partnerId, productId, warehouseId, due: 5_000m, walletId: null, paidAmount: 0m));
+        var supply = await PostTransactionAsync(
+            TransactionRequestFactory.Supply(partnerId, productId, warehouseId, due: 5_000m, walletId: null, paidAmount: 0m));
+
+        // Assert — one per-organization series across sub-types: the Supply continues the Sale's counter (+1).
+        Assert.Equal(int.Parse(sale.Number) + 1, int.Parse(supply.Number));
     }
 
     [Theory]

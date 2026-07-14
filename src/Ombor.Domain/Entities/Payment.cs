@@ -7,8 +7,8 @@ public class Payment : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 
-    /// <summary>Human-friendly payment number (e.g. «P-520»), sequential per organization.</summary>
-    public string? Number { get; set; }
+    /// <summary>Human-facing payment number, sequential per organization. Null only on synthetic seed/test rows.</summary>
+    public int? Number { get; set; }
 
     public string? Notes { get; set; }
     public PaymentType Type { get; set; }

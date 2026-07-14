@@ -27,7 +27,7 @@ public sealed class DebtTests(TestingWebApplicationFactory factory, ITestOutputH
         // Assert
         Assert.Equal("Receivable", debt.Direction);
         Assert.Equal("Sale", debt.TransactionType);
-        Assert.Equal($"S-{sale.Id}", debt.Number);
+        Assert.Equal(sale.Number, debt.Number); // the debt surfaces the transaction's persisted document number
         Assert.Equal(partnerId, debt.PartnerId);
         Assert.Equal("Acme LLC", debt.PartnerCompany);
         Assert.Equal(1_000m, debt.Total);
@@ -54,7 +54,7 @@ public sealed class DebtTests(TestingWebApplicationFactory factory, ITestOutputH
         // Assert
         Assert.Equal("Payable", debt.Direction);
         Assert.Equal("Supply", debt.TransactionType);
-        Assert.Equal($"SP-{supply.Id}", debt.Number);
+        Assert.Equal(supply.Number, debt.Number); // the debt surfaces the transaction's persisted document number
         Assert.Equal(600m, debt.Remaining);
     }
 
@@ -144,7 +144,6 @@ public sealed class DebtTests(TestingWebApplicationFactory factory, ITestOutputH
         Assert.Equal(40, debt.AgeDays);
         Assert.Equal(10, debt.OverdueDays);
         Assert.Equal("Receivable", debt.Direction);
-        Assert.Equal($"S-{id}", debt.Number);
     }
 
     [Fact]

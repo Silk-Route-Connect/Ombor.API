@@ -58,6 +58,17 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .HasMaxLength(ConfigurationConstants.MaxStringLength)
             .IsRequired(false);
 
+        builder
+            .Property(t => t.Number)
+            .IsRequired(false);
+
+        // The document number is the dispute trail's human handle: unique per organization so concurrent
+        // creates can't mint the same value (filtered to skip the nullable column's single-NULL rule).
+        builder
+            .HasIndex(t => new { t.OrganizationId, t.Number })
+            .IsUnique()
+            .HasFilter("[Number] IS NOT NULL");
+
         builder.Ignore(t => t.UnpaidAmount);
 
         builder

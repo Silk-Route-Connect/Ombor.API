@@ -6,7 +6,7 @@ namespace Ombor.Contracts.Responses.Debt;
 /// summary cards, by-partner groups, and aging buckets from it (complexity notes §J).
 /// </summary>
 /// <param name="TransactionId">The underlying transaction's id (the UI deep-links debt rows to it / the partner).</param>
-/// <param name="Number">Human-friendly transaction number (provisional, derived from type + id).</param>
+/// <param name="Number">Human-facing transaction document number, sequential per organization.</param>
 /// <param name="Direction">"Receivable" (the partner owes us) or "Payable" (we owe the partner).</param>
 /// <param name="TransactionType">Sale, Supply, SaleRefund or SupplyRefund.</param>
 /// <param name="PartnerId">The partner this debt is with.</param>

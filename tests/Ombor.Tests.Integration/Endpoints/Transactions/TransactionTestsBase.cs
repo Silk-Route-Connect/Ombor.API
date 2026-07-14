@@ -128,8 +128,16 @@ public abstract class TransactionsTestsBase(
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
 
+        // Give the seeded row a document number so refund/original-number serving is exercised. A high offset
+        // keeps it clear of the small numbers the live allocator mints in the shared per-collection database.
+        transaction.Number = SeededDocumentNumberOffset + transaction.Id;
+        await _context.SaveChangesAsync();
+
         return transaction.Id;
     }
+
+    /// <summary>Offset for numbers on directly-seeded transactions, kept far above live allocator values.</summary>
+    private protected const int SeededDocumentNumberOffset = 1_000_000;
 
     protected async Task<int> CreateOpenTransactionAsync(int partnerId, decimal due, decimal paid, TransactionType type = TransactionType.Sale)
     {

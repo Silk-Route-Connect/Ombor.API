@@ -15,7 +15,8 @@ namespace Ombor.Application.Services;
 
 internal sealed class PaymentService(
     IApplicationDbContext context,
-    IRequestValidator validator) : IPaymentService
+    IRequestValidator validator,
+    INumberSequenceAllocator allocator) : IPaymentService
 {
     public async Task<PaymentRecordDto> CreateRecordAsync(CreatePaymentRecordRequest request)
     {
@@ -146,8 +147,14 @@ internal sealed class PaymentService(
             });
         }
 
+        // Allocate the number and insert in one transaction so a rolled-back create leaves no gap (rule 4).
+        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
+
+        payment.Number = await allocator.AllocateAsync(NumberSeriesType.Payment);
         context.Payments.Add(payment);
-        await context.SaveWithPaymentNumberAsync(payment);
+        await context.SaveChangesAsync();
+
+        await databaseTransaction.CommitAsync();
 
         return await GetRecordByIdAsync(payment.Id);
     }
@@ -279,7 +286,7 @@ internal sealed class PaymentService(
     private static System.Linq.Expressions.Expression<Func<Payment, PaymentRecordDto>> ToRecordExpression() =>
         p => new PaymentRecordDto(
             p.Id,
-            p.Number,
+            p.Number.ToString(),
             p.DateUtc,
             p.Type.ToString(),
             p.Direction.ToString(),
@@ -346,8 +353,14 @@ internal sealed class PaymentService(
             Amount = request.Amount,
         });
 
+        // Allocate the number and insert in one transaction so a rolled-back create leaves no gap (rule 4).
+        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
+
+        payment.Number = await allocator.AllocateAsync(NumberSeriesType.Payment);
         context.Payments.Add(payment);
-        await context.SaveWithPaymentNumberAsync(payment);
+        await context.SaveChangesAsync();
+
+        await databaseTransaction.CommitAsync();
 
         return await GetRecordByIdAsync(payment.Id);
     }
@@ -364,7 +377,7 @@ internal sealed class PaymentService(
                 a.Id,
                 request.TransactionId,
                 a.Amount,
-                a.Payment.Number,
+                a.Payment.Number.ToString(),
                 a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,
                 a.Payment.Wallet != null ? a.Payment.Wallet.Type.ToString() : null,
                 a.Payment.Notes,

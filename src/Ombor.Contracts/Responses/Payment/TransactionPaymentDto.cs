@@ -4,7 +4,7 @@ namespace Ombor.Contracts.Responses.Payment;
 /// <param name="Id">The settlement allocation id.</param>
 /// <param name="TransactionId">The transaction settled.</param>
 /// <param name="Amount">The amount applied to the transaction.</param>
-/// <param name="PaymentNumber">The payment's human-friendly number (e.g. «P-520»).</param>
+/// <param name="PaymentNumber">The payment's human-facing document number, sequential per organization.</param>
 /// <param name="WalletName">The wallet the money moved through.</param>
 /// <param name="WalletType">The wallet type (Cash/Card/Bank).</param>
 /// <param name="Notes">Optional payment note.</param>

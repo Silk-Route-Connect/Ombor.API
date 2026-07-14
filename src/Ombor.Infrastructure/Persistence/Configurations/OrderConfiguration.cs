@@ -63,8 +63,14 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder
             .Property(o => o.OrderNumber)
-            .HasMaxLength(ConfigurationConstants.OrderNumberLength)
-            .IsRequired();
+            .IsRequired(false);
+
+        // The order number is the dispute trail's human handle: unique per organization so concurrent
+        // creates can't mint the same value (filtered to skip the nullable column's single-NULL rule).
+        builder
+            .HasIndex(o => new { o.OrganizationId, o.OrderNumber })
+            .IsUnique()
+            .HasFilter("[OrderNumber] IS NOT NULL");
 
         builder
             .Property(o => o.TotalAmount)
