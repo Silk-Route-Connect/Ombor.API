@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Domain.Exceptions;
-using Sentry;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -25,12 +24,11 @@ internal sealed class InvalidFileExceptionHandler(ILogger<InvalidFileException> 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
+        // 400s are client errors, not Sentry events — log locally only.
         logger.LogWarning(
             exception,
             "Error while processing file. {Message}",
             fileException.Message);
-
-        SentrySdk.CaptureException(fileException);
 
         return true;
     }

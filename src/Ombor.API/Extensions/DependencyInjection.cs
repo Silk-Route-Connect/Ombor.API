@@ -58,6 +58,7 @@ internal static class DependencyInjection
         services.AddExceptionHandler<ConflictExceptionHandler>();
         services.AddExceptionHandler<InvalidOrderStateTransitionExceptionHandler>();
         services.AddExceptionHandler<InvalidFileExceptionHandler>();
+        services.AddExceptionHandler<UnauthorizedAccessExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
 
         services.AddProblemDetails();

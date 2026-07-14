@@ -33,8 +33,7 @@ internal sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHand
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
 
-        SentrySdk.CaptureException(validationException);
-
+        // 400s are client errors, not Sentry events — log locally only.
         logger.LogWarning(validationException, "Validation failed: {Errors}", errors);
 
         return true;
