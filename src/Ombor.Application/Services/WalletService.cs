@@ -93,6 +93,25 @@ internal sealed class WalletService(
         await context.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await GetOrThrowAsync(id);
+
+        // Reference-gated (DR-20): a wallet with payment or transfer history can't be hard-deleted — the same
+        // predicate as the served IsDeletable flag, so the affordance and the guard agree. Archive instead.
+        var isReferenced =
+            await context.PaymentComponents.AnyAsync(c => c.WalletId == id) ||
+            await context.WalletTransfers.AnyAsync(t => t.FromWalletId == id || t.ToWalletId == id);
+
+        if (isReferenced)
+        {
+            throw new ConflictException("Wallet cannot be deleted because payments or transfers reference it. Archive it instead.");
+        }
+
+        context.Wallets.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
     public async Task<WalletTransferDto> CreateTransferAsync(CreateWalletTransferRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
@@ -347,7 +366,9 @@ internal sealed class WalletService(
                 .Sum(c => (decimal?)c.Amount) ?? 0m,
             w.Components
                 .Where(c => c.SourceType == Domain.Enums.PaymentSourceType.Wallet && c.Payment.Direction == Domain.Enums.PaymentDirection.Expense)
-                .Sum(c => (decimal?)c.Amount) ?? 0m);
+                .Sum(c => (decimal?)c.Amount) ?? 0m,
+            // Referenced (rule 32 / DR-20): any payment component or transfer bound to this wallet.
+            w.Components.Any() || w.IncomingTransfers.Any() || w.OutgoingTransfers.Any());
 
     private static decimal Balance(WalletRow row)
         => row.OpeningBalance + row.Incoming - row.Outgoing + row.PaymentsIn - row.PaymentsOut;
@@ -368,7 +389,8 @@ internal sealed class WalletService(
             row.OpeningBalance,
             row.IsArchived,
             row.CreatedBy,
-            row.CreatedAt);
+            row.CreatedAt,
+            IsDeletable: !row.IsReferenced);
     }
 
     private sealed record WalletRow(
@@ -382,5 +404,6 @@ internal sealed class WalletService(
         decimal Incoming,
         decimal Outgoing,
         decimal PaymentsIn,
-        decimal PaymentsOut);
+        decimal PaymentsOut,
+        bool IsReferenced);
 }
