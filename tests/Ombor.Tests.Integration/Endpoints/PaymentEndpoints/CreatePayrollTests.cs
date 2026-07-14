@@ -19,7 +19,7 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
     public async Task PostAsync_ShouldRecordPayroll_AsWalletSourcedExpense()
     {
         // Arrange
-        var walletId = await CreateWalletAsync(0m);
+        var walletId = await CreateWalletAsync(10_000_000m); // funded: payroll may not overdraw the wallet (DR-25)
         var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
 
         var request = new CreatePayrollRequest(employeeId, walletId, Amount: 4_000_000m, Period: "2026-06", Notes: "June salary");
@@ -46,7 +46,7 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
     public async Task PostAsync_ShouldSnapshotSalary_IndependentOfLaterSalaryChange()
     {
         // Arrange
-        var walletId = await CreateWalletAsync(0m);
+        var walletId = await CreateWalletAsync(10_000_000m); // funded: payroll may not overdraw the wallet (DR-25)
         var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
 
         var request = new CreatePayrollRequest(employeeId, walletId, Amount: 5_000_000m, Period: "2026-06", Notes: null);
@@ -66,7 +66,7 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
     public async Task PostAsync_ShouldAllowMultiplePayrolls_ForSameEmployeeAndPeriod()
     {
         // Arrange
-        var walletId = await CreateWalletAsync(0m);
+        var walletId = await CreateWalletAsync(10_000_000m); // funded: payroll may not overdraw the wallet (DR-25)
         var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
 
         var first = new CreatePayrollRequest(employeeId, walletId, Amount: 2_000_000m, Period: "2026-06", Notes: "advance");
@@ -95,7 +95,7 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
     [Fact]
     public async Task PostAsync_ShouldReturnBadRequest_WhenAmountNotPositive()
     {
-        var walletId = await CreateWalletAsync(0m);
+        var walletId = await CreateWalletAsync(10_000_000m); // funded: payroll may not overdraw the wallet (DR-25)
         var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
 
         var request = new CreatePayrollRequest(employeeId, walletId, Amount: 0m, Period: "2026-06", Notes: null);

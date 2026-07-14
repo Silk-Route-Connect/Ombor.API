@@ -295,15 +295,9 @@ internal sealed class WalletService(
         return ToDto(row);
     }
 
-    private async Task<decimal> ComputeBalanceAsync(int walletId)
-    {
-        var row = await context.Wallets
-            .Where(w => w.Id == walletId)
-            .Select(WalletProjection())
-            .FirstAsync();
-
-        return Balance(row);
-    }
+    // The transfer overdraft guard shares the one canonical balance formula (WalletCalculationExtensions).
+    private Task<decimal> ComputeBalanceAsync(int walletId)
+        => context.ComputeWalletBalanceAsync(walletId);
 
     private async Task EnsureNameIsUniqueAsync(string name, int? excludingId)
     {

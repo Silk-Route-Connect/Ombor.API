@@ -18,7 +18,7 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var walletId = await CreateWalletAsync();
+        var walletId = await CreateWalletAsync(1_000_000m); // funded: a Supply tender may not overdraw the wallet (DR-25)
         var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
@@ -47,7 +47,7 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var walletId = await CreateWalletAsync();
+        var walletId = await CreateWalletAsync(1_000_000m); // funded: a Supply tender may not overdraw the wallet (DR-25)
         var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
@@ -92,7 +92,7 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var walletId = await CreateWalletAsync();
+        var walletId = await CreateWalletAsync(1_000_000m); // funded: a Supply tender may not overdraw the wallet (DR-25)
         var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
@@ -125,7 +125,7 @@ public partial class CreateTransactionTests
     {
         // Arrange
         var partnerId = await CreatePartnerAsync();
-        var walletId = await CreateWalletAsync();
+        var walletId = await CreateWalletAsync(1_000_000m); // funded: a Supply tender may not overdraw the wallet (DR-25)
         var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
@@ -158,7 +158,7 @@ public partial class CreateTransactionTests
         var partnerId = await CreatePartnerAsync();
         await CreateOpenTransactionAsync(partnerId, due: 10_000m, paid: 0m, TransactionType.Supply);
 
-        var walletId = await CreateWalletAsync();
+        var walletId = await CreateWalletAsync(1_000_000m); // funded: a Supply tender may not overdraw the wallet (DR-25)
         var warehouseId = await CreateWarehouseAsync();
         var productId = await CreateProductAsync();
 
@@ -166,6 +166,21 @@ public partial class CreateTransactionTests
             partnerId, productId, warehouseId, due: 5_000m, walletId, paidAmount: 8_000m, OverpaymentHandling.Advance);
 
         // Act + Assert
+        await PostTransactionExpectingBadRequestAsync(request);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldReject_WhenSupplyTenderOverdrawsWallet()
+    {
+        // DR-25: a Supply tender (money out) may not draw more than the wallet holds (parity with negative stock).
+        var partnerId = await CreatePartnerAsync();
+        var walletId = await CreateWalletAsync(5_000m);
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+
+        var request = TransactionRequestFactory.Supply(
+            partnerId, productId, warehouseId, due: 10_000m, walletId, paidAmount: 10_000m);
+
         await PostTransactionExpectingBadRequestAsync(request);
     }
 }

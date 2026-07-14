@@ -44,6 +44,12 @@ internal sealed class PaymentService(
             throw new ValidationException("Settlements cannot exceed the payment amount.");
         }
 
+        // DR-25: an expense may not overdraw the source wallet (parity with the negative-stock block, rule 20).
+        if (request.Direction.ToDomainDirection() == PaymentDirection.Expense)
+        {
+            await context.EnsureWalletCanCoverAsync(wallet.Id, request.Amount);
+        }
+
         var settledIds = settlements.Select(s => s.TransactionId).ToArray();
         var transactions = await context.Transactions
             .Where(t => settledIds.Contains(t.Id))
@@ -189,17 +195,22 @@ internal sealed class PaymentService(
             .Select(e => new PaymentFormEmployeeDto(e.Id, e.FullName, e.Position, e.Salary))
             .ToArrayAsync();
 
-        var wallets = await context.Wallets
+        var walletRows = await context.Wallets
             .Where(w => !w.IsArchived)
             .OrderBy(w => w.Name)
-            .Select(w => new PaymentFormWalletDto(
-                w.Id,
-                w.Name,
-                w.Type.ToString(),
-                w.OpeningBalance
-                    + (w.IncomingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m)
-                    - (w.OutgoingTransfers.Sum(t => (decimal?)t.Amount) ?? 0m)))
+            .Select(w => new { w.Id, w.Name, Type = w.Type.ToString() })
             .ToArrayAsync();
+
+        var wallets = new PaymentFormWalletDto[walletRows.Length];
+        for (var i = 0; i < walletRows.Length; i++)
+        {
+            var w = walletRows[i];
+            // Full computed balance incl. payment activity, via the shared calculator — the form must
+            // match the wallets list (a payment-only wallet used to show 0 here while the list showed its
+            // real, possibly negative, balance).
+            var balance = await context.ComputeWalletBalanceAsync(w.Id);
+            wallets[i] = new PaymentFormWalletDto(w.Id, w.Name, w.Type, balance);
+        }
 
         return new PaymentFormDataDto(partners, employees, wallets);
     }
@@ -310,6 +321,9 @@ internal sealed class PaymentService(
 
         var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Id == request.WalletId)
             ?? throw new EntityNotFoundException<Wallet>(request.WalletId);
+
+        // DR-25: payroll always leaves the wallet — it may not overdraw it (parity with negative stock, rule 20).
+        await context.EnsureWalletCanCoverAsync(wallet.Id, request.Amount);
 
         var payment = new Payment
         {
