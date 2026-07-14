@@ -60,6 +60,9 @@ public sealed class GetProductByIdTests : ProductTestsBase
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Products, Times.Once);
+        // GetById now computes IsDeletable from the reference predicate (DR-20).
+        _mockContext.Verify(mock => mock.TransactionLines, Times.Once);
+        _mockContext.Verify(mock => mock.OrderLines, Times.Once);
 
         VerifyNoOtherCalls();
     }

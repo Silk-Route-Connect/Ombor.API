@@ -24,6 +24,9 @@ public abstract class ProductTestsBase : ServiceTestsBase
             .WithId(1_000)
             .BuildAndPopulate();
         SetupProducts(_defaultProducts);
+        // The read + delete paths gate deletability on these (DR-20); default to unreferenced.
+        SetupTransactionLines([]);
+        SetupOrderLines([]);
 
         _fileSettings = FileSettingsFactory.CreateDefault();
         var options = Options.Create(_fileSettings);

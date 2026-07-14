@@ -96,8 +96,8 @@ public sealed class DeleteProductTests : ProductTestsBase
         }]);
         SetupOrderLines([]);
 
-        // Act & Assert — a referenced product cannot be hard-deleted.
-        await Assert.ThrowsAsync<FluentValidation.ValidationException>(
+        // Act & Assert — a referenced product cannot be hard-deleted (409, DR-20).
+        await Assert.ThrowsAsync<Ombor.Domain.Exceptions.ConflictException>(
             () => _service.DeleteAsync(request));
 
         mockSet.Verify(mock => mock.Remove(It.IsAny<Product>()), Times.Never);
