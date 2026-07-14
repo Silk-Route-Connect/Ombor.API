@@ -257,6 +257,10 @@ internal sealed class TransactionService(
             }
         }
 
+        // Minted eagerly here rather than via the retry helper: this runs inside the create's explicit
+        // transaction (stock + money atomicity), where re-saving after a collision would replay the
+        // AddPayment updates. The unique (OrganizationId, Number) index still guarantees no duplicate — a
+        // rare concurrent collision rolls the whole transaction back cleanly.
         var payment = new Payment
         {
             Number = await context.NextPaymentNumberAsync(),
@@ -286,17 +290,22 @@ internal sealed class TransactionService(
                 .Where(t => settledIds.Contains(t.Id))
                 .ToDictionaryAsync(t => t.Id);
 
-            foreach (var settlement in settlements)
+            // One settling allocation per transaction; duplicate rows are summed (validated in ValidateOrThrowAsync).
+            var settlementsByTransaction = settlements
+                .GroupBy(s => s.TransactionId)
+                .ToDictionary(g => g.Key, g => g.Sum(s => s.Amount));
+
+            foreach (var (transactionId, amount) in settlementsByTransaction)
             {
-                var settled = settledTransactions[settlement.TransactionId];
+                var settled = settledTransactions[transactionId];
                 payment.Allocations.Add(new PaymentAllocation
                 {
                     Payment = payment,
-                    TransactionId = settlement.TransactionId,
+                    TransactionId = transactionId,
                     Type = PaymentAllocationType.TransactionSettlement,
-                    Amount = settlement.Amount,
+                    Amount = amount,
                 });
-                settled.AddPayment(settlement.Amount);
+                settled.AddPayment(amount);
             }
         }
 
@@ -387,22 +396,27 @@ internal sealed class TransactionService(
             .Where(t => settledIds.Contains(t.Id))
             .ToDictionaryAsync(t => t.Id);
 
-        foreach (var settlement in settlements)
+        // Collapse duplicate rows per transaction so a repeated TransactionId can't overpay (or 500 on apply).
+        var settlementsByTransaction = settlements
+            .GroupBy(s => s.TransactionId)
+            .ToDictionary(g => g.Key, g => g.Sum(s => s.Amount));
+
+        foreach (var (transactionId, amount) in settlementsByTransaction)
         {
-            if (!settledTransactions.TryGetValue(settlement.TransactionId, out var settled))
+            if (!settledTransactions.TryGetValue(transactionId, out var settled))
             {
-                throw new ValidationException($"Transaction {settlement.TransactionId} does not exist.");
+                throw new ValidationException($"Transaction {transactionId} does not exist.");
             }
 
             if (settled.PartnerId != request.PartnerId)
             {
-                throw new ValidationException($"Transaction {settlement.TransactionId} does not belong to partner {request.PartnerId}.");
+                throw new ValidationException($"Transaction {transactionId} does not belong to partner {request.PartnerId}.");
             }
 
-            if (settlement.Amount > settled.UnpaidAmount)
+            if (amount > settled.UnpaidAmount)
             {
                 throw new ValidationException(
-                    $"Settlement of {settlement.Amount} exceeds the remaining {settled.UnpaidAmount} on transaction {settled.Id}.");
+                    $"Settlement of {amount} exceeds the remaining {settled.UnpaidAmount} on transaction {settled.Id}.");
             }
         }
     }

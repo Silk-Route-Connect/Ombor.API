@@ -49,22 +49,35 @@ internal sealed class PaymentService(
             .Where(t => settledIds.Contains(t.Id))
             .ToDictionaryAsync(t => t.Id);
 
-        foreach (var settlement in settlements)
+        if (settlements.Any(s => s.Amount <= 0))
         {
-            if (settlement.Amount <= 0)
+            throw new ValidationException("Settlement amount must be greater than zero.");
+        }
+
+        // Collapse duplicate rows per transaction so a repeated TransactionId can't overpay or double-apply.
+        var settlementsByTransaction = settlements
+            .GroupBy(s => s.TransactionId)
+            .ToDictionary(g => g.Key, g => g.Sum(s => s.Amount));
+
+        foreach (var (transactionId, amount) in settlementsByTransaction)
+        {
+            if (!transactions.TryGetValue(transactionId, out var transaction))
             {
-                throw new ValidationException("Settlement amount must be greater than zero.");
+                throw new EntityNotFoundException<TransactionRecord>(transactionId);
             }
 
-            if (!transactions.TryGetValue(settlement.TransactionId, out var transaction))
-            {
-                throw new EntityNotFoundException<TransactionRecord>(settlement.TransactionId);
-            }
-
-            if (settlement.Amount > transaction.UnpaidAmount)
+            // A payment may only settle its own partner's transactions; otherwise partner A settles
+            // partner B's debt and both ledgers corrupt.
+            if (transaction.PartnerId != request.PartnerId)
             {
                 throw new ValidationException(
-                    $"Settlement of {settlement.Amount} exceeds the remaining {transaction.UnpaidAmount} on transaction {transaction.Id}.");
+                    $"Transaction {transactionId} does not belong to partner {request.PartnerId}.");
+            }
+
+            if (amount > transaction.UnpaidAmount)
+            {
+                throw new ValidationException(
+                    $"Settlement of {amount} exceeds the remaining {transaction.UnpaidAmount} on transaction {transaction.Id}.");
             }
         }
 
@@ -85,7 +98,6 @@ internal sealed class PaymentService(
 
         var payment = new Payment
         {
-            Number = await context.NextPaymentNumberAsync(),
             Type = request.Type.ToDomainType(),
             Direction = request.Direction.ToDomainDirection(),
             DateUtc = DateTimeOffset.UtcNow,
@@ -105,17 +117,17 @@ internal sealed class PaymentService(
         });
 
         // Settling allocations (rule 10): one per settled transaction, plus any excess parked as advance.
-        foreach (var settlement in settlements)
+        foreach (var (transactionId, amount) in settlementsByTransaction)
         {
             payment.Allocations.Add(new PaymentAllocation
             {
                 Payment = payment,
-                TransactionId = settlement.TransactionId,
+                TransactionId = transactionId,
                 Type = PaymentAllocationType.TransactionSettlement,
-                Amount = settlement.Amount,
+                Amount = amount,
             });
 
-            transactions[settlement.TransactionId].AddPayment(settlement.Amount);
+            transactions[transactionId].AddPayment(amount);
         }
 
         if (advanceAmount > 0 && request.PartnerId is not null)
@@ -129,7 +141,7 @@ internal sealed class PaymentService(
         }
 
         context.Payments.Add(payment);
-        await context.SaveChangesAsync();
+        await context.SaveWithPaymentNumberAsync(payment);
 
         return await GetRecordByIdAsync(payment.Id);
     }
@@ -301,7 +313,6 @@ internal sealed class PaymentService(
 
         var payment = new Payment
         {
-            Number = await context.NextPaymentNumberAsync(),
             Type = PaymentType.Payroll,
             Direction = PaymentDirection.Expense,
             DateUtc = DateTimeOffset.UtcNow,
@@ -322,7 +333,7 @@ internal sealed class PaymentService(
         });
 
         context.Payments.Add(payment);
-        await context.SaveChangesAsync();
+        await context.SaveWithPaymentNumberAsync(payment);
 
         return await GetRecordByIdAsync(payment.Id);
     }
