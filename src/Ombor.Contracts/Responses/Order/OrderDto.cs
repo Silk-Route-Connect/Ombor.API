@@ -19,7 +19,7 @@ namespace Ombor.Contracts.Responses.Order;
 /// <param name="WarehouseName">The intended warehouse name, if any.</param>
 /// <param name="SaleId">The Sale this order was promoted into on delivery; null until delivered.</param>
 /// <param name="Lines">The order lines.</param>
-/// <param name="History">The status-transition history, newest-first.</param>
+/// <param name="History">The status-transition history, oldest-first.</param>
 public sealed record OrderDto(
     int Id,
     int CustomerId,

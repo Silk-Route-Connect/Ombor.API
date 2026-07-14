@@ -127,7 +127,7 @@ internal sealed class AuthService(
 
         await SaveRefreshTokenAsync(user, refreshToken);
 
-        return new LoginResponse(accessToken, refreshToken);
+        return new LoginResponse(accessToken, refreshToken, user.Language);
     }
 
     public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
