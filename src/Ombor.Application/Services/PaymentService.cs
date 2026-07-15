@@ -2,10 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
-using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Payroll;
-using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -375,7 +373,8 @@ internal sealed class PaymentService(
             .OrderByDescending(a => a.Payment.DateUtc)
             .Select(a => new TransactionPaymentDto(
                 a.Id,
-                request.TransactionId,
+                a.TransactionId!.Value,
+                a.PaymentId,
                 a.Amount,
                 a.Payment.Number.ToString(),
                 a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,

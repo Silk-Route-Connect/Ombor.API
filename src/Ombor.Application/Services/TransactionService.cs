@@ -127,7 +127,11 @@ internal sealed class TransactionService(
                     .Where(a => a.Type == PaymentAllocationType.TransactionSettlement)
                     .OrderByDescending(a => a.Payment.DateUtc)
                     .Select(a => new TransactionPaymentDto(
-                        a.Id, t.Id, a.Amount, a.Payment.Number.ToString(),
+                        a.Id,
+                        t.Id,
+                        a.PaymentId,
+                        a.Amount,
+                        a.Payment.Number.ToString(),
                         a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,
                         a.Payment.Wallet != null ? a.Payment.Wallet.Type.ToString() : null,
                         a.Payment.Notes, a.Payment.DateUtc)).ToArray(),

@@ -12,6 +12,7 @@ namespace Ombor.Contracts.Responses.Payment;
 public sealed record TransactionPaymentDto(
     int Id,
     int TransactionId,
+    int PaymentId,
     decimal Amount,
     string? PaymentNumber,
     string? WalletName,
