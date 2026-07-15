@@ -20,7 +20,7 @@ Shared canon lives in the **sibling checkout `../Ombor.Docs`** (distribution mod
 | `../Ombor.Docs/mvp-plan.md`           | Start of any feature task                                             | The current-task slice — scope and done-ness.                                                                                                                                             |
 | `../Ombor.Docs/product-brief.md`      | When a decision needs its reasoning                                   | "Core design decisions" section.                                                                                                                                                          |
 | `../Ombor.Docs/decision-log.md`       | Before questioning or reopening any settled choice                    | The row + its revisit trigger.                                                                                                                                                            |
-| `../Ombor.Docs/operating-code.md`     | Once per session, before writing any code                             | Cross-repo Code rules: file structure & size, comments, quality bar, reuse, git, session discipline, diagnostics.                                                                         |
+| `../Ombor.Docs/operating-code.md`     | Never needs a manual read — **auto-imported** into every session      | Cross-repo Code rules: file structure & size, comments, quality bar, reuse, git, session discipline, diagnostics.                                                                         |
 | `docs/backend-conventions.md`         | Writing any code                                                      | The craft doc: layers, EF/validation/audit patterns, test philosophy (code-verified 2026-07-14).                                                                                          |
 | `docs/backend-gaps.md`                | Any v2/fix planning; checking whether a known gap or open item exists | The verified gap list + the open out-of-band items + incoming contract gaps harvested from the retired delta queue.                                                                       |
 | `../Ombor.Docs/backend-contracts/`    | Any endpoint/contract work (call, mock, test, or change)              | The served API contract, split per resource: endpoints, request/response DTOs, status codes, validation (+ shared `conventions.md`/`enums.md`). Backend changes keep it in sync.          |
@@ -87,9 +87,13 @@ Run-on-demand, not a long-running daemon. Dev DB persists across restarts (seede
 - XML docs on DTOs and public classes. Comments only where they explain a **decision, reason, or tricky part** — never narrate what the code does.
 - **Run the full suite as one batch, not isolation-only, and assert behavior.** Shared-context bleed between tests can hide failures that surface only in a full-batch run (the EndpointTestsBase shared-DbContext lesson) — a green isolated test is not proof. Verify the new behavior actually changed, not just that it compiles and green-passes.
 
-## Git, session discipline, diagnostics
+## Cross-repo code rules (auto-loaded)
 
-The cross-repo rules live in **`../Ombor.Docs/operating-code.md`** — git rules, stop-and-ask session discipline, no unilateral deviations, blocker surfacing, and Sentry/PostHog/SQL diagnostics routing. Read once per session. Backend-specific: data questions run SQL per the migration policy above (never against production destructively); recon-before-constraint-writing (top of this file) extends to production symptoms — the Sentry issue, not the report, defines the fix.
+The shared Code rules — file structure & size, comments, quality bar, reuse, git rules, session discipline, diagnostics — are edited only in Ombor.Docs and imported into every session's context here:
+
+@../Ombor.Docs/operating-code.md
+
+Backend-specific: data questions run SQL per the migration policy above (never against production destructively); recon-before-constraint-writing (top of this file) extends to production symptoms — the Sentry issue, not the report, defines the fix.
 
 ---
 
