@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Template;
@@ -35,7 +36,11 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
     {
         await validator.ValidateAndThrowAsync(request);
 
-        var entity = request.ToEntity();
+        // Package-entry items are resolved to base units server-side from the product's package size (rule 21).
+        var packageSizes = await context.LoadPackageSizesAsync(
+            request.Items.Where(i => i.PackageQuantity is > 0).Select(i => i.ProductId));
+
+        var entity = request.ToEntity(packageSizes);
 
         context.Templates.Add(entity);
         await context.SaveChangesAsync();
@@ -56,7 +61,11 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
             .FirstOrDefaultAsync(x => x.Id == request.Id)
             ?? throw new EntityNotFoundException<Template>(request.Id);
 
-        template.ApplyUpdate(request);
+        // Package-entry items are resolved to base units server-side from the product's package size (rule 21).
+        var packageSizes = await context.LoadPackageSizesAsync(
+            request.Items.Where(i => i.PackageQuantity is > 0).Select(i => i.ProductId));
+
+        template.ApplyUpdate(request, packageSizes);
 
         await context.SaveChangesAsync();
 

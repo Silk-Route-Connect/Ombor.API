@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ombor.Infrastructure.Persistence;
 
@@ -12,9 +13,11 @@ using Ombor.Infrastructure.Persistence;
 namespace Ombor.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260719112703_Add_Line_Package_Size")]
+    partial class Add_Line_Package_Size
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -541,10 +544,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Telegram")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -701,11 +700,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
                     b.Property<string>("FileId")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -721,14 +715,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("PaymentId")
                         .HasColumnType("int");
-
-                    b.Property<long>("SizeBytes")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
 

@@ -211,7 +211,7 @@ public sealed class TemplateMappingsTests
             ]);
 
         // Act
-        var entity = request.ToEntity();
+        var entity = request.ToEntity(new Dictionary<int, int>());
 
         // Assert – template
         Assert.Equal("Quarterly", entity.Name);
@@ -272,7 +272,7 @@ public sealed class TemplateMappingsTests
             ]);
 
         // Act
-        template.ApplyUpdate(updateRequest);
+        template.ApplyUpdate(updateRequest, new Dictionary<int, int>());
 
         // Assert
         Assert.Equal(updateRequest.PartnerId, template.PartnerId);

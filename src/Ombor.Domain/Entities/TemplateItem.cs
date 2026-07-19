@@ -16,6 +16,14 @@ public class TemplateItem : AuditableEntity, IOrganizationScoped
     public decimal Quantity { get; set; }
 
     /// <summary>
+    /// When the item was entered in packages, the package size (base units per package) snapshotted from the
+    /// product at event time; null when entered in base units. Audit-only (rule 21): <see cref="Quantity"/>
+    /// (base units) is server-computed as <c>pack count × PackageSize</c>; the pack count is recoverable as
+    /// <c>Quantity / PackageSize</c> and is not stored separately.
+    /// </summary>
+    public int? PackageSize { get; set; }
+
+    /// <summary>
     /// Gets or sets unit price of the <see cref="TemplateItem"/>.
     /// </summary>
     public decimal UnitPrice { get; set; }

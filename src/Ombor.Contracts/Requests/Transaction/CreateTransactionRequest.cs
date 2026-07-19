@@ -43,10 +43,12 @@ public sealed record CreateTransactionRequest(
 /// <param name="UnitPrice">Price per unit.</param>
 /// <param name="Discount">Discount value, interpreted per <paramref name="DiscountType"/> (rule 37).</param>
 /// <param name="DiscountType">Whether <paramref name="Discount"/> is a percentage or a fixed amount.</param>
-/// <param name="Quantity">Quantity.</param>
+/// <param name="Quantity">Quantity in base units. Ignored for a package entry (see <paramref name="PackageQuantity"/>), where the server computes the base quantity instead.</param>
+/// <param name="PackageQuantity">The number of packages entered, for a package-entry line; null for a base-unit line. The server reads the product's package size, computes the base <paramref name="Quantity"/>, and snapshots the size (rule 21). The package size is never supplied by the client.</param>
 public sealed record CreateTransactionLine(
     int ProductId,
     decimal UnitPrice,
     decimal Discount,
     DiscountType DiscountType,
-    decimal Quantity);
+    decimal Quantity,
+    int? PackageQuantity = null);

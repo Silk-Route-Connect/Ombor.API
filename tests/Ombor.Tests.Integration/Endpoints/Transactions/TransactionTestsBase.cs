@@ -54,7 +54,7 @@ public abstract class TransactionsTestsBase(
         return warehouse.Id;
     }
 
-    protected async Task<int> CreateProductAsync()
+    protected async Task<int> CreateProductAsync(int packageSize = 0)
     {
         var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
         _context.Categories.Add(category);
@@ -72,6 +72,7 @@ public abstract class TransactionsTestsBase(
             Type = ProductType.All,
             CategoryId = category.Id,
             Category = null!,
+            Packaging = new ProductPackaging { Size = packageSize },
         };
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
