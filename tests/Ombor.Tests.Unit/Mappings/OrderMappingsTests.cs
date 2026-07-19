@@ -82,7 +82,7 @@ public sealed class OrderMappingsTests
     [InlineData(DiscountType.Percentage, 150, 0)]
     public void LineToDto_ShouldApplyRule37(DiscountType type, decimal discount, decimal expectedTotal)
     {
-        var product = new Product { Id = 1, Name = "P", SKU = "S", Measurement = UnitOfMeasurement.Unit, Category = null! };
+        var product = new Product { Id = 1, Name = "P", SKU = "S", Measurement = UnitOfMeasurement.Piece, Category = null! };
         var line = new OrderLine
         {
             ProductId = product.Id,

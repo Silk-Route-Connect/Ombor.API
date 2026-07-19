@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Serialization;
 
 namespace Ombor.Tests.Unit.Serialization;
@@ -12,6 +13,8 @@ public sealed class ValidatingStringEnumConverterTests
     }
 
     private sealed record Holder(Sample Value);
+
+    private sealed record MeasurementHolder(UnitOfMeasurement Value);
 
     private static readonly JsonSerializerOptions Options = new()
     {
@@ -45,5 +48,21 @@ public sealed class ValidatingStringEnumConverterTests
         var json = JsonSerializer.Serialize(new Holder(Sample.Second), Options);
 
         Assert.Contains("\"Second\"", json);
+    }
+
+    [Fact]
+    public void Deserialize_RemovedUnitMeasurement_ThrowsInvalidEnumValueException()
+    {
+        // UnitOfMeasurement.Unit was removed (it duplicated Piece); a client that still posts "Unit" must get
+        // a clean 400 (InvalidEnumValueException → ValidationProblemDetails), not a silent accept.
+        var exception = Assert.Throws<InvalidEnumValueException>(
+            () => JsonSerializer.Deserialize<MeasurementHolder>("""{"value":"Unit"}""", Options));
+
+        Assert.Equal(nameof(UnitOfMeasurement), exception.EnumTypeName);
+        Assert.Equal("Unit", exception.AttemptedValue);
+
+        // The surviving Piece member still round-trips.
+        var valid = JsonSerializer.Deserialize<MeasurementHolder>("""{"value":"Piece"}""", Options);
+        Assert.Equal(UnitOfMeasurement.Piece, valid!.Value);
     }
 }
