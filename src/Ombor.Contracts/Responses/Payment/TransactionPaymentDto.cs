@@ -5,6 +5,7 @@ namespace Ombor.Contracts.Responses.Payment;
 /// <param name="TransactionId">The transaction settled.</param>
 /// <param name="Amount">The amount applied to the transaction.</param>
 /// <param name="PaymentNumber">The payment's human-facing document number, sequential per organization.</param>
+/// <param name="WalletId">The wallet the money moved through (deep-link target); null when the payment has no wallet.</param>
 /// <param name="WalletName">The wallet the money moved through.</param>
 /// <param name="WalletType">The wallet type (Cash/Card/Bank).</param>
 /// <param name="Notes">Optional payment note.</param>
@@ -15,6 +16,7 @@ public sealed record TransactionPaymentDto(
     int PaymentId,
     decimal Amount,
     string? PaymentNumber,
+    int? WalletId,
     string? WalletName,
     string? WalletType,
     string? Notes,

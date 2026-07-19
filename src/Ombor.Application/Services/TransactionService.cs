@@ -132,6 +132,7 @@ internal sealed class TransactionService(
                         a.PaymentId,
                         a.Amount,
                         a.Payment.Number.ToString(),
+                        a.Payment.WalletId,
                         a.Payment.Wallet != null ? a.Payment.Wallet.Name : null,
                         a.Payment.Wallet != null ? a.Payment.Wallet.Type.ToString() : null,
                         a.Payment.Notes, a.Payment.DateUtc)).ToArray(),

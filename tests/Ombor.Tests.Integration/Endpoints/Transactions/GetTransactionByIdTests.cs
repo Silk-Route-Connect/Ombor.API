@@ -58,6 +58,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         Assert.Equal(4_000m, payment.Amount);
         Assert.Equal(walletName, payment.WalletName);
         Assert.Equal("Cash", payment.WalletType);
+        Assert.NotNull(payment.WalletId); // XC-8: the wallet id is served so the FE can deep-link it
 
         // Assert — audit card (author display name) + note
         Assert.Equal($"{AuthorFirstName} {AuthorLastName}", detail.CreatedBy);

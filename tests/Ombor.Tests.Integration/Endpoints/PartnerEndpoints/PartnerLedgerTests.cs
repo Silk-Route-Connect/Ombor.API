@@ -42,6 +42,8 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
         Assert.Equal(-4_000m, payment.Delta); // an Income payment reduces what the partner owes
         Assert.Equal(walletName, payment.WalletName); // payment rows carry the wallet for the «Платежи» tab column
         Assert.Equal("Cash", payment.WalletType);
+        Assert.NotNull(payment.WalletId); // XC-8: the FE can now deep-link the wallet
+        Assert.Null(sale.WalletId);       // transactions aren't tied to a single wallet, so no wallet id
 
         Assert.Null(ledger.Single(e => e.Type == "opening").WalletName);
     }
