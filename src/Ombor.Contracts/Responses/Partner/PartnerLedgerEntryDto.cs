@@ -19,6 +19,7 @@ namespace Ombor.Contracts.Responses.Partner;
 /// <param name="Status">Settlement status for transaction events (paid, partial, unpaid) or "done".</param>
 /// <param name="WalletName">The wallet the money moved through, for payment events (payment, deposit, withdraw); null otherwise.</param>
 /// <param name="WalletType">The wallet's type (e.g. Cash, Card), for payment events; null otherwise.</param>
+/// <param name="WalletId">The wallet's id (deep-link target), for payment events; null otherwise.</param>
 public sealed record PartnerLedgerEntryDto(
     int Id,
     string Type,
@@ -30,4 +31,5 @@ public sealed record PartnerLedgerEntryDto(
     int? ItemCount,
     string? Status,
     string? WalletName,
-    string? WalletType);
+    string? WalletType,
+    int? WalletId);

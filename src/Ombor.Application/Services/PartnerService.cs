@@ -124,6 +124,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 p.Number,
                 p.Type,
                 p.Direction,
+                p.WalletId,
                 WalletName = p.Wallet != null ? p.Wallet.Name : null,
                 WalletType = p.Wallet != null ? p.Wallet.Type.ToString() : null,
                 // Only settling allocations move the balance; ChangeReturn is a memo (rule 10).
@@ -145,7 +146,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 null,
                 null,
                 null, // WalletName — opening has no wallet
-                null),
+                null, // WalletType
+                null), // WalletId
         };
 
         foreach (var t in transactions)
@@ -165,7 +167,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 
             // Transactions aren't tied to a single wallet (settled across zero-to-many payments), so no wallet here.
             // Reference carries the bare document Number (null on synthetic seed rows), mirroring payments below.
-            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, t.Number?.ToString(), t.ItemCount, status, null, null));
+            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, t.Number?.ToString(), t.ItemCount, status, null, null, null));
         }
 
         foreach (var p in payments)
@@ -179,7 +181,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 _ => "payment",
             };
 
-            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number?.ToString(), null, "done", p.WalletName, p.WalletType));
+            events.Add(new(p.Id, type, p.DateUtc, sign * p.Settling, p.Id, p.Number?.ToString(), null, "done", p.WalletName, p.WalletType, p.WalletId));
         }
 
         // Fold the running balance oldest→newest (final value reconciles to PartnerBalance.Total), then newest-first.
@@ -190,7 +192,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             .Select(e =>
             {
                 running += e.Delta;
-                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.SourceId, e.Reference, e.ItemCount, e.Status, e.WalletName, e.WalletType);
+                return new PartnerLedgerEntryDto(e.Id, e.Type, e.Date, e.Delta, running, e.SourceId, e.Reference, e.ItemCount, e.Status, e.WalletName, e.WalletType, e.WalletId);
             })
             .ToList();
 
@@ -260,5 +262,6 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
         int? ItemCount,
         string? Status,
         string? WalletName,
-        string? WalletType);
+        string? WalletType,
+        int? WalletId);
 }
