@@ -246,10 +246,9 @@ The frontend→backend delta queue is retired; its four surviving items were re-
 
 ### Open
 
-**D1 · `TemplateDto` lacks `lastUsedAt` (was backend-deltas §6a)**
-- **Contract:** `TemplateDto` (openapi ~8366) = id / partnerId / partnerName / name / type / items — no `lastUsedAt`. (The rest of old §6 shipped: `TemplateItemDto` now serves `sku`, `measurement`, `discountType`, and a decimal `quantity`.)
-- **Symptom:** the Templates list's «Использован» column shows «—» on every row; New Sale/Supply's template-load is supposed to stamp the date.
-- **Required:** add nullable date-time `lastUsedAt` to `TemplateDto`, stamped when a template is loaded into a transaction.
+_(none carried here — D1 below was dropped by decision. Active backend work now lives in the joint queue at `../../Ombor.Docs/issues-tracker.md` §12.)_
+
+**D1 · `TemplateDto.lastUsedAt` — ⚠ DROPPED, do not implement (was backend-deltas §6a).** The `lastUsedAt` stamp **and** the template `/use` endpoint were **removed by decision** — commit `597d6f43` "Drop template lastUsedAt and the /use endpoint" (no `LastUsedAt` remains in `src/`). The Templates list «Использован» column is intentionally gone, not a gap. *(Superseded 2026-07-19; the earlier "Required: add nullable `lastUsedAt`" is void.)*
 
 ### Verified resolved at harvest (not carried as open)
 
