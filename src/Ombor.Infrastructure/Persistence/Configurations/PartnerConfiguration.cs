@@ -48,6 +48,10 @@ internal sealed class PartnerConfiguration : IEntityTypeConfiguration<Partner>
             .HasMaxLength(ConfigurationConstants.DefaultStringLength);
 
         builder
+            .Property(p => p.Telegram)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength);
+
+        builder
             .Property(p => p.OpeningBalance)
             .HasCurrencyPrecision();
 

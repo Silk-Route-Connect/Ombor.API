@@ -13,6 +13,7 @@ namespace Ombor.Contracts.Responses.Partner;
 /// <param name="OpeningDate">The date the opening balance was recorded.</param>
 /// <param name="IsArchived">Whether the partner is archived.</param>
 /// <param name="PhoneNumbers">Phone numbers of partner.</param>
+/// <param name="Telegram">The partner's Telegram handle, if any.</param>
 public sealed record CreatePartnerResponse(
     int Id,
     string Name,
@@ -23,4 +24,5 @@ public sealed record CreatePartnerResponse(
     decimal OpeningBalance,
     DateOnly OpeningDate,
     bool IsArchived,
-    List<string> PhoneNumbers);
+    List<string> PhoneNumbers,
+    string? Telegram = null);

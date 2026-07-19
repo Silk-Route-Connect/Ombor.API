@@ -216,6 +216,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 x.partner.Address,
                 x.partner.Email,
                 x.partner.CompanyName,
+                x.partner.Telegram,
                 x.partner.PhoneNumbers,
                 x.partner.OpeningBalance,
                 x.partner.OpeningDate,
@@ -241,7 +242,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             r.OpeningDate,
             r.IsArchived,
             r.ActivityCount == 0,
-            r.ActivityCount))];
+            r.ActivityCount,
+            r.Telegram))];
     }
 
     private async Task<Partner> GetOrThrowAsync(int id) =>

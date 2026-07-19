@@ -12,6 +12,7 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="CompanyName">An optional new company name.</param>
 /// <param name="Type">The type of the partner.</param>
 /// <param name="PhoneNumbers">New phone numbers of partner.</param>
+/// <param name="Telegram">An optional Telegram handle (contact only; handle format is validated on the client).</param>
 public sealed record UpdatePartnerRequest(
     int Id,
     string Name,
@@ -19,4 +20,5 @@ public sealed record UpdatePartnerRequest(
     string? Email,
     string? CompanyName,
     PartnerType Type,
-    List<string> PhoneNumbers);
+    List<string> PhoneNumbers,
+    string? Telegram = null);

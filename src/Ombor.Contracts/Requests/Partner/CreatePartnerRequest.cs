@@ -12,6 +12,7 @@ namespace Ombor.Contracts.Requests.Partner;
 /// <param name="OpeningBalance">The partner's starting balance, recorded once as an immutable event (signed: positive = the partner owes us).</param>
 /// <param name="Type">The type of the partner.</param>
 /// <param name="PhoneNumbers">The partner's phone numbers.</param>
+/// <param name="Telegram">An optional Telegram handle (contact only; handle format is validated on the client).</param>
 public sealed record CreatePartnerRequest(
     string Name,
     string? Address,
@@ -19,4 +20,5 @@ public sealed record CreatePartnerRequest(
     string? CompanyName,
     decimal OpeningBalance,
     PartnerType Type,
-    List<string> PhoneNumbers);
+    List<string> PhoneNumbers,
+    string? Telegram = null);
