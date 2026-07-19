@@ -50,7 +50,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 25.00m,
                 RetailPrice = 45.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = request.CategoryId!.Value,
                 Category = null!
             },
@@ -65,7 +65,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 30.00m,
                 RetailPrice = 55.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = request.CategoryId!.Value,
                 Category = null!
             },
@@ -80,7 +80,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 35.00m,
                 RetailPrice = 65.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = request.CategoryId!.Value,
                 Category = null!
             },
@@ -95,7 +95,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 40.00m,
                 RetailPrice = 75.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = request.CategoryId!.Value,
                 Category = null!
             },
@@ -110,7 +110,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 45.00m,
                 RetailPrice = 85.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = request.CategoryId!.Value,
                 Category = null!
             },
@@ -125,7 +125,7 @@ public class GetProductsTests(TestingWebApplicationFactory factory, ITestOutputH
                 SupplyPrice = 50.00m,
                 RetailPrice = 90.00m,
                 LowStockThreshold = 10,
-                Measurement = UnitOfMeasurement.Unit,
+                Measurement = UnitOfMeasurement.Piece,
                 CategoryId = categoryId,
                 Category = null!
             }

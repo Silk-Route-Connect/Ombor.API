@@ -90,7 +90,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
             Id = 7,
             Name = "Cola",
             SKU = "SKU-7",
-            Measurement = UnitOfMeasurement.Unit,
+            Measurement = UnitOfMeasurement.Piece,
             Category = category,
         };
         var item = new WarehouseItem

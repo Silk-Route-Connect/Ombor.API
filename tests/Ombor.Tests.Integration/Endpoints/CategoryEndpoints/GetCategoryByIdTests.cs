@@ -66,7 +66,7 @@ public class GetCategoryByIdTests(TestingWebApplicationFactory factory, ITestOut
         {
             Name = "Counted Product",
             SKU = $"SKU {Guid.NewGuid()}",
-            Measurement = UnitOfMeasurement.Unit,
+            Measurement = UnitOfMeasurement.Piece,
             CategoryId = categoryId,
             Category = null!,
         });

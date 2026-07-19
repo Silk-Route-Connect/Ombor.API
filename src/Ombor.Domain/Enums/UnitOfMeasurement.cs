@@ -20,9 +20,6 @@ public enum UnitOfMeasurement
     /// <summary>A box containing an unspecified quantity.</summary>
     Box = 5,
 
-    /// <summary>A generic “unit”.</summary>
-    Unit = 6,
-
     /// <summary>No specific measurement.</summary>
     None = 100,
 }
