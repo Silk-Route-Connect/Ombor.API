@@ -46,7 +46,7 @@ internal sealed class TransactionService(
                 x.DateUtc,
                 x.TotalDue,
                 x.TotalPaid,
-                Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
+                Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize)).ToArray(),
                 x.OriginalTransactionId,
                 OriginalNumber = x.OriginalTransaction != null ? x.OriginalTransaction.Number : null,
                 x.RefundReason,
@@ -121,7 +121,7 @@ internal sealed class TransactionService(
                     .ToArray(),
                 Lines = t.Lines.Select(l => new TransactionLineDto(
                     l.Id, l.ProductId, l.Product.Name, l.TransactionId,
-                    l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total)).ToArray(),
+                    l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize)).ToArray(),
                 // Settling allocations only (rule 10), newest-first — same shape as GET /{id}/payments.
                 Payments = t.PaymentAllocations
                     .Where(a => a.Type == PaymentAllocationType.TransactionSettlement)
@@ -170,7 +170,11 @@ internal sealed class TransactionService(
     {
         await ValidateOrThrowAsync(request);
 
-        var transactionEntity = mapper.ToEntity(request);
+        // Package-entry lines are resolved to base units server-side from the product's package size (rule 21).
+        var packageSizes = await context.LoadPackageSizesAsync(
+            request.Lines.Where(l => l.PackageQuantity is > 0).Select(l => l.ProductId));
+
+        var transactionEntity = mapper.ToEntity(request, packageSizes);
         transactionEntity.CreatedById = currentUser.UserId;
         var partner = await context.Partners.FindAsync(request.PartnerId)
                 ?? throw new InvalidOperationException($"Partner {request.PartnerId} not found");
@@ -181,7 +185,8 @@ internal sealed class TransactionService(
             await context.MoveStockAsync(
                 request.WarehouseId!.Value,
                 request.Type.ToDomainType().ToStockMovement(),
-                request.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+                // Use the resolved entity lines so a package-entry line moves its base-unit quantity, not the raw request value.
+                transactionEntity.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
             transactionEntity.Number = await allocator.AllocateAsync(NumberSeriesType.Transaction);
             context.Transactions.Add(transactionEntity);
             await AddAttachmentsAsync(request, transactionEntity);

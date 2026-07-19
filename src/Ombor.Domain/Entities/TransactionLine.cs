@@ -19,6 +19,15 @@ public class TransactionLine : EntityBase, IOrganizationScoped
     public decimal Quantity { get; set; }
 
     /// <summary>
+    /// When the line was entered in packages, the package size (base units per package) snapshotted from the
+    /// product at event time; null when entered in base units. Audit-only (rule 21): <see cref="Quantity"/>
+    /// (base units) is server-computed as <c>pack count × PackageSize</c> and stays the source of truth for
+    /// stock and WAC. The entered pack count is recoverable as <c>Quantity / PackageSize</c>, so it is not
+    /// stored separately. Snapshotted so a later change to the product's packaging cannot rewrite this record.
+    /// </summary>
+    public int? PackageSize { get; set; }
+
+    /// <summary>
     /// Line total after discount (rule 37). A <see cref="DiscountType.Percentage"/> discount is
     /// <c>gross × discount / 100</c>; a <see cref="DiscountType.Fixed"/> discount is the value itself.
     /// The discount is clamped to the line gross so a total never goes negative. Kept as a single

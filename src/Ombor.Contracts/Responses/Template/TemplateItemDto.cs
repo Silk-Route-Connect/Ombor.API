@@ -12,6 +12,7 @@ namespace Ombor.Contracts.Responses.Template;
 /// <param name="UnitPrice">The unit price.</param>
 /// <param name="Discount">The discount value, interpreted per <paramref name="DiscountType"/>.</param>
 /// <param name="DiscountType">Whether <paramref name="Discount"/> is a Percentage or a Fixed amount (rule 37).</param>
+/// <param name="PackageSize">When the item was entered in packages, the package size (base units per package) at entry time; null for a base-unit item. The entered pack count is <paramref name="Quantity"/> ÷ this value (rule 21).</param>
 public sealed record TemplateItemDto(
     int Id,
     int ProductId,
@@ -23,4 +24,5 @@ public sealed record TemplateItemDto(
     decimal Quantity,
     decimal UnitPrice,
     decimal Discount,
-    string DiscountType);
+    string DiscountType,
+    int? PackageSize = null);

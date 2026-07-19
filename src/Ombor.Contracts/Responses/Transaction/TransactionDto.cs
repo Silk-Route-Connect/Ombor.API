@@ -31,6 +31,8 @@ public sealed record TransactionDto(
     string? OriginalTransactionNumber = null,
     string? RefundReason = null);
 
+/// <summary>A single line of a transaction (shared by the list and detail views).</summary>
+/// <param name="PackageSize">When the line was entered in packages, the package size (base units per package) at entry time; null for a base-unit line. The entered pack count is <paramref name="Quantity"/> ÷ this value; <paramref name="Quantity"/> (base units) stays authoritative (rule 21).</param>
 public sealed record TransactionLineDto(
     int Id,
     int ProductId,
@@ -40,4 +42,5 @@ public sealed record TransactionLineDto(
     decimal Discount,
     string DiscountType,
     decimal Quantity,
-    decimal Total);
+    decimal Total,
+    int? PackageSize = null);

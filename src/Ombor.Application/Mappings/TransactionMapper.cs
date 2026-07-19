@@ -7,23 +7,30 @@ namespace Ombor.Application.Mappings;
 
 internal interface ITransactionMapper
 {
-    TransactionRecord ToEntity(CreateTransactionRequest request);
+    TransactionRecord ToEntity(CreateTransactionRequest request, IReadOnlyDictionary<int, int> packageSizes);
     TransactionDto ToDto(TransactionRecord transaction);
 }
 
 internal sealed class TransactionMapper : ITransactionMapper
 {
-    public TransactionRecord ToEntity(CreateTransactionRequest request)
+    public TransactionRecord ToEntity(CreateTransactionRequest request, IReadOnlyDictionary<int, int> packageSizes)
     {
-        var lines = request.Lines.Select(x => new TransactionLine
+        var lines = request.Lines.Select(x =>
         {
-            ProductId = x.ProductId,
-            UnitPrice = x.UnitPrice,
-            Discount = x.Discount,
-            DiscountType = x.DiscountType.ToDomainDiscountType(),
-            Quantity = x.Quantity,
-            Product = null!,
-            Transaction = null!
+            // A package-entry line resolves to base units server-side (rule 21); the package size is snapshotted.
+            var (quantity, packageSize) = PackageEntry.Resolve(x.ProductId, x.Quantity, x.PackageQuantity, packageSizes);
+
+            return new TransactionLine
+            {
+                ProductId = x.ProductId,
+                UnitPrice = x.UnitPrice,
+                Discount = x.Discount,
+                DiscountType = x.DiscountType.ToDomainDiscountType(),
+                Quantity = quantity,
+                PackageSize = packageSize,
+                Product = null!,
+                Transaction = null!
+            };
         }).ToArray();
 
         return new TransactionRecord
@@ -61,7 +68,7 @@ internal sealed class TransactionMapper : ITransactionMapper
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
-                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total)),
+                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total, x.PackageSize)),
             transaction.OriginalTransactionId,
             transaction.OriginalTransaction?.Number.ToString(),
             transaction.RefundReason);

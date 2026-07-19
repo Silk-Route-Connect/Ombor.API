@@ -68,7 +68,7 @@ internal static class TemplateMappings
             Items: items);
     }
 
-    public static void ApplyUpdate(this Template template, UpdateTemplateRequest request)
+    public static void ApplyUpdate(this Template template, UpdateTemplateRequest request, IReadOnlyDictionary<int, int> packageSizes)
     {
         template.Name = request.Name;
         template.PartnerId = request.PartnerId;
@@ -80,13 +80,17 @@ internal static class TemplateMappings
 
         foreach (var requestItem in request.Items)
         {
+            // A package-entry item resolves to base units server-side; the package size is snapshotted (rule 21).
+            var (quantity, packageSize) = PackageEntry.Resolve(requestItem.ProductId, requestItem.Quantity, requestItem.PackageQuantity, packageSizes);
+
             if (requestItem.Id != 0 && existingById.TryGetValue(requestItem.Id, out var existing))
             {
                 existing.ProductId = requestItem.ProductId;
-                existing.Quantity = requestItem.Quantity;
+                existing.Quantity = quantity;
                 existing.UnitPrice = requestItem.UnitPrice;
                 existing.DiscountAmount = requestItem.Discount;
                 existing.DiscountType = requestItem.DiscountType.ToDomainDiscountType();
+                existing.PackageSize = packageSize;
                 keptIds.Add(existing.Id);
             }
             else
@@ -95,10 +99,11 @@ internal static class TemplateMappings
                 template.Items.Add(new TemplateItem
                 {
                     ProductId = requestItem.ProductId,
-                    Quantity = requestItem.Quantity,
+                    Quantity = quantity,
                     UnitPrice = requestItem.UnitPrice,
                     DiscountAmount = requestItem.Discount,
                     DiscountType = requestItem.DiscountType.ToDomainDiscountType(),
+                    PackageSize = packageSize,
                     Product = null!,
                     Template = null!,
                 });
@@ -111,10 +116,10 @@ internal static class TemplateMappings
         }
     }
 
-    public static Template ToEntity(this CreateTemplateRequest request)
+    public static Template ToEntity(this CreateTemplateRequest request, IReadOnlyDictionary<int, int> packageSizes)
     {
         var items = request.Items
-            .Select(ToEntity)
+            .Select(item => item.ToEntity(packageSizes))
             .ToList();
 
         return new Template
@@ -127,30 +132,23 @@ internal static class TemplateMappings
         };
     }
 
-    private static TemplateItem ToEntity(this CreateTemplateItem item)
-        => new()
-        {
-            ProductId = item.ProductId,
-            Quantity = item.Quantity,
-            UnitPrice = item.UnitPrice,
-            DiscountAmount = item.Discount,
-            DiscountType = item.DiscountType.ToDomainDiscountType(),
-            Product = null!, // Will be set by EF
-            Template = null! // Will be set by EF
-        };
+    private static TemplateItem ToEntity(this CreateTemplateItem item, IReadOnlyDictionary<int, int> packageSizes)
+    {
+        // A package-entry item resolves to base units server-side; the package size is snapshotted (rule 21).
+        var (quantity, packageSize) = PackageEntry.Resolve(item.ProductId, item.Quantity, item.PackageQuantity, packageSizes);
 
-    private static TemplateItem ToEntity(this UpdateTemplateItem item)
-        => new()
+        return new()
         {
-            Id = item.Id,
             ProductId = item.ProductId,
-            Quantity = item.Quantity,
+            Quantity = quantity,
             UnitPrice = item.UnitPrice,
             DiscountAmount = item.Discount,
             DiscountType = item.DiscountType.ToDomainDiscountType(),
+            PackageSize = packageSize,
             Product = null!, // Will be set by EF
             Template = null! // Will be set by EF
         };
+    }
 
     private static TemplateItemDto ToDto(this TemplateItem item)
     {
@@ -175,7 +173,8 @@ internal static class TemplateMappings
             Quantity: item.Quantity,
             UnitPrice: item.UnitPrice,
             Discount: item.DiscountAmount,
-            DiscountType: item.DiscountType.ToString());
+            DiscountType: item.DiscountType.ToString(),
+            PackageSize: item.PackageSize);
     }
 
     public static TemplateType ToDomain(this Contracts.Enums.TemplateType type)

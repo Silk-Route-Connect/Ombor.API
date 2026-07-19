@@ -178,6 +178,9 @@ public static class RequestExtensions
             content.Add(new StringContent(l.Discount.ToString(cultureInfo)), $"Lines[{i}].Discount");
             content.Add(new StringContent(((int)l.DiscountType).ToString()), $"Lines[{i}].DiscountType");
             content.Add(new StringContent(l.Quantity.ToString(cultureInfo)), $"Lines[{i}].Quantity");
+
+            if (l.PackageQuantity.HasValue)
+                content.Add(new StringContent(l.PackageQuantity.Value.ToString()), $"Lines[{i}].PackageQuantity");
         }
 
         // Settlements of other open transactions (optional)
