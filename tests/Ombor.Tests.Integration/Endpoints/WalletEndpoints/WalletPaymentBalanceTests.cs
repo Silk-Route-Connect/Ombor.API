@@ -4,6 +4,7 @@ using Ombor.Contracts.Requests.Wallet;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Contracts.Responses.Wallet;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 using PartnerType = Ombor.Domain.Enums.PartnerType;
@@ -24,7 +25,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
         var request = new CreatePaymentRecordRequest(
             PaymentType.Deposit, PaymentDirection.Income, partnerId, null, walletId,
             Amount: 5_000m, Description: null, Period: null, Settlements: []);
-        await _client.PostAsync<PaymentRecordDto>("payments", request);
+        await _client.PostAsync<PaymentRecordDto>("payments", request.ToMultipartFormData());
 
         // Assert — balance includes the wallet-sourced component; advances aren't attributed yet.
         var wallet = await _client.GetAsync<WalletDto>(GetUrl(walletId));
@@ -52,7 +53,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
         var request = new CreatePaymentRecordRequest(
             PaymentType.General, PaymentDirection.Expense, null, null, walletId,
             Amount: 4_000m, Description: "office supplies", Period: null, Settlements: []);
-        await _client.PostAsync<PaymentRecordDto>("payments", request);
+        await _client.PostAsync<PaymentRecordDto>("payments", request.ToMultipartFormData());
 
         // Assert
         var wallet = await _client.GetAsync<WalletDto>(GetUrl(walletId));
@@ -78,7 +79,7 @@ public sealed class WalletPaymentBalanceTests(TestingWebApplicationFactory facto
 
         await _client.PostAsync<PaymentRecordDto>("payments", new CreatePaymentRecordRequest(
             PaymentType.Deposit, PaymentDirection.Income, partnerId, null, walletId,
-            Amount: 500m, Description: null, Period: null, Settlements: []));
+            Amount: 500m, Description: null, Period: null, Settlements: []).ToMultipartFormData());
 
         await _client.PostAsync<WalletTransferDto>(
             $"{GetUrl()}/transfers",

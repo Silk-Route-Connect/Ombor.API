@@ -69,7 +69,7 @@ public sealed class PaymentsController(IPaymentService paymentService) : Control
     [ProducesResponseType(typeof(PaymentRecordDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PaymentRecordDto>> PostAsync([FromBody] CreatePaymentRecordRequest request)
+    public async Task<ActionResult<PaymentRecordDto>> PostAsync([FromForm] CreatePaymentRecordRequest request)
     {
         var response = await paymentService.CreateRecordAsync(request);
 
