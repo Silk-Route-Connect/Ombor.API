@@ -1,7 +1,7 @@
 # Ombor backend — verified gap list (regenerated)
 
 **Regenerated:** 2026-07-09 · **Method:** read-only recon, one auditor per row opening the real code, every open Blocker/Important gap re-checked by an adversarial skeptic. **Canon:** `docs/business-rules.md` (rule wins on any conflict).
-**Last updated:** 2026-07-14 — harvested the out-of-band open items (secrets rotation, error-key casing) and the retired `Ombor.Web/docs/backend-deltas.md` queue into the two sections before Part C; A-rows unchanged from the 2026-07-09 recon.
+**Last updated:** 2026-07-19 — **wave-5 resolutions** merged into `redesign/issue-fixes` (PRs #97–#102): **F1** intra-request over-refund (grouped by product), **F2** negative-discount surcharge (line guards: `quantity>0`, `discount≥0`, percent≤100), and **A7** R21 package handling (per-line `PackageSize` snapshot, server-computed base quantity) are now resolved — see the marked rows. Prior: 2026-07-14 harvested the out-of-band open items (secrets rotation, error-key casing) and the retired `Ombor.Web/docs/backend-deltas.md` queue; A-rows from the 2026-07-09 recon.
 
 Statuses: **Done** / **Partial** / **Missing** / **Superseded**. Severity (open gaps only): **Blocker** (violates a numbered Hard Rule) / **Important** / **Nice-to-have**. Every verdict is backed by `file:line — member` evidence in the per-item detail; "(challenge: …)" records the adversarial re-check.
 
@@ -13,11 +13,11 @@ Statuses: **Done** / **Partial** / **Missing** / **Superseded**. Severity (open 
 |---|------|-------|--------|----------|----------|
 | A1 | Tenancy | R34 | **Done** | — | Single reflection-applied global query filter over `IOrganizationScoped`; stamping + JWT resolution present. (Fails *open* at org 0 — unreachable today.) |
 | A2 | Immutability | R1 | **Done** | — | No PUT/DELETE on any immutable event, at endpoint *and* service level. |
-| A3 | Refunds | R2–R7 | **Done** | — | All six checks enforced server-side. One correctness hole: intra-request duplicate-product lines bypass the cumulative cap. |
+| A3 | Refunds | R2–R7 | **Done** | — | All six checks enforced server-side. ~~One correctness hole: intra-request duplicate-product lines bypass the cumulative cap~~ — **fixed** (F1, PR #97): request lines pre-grouped by product before the cap. |
 | A4 | Payment model | R8–R10 | **Partial** | Important | Enums exact; rule-8 balancing is *by construction only* (no reject guard); Payroll/General persist source-only payments. |
 | A5 | Balances | R10–12,15 | **Partial** | Important | Balances correctly computed-not-stored; but `ourMoney` = `balance − advancesHeld` with **advancesHeld hardcoded 0** → overstates once any advance exists. |
 | A6 | Wallets | R15–16 | **Partial** | Important | Net-of-change ✓, inter-wallet transfer ✓; opening wallet balance is a **raw field, not an audited event** (Wallet not `IAuditable`). (Auditor said Blocker → challenge downgraded.) |
-| A7 | Inventory | R17,20–22 | **Partial** | Important | Removal ✓, negative-stock block ✓, create-at-zero ✓; **package-count entry/conversion not implemented**; 400 lacks available-vs-requested. |
+| A7 | Inventory | R17,20–22 | **Partial** | Important | Removal ✓, negative-stock block ✓, create-at-zero ✓; ~~package-count entry/conversion not implemented~~ **done** (F21, PR #99): per-line `PackageSize` snapshot, base quantity server-computed from `Product.Packaging.Size`. Remaining: 400 lacks available-vs-requested. |
 | A8 | WAC | R18–19 | **Done** | — | WAC stored, atomically updated on all 5 stock-ins, leaves at WAC. Sale COGS not snapshotted (WAC drifts — see decision). |
 | A9 | StockAdjustment | R23–25 | **Done** | — | Direction + mandatory reason, immutable, partner/payment-less, WAC snapshot; no `WriteOff` in enum. |
 | A10 | Transfers | domain | **Done** | Nice-to-have | Atomic dual-warehouse, immutable, no money. `TransferLine.Quantity` persisted at (18,2) not (18,3); no status field. |
@@ -25,7 +25,7 @@ Statuses: **Done** / **Partial** / **Missing** / **Superseded**. Severity (open 
 | A12 | Archive | R29–32 | **Done** | — | `IsArchived` on exactly the 4 entities; warehouse delete-guard + `isDeletable` share one predicate. |
 | A13 | Audit | R26–28 | **Partial** | Important | Money/stock capture complete; **master-data CRUD not audited** (conflicts R26); no Activity-Log read endpoint (R28, v2-deferred). |
 | A14 | Opening events | R16,22,partner | **Partial** | **Blocker** | Opening **stock** is an audited event ✓; opening **wallet** and **partner** balances are raw fields → no AuditEntry; partner has **no actor** at all. |
-| A15 | Discounts | R37–38 | **Done** | — | Line-level %/fixed both persisted, no txn-level field, total computed. Missing `Discount ≥ 0` guard → negative discount = surcharge. |
+| A15 | Discounts | R37–38 | **Done** | — | Line-level %/fixed both persisted, no txn-level field, total computed. ~~Missing `Discount ≥ 0` guard → negative discount = surcharge~~ — **fixed** (F2, PR #97): line guards reject `discount<0` and percent>100 (400). |
 | A16 | Currency | R33 | **Done** | — | No currency/FX/USD remnant in live schema/DTOs/enums; legacy columns dropped. |
 | A17 | Search | brief | **Missing** | Important | Plain `LIKE` everywhere; **no Cyrillic↔Latin parity** (a Latin query won't match a Cyrillic name). |
 | A18 | List endpoints | contract | **Partial** | Important | **Pagination 0/14** (PagedRequest/Response defined, never wired); filter 8/14, search 9/14 with **2 dead search params** (Transactions, Payments). |
@@ -92,7 +92,7 @@ Net-of-change ✓ (`TransactionService.cs:319-329`), inter-wallet transfer ✓ (
 - R17 ✓ (`Product.QuantityInStock` gone, column dropped; remaining hits are stale docs).
 - R20 ✓ and **centralized**: all 5 stock-out paths (Sale, SupplyRefund, transfer-send, adjustment-decrease, order delivery) route through one `MoveStockAsync` StockOut guard (`StockMovementExtensions.cs:69-79`) → 400 ValidationProblemDetails. **Gap:** the 400 message is generic, omits available-vs-requested (`:74`).
 - R22 ✓ (create is definition-only; stock enters via `OpeningStock` events).
-- **R21 package handling NOT implemented** (main gap): line entities/DTOs carry only a single decimal `Quantity`; `ProductPackaging.Size` is descriptive metadata no write path consumes → no package-count×size conversion, no retained package count for audit.
+- ~~**R21 package handling NOT implemented**~~ — **DONE (F21, PR #99):** transaction lines and template items carry a nullable `PackageSize` snapshotted from `Product.Packaging.Size`; a package-entry line sends only the pack count and the server computes base `Quantity = count × size` (the client never supplies the size). Pack count is recoverable as `Quantity ÷ PackageSize`. Base `Quantity` stays the source of truth for stock/WAC.
 - **Superseded:** R21 "integer quantity throughout MVP" → **WS4 decimal(18,3)** domain-wide (`PropertyBuilderExtensions.cs:15` `HasQuantityPrecision`).
 - **Decision:** is package-count capture a deferred V2 (like fractional stock) or an in-scope MVP gap?
 
@@ -184,8 +184,8 @@ No count ceiling on create (`WarehouseService.CreateAsync`/validator); all per-w
 
 | # | Item | Severity | Evidence |
 |---|------|----------|----------|
-| F1 | **Intra-request duplicate-product over-refund** — two refund lines of the same product in one request each pass the cap; sum exceeds original qty → over-refund + over-restock | Important (correctness) | `TransactionService.cs:466-481` |
-| F2 | **Negative discount = surcharge** — no `Discount ≥ 0` guard; `Total` clamps only positive discounts, so `%-10` inflates TotalDue | Important (correctness) | `CreateTransactionValidator.cs`, `TransactionLine.cs:27-30` |
+| F1 | ~~**Intra-request duplicate-product over-refund**~~ — **FIXED (PR #97):** request lines pre-grouped by `ProductId` before the cumulative cap | ~~Important (correctness)~~ Resolved | `TransactionService.cs` (`ValidateRefundOrThrowAsync`) |
+| F2 | ~~**Negative discount = surcharge**~~ — **FIXED (PR #97):** `CreateTransactionValidator` rejects `discount<0`, percent>100, and `quantity≤0` (400) | ~~Important (correctness)~~ Resolved | `CreateTransactionValidator.cs` |
 | F3 | **Dead query params** — `Transactions.SearchTerm`, `Payments.SearchTerm`/`TransactionId` on the contract but never applied → silently unfiltered | Important | `TransactionService.cs:488-523`, `PaymentService.cs:210-254` |
 | F4 | **Fractional quantity truncated in audit rows** — `TransferLine.Quantity` & `TransactionLine.Quantity` persisted at (18,2) vs domain (18,3); audit row disagrees with actual stock moved | Nice-to-have | `TransferLineConfiguration.cs:25`, `TransactionLineConfiguration.cs` |
 | F5 | **Sale COGS not reconstructable** — no per-line COGS snapshot; WAC drifts → past-sale COGS not derivable from ledger (tension w/ hard rule 2) | Decision | `StockMovementExtensions.cs:69-79` |
@@ -214,8 +214,8 @@ No count ceiling on create (`WarehouseService.CreateAsync`/validator); all per-w
 ## Fixable items log (read-only session — NOT applied)
 
 Small, self-contained; safe to batch in a cleanup pass. F-numbers cross-ref above.
-- **F1** `TransactionService.cs:466-481` — pre-group request lines by `ProductId` before the refund cap. *(correctness — do first)*
-- **F2** `CreateTransactionValidator.cs` — `RuleForEach(Lines)`: `Discount ≥ 0` (and `≤ 100` for Percentage). *(correctness)*
+- ~~**F1** `TransactionService.cs` — pre-group request lines by `ProductId` before the refund cap.~~ **✅ done (PR #97).**
+- ~~**F2** `CreateTransactionValidator.cs` — `RuleForEach(Lines)`: `Discount ≥ 0` (and `≤ 100` for Percentage).~~ **✅ done (PR #97)** — also `Quantity > 0`.
 - **F3** wire or drop `Transactions.SearchTerm`, `Payments.SearchTerm`/`TransactionId`.
 - **F4** `TransferLineConfiguration.cs:25` & `TransactionLineConfiguration` — `HasQuantityPrecision()` + migration.
 - **F7** `PartnerService.cs:238` — reuse `PartnerBalance.Total`.
