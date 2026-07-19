@@ -19,13 +19,31 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
             .NotEmpty()
             .WithMessage("Transaction must contain at least one line item.");
 
-        // Guard each line's discount type: an omitted/0/invalid value would otherwise fail deep in the enum
-        // mapper as a 500. This mirrors the order-line validator and returns a clean 400 instead.
         RuleForEach(x => x.Lines)
-            .ChildRules(line => line
-                .RuleFor(l => l.DiscountType)
-                .IsInEnum()
-                .WithMessage("Invalid discount type."));
+            .ChildRules(line =>
+            {
+                line.RuleFor(l => l.Quantity)
+                    .GreaterThan(0m)
+                    .WithMessage("Transaction line quantity must be greater than zero.");
+
+                // Guard each line's discount type: an omitted/0/invalid value would otherwise fail deep in
+                // the enum mapper as a 500. This mirrors the order-line validator and returns a clean 400.
+                line.RuleFor(l => l.DiscountType)
+                    .IsInEnum()
+                    .WithMessage("Invalid discount type.");
+
+                // Rule 37 clamps only positive discounts, so a negative value would act as a surcharge that
+                // inflates TotalDue; a percentage above 100 is nonsensical. Reject both with a 400 rather
+                // than silently clamping. (Discount is a non-nullable decimal here, so the floor is unconditional.)
+                line.RuleFor(l => l.Discount)
+                    .GreaterThanOrEqualTo(0m)
+                    .WithMessage("Discount cannot be negative.");
+
+                line.RuleFor(l => l.Discount)
+                    .LessThanOrEqualTo(100m)
+                    .When(l => l.DiscountType == Contracts.Enums.DiscountType.Percentage)
+                    .WithMessage("A percentage discount cannot exceed 100.");
+            });
 
         RuleFor(x => x.PaidAmount)
             .GreaterThanOrEqualTo(0m)

@@ -112,7 +112,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 
         var transactions = await context.Transactions
             .Where(t => t.PartnerId == partnerId)
-            .Select(t => new { t.Id, t.DateUtc, t.Type, t.TotalDue, t.TotalPaid, ItemCount = t.Lines.Count })
+            .Select(t => new { t.Id, t.DateUtc, t.Number, t.Type, t.TotalDue, t.TotalPaid, ItemCount = t.Lines.Count })
             .ToArrayAsync();
 
         var payments = await context.Payments
@@ -164,7 +164,8 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
                 : (t.TotalPaid < t.TotalDue ? "partial" : "paid");
 
             // Transactions aren't tied to a single wallet (settled across zero-to-many payments), so no wallet here.
-            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, null, t.ItemCount, status, null, null));
+            // Reference carries the bare document Number (null on synthetic seed rows), mirroring payments below.
+            events.Add(new(t.Id, type, t.DateUtc, sign * t.TotalDue, t.Id, t.Number?.ToString(), t.ItemCount, status, null, null));
         }
 
         foreach (var p in payments)

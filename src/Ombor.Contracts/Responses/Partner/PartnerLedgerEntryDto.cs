@@ -14,7 +14,7 @@ namespace Ombor.Contracts.Responses.Partner;
 /// the payment id for payment/deposit/withdraw rows, and null for the opening event.
 /// <see cref="Type"/> tells the frontend which kind it is.
 /// </param>
-/// <param name="Reference">The document number of the underlying payment, if any.</param>
+/// <param name="Reference">The bare document number of the underlying record — the transaction number for sale/supply/refund-* rows and the payment number for payment/deposit/withdraw rows; null for the opening event and for records without a persisted number (synthetic seed rows).</param>
 /// <param name="ItemCount">Number of line items, for transaction events.</param>
 /// <param name="Status">Settlement status for transaction events (paid, partial, unpaid) or "done".</param>
 /// <param name="WalletName">The wallet the money moved through, for payment events (payment, deposit, withdraw); null otherwise.</param>
