@@ -354,7 +354,22 @@ internal sealed class PaymentService(
                 a.FileName,
                 a.ContentType,
                 a.SizeBytes,
-                a.Url)).ToArray());
+                a.Url)).ToArray(),
+            // Echo the settled transaction's note (the single one this payment settles; first if several).
+            p.Allocations
+                .Where(a => a.Type == PaymentAllocationType.TransactionSettlement && a.Transaction != null)
+                .Select(a => a.Transaction!.Notes)
+                .FirstOrDefault(),
+            // Echo the settled transaction(s)' attachments (union), stored on the transaction — not duplicated.
+            p.Allocations
+                .Where(a => a.Type == PaymentAllocationType.TransactionSettlement && a.Transaction != null)
+                .SelectMany(a => a.Transaction!.Attachments)
+                .Select(ta => new PaymentAttachmentDto(
+                    ta.Id,
+                    ta.FileName,
+                    ta.ContentType,
+                    ta.SizeBytes,
+                    ta.Url)).ToArray());
 
     public async Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request)
     {

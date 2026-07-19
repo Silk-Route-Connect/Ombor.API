@@ -4,6 +4,15 @@ namespace Ombor.Contracts.Responses.Payment;
 /// A payment in the source/allocation model (rules 8-14). <see cref="Sources"/> is where the
 /// money came from; <see cref="Allocations"/> is what it settled. All money figures are server-computed.
 /// </summary>
+/// <param name="TransactionNotes">
+/// Echoed read-only from the transaction(s) this payment settles: the note captured when a transaction and
+/// its payment are created together belongs to either — we can't tell upfront — so it is surfaced on both.
+/// The single settled transaction's note (the first, if the payment settles several); null when none.
+/// </param>
+/// <param name="TransactionAttachments">
+/// Echoed read-only: the attachments of the transaction(s) this payment settles (union when it settles more
+/// than one); empty when none. The files are stored on the transaction — not duplicated onto the payment.
+/// </param>
 public sealed record PaymentRecordDto(
     int Id,
     string? Number,
@@ -27,7 +36,9 @@ public sealed record PaymentRecordDto(
     string? CreatedBy,
     PaymentSourceDto[] Sources,
     PaymentAllocationEntryDto[] Allocations,
-    PaymentAttachmentDto[] Attachments);
+    PaymentAttachmentDto[] Attachments,
+    string? TransactionNotes,
+    PaymentAttachmentDto[] TransactionAttachments);
 
 /// <summary>
 /// A file uploaded with a payment. Raw values only — the client derives the icon from
