@@ -200,7 +200,7 @@ No count ceiling on create (`WarehouseService.CreateAsync`/validator); all per-w
 
 ## Decisions needed (a human call, not a fix)
 
-1. **Master-data & opening-balance audit scope (A6/A13/A14, the Blocker cluster).** Accept the money/stock-only narrowing as a *recorded supersession* of R26's master-data half, **or** implement master-data + opening-balance auditing (make `Partner`/`Wallet`/… `IAuditable`; add a `CreatedById` to `Partner`; model opening wallet/partner balance as events mirroring `OpeningStock`). Plus: minimal Activity-Log read endpoint now, or hold to v2?
+1. **Master-data & opening-balance audit scope (A6/A13/A14, the Blocker cluster) — RULED 2026-07-19: deferred to its own feature.** The owner ruled this is a dedicated feature to be designed and reviewed carefully (make `Partner`/`Wallet`/… `IAuditable`; add `CreatedById` to `Partner`; model opening wallet/partner balances as events mirroring `OpeningStock`; add the Activity-Log read endpoint) — **not** a bolt-on. Do not start it piecemeal; schedule as a standalone design+build slice.
 2. **Rule-8 enforcement & Payroll/General shape (A4).** By-construction acceptable, or add a defensive balance assert? Are Payroll/General exempt from the two-sided identity?
 3. **`ourMoney` / per-wallet advance attribution (A5).** How does a parked advance attribute to a wallet, and re-attribute on transfer/draw?
 4. **Package-count capture (A7).** In-scope MVP or deferred like fractional-quantity V2?
@@ -234,9 +234,9 @@ Open items that live outside the A-row gap matrix (the list `CLAUDE.md` → Live
 
 Real-looking production secrets were committed to the repo and shared across environments (audit 2026-06-18 Part 4 — doc retired 2026-07-14, recoverable from Ombor.API git history): the SQL Server connection string with credentials in `appsettings.Production.json`, the JWT signing key, the Eskiz SMS token, a Sentry DSN — plus a plaintext SA password in `docker-compose.yaml`. Re-checked 2026-07-14: the Production config values are now blank and `Ombor.API.csproj` carries a `UserSecretsId` (the move is underway), but `docker-compose.yaml:16,24` still holds the plaintext SA password, and everything previously committed remains in git history. **Action:** rotate every exposed secret (DB credentials, JWT signing key, Eskiz token, Sentry DSN, SA password) and keep them exclusively in user-secrets/env vars.
 
-### Error-key casing drift — open
+### Error-key casing — ✅ RULED 2026-07-19 (keep PascalCase)
 
-Validation 400s serve `Errors` keys straight from FluentValidation `PropertyName`s — PascalCase, e.g. `Lines[0].Quantity` — while the rest of the JSON contract is camelCase (`backend-conventions.md` → Validation & error shape). Needs a ruling: keep PascalCase and document it as the contract, or normalize keys to camelCase. Until ruled, nothing may depend on `Errors`-key casing.
+Validation 400s serve `Errors` keys straight from FluentValidation `PropertyName`s — PascalCase, e.g. `Lines[0].Quantity`. **Ruling:** keep PascalCase and treat it as the documented contract (the FE keys its error map by PascalCase property paths); the rest of every JSON body stays camelCase. No code change — documented in `backend-conventions.md` → Validation & error shape. The FE may depend on PascalCase `Errors` keys.
 
 ---
 
