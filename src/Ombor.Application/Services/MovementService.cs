@@ -104,8 +104,9 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .ToListAsync();
         foreach (var l in transferLines)
         {
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, null, null, -l.Quantity));
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, null, null, l.Quantity));
+            // Each row's counterparty is the other warehouse, so a consumer can link the send and receive rows.
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, l.ToName, null, -l.Quantity, CounterpartyWarehouseId: l.ToWarehouseId));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, l.FromName, null, l.Quantity, CounterpartyWarehouseId: l.FromWarehouseId));
         }
 
         // Running total stock across all warehouses (reconciles to the product's total stock).
@@ -114,7 +115,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         return [.. withBalance
             .Select(x => new ProductMovementDto(
                 x.Movement.Id, productId, x.Movement.Date, x.Movement.Kind, x.Movement.WarehouseId,
-                x.Movement.WarehouseName, x.Movement.Quantity, x.Balance))];
+                x.Movement.WarehouseName, x.Movement.CounterpartyWarehouseId, x.Movement.Counterparty,
+                x.Movement.Quantity, x.Balance))];
     }
 
     /// <summary>

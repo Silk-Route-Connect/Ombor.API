@@ -498,20 +498,27 @@ internal sealed class TransactionService(
             .Select(g => new { ProductId = g.Key, Quantity = g.Sum(l => l.Quantity) })
             .ToDictionaryAsync(x => x.ProductId, x => x.Quantity);
 
-        foreach (var line in request.Lines)
+        // Aggregate this request's lines by product before the cap check. Two lines of the same product in
+        // one request would otherwise each pass against the same persisted baseline while their sum exceeds
+        // the original quantity (over-refund + over-restock). Mirrors the settlement dedup above.
+        var requestedQuantities = request.Lines
+            .GroupBy(l => l.ProductId)
+            .ToDictionary(g => g.Key, g => g.Sum(l => l.Quantity));
+
+        foreach (var (productId, requestedQuantity) in requestedQuantities)
         {
-            if (!originalQuantities.TryGetValue(line.ProductId, out var originalQuantity))
+            if (!originalQuantities.TryGetValue(productId, out var originalQuantity))
             {
                 throw new ValidationException(
-                    $"Product {line.ProductId} is not part of the original transaction.");
+                    $"Product {productId} is not part of the original transaction.");
             }
 
-            alreadyRefunded.TryGetValue(line.ProductId, out var refundedQuantity);
+            alreadyRefunded.TryGetValue(productId, out var refundedQuantity);
 
-            if (refundedQuantity + line.Quantity > originalQuantity)
+            if (refundedQuantity + requestedQuantity > originalQuantity)
             {
                 throw new ValidationException(
-                    $"Refund quantity for product {line.ProductId} exceeds the original transaction quantity.");
+                    $"Refund quantity for product {productId} exceeds the original transaction quantity.");
             }
         }
     }

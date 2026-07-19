@@ -47,6 +47,22 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
     }
 
     [Fact]
+    public async Task Ledger_ShouldExposeTransactionNumber_AsReferenceOnTransactionRows()
+    {
+        // Arrange — a sale carrying a persisted document number (F20). Opening balance 0 keeps this focused.
+        var partnerId = await CreateLedgerPartnerAsync(openingBalance: 0m);
+        await CreateOpenTransactionAsync(partnerId, TransactionType.Sale, due: 5_000m, paid: 0m, number: 797);
+
+        // Act
+        var ledger = await _client.GetAsync<PartnerLedgerEntryDto[]>($"{GetUrl(partnerId)}/ledger");
+
+        // Assert — the sale row serves the bare transaction number; the opening row has no reference.
+        var sale = ledger.Single(e => e.Type == "sale");
+        Assert.Equal("797", sale.Reference);
+        Assert.Null(ledger.Single(e => e.Type == "opening").Reference);
+    }
+
+    [Fact]
     public async Task Delete_ShouldReturnConflict_WhenPartnerIsReferenced()
     {
         // Arrange — a partner with a transaction can't be hard-deleted.
@@ -84,13 +100,14 @@ public sealed class PartnerLedgerTests(TestingWebApplicationFactory factory, ITe
         return partner.Id;
     }
 
-    private async Task<int> CreateOpenTransactionAsync(int partnerId, TransactionType type, decimal due, decimal paid)
+    private async Task<int> CreateOpenTransactionAsync(int partnerId, TransactionType type, decimal due, decimal paid, int? number = null)
     {
         var transaction = new TransactionRecord
         {
             PartnerId = partnerId,
             Partner = null!,
             Type = type,
+            Number = number,
             WarehouseId = await EnsureWarehouseAsync(),
             DateUtc = new DateTimeOffset(2026, 2, 1, 0, 0, 0, TimeSpan.Zero),
             TotalDue = due,

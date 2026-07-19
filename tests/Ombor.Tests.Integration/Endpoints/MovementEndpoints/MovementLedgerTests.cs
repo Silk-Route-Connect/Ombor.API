@@ -114,6 +114,12 @@ public sealed class MovementLedgerTests(TestingWebApplicationFactory factory, IT
         Assert.Equal(30, receive.Quantity);
         Assert.False(string.IsNullOrEmpty(receive.WarehouseName));
 
+        // Each transfer row names the other warehouse so a consumer can link the two sides.
+        Assert.Equal(destination, send.CounterpartyWarehouseId);
+        Assert.Equal(source, receive.CounterpartyWarehouseId);
+        Assert.False(string.IsNullOrEmpty(send.CounterpartyWarehouseName));
+        Assert.False(string.IsNullOrEmpty(receive.CounterpartyWarehouseName));
+
         // The running total reconciles to the product's total stock across warehouses.
         var totalStock = await _context.WarehouseItems.AsNoTracking()
             .Where(i => i.ProductId == product)
