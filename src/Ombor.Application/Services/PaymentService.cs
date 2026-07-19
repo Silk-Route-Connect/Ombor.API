@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Interfaces.File;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Payroll;
 using Ombor.Contracts.Responses.Payment;
@@ -14,8 +15,12 @@ namespace Ombor.Application.Services;
 internal sealed class PaymentService(
     IApplicationDbContext context,
     IRequestValidator validator,
+    IFileService fileService,
     INumberSequenceAllocator allocator) : IPaymentService
 {
+    // Uploaded payment files land here (originals + thumbnails under their standard sections).
+    private const string AttachmentsSubfolder = "payments";
+
     public async Task<PaymentRecordDto> CreateRecordAsync(CreatePaymentRecordRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
@@ -150,11 +155,39 @@ internal sealed class PaymentService(
 
         payment.Number = await allocator.AllocateAsync(NumberSeriesType.Payment);
         context.Payments.Add(payment);
+        await AddAttachmentsAsync(request, payment);
         await context.SaveChangesAsync();
 
         await databaseTransaction.CommitAsync();
 
         return await GetRecordByIdAsync(payment.Id);
+    }
+
+    /// <summary>
+    /// Uploads the request's files and links them to the payment, mirroring the transaction attachment flow:
+    /// the original name, MIME type, and size are kept so the client can render each without re-reading the file.
+    /// </summary>
+    private async Task AddAttachmentsAsync(CreatePaymentRecordRequest request, Payment payment)
+    {
+        if (request.Attachments is not { Length: > 0 })
+        {
+            return;
+        }
+
+        foreach (var file in request.Attachments)
+        {
+            var uploaded = await fileService.UploadAsync(file, AttachmentsSubfolder);
+
+            payment.Attachments.Add(new PaymentAttachment
+            {
+                Payment = payment,
+                FileId = uploaded.FileName,
+                FileName = uploaded.OriginalFileName,
+                ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+                SizeBytes = file.Length,
+                Url = uploaded.Url,
+            });
+        }
     }
 
     public Task<PaymentRecordDto[]> GetRecordsAsync(GetPaymentsRequest request)
@@ -315,7 +348,13 @@ internal sealed class PaymentService(
                 a.Type.ToString(),
                 a.TransactionId,
                 a.Transaction != null ? a.Transaction.Type.ToString() : null,
-                a.Amount)).ToArray());
+                a.Amount)).ToArray(),
+            p.Attachments.Select(a => new PaymentAttachmentDto(
+                a.Id,
+                a.FileName,
+                a.ContentType,
+                a.SizeBytes,
+                a.Url)).ToArray());
 
     public async Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request)
     {

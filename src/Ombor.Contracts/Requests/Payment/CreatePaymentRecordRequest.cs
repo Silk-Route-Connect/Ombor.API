@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Requests.Payment;
@@ -16,6 +17,7 @@ namespace Ombor.Contracts.Requests.Payment;
 /// <param name="Description">Required for General payments.</param>
 /// <param name="Period">Payroll period, e.g. «2026-06».</param>
 /// <param name="Settlements">Per-transaction amounts this payment settles.</param>
+/// <param name="Attachments">Optional file attachments (receipts, transfer confirmations). Sent as multipart/form-data.</param>
 public sealed record CreatePaymentRecordRequest(
     PaymentType Type,
     PaymentDirection Direction,
@@ -25,7 +27,8 @@ public sealed record CreatePaymentRecordRequest(
     decimal Amount,
     string? Description,
     string? Period,
-    SettlementInput[] Settlements);
+    SettlementInput[] Settlements,
+    IFormFile[]? Attachments = null);
 
 /// <summary>A single transaction-settlement instruction within a payment.</summary>
 /// <param name="TransactionId">The transaction being settled.</param>

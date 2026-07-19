@@ -4,6 +4,7 @@ using Ombor.Contracts.Requests.Category;
 using Ombor.Contracts.Requests.Employee;
 using Ombor.Contracts.Requests.Warehouse;
 using Ombor.Contracts.Requests.Partner;
+using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Requests.Template;
 using Ombor.Contracts.Requests.Transaction;
@@ -138,6 +139,51 @@ public static class RequestExtensions
             foreach (var imageIdToDelete in request.ImagesToDelete)
             {
                 content.Add(new StringContent(imageIdToDelete.ToString()), nameof(request.ImagesToDelete));
+            }
+        }
+
+        return content;
+    }
+
+    public static MultipartFormDataContent ToMultipartFormData(this CreatePaymentRecordRequest request)
+    {
+        var content = new MultipartFormDataContent
+        {
+            { new StringContent(((int)request.Type).ToString()),      nameof(request.Type) },
+            { new StringContent(((int)request.Direction).ToString()), nameof(request.Direction) },
+            { new StringContent(request.WalletId.ToString()),         nameof(request.WalletId) },
+            { new StringContent(request.Amount.ToString(cultureInfo)), nameof(request.Amount) },
+        };
+
+        if (request.PartnerId.HasValue)
+            content.Add(new StringContent(request.PartnerId.Value.ToString()), nameof(request.PartnerId));
+
+        if (request.EmployeeId.HasValue)
+            content.Add(new StringContent(request.EmployeeId.Value.ToString()), nameof(request.EmployeeId));
+
+        if (request.Description is not null)
+            content.Add(new StringContent(request.Description), nameof(request.Description));
+
+        if (request.Period is not null)
+            content.Add(new StringContent(request.Period), nameof(request.Period));
+
+        if (request.Settlements is not null)
+        {
+            for (var i = 0; i < request.Settlements.Length; i++)
+            {
+                var s = request.Settlements[i];
+                content.Add(new StringContent(s.TransactionId.ToString()), $"Settlements[{i}].TransactionId");
+                content.Add(new StringContent(s.Amount.ToString(cultureInfo)), $"Settlements[{i}].Amount");
+            }
+        }
+
+        if (request.Attachments is not null)
+        {
+            foreach (var f in request.Attachments)
+            {
+                var fc = new StreamContent(f.OpenReadStream());
+                fc.Headers.ContentType = MediaTypeHeaderValue.Parse(f.ContentType ?? "application/octet-stream");
+                content.Add(fc, nameof(request.Attachments), f.FileName);
             }
         }
 

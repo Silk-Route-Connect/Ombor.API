@@ -26,7 +26,24 @@ public sealed record PaymentRecordDto(
     decimal? Salary,
     string? CreatedBy,
     PaymentSourceDto[] Sources,
-    PaymentAllocationEntryDto[] Allocations);
+    PaymentAllocationEntryDto[] Allocations,
+    PaymentAttachmentDto[] Attachments);
+
+/// <summary>
+/// A file uploaded with a payment. Raw values only — the client derives the icon from
+/// <see cref="ContentType"/> and formats <see cref="SizeBytes"/> for display. Mirrors the transaction attachment shape.
+/// </summary>
+/// <param name="Id">The attachment id.</param>
+/// <param name="Name">The original file name as uploaded.</param>
+/// <param name="ContentType">The MIME type (e.g. application/pdf, image/jpeg).</param>
+/// <param name="SizeBytes">The file size in bytes.</param>
+/// <param name="Url">The public URL to fetch the file.</param>
+public sealed record PaymentAttachmentDto(
+    int Id,
+    string Name,
+    string ContentType,
+    long SizeBytes,
+    string Url);
 
 /// <summary>The source side of a payment (rule 9): a wallet draw or a draw against the partner's advance.</summary>
 public sealed record PaymentSourceDto(

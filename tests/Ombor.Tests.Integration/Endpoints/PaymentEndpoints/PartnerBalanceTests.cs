@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -28,7 +29,7 @@ public sealed class PartnerBalanceTests(TestingWebApplicationFactory factory, IT
         // Act — settle the sale in full.
         await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
             PaymentType.Transaction, PaymentDirection.Income, partnerId, null, walletId,
-            10_000m, null, null, [new SettlementInput(saleId, 10_000m)]));
+            10_000m, null, null, [new SettlementInput(saleId, 10_000m)]).ToMultipartFormData());
 
         // Assert — debt cleared.
         Assert.Equal(0m, await BalanceTotalAsync(partnerId));
@@ -36,7 +37,7 @@ public sealed class PartnerBalanceTests(TestingWebApplicationFactory factory, IT
         // Act — partner deposits 5,000 with no debt outstanding (becomes an advance).
         await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
             PaymentType.Deposit, PaymentDirection.Income, partnerId, null, walletId,
-            5_000m, null, null, []));
+            5_000m, null, null, []).ToMultipartFormData());
 
         // Assert — we now owe the partner their 5,000 advance (negative balance).
         Assert.Equal(-5_000m, await BalanceTotalAsync(partnerId));

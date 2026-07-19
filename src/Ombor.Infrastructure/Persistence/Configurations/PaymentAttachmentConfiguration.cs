@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 
@@ -26,6 +26,17 @@ internal sealed class PaymentAttachmentConfiguration : IEntityTypeConfiguration<
 
         builder
             .Property(pa => pa.FileName)
-            .HasMaxLength(ConfigurationConstants.MaxStringLength);
+            .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired();
+
+        builder
+            .Property(pa => pa.ContentType)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength)
+            .IsRequired();
+
+        builder
+            .Property(pa => pa.Url)
+            .HasMaxLength(ConfigurationConstants.MaxStringLength)
+            .IsRequired();
     }
 }

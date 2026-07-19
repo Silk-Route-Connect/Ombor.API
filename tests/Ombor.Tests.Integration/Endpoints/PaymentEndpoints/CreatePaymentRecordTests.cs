@@ -5,6 +5,7 @@ using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -27,7 +28,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             Settlements: [new SettlementInput(saleId, 10_000m)]);
 
         // Act
-        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request);
+        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request.ToMultipartFormData());
 
         // Assert — one wallet source = one settling allocation (rule 8).
         var source = Assert.Single(payment.Sources);
@@ -59,7 +60,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             Settlements: [new SettlementInput(saleId, 6_000m)]);
 
         // Act
-        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request);
+        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request.ToMultipartFormData());
 
         // Assert — settlement + advance, and they sum to the wallet source (rule 8).
         Assert.Contains(payment.Allocations, a => a.AllocationType == "TransactionSettlement" && a.Amount == 6_000m && a.TransactionType == "Sale");
@@ -82,7 +83,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             Settlements: [new SettlementInput(saleId, 6_000m)]);
 
         // Act & Assert
-        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
+        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -97,7 +98,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             Amount: 8_000m, Description: null, Period: null,
             Settlements: [new SettlementInput(saleId, 8_000m)]);
 
-        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
+        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -109,6 +110,6 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             PaymentType.Deposit, PaymentDirection.Income, partnerId, null, NonExistentEntityId,
             Amount: 1_000m, Description: null, Period: null, Settlements: []);
 
-        await _client.PostAsync<ProblemDetails>(GetUrl(), request, HttpStatusCode.NotFound);
+        await _client.PostAsync<ProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.NotFound);
     }
 }

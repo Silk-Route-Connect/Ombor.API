@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -31,7 +32,7 @@ public sealed class PaymentLedgerIntegrityTests(TestingWebApplicationFactory fac
             Settlements: [new SettlementInput(partnerBSaleId, 10_000m)]);
 
         // Act & Assert — a clean 400, and partner B's sale is untouched.
-        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
+        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
 
         var sale = await _context.Transactions.AsNoTracking().FirstAsync(t => t.Id == partnerBSaleId);
         Assert.Equal(0m, sale.TotalPaid);
@@ -51,7 +52,7 @@ public sealed class PaymentLedgerIntegrityTests(TestingWebApplicationFactory fac
             Settlements: [new SettlementInput(saleId, 6_000m), new SettlementInput(saleId, 6_000m)]);
 
         // Act & Assert — a clean 400, never a 500, and the sale is untouched.
-        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request, HttpStatusCode.BadRequest);
+        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
 
         var sale = await _context.Transactions.AsNoTracking().FirstAsync(t => t.Id == saleId);
         Assert.Equal(0m, sale.TotalPaid);
@@ -71,7 +72,7 @@ public sealed class PaymentLedgerIntegrityTests(TestingWebApplicationFactory fac
             Settlements: [new SettlementInput(saleId, 4_000m), new SettlementInput(saleId, 6_000m)]);
 
         // Act
-        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request);
+        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request.ToMultipartFormData());
 
         // Assert — one merged allocation of 10,000 and the sale is paid once, not twice.
         var allocation = Assert.Single(payment.Allocations);
@@ -94,12 +95,12 @@ public sealed class PaymentLedgerIntegrityTests(TestingWebApplicationFactory fac
         var first = await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
             PaymentType.Transaction, PaymentDirection.Income, partnerId, null, walletId,
             Amount: 5_000m, Description: null, Period: null,
-            Settlements: [new SettlementInput(firstSaleId, 5_000m)]));
+            Settlements: [new SettlementInput(firstSaleId, 5_000m)]).ToMultipartFormData());
 
         var second = await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
             PaymentType.Transaction, PaymentDirection.Income, partnerId, null, walletId,
             Amount: 5_000m, Description: null, Period: null,
-            Settlements: [new SettlementInput(secondSaleId, 5_000m)]));
+            Settlements: [new SettlementInput(secondSaleId, 5_000m)]).ToMultipartFormData());
 
         Assert.True(int.TryParse(first.Number, out _)); // bare sequential number, no "P-" prefix
         Assert.True(int.TryParse(second.Number, out _));

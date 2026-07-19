@@ -4,6 +4,7 @@ using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Domain.Entities;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -22,7 +23,7 @@ public sealed class ReadPaymentTests(TestingWebApplicationFactory factory, ITest
         var saleId = await CreateOpenSaleAsync(partnerId, total: 3_000m);
         var created = await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
             PaymentType.Transaction, PaymentDirection.Income, partnerId, null, walletId,
-            3_000m, null, null, [new SettlementInput(saleId, 3_000m)]));
+            3_000m, null, null, [new SettlementInput(saleId, 3_000m)]).ToMultipartFormData());
 
         // Act
         var fetched = await _client.GetAsync<PaymentRecordDto>(GetUrl(created.Id));
