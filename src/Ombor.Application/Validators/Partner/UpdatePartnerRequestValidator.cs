@@ -31,6 +31,11 @@ public sealed class UpdatePartnerRequestValidator : AbstractValidator<UpdatePart
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Company name must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
+        // Length only — the client validates the handle format.
+        RuleFor(x => x.Telegram)
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"Telegram handle must not exceed {ValidationConstants.DefaultStringLength} characters.");
+
         RuleForEach(x => x.PhoneNumbers)
             .Must(ValidationHelpers.IsValidPhoneNumber)
             .WithMessage("The phone number is in the wrong format.");

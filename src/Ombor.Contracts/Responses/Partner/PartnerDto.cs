@@ -16,6 +16,7 @@ namespace Ombor.Contracts.Responses.Partner;
 /// <param name="IsArchived">Whether the partner is archived.</param>
 /// <param name="IsDeletable">True when no other record references the partner (otherwise DELETE returns 409).</param>
 /// <param name="ActivityCount">Number of records referencing the partner (transactions, payments, orders, templates).</param>
+/// <param name="Telegram">The partner's Telegram handle, if any.</param>
 public sealed record PartnerDto(
     int Id,
     string Name,
@@ -29,4 +30,5 @@ public sealed record PartnerDto(
     DateOnly OpeningDate,
     bool IsArchived,
     bool IsDeletable,
-    int ActivityCount);
+    int ActivityCount,
+    string? Telegram = null);

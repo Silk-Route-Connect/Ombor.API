@@ -28,6 +28,11 @@ public sealed class CreatePartnerRequestValidator : AbstractValidator<CreatePart
             .MaximumLength(ValidationConstants.DefaultStringLength)
             .WithMessage($"Company name must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
+        // Length only — the client validates the handle format.
+        RuleFor(x => x.Telegram)
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"Telegram handle must not exceed {ValidationConstants.DefaultStringLength} characters.");
+
         RuleForEach(x => x.PhoneNumbers)
             .Must(ValidationHelpers.IsValidPhoneNumber)
             .WithMessage("One or more phone numbers are in invalid format.");

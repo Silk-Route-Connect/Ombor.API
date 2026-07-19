@@ -14,6 +14,7 @@ internal static class PartnerMappings
             Address = request.Address,
             Email = request.Email,
             CompanyName = request.CompanyName,
+            Telegram = request.Telegram,
             Type = Enum.Parse<PartnerType>(request.Type.ToString()),
             OpeningBalance = request.OpeningBalance,
             PhoneNumbers = request.PhoneNumbers
@@ -29,7 +30,8 @@ internal static class PartnerMappings
             OpeningBalance: partner.OpeningBalance,
             OpeningDate: partner.OpeningDate,
             IsArchived: partner.IsArchived,
-            PhoneNumbers: partner.PhoneNumbers);
+            PhoneNumbers: partner.PhoneNumbers,
+            Telegram: partner.Telegram);
 
     public static UpdatePartnerResponse ToUpdateResponse(this Partner partner) =>
         new(Id: partner.Id,
@@ -41,7 +43,8 @@ internal static class PartnerMappings
             OpeningBalance: partner.OpeningBalance,
             OpeningDate: partner.OpeningDate,
             IsArchived: partner.IsArchived,
-            PhoneNumbers: partner.PhoneNumbers);
+            PhoneNumbers: partner.PhoneNumbers,
+            Telegram: partner.Telegram);
 
     // Opening balance/date are immutable (set once at creation) — the update never touches them.
     public static void ApplyUpdate(this Partner partner, UpdatePartnerRequest request)
@@ -50,6 +53,7 @@ internal static class PartnerMappings
         partner.Address = request.Address;
         partner.Email = request.Email;
         partner.CompanyName = request.CompanyName;
+        partner.Telegram = request.Telegram;
         partner.PhoneNumbers = request.PhoneNumbers;
         partner.Type = Enum.Parse<PartnerType>(request.Type.ToString());
     }

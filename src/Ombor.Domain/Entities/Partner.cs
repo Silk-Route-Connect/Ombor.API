@@ -25,6 +25,9 @@ public class Partner : EntityBase, IOrganizationScoped
     /// <summary>Gets or sets the name of the company associated with the partner.</summary>
     public string? CompanyName { get; set; }
 
+    /// <summary>Gets or sets the partner's Telegram handle (contact only; handle format is validated on the client).</summary>
+    public string? Telegram { get; set; }
+
     /// <summary>
     /// The partner's starting balance, recorded once at creation as an immutable event (signed:
     /// positive = the partner owes us). The net balance is computed from this plus the event log.
