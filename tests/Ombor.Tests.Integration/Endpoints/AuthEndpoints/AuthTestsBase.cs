@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Ombor.Tests.Integration.Endpoints.AuthEndpoints;
@@ -40,5 +42,20 @@ public abstract class AuthTestsBase(TestingWebApplicationFactory factory, ITestO
         await _context.SaveChangesAsync();
 
         return (user.Id, phone);
+    }
+
+    /// <summary>
+    /// Reads the OTP the server actually issued (via the shared in-memory store), instead of assuming a fixed
+    /// stub — the provider mints a random code (<c>OtpCodeProvider.GenerateOtpAsync</c>).
+    /// </summary>
+    protected async Task<string> GetIssuedOtpAsync(string phone, OtpPurpose purpose)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var provider = scope.ServiceProvider.GetRequiredService<IOtpCodeProvider>();
+
+        var otp = await provider.GetOtpAsync(phone, purpose);
+        Assert.NotNull(otp);
+
+        return otp!.Code;
     }
 }
