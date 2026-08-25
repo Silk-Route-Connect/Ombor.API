@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage line-rate="0.9203490008443569" branch-rate="0.7060133630289532" lines-covered="3270" lines-valid="3553" branches-covered="634" branches-valid="898" complexity="1363" version="0" timestamp="1784574334">
+<coverage line-rate="0.9203490008443569" branch-rate="0.7060133630289532" lines-covered="3270" lines-valid="3553" branches-covered="634" branches-valid="898" complexity="1363" version="0" timestamp="1787654181">
   <sources>
     <source>/home/runner/work/Ombor.API/Ombor.API/src/</source>
   </sources>
@@ -9401,17 +9401,17 @@
           <methods>
             <method name="get_Total" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="30" hits="466" branch="false" />
+                <line number="30" hits="464" branch="false" />
               </lines>
             </method>
             <method name="Total" signature="()" line-rate="1" branch-rate="1" complexity="NaN">
               <lines>
-                <line number="30" hits="466" branch="false" />
+                <line number="30" hits="464" branch="false" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="30" hits="466" branch="false" />
+            <line number="30" hits="464" branch="false" />
           </lines>
         </class>
         <class name="Ombor.Domain.Entities.TransactionLine" filename="/home/runner/work/Ombor.API/Ombor.API/src/Ombor.Domain/Entities/TransactionLine.cs" line-rate="1" branch-rate="1" complexity="6">
@@ -10344,9 +10344,9 @@
                 <line number="107" hits="1784" branch="false" />
                 <line number="109" hits="1784" branch="true" condition-coverage="100% (4/4)" />
                 <line number="111" hits="10" branch="false" />
-                <line number="114" hits="823104" branch="true" condition-coverage="100% (4/4)" />
-                <line number="116" hits="409778" branch="true" condition-coverage="100% (4/4)" />
-                <line number="118" hits="2976" branch="false" />
+                <line number="114" hits="823200" branch="true" condition-coverage="100% (4/4)" />
+                <line number="116" hits="409826" branch="true" condition-coverage="100% (4/4)" />
+                <line number="118" hits="2978" branch="false" />
                 <line number="121" hits="1774" branch="false" />
               </lines>
             </method>
@@ -10398,9 +10398,9 @@
                 <line number="107" hits="1784" branch="false" />
                 <line number="109" hits="1784" branch="true" condition-coverage="100% (4/4)" />
                 <line number="111" hits="10" branch="false" />
-                <line number="114" hits="823104" branch="true" condition-coverage="100% (4/4)" />
-                <line number="116" hits="409778" branch="true" condition-coverage="100% (4/4)" />
-                <line number="118" hits="2976" branch="false" />
+                <line number="114" hits="823200" branch="true" condition-coverage="100% (4/4)" />
+                <line number="116" hits="409826" branch="true" condition-coverage="100% (4/4)" />
+                <line number="118" hits="2978" branch="false" />
                 <line number="121" hits="1774" branch="false" />
               </lines>
             </method>
@@ -10433,9 +10433,9 @@
             <line number="107" hits="1784" branch="false" />
             <line number="109" hits="1784" branch="true" condition-coverage="100% (4/4)" />
             <line number="111" hits="10" branch="false" />
-            <line number="114" hits="823104" branch="true" condition-coverage="100% (4/4)" />
-            <line number="116" hits="409778" branch="true" condition-coverage="100% (4/4)" />
-            <line number="118" hits="2976" branch="false" />
+            <line number="114" hits="823200" branch="true" condition-coverage="100% (4/4)" />
+            <line number="116" hits="409826" branch="true" condition-coverage="100% (4/4)" />
+            <line number="118" hits="2978" branch="false" />
             <line number="121" hits="1774" branch="false" />
           </lines>
         </class>
