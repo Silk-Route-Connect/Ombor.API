@@ -14,4 +14,10 @@ public sealed class SmsSettings
 
     [Required(ErrorMessage = "From Number is required.")]
     public required string FromNumber { get; init; }
+
+    /// <summary>
+    /// In the Development environment SMS are written to the log instead of sent; set this to <c>true</c> to send
+    /// real SMS from a local run. Ignored in every other environment.
+    /// </summary>
+    public bool SendInDevelopment { get; init; }
 }

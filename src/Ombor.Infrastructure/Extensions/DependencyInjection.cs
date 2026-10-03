@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
@@ -16,13 +17,14 @@ namespace Ombor.Infrastructure.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) =>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment) =>
         services
         .AddDatabase(configuration)
         .AddAuthentication(configuration)
         .AddInMemoryCache()
         .AddKeyPersistence()
-        .AddServices();
+        .AddServices()
+        .AddSms(configuration, environment);
 
     private static IServiceCollection AddKeyPersistence(this IServiceCollection services)
     {
@@ -111,7 +113,22 @@ public static class DependencyInjection
 
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-        services.AddHttpClient<ISmsService, SmsService>();
+        return services;
+    }
+
+    private static IServiceCollection AddSms(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
+        var sendInDevelopment = configuration.GetValue<bool>($"{SmsSettings.SectionName}:{nameof(SmsSettings.SendInDevelopment)}");
+
+        // Local runs log OTP codes instead of sending real (billed) SMS to real phone numbers.
+        if (environment.IsDevelopment() && !sendInDevelopment)
+        {
+            services.AddScoped<ISmsService, LoggingSmsService>();
+        }
+        else
+        {
+            services.AddHttpClient<ISmsService, SmsService>();
+        }
 
         return services;
     }

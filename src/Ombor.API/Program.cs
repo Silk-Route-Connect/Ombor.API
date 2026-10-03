@@ -24,7 +24,7 @@ try
     builder.Services
         .AddApi(builder.Configuration)
         .AddApplication(builder.Configuration)
-        .AddInfrastructure(builder.Configuration)
+        .AddInfrastructure(builder.Configuration, builder.Environment)
         .AddTestDataGenerator(builder.Configuration);
 
     var app = builder.Build();
