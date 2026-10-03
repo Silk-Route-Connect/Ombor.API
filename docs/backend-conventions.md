@@ -56,6 +56,13 @@ Controller action (API) · service interface + implementation (Application, regi
 - JSON conventions: camelCase properties, nulls ignored on write, **enums as strings** via the custom `ValidatingStringEnumConverter` (`Ombor.Contracts/Serialization/`) — it wraps `JsonStringEnumConverter` but throws `InvalidEnumValueException` on an unparseable value, so an invalid enum surfaces as a 400 instead of the built-in converter's null-argument 500.
 - **Error-key casing — PascalCase (ruled 2026-07-19):** validation-400 `Errors` keys are **PascalCase**, straight from FluentValidation `PropertyName`s (e.g. `Lines[0].Quantity`). This is the intentional, documented contract — the frontend keys its error map by PascalCase property paths. Only the `Errors` dictionary keys are PascalCase; the rest of every JSON body stays camelCase.
 
+## Auth & account security (added 2026-10-03)
+
+- **Phone numbers:** every user phone write and lookup goes through `Application/Helpers/PhoneNumbers` (`TryNormalize` / `Canonical` → `+998XXXXXXXXX`; validators use `PhoneNumbers.IsValid`). Never compare a raw client string against `User.PhoneNumber`. Uniqueness checks on phone/email/Telegram use `IgnoreQueryFilters()` — the indexes are global, not per organization.
+- **Throttles** count with the atomic `IRedisService.IncrementAsync` (never get-then-set, which parallel requests race past): OTP send budget and wrong-guess cap in `OtpCodeProvider`, the per-phone login lockout in `ILoginThrottle`, per-IP limits as named `[EnableRateLimiting]` policies (`API/Extensions/AuthSecurityExtensions.cs`). A new anonymous endpoint gets a policy. Limits are configured in `OtpSettings` / `AuthSecuritySettings` (defaults in code; Testing raises the IP limits).
+- **Sessions:** issue/revoke/prune refresh tokens only through `IRefreshTokenStore`; anything that ends a user's access (deactivation, password change/reset) revokes there and, for deactivation, invalidates `IActiveUserCache` (the bearer-token rule-41 check).
+- **Never let a response tell accounts apart** on login/forgot-password: same status, same body, comparable timing.
+
 ## Mapping
 
 Manual, `internal static` extension classes per entity in `Application/Mappings` — `ToDto`, `ToEntity`, `ToCreateResponse`, `ToUpdateResponse`, `ApplyUpdate`. No AutoMapper/Mapster. A new field updates the mapping and the DTO XML docs in the same change.
