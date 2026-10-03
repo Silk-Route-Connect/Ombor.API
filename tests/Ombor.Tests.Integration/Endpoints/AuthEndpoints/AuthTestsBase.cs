@@ -1,4 +1,8 @@
+using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -11,6 +15,9 @@ namespace Ombor.Tests.Integration.Endpoints.AuthEndpoints;
 public abstract class AuthTestsBase(TestingWebApplicationFactory factory, ITestOutputHelper output)
     : EndpointTestsBase(factory, output)
 {
+    protected const string RefreshTokenCookie = "ombor.refreshToken";
+    protected const string LanguageHeader = "X-Ombor-Language";
+
     protected override string GetUrl() => "auth";
     protected override string GetUrl(int id) => $"auth/{id}";
 
@@ -57,5 +64,69 @@ public abstract class AuthTestsBase(TestingWebApplicationFactory factory, ITestO
         Assert.NotNull(otp);
 
         return otp!.Code;
+    }
+
+    /// <summary>
+    /// A client with no default auth header and no cookie container, for asserting raw status, headers and the
+    /// error body (<c>code</c>/<c>params</c> extension members the typed client cannot see).
+    /// </summary>
+    protected HttpClient CreateRawClient() => _factory.CreateDefaultClient(new Uri("https://localhost/api/"));
+
+    protected static async Task<RawResponse> SendAsync(
+        HttpClient client,
+        HttpMethod method,
+        string url,
+        object? body = null,
+        string? bearerToken = null,
+        string? refreshTokenCookie = null,
+        string? language = null)
+    {
+        using var request = new HttpRequestMessage(method, url);
+
+        if (body is not null)
+        {
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+        }
+
+        if (bearerToken is not null)
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+        }
+
+        if (refreshTokenCookie is not null)
+        {
+            // The server writes the cookie URL-encoded and decodes it on read.
+            request.Headers.Add("Cookie", $"{RefreshTokenCookie}={Uri.EscapeDataString(refreshTokenCookie)}");
+        }
+
+        if (language is not null)
+        {
+            request.Headers.Add(LanguageHeader, language);
+        }
+
+        using var response = await client.SendAsync(request);
+        var text = await response.Content.ReadAsStringAsync();
+
+        // Error bodies are objects; a successful list read is an array and simply yields an empty Body.
+        var json = string.IsNullOrWhiteSpace(text) ? null : JToken.Parse(text);
+
+        return new RawResponse(
+            response.StatusCode,
+            text,
+            json as JObject ?? new JObject(),
+            response.Headers.RetryAfter?.Delta);
+    }
+
+    protected async Task<RawResponse> PostRawAsync(string url, object body, string? language = null)
+    {
+        using var client = CreateRawClient();
+
+        return await SendAsync(client, HttpMethod.Post, url, body, language: language);
+    }
+
+    /// <summary>Status, raw text, parsed JSON body and the <c>Retry-After</c> delta of one response.</summary>
+    protected sealed record RawResponse(System.Net.HttpStatusCode Status, string Text, JObject Body, TimeSpan? RetryAfter)
+    {
+        public string? Code => (string?)Body["code"];
     }
 }

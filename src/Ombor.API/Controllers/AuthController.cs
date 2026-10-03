@@ -2,30 +2,38 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using Ombor.API.Extensions;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Localization;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.API.Controllers;
 
 [Route("api/auth")]
 [ApiController]
 [AllowAnonymous]
+[EnableRateLimiting(RateLimitPolicies.Auth)]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
 public class AuthController(
     IAuthService service,
+    IPasswordResetService passwordResetService,
     IOptions<JwtSettings> jwt,
     IOptions<CookieSettings> cookieSettings,
     ILogger<AuthController> logger) : ControllerBase
 {
-    private const string RefreshTokenCookieName = "ombor.refreshToken";
+    /// <summary>The httpOnly cookie carrying the refresh token (also read by change-password to keep this session).</summary>
+    internal const string RefreshTokenCookieName = "ombor.refreshToken";
 
     /// <summary>The header carrying the user's interface language on the registration flow.</summary>
     private const string LanguageHeaderName = "X-Ombor-Language";
 
     [HttpPost("register")]
+    [EnableRateLimiting(RateLimitPolicies.Sms)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegisterResponse>> RegisterAsync([FromBody] RegisterRequest request)
@@ -47,7 +55,9 @@ public class AuthController(
 
         if (!result.Success)
         {
-            return BadRequest(new { message = "Invalid verification code." });
+            // Kept as a plain body (not ProblemDetails) for existing clients; `code` tells invalid / expired /
+            // too many attempts apart.
+            return BadRequest(new { message = "Invalid verification code.", code = result.Code });
         }
 
         SetRefreshTokenCookie(result.RefreshToken);
@@ -72,6 +82,7 @@ public class AuthController(
     }
 
     [HttpPost("refresh-token")]
+    [EnableRateLimiting(RateLimitPolicies.Session)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<RefreshTokenResponse>> RefreshTokenAsync([FromBody] RefreshTokenRequest? request)
@@ -89,7 +100,7 @@ public class AuthController(
                 "No refresh token found. Cookie keys present: [{Cookies}]",
                 string.Join(", ", Request.Cookies.Keys));
 
-            return Unauthorized(new { message = "Refresh token is required" });
+            return Unauthorized(new { message = "Refresh token is required", code = ErrorCodes.SessionExpired });
         }
 
         logger.LogInformation("Refresh token found from: {Source}",
@@ -105,6 +116,7 @@ public class AuthController(
     }
 
     [HttpPost("logout")]
+    [EnableRateLimiting(RateLimitPolicies.Session)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> LogoutAsync()
     {
@@ -121,11 +133,12 @@ public class AuthController(
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting(RateLimitPolicies.Sms)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ForgotPasswordResponse>> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
     {
-        var result = await service.ForgotPasswordAsync(request);
+        var result = await passwordResetService.ForgotPasswordAsync(request);
         return Ok(result);
     }
 
@@ -134,7 +147,7 @@ public class AuthController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<VerifyResetCodeResponse>> VerifyResetCodeAsync([FromBody] VerifyResetCodeRequest request)
     {
-        var result = await service.VerifyResetCodeAsync(request);
+        var result = await passwordResetService.VerifyResetCodeAsync(request);
         return Ok(result);
     }
 
@@ -143,7 +156,7 @@ public class AuthController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
     {
-        var result = await service.ResetPasswordAsync(request);
+        var result = await passwordResetService.ResetPasswordAsync(request);
         return Ok(result);
     }
 

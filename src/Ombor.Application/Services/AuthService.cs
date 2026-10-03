@@ -1,9 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Models;
+using Ombor.Application.Validators;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
 using Ombor.Domain.Entities;
@@ -21,24 +21,28 @@ internal sealed class AuthService(
     IRequestValidator validator,
     IOrganizationService organizationService,
     IOrganizationSetupService organizationSetupService,
-    IOptions<JwtSettings> jwtSettings) : IAuthService
+    IRefreshTokenStore refreshTokens,
+    ILoginThrottle loginThrottle) : IAuthService
 {
-    private const int ResetCodeLifetimeMinutes = 5;
+    private static readonly TimeSpan CodeLifetime = TimeSpan.FromMinutes(OtpSettings.CodeLifetimeMinutes);
 
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
-        var existingUser = await context.Users
-            .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-
-        if (existingUser is not null)
+        // Cache the canonical form: verification creates the account from exactly this request.
+        request = request with
         {
-            throw new InvalidOperationException("User with this phone number already exists.");
-        }
+            PhoneNumber = PhoneNumbers.Canonical(request.PhoneNumber),
+            Email = NullIfBlank(request.Email),
+            TelegramAccount = NullIfBlank(request.TelegramAccount),
+        };
 
-        await otpCodeProvider.SetRegisterRequestAsync(request, TimeSpan.FromMinutes(5));
-        var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.Registration, 5);
+        await EnsureAccountDetailsAvailableAsync(request);
+        await otpCodeProvider.EnsureCanSendAsync(request.PhoneNumber, OtpPurpose.Registration);
+
+        await otpCodeProvider.SetRegisterRequestAsync(request, CodeLifetime);
+        var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
 
         var message = new SmsMessage
         (
@@ -47,29 +51,36 @@ internal sealed class AuthService(
             "Inventory Management"
         );
 
-        // disable for testing
         await smsService.SendMessageAsync(message);
 
-        return new RegisterResponse("Registration OTP code sent to your phone number.", 5);
+        return new RegisterResponse(
+            "Registration OTP code sent to your phone number.",
+            OtpSettings.CodeLifetimeMinutes,
+            otpCodeProvider.CodeLength,
+            otpCodeProvider.ResendAfterSeconds);
     }
 
     public async Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request, string language)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
-        var otpCode = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
+        var phoneNumber = PhoneNumbers.Canonical(request.PhoneNumber);
+        var check = await otpCodeProvider.VerifyOtpAsync(phoneNumber, OtpPurpose.Registration, request.Code);
 
-        if (!TryVerifyOtp(request, otpCode, out var response))
+        if (check != OtpCheckResult.Valid)
         {
-            return response;
+            return new VerifyOtpResponse { Code = check.ToErrorCode() };
         }
 
-        var registerRequest = await otpCodeProvider.GetRegisterRequestAsync(request.PhoneNumber);
+        var registerRequest = await otpCodeProvider.GetRegisterRequestAsync(phoneNumber);
 
         if (registerRequest is null)
         {
-            return new VerifyOtpResponse();
+            return new VerifyOtpResponse { Code = ErrorCodes.CodeExpired };
         }
+
+        // Another registration may have claimed the phone or email while this code was in flight.
+        await EnsureAccountDetailsAvailableAsync(registerRequest);
 
         var passwordHash = passwordHasher.HashPassword(registerRequest.Password);
 
@@ -105,8 +116,7 @@ internal sealed class AuthService(
                 // Seed the organization's ordinary starter records (rule 42), named in the registration language.
                 await organizationSetupService.SeedStarterDataAsync(organization.Id, language);
 
-                refreshToken = tokenService.GenerateRefreshToken();
-                await SaveRefreshTokenAsync(newUser, refreshToken);
+                refreshToken = await refreshTokens.IssueAsync(newUser);
 
                 await transaction.CommitAsync();
             }
@@ -118,8 +128,8 @@ internal sealed class AuthService(
         }
 
         // Clear the OTP only after the account is durably committed, so a failed attempt can be retried.
-        await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
-        await otpCodeProvider.RemoveRegisterRequestAsync(request.PhoneNumber);
+        await otpCodeProvider.RemoveOtpAsync(phoneNumber, OtpPurpose.Registration);
+        await otpCodeProvider.RemoveRegisterRequestAsync(phoneNumber);
 
         var accessToken = tokenService.GenerateAccessToken(newUser);
 
@@ -128,22 +138,44 @@ internal sealed class AuthService(
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        await validator.ValidateAndThrowAsync(request);
 
-        var user = await GetOrThrowAsync(request.PhoneNumber);
-
-        VerifyPassword(user, request.Password);
-
-        // Deactivated users keep their audit history but cannot authenticate (rule 41).
-        if (!user.IsActive)
+        // A number that cannot be normalized cannot match an account: the same 401 as a wrong password.
+        if (!PhoneNumbers.TryNormalize(request.PhoneNumber, out var phoneNumber))
         {
-            throw new UnauthorizedAccessException("This account has been deactivated.");
+            throw InvalidCredentials();
         }
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken();
+        await loginThrottle.BeginAttemptAsync(phoneNumber);
 
-        await SaveRefreshTokenAsync(user, refreshToken);
+        var user = await context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+
+        // Unknown phone, wrong password and unconfirmed phone share one body; the unknown-phone path still pays
+        // for a hash so the response time does not tell them apart either.
+        if (user is null)
+        {
+            passwordHasher.HashPassword(request.Password);
+            throw InvalidCredentials();
+        }
+
+        if (!passwordHasher.VerifyPassword(request.Password, user) || !user.IsPhoneNumberConfirmed)
+        {
+            throw InvalidCredentials();
+        }
+
+        await loginThrottle.ResetAsync(phoneNumber);
+
+        // Deactivated users keep their audit history but cannot authenticate (rule 41). Said only after the
+        // password proved who is asking, so it tells a guesser nothing.
+        if (!user.IsActive)
+        {
+            throw AccountDeactivated();
+        }
+
+        await refreshTokens.PruneAsync(user.Id);
+
+        var accessToken = tokenService.GenerateAccessToken(user);
+        var refreshToken = await refreshTokens.IssueAsync(user);
 
         return new LoginResponse(accessToken, refreshToken, user.Language);
     }
@@ -153,70 +185,42 @@ internal sealed class AuthService(
         ArgumentNullException.ThrowIfNull(request);
 
         var refreshToken = await context.RefreshTokens
-            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken);
+            .FirstOrDefaultAsync(x => x.Token == request.RefreshToken)
+            ?? throw SessionExpired();
 
-        if (refreshToken is null || refreshToken.IsRevoked)
-        {
-            throw new UnauthorizedAccessException("Invalid refresh token");
-        }
+        // Bypasses the organization query filter: refresh is anonymous (no org claim) and the user is fetched by
+        // its own id. Without this, a stray org context filters the required User out and token refresh fails.
+        var user = await context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == refreshToken.UserId)
+            ?? throw SessionExpired();
 
-        if (refreshToken.ExpiresAt <= DateTime.UtcNow)
+        // Rule 41: a deactivated user's session ends here, whatever state this token is in — every token is
+        // revoked so no other tab or device can come back either.
+        if (!user.IsActive)
         {
-            refreshToken.IsRevoked = true;
+            await refreshTokens.RevokeAllAsync(user.Id);
             await context.SaveChangesAsync();
 
-            throw new UnauthorizedAccessException("Invalid refresh token");
+            throw AccountDeactivated();
         }
 
-        var user = await GetOrThrowAsync(refreshToken.UserId);
+        if (refreshToken.IsRevoked)
+        {
+            throw SessionExpired();
+        }
 
-        var newAccessToken = tokenService.GenerateAccessToken(user);
-        var newRefreshToken = tokenService.GenerateRefreshToken();
-
+        // Single use: the presented token is spent whether it rotates or turns out to be expired.
         refreshToken.IsRevoked = true;
         await context.SaveChangesAsync();
 
-        await SaveRefreshTokenAsync(user, newRefreshToken);
+        if (refreshToken.ExpiresAt <= DateTime.UtcNow)
+        {
+            throw SessionExpired();
+        }
+
+        var newAccessToken = tokenService.GenerateAccessToken(user);
+        var newRefreshToken = await refreshTokens.IssueAsync(user);
 
         return new RefreshTokenResponse(newAccessToken, newRefreshToken);
-    }
-
-    private async Task SaveRefreshTokenAsync(User user, string refreshToken)
-    {
-        var tokenEntity = new RefreshToken
-        {
-            Token = refreshToken,
-            IsRevoked = false,
-            ExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiresInDays),
-            UserId = user.Id,
-            User = user
-        };
-
-        context.RefreshTokens.Add(tokenEntity);
-        await context.SaveChangesAsync();
-    }
-
-    private async Task<User> GetOrThrowAsync(string phoneNumber) =>
-       await context.Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber)
-       ?? throw new EntityNotFoundException<User>(phoneNumber);
-
-    // Bypasses the organization query filter: refresh is anonymous (no org claim) and the user is fetched by
-    // its own id. Without this, a stray org context filters the required User out and token refresh fails.
-    private async Task<User> GetOrThrowAsync(int id) =>
-       await context.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id)
-       ?? throw new EntityNotFoundException<User>(id);
-
-    private void VerifyPassword(User user, string password)
-    {
-        if (!passwordHasher.VerifyPassword(password, user))
-        {
-            throw new UnauthorizedAccessException("Invalid phone number or password.");
-        }
-
-        if (!user.IsPhoneNumberConfirmed)
-        {
-            throw new UnauthorizedAccessException("Invalid phone number or password.");
-        }
     }
 
     public async Task RevokeRefreshTokenAsync(RevokeRefreshTokenRequest request)
@@ -238,99 +242,42 @@ internal sealed class AuthService(
         }
     }
 
-    public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
+    /// <summary>
+    /// Phone, email and Telegram are unique across every organization (the indexes are global), so the check looks
+    /// past the organization filter. A taken value is a 400 field error, never the unique-index 500.
+    /// </summary>
+    private async Task EnsureAccountDetailsAvailableAsync(RegisterRequest request)
     {
-        await validator.ValidateAndThrowAsync(request);
+        var users = context.Users.IgnoreQueryFilters();
 
-        // Generic acknowledgement whether or not the number has an account, so the response never reveals
-        // which phone numbers are registered (owner decision). The OTP + SMS only go out for a real user.
-        var user = await context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-
-        if (user is not null)
+        if (await users.AnyAsync(u => u.PhoneNumber == request.PhoneNumber))
         {
-            var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset, ResetCodeLifetimeMinutes);
-
-            var message = new SmsMessage(
-                request.PhoneNumber,
-                $"Inventory Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-                "Inventory Management");
-
-            await smsService.SendMessageAsync(message);
+            throw CodedValidation.Failure(
+                nameof(RegisterRequest.PhoneNumber), "This phone number is already registered.", ErrorCodes.PhoneTaken);
         }
 
-        return new ForgotPasswordResponse(
-            "If an account exists for this number, a reset code has been sent.",
-            ResetCodeLifetimeMinutes);
-    }
-
-    public async Task<VerifyResetCodeResponse> VerifyResetCodeAsync(VerifyResetCodeRequest request)
-    {
-        await validator.ValidateAndThrowAsync(request);
-
-        var otp = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
-
-        return IsOtpValid(otp, request.Code)
-            ? new VerifyResetCodeResponse(true)
-            : new VerifyResetCodeResponse(false, "The reset code is invalid or has expired.");
-    }
-
-    public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
-    {
-        await validator.ValidateAndThrowAsync(request);
-
-        var otp = await otpCodeProvider.GetOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
-
-        if (!IsOtpValid(otp, request.Code))
+        if (request.Email is not null && await users.AnyAsync(u => u.Email == request.Email))
         {
-            return new ResetPasswordResponse(false, "The reset code is invalid or has expired.");
+            throw CodedValidation.Failure(
+                nameof(RegisterRequest.Email), "This email is already registered.", ErrorCodes.EmailTaken);
         }
 
-        var user = await context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-
-        if (user is null)
+        if (request.TelegramAccount is not null && await users.AnyAsync(u => u.TelegramAccount == request.TelegramAccount))
         {
-            // The OTP is only ever issued for a real account, so a missing user means a stale/forged code.
-            return new ResetPasswordResponse(false, "The reset code is invalid or has expired.");
+            throw CodedValidation.Failure(
+                nameof(RegisterRequest.TelegramAccount), "This Telegram account is already registered.", ErrorCodes.TelegramTaken);
         }
-
-        var passwordHash = passwordHasher.HashPassword(request.NewPassword);
-        user.PasswordHash = passwordHash.Hash;
-        user.PasswordSalt = passwordHash.Salt;
-
-        // Force a fresh login everywhere after a password change (owner decision): a session opened before the
-        // reset — including one an attacker may hold — must not survive it.
-        var activeTokens = await context.RefreshTokens
-            .Where(t => t.UserId == user.Id && !t.IsRevoked)
-            .ToListAsync();
-
-        foreach (var token in activeTokens)
-        {
-            token.IsRevoked = true;
-        }
-
-        await context.SaveChangesAsync();
-        await otpCodeProvider.RemoveOtpAsync(request.PhoneNumber, OtpPurpose.PasswordReset);
-
-        return new ResetPasswordResponse(true, "Your password has been reset.");
     }
 
-    // A reset OTP is valid when it exists, has not expired, and matches. Purpose-agnostic sibling of TryVerifyOtp.
-    private static bool IsOtpValid(OtpCode? otp, string code) =>
-        otp is not null && DateTime.UtcNow <= otp.ExpiredAt && otp.Code == code;
+    private static string? NullIfBlank(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
-    private static bool TryVerifyOtp(
-        SmsVerificationRequest request,
-        OtpCode? otpData,
-        [NotNullWhen(false)] out VerifyOtpResponse? failResponse)
-    {
-        failResponse = otpData switch
-        {
-            null => new VerifyOtpResponse(),
-            { ExpiredAt: var exp } when DateTime.UtcNow > exp => new VerifyOtpResponse(),
-            { Code: var code } when code != request.Code => new VerifyOtpResponse(),
-            _ => null
-        };
+    private static AuthenticationFailedException InvalidCredentials() =>
+        new(ErrorCodes.InvalidCredentials, "Invalid phone number or password.");
 
-        return failResponse is null;
-    }
+    private static AuthenticationFailedException AccountDeactivated() =>
+        new(ErrorCodes.AccountDeactivated, "This account has been deactivated.");
+
+    private static AuthenticationFailedException SessionExpired() =>
+        new(ErrorCodes.SessionExpired, "Invalid refresh token");
 }

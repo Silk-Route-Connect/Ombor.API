@@ -1,22 +1,17 @@
 using FluentValidation;
-using Ombor.Application.Helpers;
-using Ombor.Contracts.Requests.Auth;
+using Ombor.Contracts.Requests.User;
 
-namespace Ombor.Application.Validators.Auth;
+namespace Ombor.Application.Validators.User;
 
-public sealed class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequest>
+public sealed class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRequest>
 {
-    public ResetPasswordRequestValidator()
+    public ChangePasswordRequestValidator()
     {
-        RuleFor(x => x.PhoneNumber)
+        RuleFor(x => x.CurrentPassword)
             .NotEmpty()
-            .WithMessage("PhoneNumber is required.")
-            .Must(PhoneNumbers.IsValid)
-            .WithMessage("One or more phone numbers are in invalid format.");
-
-        RuleFor(x => x.Code)
-            .NotEmpty()
-            .WithMessage("Code is required.");
+            .WithMessage("Current password is required.")
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"Current password must not exceed {ValidationConstants.DefaultStringLength} characters.");
 
         RuleFor(x => x.NewPassword)
             .NotEmpty()

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Models;
 using StackExchange.Redis;
 
 namespace Ombor.Infrastructure.Services;
@@ -27,4 +28,18 @@ internal sealed class RedisService(IConnectionMultiplexer connection) : IRedisSe
 
     public async Task RemoveAsync(string key)
         => await _redis.KeyDeleteAsync(key);
+
+    public async Task<CacheCounter> IncrementAsync(string key, TimeSpan window)
+    {
+        var count = await _redis.StringIncrementAsync(key);
+
+        if (count == 1)
+        {
+            await _redis.KeyExpireAsync(key, window);
+        }
+
+        var ttl = await _redis.KeyTimeToLiveAsync(key) ?? window;
+
+        return new CacheCounter(count, DateTimeOffset.UtcNow.Add(ttl));
+    }
 }

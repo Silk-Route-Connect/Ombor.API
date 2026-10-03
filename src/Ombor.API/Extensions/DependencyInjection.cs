@@ -25,6 +25,7 @@ internal static class DependencyInjection
             .AddAuthorization()
             .AddSwagger(configuration)
             .AddErrorHandlers()
+            .AddAuthSecurity()
             .AddCors(configuration);
     }
 

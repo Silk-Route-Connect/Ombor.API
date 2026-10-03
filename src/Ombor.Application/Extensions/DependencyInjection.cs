@@ -40,6 +40,10 @@ public static class DependencyInjection
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPasswordResetService, PasswordResetService>();
+        services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
+        services.AddScoped<ILoginThrottle, LoginThrottle>();
+        services.AddScoped<IActiveUserCache, ActiveUserCache>();
         services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOrganizationSetupService, OrganizationSetupService>();
@@ -76,6 +80,16 @@ public static class DependencyInjection
 
         services.AddOptions<CookieSettings>()
             .Bind(configuration.GetSection(CookieSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<OtpSettings>()
+            .Bind(configuration.GetSection(OtpSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<AuthSecuritySettings>()
+            .Bind(configuration.GetSection(AuthSecuritySettings.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

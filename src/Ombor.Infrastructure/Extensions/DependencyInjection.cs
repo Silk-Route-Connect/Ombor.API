@@ -130,6 +130,10 @@ public static class DependencyInjection
             services.AddHttpClient<ISmsService, SmsService>();
         }
 
+        services.AddSingleton<BackgroundSmsQueue>();
+        services.AddSingleton<ISmsQueue>(sp => sp.GetRequiredService<BackgroundSmsQueue>());
+        services.AddHostedService(sp => sp.GetRequiredService<BackgroundSmsQueue>());
+
         return services;
     }
 }

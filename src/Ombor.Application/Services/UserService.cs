@@ -1,6 +1,8 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Validators;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.User;
 using Ombor.Contracts.Responses.User;
@@ -14,7 +16,10 @@ internal sealed class UserService(
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
     IOrganizationAccessor organizationAccessor,
-    IPasswordHasher passwordHasher) : IUserService
+    IPasswordHasher passwordHasher,
+    IRefreshTokenStore refreshTokens,
+    IActiveUserCache activeUsers,
+    ILoginThrottle loginThrottle) : IUserService
 {
     public async Task<TenantUserDto[]> GetUsersAsync()
     {
@@ -37,23 +42,26 @@ internal sealed class UserService(
             throw new ValidationException("Only phone invites are supported.");
         }
 
-        var phone = request.Value.Trim();
+        var phone = PhoneNumbers.Canonical(request.Value);
 
-        if (await context.Users.AnyAsync(u => u.PhoneNumber == phone))
+        // The phone index is global: a number registered in any organization is taken, not only in this one.
+        if (await context.Users.IgnoreQueryFilters().AnyAsync(u => u.PhoneNumber == phone))
         {
-            throw new ValidationException($"A user with phone {phone} already exists.");
+            throw CodedValidation.Failure(
+                nameof(InviteUserRequest.Value), "This phone number is already registered.", ErrorCodes.PhoneTaken);
         }
 
         var organizationId = organizationAccessor.OrganizationId
             ?? throw new InvalidOperationException("No organization in the current context.");
 
-        // The invitee gets a usable account with a random password they replace via the OTP / forgot-password flow.
+        // The invitee's random password is never shown to anyone: they set their own through forgot-password, whose
+        // SMS code also confirms the phone (until then login treats the account as unconfirmed).
         var password = passwordHasher.HashPassword(Guid.NewGuid().ToString("N"));
 
         var user = new User
         {
-            FirstName = phone,
-            LastName = string.Empty,
+            FirstName = string.IsNullOrWhiteSpace(request.FirstName) ? phone : request.FirstName.Trim(),
+            LastName = request.LastName?.Trim() ?? string.Empty,
             PhoneNumber = phone,
             PasswordHash = password.Hash,
             PasswordSalt = password.Salt,
@@ -80,7 +88,12 @@ internal sealed class UserService(
         user.IsActive = false;
         user.DeactivatedAt = DateTimeOffset.UtcNow;
 
+        // Rule 41: deactivation ends every session now — refresh tokens die in this save, and the access-token
+        // check stops honouring the user's live access tokens on their next request.
+        await refreshTokens.RevokeAllAsync(user.Id);
+
         await context.SaveChangesAsync();
+        await activeUsers.InvalidateAsync(user.Id);
 
         return Map(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt);
     }
@@ -92,6 +105,7 @@ internal sealed class UserService(
         user.DeactivatedAt = null;
 
         await context.SaveChangesAsync();
+        await activeUsers.InvalidateAsync(user.Id);
 
         return Map(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt);
     }
@@ -105,6 +119,39 @@ internal sealed class UserService(
 
         var user = await GetOrThrowAsync(userId);
         user.Language = request.Language;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task ChangePasswordAsync(ChangePasswordRequest request, string? currentRefreshToken)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var userId = currentUser.UserId
+            ?? throw new InvalidOperationException("No user in the current context.");
+
+        var user = await GetOrThrowAsync(userId);
+
+        // Shares the login lockout: a stolen session must not become an unthrottled password oracle.
+        await loginThrottle.BeginAttemptAsync(user.PhoneNumber);
+
+        if (!passwordHasher.VerifyPassword(request.CurrentPassword, user))
+        {
+            throw CodedValidation.Failure(
+                nameof(ChangePasswordRequest.CurrentPassword),
+                "The current password is incorrect.",
+                ErrorCodes.CurrentPasswordInvalid);
+        }
+
+        await loginThrottle.ResetAsync(user.PhoneNumber);
+
+        var passwordHash = passwordHasher.HashPassword(request.NewPassword);
+        user.PasswordHash = passwordHash.Hash;
+        user.PasswordSalt = passwordHash.Salt;
+
+        // Every other session ends with the old password (whoever else holds one is locked out); this device stays
+        // signed in.
+        await refreshTokens.RevokeAllAsync(user.Id, keepToken: currentRefreshToken);
 
         await context.SaveChangesAsync();
     }

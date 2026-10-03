@@ -63,7 +63,8 @@ public sealed class AuthControllerLanguageHeaderTests
         });
         var cookies = Options.Create(new CookieSettings { SameSite = "Lax" });
 
-        var controller = new AuthController(service, jwt, cookies, NullLogger<AuthController>.Instance);
+        var controller = new AuthController(
+            service, Mock.Of<IPasswordResetService>(), jwt, cookies, NullLogger<AuthController>.Instance);
 
         var httpContext = new DefaultHttpContext();
         if (language is not null)
