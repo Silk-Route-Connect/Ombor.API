@@ -51,7 +51,7 @@ internal static class OrderMappings
             CustomerName: order.Customer.Name,
             CustomerType: order.Customer.Type.ToString(),
             CustomerBalance: customerBalance,
-            OrderNumber: order.OrderNumber.ToString(),
+            OrderNumber: order.OrderNumber?.ToString(),
             Notes: order.Notes,
             Total: order.TotalAmount,
             Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),

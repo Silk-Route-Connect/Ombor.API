@@ -1,8 +1,11 @@
-﻿namespace Ombor.Contracts.Responses.Auth;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Ombor.Contracts.Responses.Auth;
 
 /// <summary>Result of confirming the registration code; carries the first session's tokens on success.</summary>
 public sealed record VerifyOtpResponse
 {
+    [MemberNotNullWhen(true, nameof(RefreshToken), nameof(AccessToken))]
     public bool Success { get; }
     public string? RefreshToken { get; init; }
     public string? AccessToken { get; init; }

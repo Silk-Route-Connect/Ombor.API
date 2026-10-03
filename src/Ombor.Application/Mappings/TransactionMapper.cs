@@ -59,7 +59,7 @@ internal sealed class TransactionMapper : ITransactionMapper
 
         return new TransactionDto(
             transaction.Id,
-            transaction.Number.ToString(),
+            transaction.Number?.ToString(),
             transaction.PartnerId,
             transaction.Partner.Name,
             transaction.DateUtc,
@@ -70,7 +70,7 @@ internal sealed class TransactionMapper : ITransactionMapper
             transaction.Lines.Select(
                 x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total, x.PackageSize)),
             transaction.OriginalTransactionId,
-            transaction.OriginalTransaction?.Number.ToString(),
+            transaction.OriginalTransaction?.Number?.ToString(),
             transaction.RefundReason);
     }
 }

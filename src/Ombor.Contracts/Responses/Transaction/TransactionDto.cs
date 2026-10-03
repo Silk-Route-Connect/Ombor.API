@@ -4,7 +4,7 @@
 /// A transaction as it appears in the Sales/Supplies list.
 /// </summary>
 /// <param name="Id">The transaction id.</param>
-/// <param name="Number">Human-facing document number, sequential per organization. Rendered bare (the «№» prefix is added client-side).</param>
+/// <param name="Number">Human-facing document number, sequential per organization. Rendered bare (the «№» prefix is added client-side); null for a legacy row without one.</param>
 /// <param name="PartnerId">The partner this transaction is with.</param>
 /// <param name="PartnerName">The partner's name.</param>
 /// <param name="Date">When the transaction occurred.</param>
@@ -18,7 +18,7 @@
 /// <param name="RefundReason">For refunds, why it was issued; otherwise null.</param>
 public sealed record TransactionDto(
     int Id,
-    string Number,
+    string? Number,
     int PartnerId,
     string PartnerName,
     DateTimeOffset Date,

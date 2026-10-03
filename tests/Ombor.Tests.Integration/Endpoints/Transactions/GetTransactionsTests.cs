@@ -1,4 +1,4 @@
-using Ombor.Contracts.Responses.Transaction;
+﻿using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -25,6 +25,22 @@ public sealed class GetTransactionsTests(TestingWebApplicationFactory factory, I
         var row = Assert.Single(list, t => t.Id == id);
         Assert.Equal((SeededDocumentNumberOffset + id).ToString(), row.Number);
         Assert.Equal(detail.Number, row.Number);
+    }
+
+    [Fact]
+    public async Task GetListAndDetail_ShouldServeNullNumber_ForALegacyRowWithoutOne()
+    {
+        // Arrange — a row planted without a document number (legacy/seeded data); the client renders «Без номера».
+        var partnerId = await CreatePartnerAsync();
+        var id = await CreateOpenTransactionAsync(partnerId, due: 1_000m, paid: 0m);
+
+        // Act
+        var list = await _client.GetAsync<TransactionDto[]>(GetUrl());
+        var detail = await _client.GetAsync<TransactionDetailDto>(GetUrl(id));
+
+        // Assert — null, never the empty string the nullable int used to print.
+        Assert.Null(Assert.Single(list, t => t.Id == id).Number);
+        Assert.Null(detail.Number);
     }
 
     [Fact]

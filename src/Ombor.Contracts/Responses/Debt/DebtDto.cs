@@ -6,7 +6,7 @@ namespace Ombor.Contracts.Responses.Debt;
 /// summary cards, by-partner groups, and aging buckets from it (complexity notes §J).
 /// </summary>
 /// <param name="TransactionId">The underlying transaction's id (the UI deep-links debt rows to it / the partner).</param>
-/// <param name="Number">Human-facing transaction document number, sequential per organization.</param>
+/// <param name="Number">Human-facing transaction document number, sequential per organization; null for a legacy row without one.</param>
 /// <param name="Direction">"Receivable" (the partner owes us) or "Payable" (we owe the partner).</param>
 /// <param name="TransactionType">Sale, Supply, SaleRefund or SupplyRefund.</param>
 /// <param name="PartnerId">The partner this debt is with.</param>
@@ -22,7 +22,7 @@ namespace Ombor.Contracts.Responses.Debt;
 /// <param name="OverdueDays">Days past the due date (>0 = overdue); 0 when not overdue or no due date.</param>
 public sealed record DebtDto(
     int TransactionId,
-    string Number,
+    string? Number,
     string Direction,
     string TransactionType,
     int PartnerId,

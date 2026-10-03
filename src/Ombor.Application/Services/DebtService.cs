@@ -34,7 +34,7 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
         return [.. rows
             .Select(r => new DebtDto(
                 r.Id,
-                r.Number.ToString(),
+                r.Number?.ToString(),
                 r.Type.ToDebtDirection(),
                 r.Type.ToString(),
                 r.PartnerId,
