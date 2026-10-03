@@ -166,4 +166,28 @@ public abstract class ServiceTestsBase : UnitTestsBase
 
         return mockSet;
     }
+
+    protected Mock<DbSet<TransferLine>> SetupTransferLines(IEnumerable<TransferLine> lines)
+    {
+        var mockSet = lines.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.TransferLines).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<TemplateItem>> SetupTemplateItems(IEnumerable<TemplateItem> items)
+    {
+        var mockSet = items.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.TemplateItems).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<WarehouseItem>> SetupWarehouseItems(IEnumerable<WarehouseItem> items)
+    {
+        var mockSet = items.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.WarehouseItems).Returns(mockSet.Object);
+
+        return mockSet;
+    }
 }

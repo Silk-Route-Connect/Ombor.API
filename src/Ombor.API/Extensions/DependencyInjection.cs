@@ -62,6 +62,7 @@ internal static class DependencyInjection
         services.AddExceptionHandler<SmsDeliveryExceptionHandler>();
         services.AddExceptionHandler<UnauthorizedAccessExceptionHandler>();
         services.AddExceptionHandler<TooManyRequestsExceptionHandler>();
+        services.AddExceptionHandler<DbUpdateExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
 
         services.AddProblemDetails();
