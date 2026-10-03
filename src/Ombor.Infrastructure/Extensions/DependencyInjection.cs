@@ -127,6 +127,8 @@ public static class DependencyInjection
         }
         else
         {
+            services.AddHttpClient(nameof(EskizTokenProvider));
+            services.AddSingleton<IEskizTokenProvider, EskizTokenProvider>();
             services.AddHttpClient<ISmsService, SmsService>();
         }
 
