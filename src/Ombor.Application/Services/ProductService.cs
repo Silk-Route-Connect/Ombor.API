@@ -237,7 +237,7 @@ internal sealed class ProductService(
             return [];
         }
 
-        var fileUrls = await fileService.UploadAsync(attachments, fileSettings.ProductUploadsSection);
+        var fileUrls = await fileService.UploadImagesAsync(attachments, fileSettings.ProductUploadsSection);
         var images = fileUrls
             .Select(file => new ProductImage
             {

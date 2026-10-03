@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.TestDataGenerator.Interfaces;
 
@@ -26,6 +29,13 @@ public static class StartupExtensions
         return app;
     }
 
+    /// <summary>
+    /// Serves every upload section (product images, transaction and payment attachments, organization logos) under
+    /// <c>/{PublicUrlPrefix}</c> from <c>wwwroot/{BasePath}</c> — the same URLs the upload responses already return, so
+    /// stored links stay valid. Files are public by URL (no auth on static files): every stored name is a random
+    /// GUID, so a URL cannot be guessed from another. <c>nosniff</c> stops a browser from running an upload as a
+    /// type other than the one its (content-checked) extension declares.
+    /// </summary>
     public static IApplicationBuilder UseStaticFiles(this WebApplication app)
     {
         var webRootPath = app.Environment.WebRootPath;
@@ -35,14 +45,17 @@ public static class StartupExtensions
             webRootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
         }
 
-        var fullPath = Path.Combine(webRootPath, "uploads", "products");
+        var fileSettings = app.Services.GetRequiredService<IOptions<FileSettings>>().Value;
+        var uploadsPath = Path.Combine(webRootPath, fileSettings.BasePath);
 
-        Directory.CreateDirectory(fullPath);
+        Directory.CreateDirectory(uploadsPath);
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(fullPath),
-            RequestPath = "/images/products",
+            FileProvider = new PhysicalFileProvider(uploadsPath),
+            RequestPath = $"/{fileSettings.PublicUrlPrefix}",
+            OnPrepareResponse = context =>
+                context.Context.Response.Headers[HeaderNames.XContentTypeOptions] = "nosniff",
         });
 
         return app;

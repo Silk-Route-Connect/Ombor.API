@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
@@ -19,12 +19,41 @@ internal sealed class FileService(
 {
     private readonly FileSettings _settings = options.Value;
 
-    public async Task<FileUploadResult> UploadAsync(
+    public Task<FileUploadResult> UploadAsync(
         IFormFile file,
         string? subfolder = null,
         CancellationToken cancellationToken = default)
+        => UploadCheckedAsync(file, subfolder, imagesOnly: false, cancellationToken);
+
+    public Task<FileUploadResult> UploadImageAsync(
+        IFormFile file,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
+        => UploadCheckedAsync(file, subfolder, imagesOnly: true, cancellationToken);
+
+    public async Task<FileUploadResult[]> UploadImagesAsync(
+        IEnumerable<IFormFile> files,
+        string? subfolder = null,
+        CancellationToken cancellationToken = default)
     {
-        ValidateOrThrow(file);
+        ArgumentNullException.ThrowIfNull(files);
+
+        var results = new List<FileUploadResult>();
+        foreach (var file in files)
+        {
+            results.Add(await UploadImageAsync(file, subfolder, cancellationToken));
+        }
+
+        return [.. results];
+    }
+
+    private async Task<FileUploadResult> UploadCheckedAsync(
+        IFormFile file,
+        string? subfolder,
+        bool imagesOnly,
+        CancellationToken cancellationToken)
+    {
+        var contentType = await ValidateOrThrowAsync(file, imagesOnly, cancellationToken);
 
         var extension = file.GetNormalizedFileExtension();
         var generatedFileName = $"{Guid.NewGuid():N}{extension}";
@@ -45,24 +74,8 @@ internal sealed class FileService(
             FileName: generatedFileName,
             OriginalFileName: file.FileName,
             Url: originalUrl,
-            ThumbnailUrl: thumbnailUrl);
-    }
-
-    public async Task<FileUploadResult[]> UploadAsync(
-        IEnumerable<IFormFile> files,
-        string? subfolder = null,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(files);
-
-        var results = new List<FileUploadResult>();
-        foreach (var file in files)
-        {
-            var result = await UploadAsync(file, subfolder, cancellationToken);
-            results.Add(result);
-        }
-
-        return [.. results];
+            ThumbnailUrl: thumbnailUrl,
+            ContentType: contentType);
     }
 
     public async Task DeleteAsync(
@@ -88,16 +101,20 @@ internal sealed class FileService(
         return Task.WhenAll(tasks);
     }
 
-    private void ValidateOrThrow(IFormFile file)
+    /// <summary>
+    /// Rejects an empty, oversized or disallowed upload, and one whose bytes are not what its extension claims
+    /// (a renamed executable, HTML or SVG never reaches storage). Returns the content type the bytes prove.
+    /// </summary>
+    private async Task<string> ValidateOrThrowAsync(IFormFile file, bool imagesOnly, CancellationToken cancellationToken)
     {
-        if (file == null || file.Length == 0)
+        if (file is null || file.Length == 0)
         {
-            throw new ArgumentException("File is required.", nameof(file));
+            throw new InvalidFileContentException("File is required.");
         }
 
         if (string.IsNullOrWhiteSpace(file.FileName))
         {
-            throw new ArgumentException("File name is required.", nameof(file));
+            throw new InvalidFileContentException("File name is required.");
         }
 
         if (file.Length > _settings.MaxBytes)
@@ -106,10 +123,24 @@ internal sealed class FileService(
         }
 
         var extension = file.GetNormalizedFileExtension();
-        if (!_settings.AllowedFileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        var allowed = imagesOnly ? _settings.AllowedImageExtensions : _settings.AllowedFileExtensions;
+        if (!allowed.Contains(extension, StringComparer.OrdinalIgnoreCase))
         {
-            throw new UnsupportedFileFormatException(extension, _settings.AllowedFileExtensions);
+            throw new UnsupportedFileFormatException(extension, allowed);
         }
+
+        var header = new byte[FileSignatures.HeaderLength];
+        await using var stream = file.OpenReadStream();
+        var read = await stream.ReadAtLeastAsync(header, header.Length, throwOnEndOfStream: false, cancellationToken);
+        var detected = FileSignatures.Detect(header.AsSpan(0, read));
+
+        if (detected is null || detected != FileSignatures.ExpectedFor(extension))
+        {
+            throw new InvalidFileContentException(
+                $"The content of '{file.FileName}' is not a valid {extension} file (detected: {detected ?? "unknown"}).");
+        }
+
+        return detected;
     }
 
     private async Task<string> SaveOriginalFileAsync(

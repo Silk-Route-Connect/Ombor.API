@@ -47,8 +47,26 @@ public static class ErrorCodes
     /// <summary>A wallet cannot be overdrawn (400). Params: <c>walletName</c>, <c>available</c>, <c>requested</c>.</summary>
     public const string WalletInsufficientBalance = "wallet.insufficient_balance";
 
+    /// <summary>
+    /// A payment settles a transaction of the opposite direction (400, field error on the settlement): Income settles
+    /// only Sale/SupplyRefund, Expense only Supply/SaleRefund.
+    /// </summary>
+    public const string PaymentDirectionMismatch = "payment.direction_mismatch";
+
     /// <summary>A referenced record cannot be deleted (409) — archive it instead.</summary>
     public const string EntityReferenced = "entity.referenced";
+
+    /// <summary>The value must be unique and is already taken (409) — the database's unique-index safety net.</summary>
+    public const string ConflictDuplicate = "conflict.duplicate";
+
+    /// <summary>
+    /// An upload was rejected: empty, not an allowed type for this upload (images only for product images and logos),
+    /// or its content does not match its extension (400).
+    /// </summary>
+    public const string FileInvalid = "file.invalid";
+
+    /// <summary>An upload exceeds the size limit (400). Params: <c>maxMegabytes</c>.</summary>
+    public const string FileTooLarge = "file.too_large";
 
     /// <summary>The record does not exist (404).</summary>
     public const string EntityNotFound = "entity.not_found";
