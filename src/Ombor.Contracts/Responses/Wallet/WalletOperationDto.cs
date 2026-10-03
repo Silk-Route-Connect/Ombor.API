@@ -14,6 +14,7 @@ namespace Ombor.Contracts.Responses.Wallet;
 /// <param name="BalanceAfter">Computed running balance after this event.</param>
 /// <param name="TransferId">The transfer this row belongs to, when the event is a transfer.</param>
 /// <param name="PaymentId">The payment this row belongs to, when the event is a payment-kind operation.</param>
+/// <param name="PaymentType">The payment's <c>PaymentType</c> (Transaction / Deposit / Withdrawal / Payroll / General) for a payment row, so clients label it exactly like the payments list; null for transfers.</param>
 public sealed record WalletOperationDto(
     int Id,
     DateTimeOffset Date,
@@ -25,4 +26,5 @@ public sealed record WalletOperationDto(
     decimal Amount,
     decimal BalanceAfter,
     int? TransferId,
-    int? PaymentId);
+    int? PaymentId,
+    string? PaymentType = null);

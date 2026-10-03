@@ -233,7 +233,8 @@ internal sealed class WalletService(
                 Amount: p.Amount,
                 BalanceAfter: 0m,
                 TransferId: null,
-                PaymentId: p.PaymentId)));
+                PaymentId: p.PaymentId,
+                PaymentType: p.Type.ToString())));
         }
 
         // Fold the running balance from the opening balance over the merged timeline; it reconciles to the current balance.
