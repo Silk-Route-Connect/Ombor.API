@@ -1,7 +1,7 @@
 # Backend conventions — Ombor
 
 **Status:** verified 2026-07-14 against `src/` — a 12-claim spot-check (2026-07-13) of layering, DI, validation, mapping, interceptor, tenancy, controllers, serialization, and tests: 10 claims matched the code, 2 corrected below (tenancy interface name; exception-handler chain). Originally harvested 2026-07-12 from `audit-findings.md` Part 2 (code-traced 2026-06-18), the redesign plan's settled decisions, and `backend-complexity-notes.md`. Items marked ⚠ are known-uncertain or open.
-**Last updated:** 2026-07-14
+**Last updated:** 2026-10-04
 
 Read once per session before writing code. Codifies the patterns the codebase follows; new code must follow them. Where existing legacy code and this doc disagree, follow this doc for new code and don't refactor legacy outside the task scope. When changing a pattern here seems justified, propose it — don't fork silently. Pair with `../Ombor.Docs/business-rules.md` (the spec), `CLAUDE.md` (hard rules), and `backend-gaps.md` (known gaps).
 
@@ -31,13 +31,14 @@ Controller action (API) · service interface + implementation (Application, regi
 - `sealed`, primary-constructor DI. Action methods `async` with the `Async` suffix retained (`SuppressAsyncSuffixInActionNames = false`).
 - Inline route constraints (`{id:int:min(1)}`); all binding via **request records** (`[FromQuery]` / `[FromRoute]` / `[FromBody]`), even single-id reads.
 - `[ProducesResponseType(...)]` declared per status; XML `<summary>/<param>/<returns>` on every public action (fed to Swagger).
-- Controllers stay **thin**: delegate to the service, wrap in `Ok` / `CreatedAtAction` / `NoContent`. The one sanctioned inline guard is the PUT route-vs-body id-mismatch check returning `ProblemDetails`.
+- Controllers stay **thin**: delegate to the service, wrap in `Ok` / `CreatedAtAction` / `NoContent`. The one sanctioned inline guard is the PUT route-vs-body id-mismatch check returning `ProblemDetails`, written `if (request is not null && id != request.Id)` so a missing body skips it and reaches the service validator (`IRequestValidator` answers a null request with 400) instead of a null-dereference 500.
 
 ## Services
 
 - `internal sealed`, primary-constructor DI of `IApplicationDbContext` + `IRequestValidator`.
 - **Validation is the first line of every write:** `await validator.ValidateAndThrowAsync(request)`. ⚠ Historically list `GetAsync` requests were unvalidated — validate any request that carries constraints.
-- Not-found via a private `GetOrThrowAsync` → `throw new EntityNotFoundException<TEntity>(id)`.
+- Not-found via a private `GetOrThrowAsync` → `throw new EntityNotFoundException<TEntity>(id)` — for the resource **in the route** only.
+- **Every foreign id in a write body goes through `OwnedReferences`** (`Application/Helpers/OwnedReferences.cs`) right after validation, before mapping: `OwnedReferences.Check().Require(context.Partners, request.PartnerId, nameof(request.PartnerId)).Require(context.Products, request.Lines.Select((l, i) => (l.ProductId, $"Lines[{i}].ProductId"))).ThrowIfMissingAsync()`. It queries the organization-filtered sets and throws one 400 (`validation.failed`) listing every missing/foreign id on its property path. A body reference is never a 404, and never resolved with an unfiltered lookup — the global filter only guards reads; without this check an id from another organization satisfies the FK and corrupts that tenant's ledger (rule 34). A new write endpoint with an id in its body must use it.
 - Projection: **list queries project inline** in the LINQ `Select` with `AsNoTracking()`; **single-entity reads and writes** use the mapping extensions (`ToDto`, `ToEntity`, `ApplyUpdate`).
 - Business logic is procedural in services; entities are mostly anemic (domain methods only where they already exist, e.g. `TransactionRecord.AddPayment`).
 - Money/stock orchestration moves **stock + money + ledgers in one transaction** — partial application must be impossible (CLAUDE.md hard rule 4).
@@ -46,12 +47,14 @@ Controller action (API) · service interface + implementation (Application, regi
 ## Validation & error shape
 
 - FluentValidation auto-registered (`AddValidatorsFromAssembly`), invoked in services through `IRequestValidator`. The automatic MVC 400 is **suppressed** — all validation flows through FluentValidation.
-- Errors are produced by **`IExceptionHandler` implementations** (never filters or per-action code), registered in order: `ValidationExceptionHandler` → `InvalidEnumExceptionHandler` → `EntityNotFoundExceptionHandler` → `ConflictExceptionHandler` → `InvalidOrderStateTransitionExceptionHandler` → `InvalidFileExceptionHandler` → `SmsDeliveryExceptionHandler` → `UnauthorizedAccessExceptionHandler` → `TooManyRequestsExceptionHandler` → `GlobalExceptionHandler` (`API/Extensions/DependencyInjection.cs` → `AddErrorHandlers`).
+- Errors are produced by **`IExceptionHandler` implementations** (never filters or per-action code), registered in order: `ValidationExceptionHandler` → `InvalidEnumExceptionHandler` → `EntityNotFoundExceptionHandler` → `ConflictExceptionHandler` → `InvalidOrderStateTransitionExceptionHandler` → `InvalidFileExceptionHandler` → `SmsDeliveryExceptionHandler` → `UnauthorizedAccessExceptionHandler` → `TooManyRequestsExceptionHandler` → `DbUpdateExceptionHandler` → `GlobalExceptionHandler` (`API/Extensions/DependencyInjection.cs` → `AddErrorHandlers`).
+- **No client mistake may reach the client as a 500.** Request paths throw `ValidationException` (field error), `EntityNotFoundException` (route resource), `ConflictException` or an `InvalidFileException` subtype — never `InvalidOperationException` / `ArgumentException` for bad input. `DbUpdateExceptionHandler` is the safety net for a constraint a guard missed: SQL 2601/2627 → 409 `conflict.duplicate`, 547 → 409 `entity.referenced`, 2628/8152 → 400 `validation.failed`; it logs a warning (reaching Sentry) because hitting it means a guard is missing — add the guard.
 - Shapes the frontend depends on: **400** `ValidationProblemDetails` with `Errors = Dictionary<string,string[]>` keyed by property; **404** / **500** `ProblemDetails` (500 detail is generic outside Development, with a `traceId`); **409** `ProblemDetails` for reference-gated deletes (Partner, Category); **429** `ProblemDetails` + `Retry-After` for throttling.
 - **Error codes (added 2026-10-03).** Every domain error body carries the extension members **`code`** (one of `Domain/Exceptions/ErrorCodes`) and optional **`params`** (camelCase keys the client interpolates), so the UI localizes by code and never shows raw server text. The mechanism is small — reuse it, don't add a parallel one:
   - Throw an exception that implements `ICodedError` (`Code` + `Params`): `AuthenticationFailedException` (401), `TooManyRequestsException` (429, `retryAfterSeconds`), or your own domain exception mapped by a handler. Handlers call `problem.WithCodeFrom(exception, fallback)` / `problem.WithCode(code, params)` (`API/ExceptionHandlers/ProblemDetailsCodeExtensions.cs`).
   - For a **400 with a field error** (e.g. `stock.insufficient`, `auth.phone_taken`) throw `CodedValidation.Failure(propertyName, message, code, params)` (`Application/Validators`), or attach `.WithErrorCode(ErrorCodes.X)` to a validator rule; the first failure with a domain code (it contains a dot) becomes the top-level `code`, its `CustomState` dictionary becomes `params`.
   - Defaults when nothing more specific is thrown: 400 → `validation.failed`, 404 → `entity.not_found`, 409 (`ConflictException`) → `entity.referenced`.
+  - Shared coded errors — reuse, don't rebuild: the negative-stock block is thrown by `MoveStockAsync` (`stock.insufficient` with `productName`/`available`/`requested`; pass `propertyFor` when the line path is not `Lines[i].Quantity`); every wallet overdraft goes through `EnsureWalletCanCoverAsync(walletId, amount, propertyName)` or `WalletCalculationExtensions.InsufficientBalance` (`wallet.insufficient_balance`); a settlement in the wrong direction through `TransactionRecord.EnsureSettlableBy(direction, propertyName)` (`payment.direction_mismatch`); upload rejections are `InvalidFileException` subtypes, which carry `file.invalid` / `file.too_large` themselves.
   - A new code is added to `ErrorCodes` **and** to `Ombor.Docs/backend-contracts/conventions.md` in the same change.
 - JSON conventions: camelCase properties, nulls ignored on write, **enums as strings** via the custom `ValidatingStringEnumConverter` (`Ombor.Contracts/Serialization/`) — it wraps `JsonStringEnumConverter` but throws `InvalidEnumValueException` on an unparseable value, so an invalid enum surfaces as a 400 instead of the built-in converter's null-argument 500.
 - **Error-key casing — PascalCase (ruled 2026-07-19):** validation-400 `Errors` keys are **PascalCase**, straight from FluentValidation `PropertyName`s (e.g. `Lines[0].Quantity`). This is the intentional, documented contract — the frontend keys its error map by PascalCase property paths. Only the `Errors` dictionary keys are PascalCase; the rest of every JSON body stays camelCase.
@@ -66,6 +69,12 @@ Controller action (API) · service interface + implementation (Application, regi
 ## Mapping
 
 Manual, `internal static` extension classes per entity in `Application/Mappings` — `ToDto`, `ToEntity`, `ToCreateResponse`, `ToUpdateResponse`, `ApplyUpdate`. No AutoMapper/Mapster. A new field updates the mapping and the DTO XML docs in the same change.
+
+## File uploads
+
+- Go through `IFileService`: `UploadAsync` for document attachments (images or PDF), `UploadImageAsync` / `UploadImagesAsync` for product images and logos (images only). It checks the **content** (magic bytes, `Helpers/FileSignatures`) against the extension, stores under a random GUID name, and returns the detected `ContentType` — store that, never the client's `IFormFile.ContentType`.
+- Every upload section is served statically under `/{PublicUrlPrefix}` from `wwwroot/{BasePath}` (`StartupExtensions.UseStaticFiles`) with `nosniff`; the stored URL is relative to the API base. Static files carry no auth — the GUID name is what keeps a URL unguessable, so never build an upload name from user input or a sequential id.
+- Cap the number of files per request in the validator (`ValidationConstants.MaxAttachments`).
 
 ## Persistence
 
@@ -85,6 +94,8 @@ Global query filter applied **by reflection over every `IOrganizationScoped` ent
 - **Sign convention:** `balance > 0` = the partner owes us (receivable); `< 0` = we owe them. Consistent everywhere — Partner, Order `customerBalance`, Debt direction, Dashboard.
 - **WAC engine:** stock-in events recompute the average (`(oldQty·oldWAC + inQty·inCost)/(oldQty+inQty)`; transfer-in carries the source WAC; Increase adjustments restore at current WAC without changing it); stock-out events leave at current WAC (Sale → COGS; Decrease adjustment → a loss line distinct from COGS). Base-unit movement with package count retained on lines.
 - **Negative stock is impossible** (rule 20): sale lines, decrease adjustments, transfer lines, order delivery — hard-blocked with **400 `ValidationProblemDetails`** carrying available-vs-requested detail.
+- **Settlement direction:** a payment settles only transactions of its own direction (Income → Sale/SupplyRefund, Expense → Supply/SaleRefund — `PaymentDirection.SettlableTypes()`), on both create paths; the same set drives the rule-40 advance gate.
+- **Refunds** are booked to the original's partner and priced from the original line (`TransactionCreateGuard.ApplyOriginalPricing`) — never from the request — so a refund cannot pay out more than was charged. Line quantities (transaction, transfer) use the quantity precision (18,3), like stock.
 
 ## Read models
 
@@ -105,7 +116,7 @@ No PUT/DELETE surface — at endpoint **and** service level — for TransactionR
 ## Testing
 
 - **Heavy integration tests on the money/stock invariants** — WAC, source = settling allocations, atomicity, negative-stock blocks, organization isolation — via Testcontainers SQL Server 2022 (Docker/Podman required). **Thin, focused unit tests** elsewhere.
-- Setup through `Ombor.TestDataGenerator`; never bespoke seed paths.
+- Setup through `Ombor.TestDataGenerator`; never bespoke seed paths. **Seeding by environment:** Development and Testing seed demo data; Production and Staging seed **nothing** (`NoDataSeeder`) — a live host never gains demo organizations, users with a known password, or fabricated payments. Startup still applies migrations everywhere.
 - **Run the full suite as one batch** — shared-context bleed can hide failures an isolated run never sees (the `EndpointTestsBase` shared-DbContext lesson). Assert the behavior actually changed, not merely that the build is green.
 
 ## Docs & comments
