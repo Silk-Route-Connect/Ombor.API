@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Ombor.Contracts.Requests.Transaction;
 
 namespace Ombor.Application.Validators.Transaction;
@@ -22,9 +22,19 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
         RuleForEach(x => x.Lines)
             .ChildRules(line =>
             {
+                line.RuleFor(l => l.ProductId)
+                    .GreaterThan(0)
+                    .WithMessage("Invalid product ID.");
+
                 line.RuleFor(l => l.Quantity)
                     .GreaterThan(0m)
                     .WithMessage("Transaction line quantity must be greater than zero.");
+
+                // A negative price would make a negative line total (and on a Supply, a negative WAC); zero stays
+                // allowed for free items.
+                line.RuleFor(l => l.UnitPrice)
+                    .GreaterThanOrEqualTo(0m)
+                    .WithMessage("Unit price cannot be negative.");
 
                 // Guard each line's discount type: an omitted/0/invalid value would otherwise fail deep in
                 // the enum mapper as a 500. This mirrors the order-line validator and returns a clean 400.
@@ -59,6 +69,10 @@ public sealed class CreateTransactionValidator : AbstractValidator<CreateTransac
                 settlement.RuleFor(s => s.Amount)
                     .GreaterThan(0m)
                     .WithMessage("Settlement amount must be positive."));
+
+        RuleFor(x => x.Attachments)
+            .Must(files => files is null || files.Length <= ValidationConstants.MaxAttachments)
+            .WithMessage($"At most {ValidationConstants.MaxAttachments} files can be attached.");
 
         RuleFor(x => x.OriginalTransactionId)
             .NotNull()

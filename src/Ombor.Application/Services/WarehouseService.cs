@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Warehouse;
@@ -150,6 +151,10 @@ internal sealed class WarehouseService(
 
         // 404 if the warehouse doesn't exist.
         _ = await GetOrThrowAsync(request.WarehouseId);
+
+        await OwnedReferences.Check()
+            .Require(context.Products, request.Items.Select((x, i) => (x.ProductId, $"Items[{i}].ProductId")))
+            .ThrowIfMissingAsync();
 
         var productIds = request.Items.Select(x => x.ProductId).ToArray();
 

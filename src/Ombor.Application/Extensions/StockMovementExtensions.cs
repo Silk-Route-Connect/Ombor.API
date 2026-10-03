@@ -1,8 +1,10 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Validators;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Extensions;
 
@@ -39,21 +41,26 @@ internal static class StockMovementExtensions
     /// Applies a stock movement to the <see cref="WarehouseItem"/> rows of one warehouse — the single
     /// stock path shared by transactions, order delivery, and stock adjustments. <see cref="WarehouseItem"/>
     /// is the sole source of truth for stock; WAC is recomputed only on a weighted-average stock-in.
-    /// Negative stock is hard-blocked (rule 20). The caller owns the surrounding transaction.
+    /// Negative stock is hard-blocked (rule 20) with a <c>stock.insufficient</c> 400 on the offending line's
+    /// property (<paramref name="propertyFor"/> maps the line's index; defaults to <c>Lines[i].Quantity</c>).
+    /// The caller owns the surrounding transaction.
     /// </summary>
     public static async Task MoveStockAsync(
         this IApplicationDbContext context,
         int warehouseId,
         StockMovement movement,
-        IEnumerable<(int ProductId, decimal Quantity, decimal UnitPrice)> rawLines)
+        IEnumerable<(int ProductId, decimal Quantity, decimal UnitPrice)> rawLines,
+        Func<int, string>? propertyFor = null)
     {
         var lines = rawLines
+            .Select((line, index) => (line.ProductId, line.Quantity, line.UnitPrice, Index: index))
             .GroupBy(x => x.ProductId)
             .Select(g => new
             {
                 ProductId = g.Key,
                 Quantity = g.Sum(l => l.Quantity),
                 IncomingValue = g.Sum(l => l.Quantity * l.UnitPrice),
+                FirstIndex = g.First().Index,
             })
             .ToArray();
         var productIds = lines.Select(x => x.ProductId).ToArray();
@@ -71,8 +78,12 @@ internal static class StockMovementExtensions
                 // Stock-out leaves at WAC; negative stock is hard-blocked.
                 if (item is null || item.Quantity < line.Quantity)
                 {
-                    throw new ValidationException(
-                        $"Insufficient stock for product {line.ProductId} in the selected warehouse.");
+                    throw await InsufficientStockAsync(
+                        context,
+                        line.ProductId,
+                        available: item?.Quantity ?? 0m,
+                        requested: line.Quantity,
+                        (propertyFor ?? DefaultLineProperty)(line.FirstIndex));
                 }
 
                 item.Quantity -= line.Quantity;
@@ -108,5 +119,31 @@ internal static class StockMovementExtensions
                 item.Quantity += line.Quantity;
             }
         }
+    }
+
+    private static string DefaultLineProperty(int index) => $"Lines[{index}].Quantity";
+
+    private static async Task<ValidationException> InsufficientStockAsync(
+        IApplicationDbContext context,
+        int productId,
+        decimal available,
+        decimal requested,
+        string propertyName)
+    {
+        var productName = await context.Products
+            .Where(p => p.Id == productId)
+            .Select(p => p.Name)
+            .FirstOrDefaultAsync();
+
+        return CodedValidation.Failure(
+            propertyName,
+            $"Insufficient stock for '{productName}' in the selected warehouse. Available: {available}, requested: {requested}.",
+            ErrorCodes.StockInsufficient,
+            new Dictionary<string, object?>
+            {
+                ["productName"] = productName,
+                ["available"] = available,
+                ["requested"] = requested,
+            });
     }
 }

@@ -2,6 +2,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Wallet;
 using Ombor.Contracts.Responses.Wallet;
@@ -116,6 +117,11 @@ internal sealed class WalletService(
     {
         await validator.ValidateAndThrowAsync(request);
 
+        await OwnedReferences.Check()
+            .Require(context.Wallets, request.FromWalletId, nameof(request.FromWalletId))
+            .Require(context.Wallets, request.ToWalletId, nameof(request.ToWalletId))
+            .ThrowIfMissingAsync();
+
         var from = await GetOrThrowAsync(request.FromWalletId);
         var to = await GetOrThrowAsync(request.ToWalletId);
 
@@ -123,12 +129,7 @@ internal sealed class WalletService(
         var fromBalance = await ComputeBalanceAsync(from.Id);
         if (request.Amount > fromBalance)
         {
-            throw new ValidationException(
-            [
-                new ValidationFailure(
-                    nameof(request.Amount),
-                    $"Insufficient balance in wallet '{from.Name}'. Available: {fromBalance}, requested: {request.Amount}."),
-            ]);
+            throw WalletCalculationExtensions.InsufficientBalance(nameof(request.Amount), from.Name, fromBalance, request.Amount);
         }
 
         // A transfer is a single immutable event row; both wallets' balances derive from it,

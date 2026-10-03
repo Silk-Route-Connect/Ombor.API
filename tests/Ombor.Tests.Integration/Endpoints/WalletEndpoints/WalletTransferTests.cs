@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Requests.Wallet;
 using Ombor.Contracts.Responses.Wallet;
@@ -93,13 +93,15 @@ public sealed class WalletTransferTests(TestingWebApplicationFactory factory, IT
     }
 
     [Fact]
-    public async Task Transfer_ShouldReturnNotFound_WhenWalletMissing()
+    public async Task Transfer_ShouldReturnBadRequestOnToWalletId_WhenWalletMissing()
     {
         var walletId = await CreateWalletAsync(openingBalance: 100m);
 
-        await _client.PostAsync<ProblemDetails>(
+        var problem = await _client.PostAsync<ValidationProblemDetails>(
             TransfersUrl,
             new CreateWalletTransferRequest(walletId, NonExistentEntityId, 10m, null),
-            HttpStatusCode.NotFound);
+            HttpStatusCode.BadRequest);
+
+        Assert.Contains(nameof(CreateWalletTransferRequest.ToWalletId), problem.Errors.Keys);
     }
 }

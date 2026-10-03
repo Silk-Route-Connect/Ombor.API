@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Abstractions;
@@ -16,11 +17,13 @@ internal sealed class OrderService(
     IApplicationDbContext context,
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
-    INumberSequenceAllocator allocator) : IOrderService
+    INumberSequenceAllocator allocator,
+    OrderQueries queries) : IOrderService
 {
     public async Task<OrderDto> CreateAsync(CreateOrderRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+        await EnsureReferencesOwnedAsync(request.CustomerId, request.WarehouseId, request.Lines);
 
         var entity = request.ToEntity();
         entity.History.Add(new OrderStatusEvent
@@ -41,26 +44,30 @@ internal sealed class OrderService(
 
         await databaseTransaction.CommitAsync();
 
-        return await GetProjectedOrThrowAsync(entity.Id);
+        return await queries.GetProjectedOrThrowAsync(entity.Id);
     }
 
     public async Task<OrderDto[]> GetAsync(GetOrdersRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
-        return await ProjectAsync(GetQuery(request));
+        return await queries.GetAsync(request);
     }
 
     public async Task<OrderDto> GetByIdAsync(GetOrderByIdRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
-        return await GetProjectedOrThrowAsync(request.OrderId);
+        return await queries.GetProjectedOrThrowAsync(request.OrderId);
     }
 
     public async Task<OrderDto> UpdateAsync(UpdateOrderRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+        await EnsureReferencesOwnedAsync(
+            request.CustomerId,
+            request.WarehouseId.IsSpecified ? request.WarehouseId.Value : null,
+            request.Lines);
 
         var order = await context.Orders
             .Include(x => x.Lines)
@@ -98,7 +105,7 @@ internal sealed class OrderService(
 
         await context.SaveChangesAsync();
 
-        return await GetProjectedOrThrowAsync(order.Id);
+        return await queries.GetProjectedOrThrowAsync(order.Id);
     }
 
     public Task<OrderDto> ProcessAsync(ProcessOrderRequest request) => UpdateOrderStatus(request);
@@ -128,10 +135,9 @@ internal sealed class OrderService(
         // Enforce Shipping → Delivered (throws → 409) before touching stock.
         order.ValidateTransition(DomainOrderStatus.Delivered);
 
-        if (!await context.Warehouses.AnyAsync(i => i.Id == request.WarehouseId))
-        {
-            throw new ValidationException($"Warehouse {request.WarehouseId} does not exist.");
-        }
+        await OwnedReferences.Check()
+            .Require(context.Warehouses, request.WarehouseId, nameof(request.WarehouseId))
+            .ThrowIfMissingAsync();
 
         await using var transaction = await context.Database.BeginTransactionAsync();
         try
@@ -173,8 +179,19 @@ internal sealed class OrderService(
             throw;
         }
 
-        return await GetProjectedOrThrowAsync(order.Id);
+        return await queries.GetProjectedOrThrowAsync(order.Id);
     }
+
+    /// <summary>
+    /// The customer, warehouse and every line's product must belong to the caller's organization (rule 34): a
+    /// foreign customer would otherwise receive the Sale this order becomes on delivery.
+    /// </summary>
+    private Task EnsureReferencesOwnedAsync(int customerId, int? warehouseId, IEnumerable<CreateOrderLineRequest> lines) =>
+        OwnedReferences.Check()
+            .Require(context.Partners, customerId, nameof(CreateOrderRequest.CustomerId))
+            .Require(context.Warehouses, warehouseId, nameof(CreateOrderRequest.WarehouseId))
+            .Require(context.Products, lines.Select((l, i) => (l.ProductId, $"Lines[{i}].ProductId")))
+            .ThrowIfMissingAsync();
 
     private static TransactionLine ToSaleLine(OrderLine line) => new()
     {
@@ -207,7 +224,7 @@ internal sealed class OrderService(
             await context.SaveChangesAsync();
         }
 
-        return await GetProjectedOrThrowAsync(order.Id);
+        return await queries.GetProjectedOrThrowAsync(order.Id);
     }
 
     private void AppendStatusEvent(Order order, DomainOrderStatus from, DomainOrderStatus to)
@@ -219,92 +236,4 @@ internal sealed class OrderService(
             By = currentUser.UserId,
             Order = order,
         });
-
-    private IQueryable<Order> GetQuery(GetOrdersRequest request)
-    {
-        var query = context.Orders.AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-        {
-            var term = request.SearchTerm;
-            // The order number is an integer now, so it matches exactly (not as a substring); notes and
-            // customer name stay substring searches.
-            var numberTerm = int.TryParse(term, out var parsed) ? parsed : (int?)null;
-            query = query.Where(x =>
-                (numberTerm != null && x.OrderNumber == numberTerm) ||
-                (x.Notes != null && x.Notes.Contains(term)) ||
-                x.Customer.Name.Contains(term));
-        }
-
-        if (request.Status.HasValue)
-        {
-            var status = request.Status.Value.ToDomainStatus();
-            query = query.Where(x => x.Status == status);
-        }
-
-        if (request.CustomerId.HasValue)
-        {
-            query = query.Where(x => x.CustomerId == request.CustomerId);
-        }
-
-        if (request.FromDate.HasValue)
-        {
-            query = query.Where(x => x.DateUtc >= request.FromDate);
-        }
-
-        if (request.ToDate.HasValue)
-        {
-            query = query.Where(x => x.DateUtc <= request.ToDate);
-        }
-
-        return query.OrderByDescending(x => x.DateUtc).ThenByDescending(x => x.Id);
-    }
-
-    private async Task<OrderDto> GetProjectedOrThrowAsync(int orderId)
-    {
-        var dtos = await ProjectAsync(context.Orders.Where(x => x.Id == orderId));
-
-        return dtos.FirstOrDefault() ?? throw new EntityNotFoundException<Order>(orderId);
-    }
-
-    private async Task<OrderDto[]> ProjectAsync(IQueryable<Order> query)
-    {
-        var orders = await query
-            .Include(x => x.Customer)
-            .Include(x => x.Warehouse)
-            .Include(x => x.Lines)
-            .ThenInclude(x => x.Product)
-            .Include(x => x.History)
-            .AsNoTracking()
-            .ToListAsync();
-
-        if (orders.Count == 0)
-        {
-            return [];
-        }
-
-        // customerBalance comes from the org-scoped PartnerBalance view (Total is computed in memory).
-        var customerIds = orders.Select(o => o.CustomerId).Distinct().ToArray();
-        var balanceRows = await context.PartnerBalances
-            .Where(b => customerIds.Contains(b.PartnerId))
-            .ToArrayAsync();
-        var balances = balanceRows.ToDictionary(b => b.PartnerId, b => b.Total);
-
-        // Resolve each history actor's display name in one query.
-        var actorIds = orders
-            .SelectMany(o => o.History)
-            .Where(h => h.By.HasValue)
-            .Select(h => h.By!.Value)
-            .Distinct()
-            .ToArray();
-        var actorNames = actorIds.Length == 0
-            ? new Dictionary<int, string>()
-            : await context.Users
-                .Where(u => actorIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id, u => u.FirstName + " " + u.LastName);
-
-        return [.. orders.Select(o => o.ToDto(
-            balances.TryGetValue(o.CustomerId, out var balance) ? balance : 0m,
-            actorNames))];
-    }
 }

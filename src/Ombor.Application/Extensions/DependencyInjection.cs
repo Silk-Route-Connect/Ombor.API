@@ -36,7 +36,10 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IWarehouseService, WarehouseService>();
         services.AddScoped<ITransactionMapper, TransactionMapper>();
+        services.AddScoped<TransactionCreateGuard>();
+        services.AddScoped<TransactionPaymentBuilder>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<PaymentQueries>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<IAuthService, AuthService>();
@@ -48,6 +51,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOrganizationSetupService, OrganizationSetupService>();
         services.AddScoped<IOtpCodeProvider, OtpCodeProvider>();
+        services.AddScoped<OrderQueries>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ITransferService, TransferService>();
         services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();

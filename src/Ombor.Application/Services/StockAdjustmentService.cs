@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Enums;
@@ -63,15 +64,10 @@ internal sealed class StockAdjustmentService(
     {
         await validator.ValidateAndThrowAsync(request);
 
-        if (!await context.Warehouses.AnyAsync(w => w.Id == request.WarehouseId))
-        {
-            throw new ValidationException($"Warehouse {request.WarehouseId} does not exist.");
-        }
-
-        if (!await context.Products.AnyAsync(p => p.Id == request.ProductId))
-        {
-            throw new ValidationException($"Product {request.ProductId} does not exist.");
-        }
+        await OwnedReferences.Check()
+            .Require(context.Warehouses, request.WarehouseId, nameof(request.WarehouseId))
+            .Require(context.Products, request.ProductId, nameof(request.ProductId))
+            .ThrowIfMissingAsync();
 
         var direction = request.Direction.ToDomainDirection();
 
@@ -96,7 +92,8 @@ internal sealed class StockAdjustmentService(
             await context.MoveStockAsync(
                 request.WarehouseId,
                 movement,
-                [(request.ProductId, request.Quantity, 0m)]);
+                [(request.ProductId, request.Quantity, 0m)],
+                _ => nameof(request.Quantity));
 
             var adjustment = new StockAdjustment
             {

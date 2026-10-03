@@ -7,4 +7,5 @@ internal static class ValidationConstants
     public const int CodeLength = 50; // for SKU and Barcode
     public const int TokenLength = 512; // for Refresh Tokens
     public const int PhoneNumberLength = 20;
+    public const int MaxAttachments = 10; // files per transaction/payment request
 }

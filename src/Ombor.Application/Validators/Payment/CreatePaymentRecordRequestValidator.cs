@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 
@@ -29,10 +29,28 @@ public sealed class CreatePaymentRecordRequestValidator : AbstractValidator<Crea
             .When(x => x.Type == PaymentType.Payroll)
             .WithMessage("An employee is required for a payroll payment.");
 
+        // Rule 14: payroll is always money out.
+        RuleFor(x => x.Direction)
+            .Equal(PaymentDirection.Expense)
+            .When(x => x.Type == PaymentType.Payroll)
+            .WithMessage("A payroll payment is always an expense.");
+
         RuleFor(x => x.Description)
             .NotEmpty()
             .When(x => x.Type == PaymentType.General)
             .WithMessage("A description is required for a general payment.");
+
+        RuleFor(x => x.Description)
+            .MaximumLength(ValidationConstants.MaxStringLength)
+            .WithMessage($"Description must not exceed {ValidationConstants.MaxStringLength} characters.");
+
+        RuleFor(x => x.Period)
+            .MaximumLength(ValidationConstants.DefaultStringLength)
+            .WithMessage($"Period must not exceed {ValidationConstants.DefaultStringLength} characters.");
+
+        RuleFor(x => x.Attachments)
+            .Must(files => files is null || files.Length <= ValidationConstants.MaxAttachments)
+            .WithMessage($"At most {ValidationConstants.MaxAttachments} files can be attached.");
 
         RuleForEach(x => x.Settlements).ChildRules(settlement =>
         {

@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Transfer;
@@ -55,8 +56,11 @@ internal sealed class TransferService(
             throw new ValidationException("Source and destination warehouses must be different.");
         }
 
-        await EnsureWarehouseExistsAsync(request.FromWarehouseId, "Source");
-        await EnsureWarehouseExistsAsync(request.ToWarehouseId, "Destination");
+        await OwnedReferences.Check()
+            .Require(context.Warehouses, request.FromWarehouseId, nameof(request.FromWarehouseId))
+            .Require(context.Warehouses, request.ToWarehouseId, nameof(request.ToWarehouseId))
+            .Require(context.Products, request.Lines.Select((l, i) => (l.ProductId, $"Lines[{i}].ProductId")))
+            .ThrowIfMissingAsync();
 
         var lines = request.Lines
             .GroupBy(l => l.ProductId)
@@ -71,10 +75,11 @@ internal sealed class TransferService(
 
         // Send (rule-20 hard block) then receive (WAC-weighted at the source cost). A single SaveChanges
         // moves both warehouses atomically; the hard block throws before any write on insufficient stock.
+        // The request lines (not the grouped ones) so an insufficient-stock error names the request's line index.
         await context.MoveStockAsync(
             request.FromWarehouseId,
             StockMovement.StockOut,
-            lines.Select(l => (l.ProductId, l.Quantity, 0m)));
+            request.Lines.Select(l => (l.ProductId, l.Quantity, 0m)));
 
         await context.MoveStockAsync(
             request.ToWarehouseId,
@@ -114,12 +119,4 @@ internal sealed class TransferService(
             .Include(t => t.Lines)
             .ThenInclude(l => l.Product)
             .AsNoTracking();
-
-    private async Task EnsureWarehouseExistsAsync(int warehouseId, string role)
-    {
-        if (!await context.Warehouses.AnyAsync(i => i.Id == warehouseId))
-        {
-            throw new ValidationException($"{role} warehouse {warehouseId} does not exist.");
-        }
-    }
 }

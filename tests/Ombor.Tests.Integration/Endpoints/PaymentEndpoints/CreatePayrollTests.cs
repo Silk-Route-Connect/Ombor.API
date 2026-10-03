@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Requests.Payroll;
@@ -83,13 +83,14 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
     }
 
     [Fact]
-    public async Task PostAsync_ShouldReturnNotFound_WhenWalletMissing()
+    public async Task PostAsync_ShouldReturnBadRequestOnWalletId_WhenWalletMissing()
     {
         var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
 
         var request = new CreatePayrollRequest(employeeId, NonExistentEntityId, Amount: 1_000m, Period: "2026-06", Notes: null);
 
-        await _client.PostAsync<ProblemDetails>(PayrollUrl(employeeId), request, HttpStatusCode.NotFound);
+        var problem = await _client.PostAsync<ValidationProblemDetails>(PayrollUrl(employeeId), request, HttpStatusCode.BadRequest);
+        Assert.Contains(nameof(CreatePayrollRequest.WalletId), problem.Errors.Keys);
     }
 
     [Fact]
