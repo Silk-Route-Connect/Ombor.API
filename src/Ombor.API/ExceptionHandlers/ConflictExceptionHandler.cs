@@ -23,7 +23,7 @@ internal sealed class ConflictExceptionHandler(ILogger<ConflictExceptionHandler>
             Detail = conflictException.Message,
             Type = "https://httpstatuses.com/409",
             Instance = httpContext.Request.Path
-        };
+        }.WithCodeFrom(exception, ErrorCodes.EntityReferenced);
 
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
