@@ -15,8 +15,9 @@ internal sealed class BackgroundSmsQueue(IServiceScopeFactory scopeFactory, ILog
     : BackgroundService, ISmsQueue
 {
     // Bounded so a flood of requests cannot grow memory without limit; the throttles keep real traffic far below it.
+    // Wait mode makes the non-blocking TryWrite report a full queue (DropWrite would report success and drop silently).
     private readonly Channel<SmsMessage> _channel = Channel.CreateBounded<SmsMessage>(
-        new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.DropWrite, SingleReader = true });
+        new BoundedChannelOptions(1000) { FullMode = BoundedChannelFullMode.Wait, SingleReader = true });
 
     public void Enqueue(SmsMessage message)
     {
