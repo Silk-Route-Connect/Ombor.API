@@ -1,4 +1,4 @@
-namespace Ombor.Contracts.Responses.StockAdjustment;
+﻿namespace Ombor.Contracts.Responses.StockAdjustment;
 
 /// <summary>A recorded stock adjustment.</summary>
 /// <param name="Id">The adjustment id.</param>
@@ -16,6 +16,14 @@ namespace Ombor.Contracts.Responses.StockAdjustment;
 /// <param name="Note">Optional free-text note.</param>
 /// <param name="CreatedBy">The user who made the adjustment, if known.</param>
 /// <param name="BalanceAfter">The product's stock in this warehouse immediately after the adjustment.</param>
+/// <param name="UnitCost">
+/// The weighted-average unit cost snapshotted at the adjustment — the loss cost of a Decrease, the carrying cost a
+/// unit is restored at on an Increase. 0 on Increase rows recorded before 2026-10-04, which did not snapshot it.
+/// </param>
+/// <param name="Value">
+/// <c>Quantity × UnitCost</c>, rounded to the tiyin: on a Decrease, the amount written off (a loss line distinct from
+/// COGS); on an Increase, the value restored.
+/// </param>
 public sealed record StockAdjustmentDto(
     int Id,
     DateTimeOffset Date,
@@ -31,4 +39,6 @@ public sealed record StockAdjustmentDto(
     string Reason,
     string? Note,
     string? CreatedBy,
-    decimal BalanceAfter);
+    decimal BalanceAfter,
+    decimal UnitCost,
+    decimal Value);

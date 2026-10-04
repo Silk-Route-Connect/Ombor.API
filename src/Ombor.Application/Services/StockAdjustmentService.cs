@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Helpers;
@@ -74,15 +74,12 @@ internal sealed class StockAdjustmentService(
         await using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            // A decrease records the loss at the current carrying cost — snapshot the WAC before moving stock.
-            var unitCost = 0m;
-            if (direction == DomainDirection.Decrease)
-            {
-                unitCost = await context.WarehouseItems
-                    .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
-                    .Select(i => i.AverageCost)
-                    .FirstOrDefaultAsync();
-            }
+            // Snapshot the WAC before moving stock: a decrease records the loss at the current carrying cost, an
+            // increase restores units at that same cost (rule 18), so both serve a value.
+            var unitCost = await context.WarehouseItems
+                .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
+                .Select(i => i.AverageCost)
+                .FirstOrDefaultAsync();
 
             var movement = direction == DomainDirection.Increase
                 ? StockMovement.StockInAtCarryingCost
