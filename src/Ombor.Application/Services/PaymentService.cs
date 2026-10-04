@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
@@ -66,9 +66,10 @@ internal sealed class PaymentService(
             }
         }
 
+        var type = request.Type.ToDomainType();
         var payment = new Payment
         {
-            Type = request.Type.ToDomainType(),
+            Type = type,
             Direction = direction,
             DateUtc = DateTimeOffset.UtcNow,
             PartnerId = request.PartnerId,
@@ -76,6 +77,17 @@ internal sealed class PaymentService(
             WalletId = request.WalletId,
             Notes = request.Description,
         };
+
+        // A payroll paid from the payments module records the same facts as one paid from the employee page:
+        // the period it covers and the salary at that moment (a later salary change must not rewrite history).
+        if (type == PaymentType.Payroll && request.EmployeeId is int employeeId)
+        {
+            payment.Period = request.Period;
+            payment.Salary = await context.Employees
+                .Where(e => e.Id == employeeId)
+                .Select(e => (decimal?)e.Salary)
+                .FirstOrDefaultAsync();
+        }
 
         // Source side (rule 9): the whole amount moves through one wallet.
         payment.Components.Add(new PaymentComponent

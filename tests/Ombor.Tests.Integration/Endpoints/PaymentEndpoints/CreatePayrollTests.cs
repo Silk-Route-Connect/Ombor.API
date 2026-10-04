@@ -1,10 +1,13 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Requests.Payroll;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.Infrastructure.Persistence.DataFixes;
+using Ombor.Tests.Common.Extensions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -102,6 +105,96 @@ public sealed class CreatePayrollTests(TestingWebApplicationFactory factory, ITe
         var request = new CreatePayrollRequest(employeeId, walletId, Amount: 0m, Period: "2026-06", Notes: null);
 
         await _client.PostAsync<ValidationProblemDetails>(PayrollUrl(employeeId), request, HttpStatusCode.BadRequest);
+    }
+
+    [Theory]
+    [InlineData("Июнь 2026")]
+    [InlineData("2026-6")]
+    [InlineData("2026-13")]
+    [InlineData("06-2026")]
+    public async Task PostAsync_ShouldReturnBadRequestOnPeriod_WhenNotYearMonth(string period)
+    {
+        var walletId = await CreateWalletAsync(10_000_000m);
+        var employeeId = await CreateEmployeeAsync(salary: 5_000_000m);
+
+        var request = new CreatePayrollRequest(employeeId, walletId, Amount: 1_000m, Period: period, Notes: null);
+
+        var problem = await _client.PostAsync<ValidationProblemDetails>(PayrollUrl(employeeId), request, HttpStatusCode.BadRequest);
+        Assert.Contains(nameof(CreatePayrollRequest.Period), problem.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task PaymentsModulePayroll_ShouldRecordPeriodAndSalary_LikeTheEmployeePage()
+    {
+        var walletId = await CreateWalletAsync(10_000_000m);
+        var employeeId = await CreateEmployeeAsync(salary: 3_000_000m);
+        var request = new CreatePaymentRecordRequest(
+            Contracts.Enums.PaymentType.Payroll, Contracts.Enums.PaymentDirection.Expense, null, employeeId, walletId,
+            Amount: 1_500_000m, Description: null, Period: "2026-10", Settlements: []);
+
+        var payment = await _client.PostAsync<PaymentRecordDto>(GetUrl(), request.ToMultipartFormData());
+
+        Assert.Equal("2026-10", payment.Period);
+        Assert.Equal(3_000_000m, payment.Salary);
+    }
+
+    [Fact]
+    public async Task PaymentsModulePayroll_ShouldRejectALabelPeriod()
+    {
+        var walletId = await CreateWalletAsync(10_000_000m);
+        var employeeId = await CreateEmployeeAsync(salary: 3_000_000m);
+        var request = new CreatePaymentRecordRequest(
+            Contracts.Enums.PaymentType.Payroll, Contracts.Enums.PaymentDirection.Expense, null, employeeId, walletId,
+            Amount: 1_000m, Description: null, Period: "Iyun 2026", Settlements: []);
+
+        var problem = await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
+
+        Assert.Contains(nameof(CreatePaymentRecordRequest.Period), problem.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Backfill_ShouldConvertLabelPeriods_ToYearMonth_AndLeaveTheRest()
+    {
+        // Arrange — periods as the payments module once saved them, in each language, plus values to keep.
+        var walletId = await CreateWalletAsync(0m);
+        var employeeId = await CreateEmployeeAsync(salary: 1_000m);
+        var ids = new Dictionary<string, int>();
+        foreach (var period in new[] { "Июнь 2026", "Iyun 2026", "сентября 2025", "Декабр 2024", "2026-07", "unreadable" })
+        {
+            ids[period] = await PlantPayrollAsync(employeeId, walletId, period);
+        }
+
+        // Act
+        await _context.Database.ExecuteSqlRawAsync(PayrollPeriodBackfill.Sql);
+
+        // Assert
+        async Task<string?> PeriodOf(string original) =>
+            (await _context.Payments.AsNoTracking().FirstAsync(p => p.Id == ids[original])).Period;
+
+        Assert.Equal("2026-06", await PeriodOf("Июнь 2026"));
+        Assert.Equal("2026-06", await PeriodOf("Iyun 2026"));
+        Assert.Equal("2025-09", await PeriodOf("сентября 2025"));
+        Assert.Equal("2024-12", await PeriodOf("Декабр 2024"));
+        Assert.Equal("2026-07", await PeriodOf("2026-07"));
+        Assert.Equal("unreadable", await PeriodOf("unreadable"));
+        Assert.Equal(0, await _context.Database.ExecuteSqlRawAsync(PayrollPeriodBackfill.Sql)); // idempotent
+    }
+
+    private async Task<int> PlantPayrollAsync(int employeeId, int walletId, string period)
+    {
+        var payment = new Payment
+        {
+            Type = PaymentType.Payroll,
+            Direction = PaymentDirection.Expense,
+            DateUtc = DateTimeOffset.UtcNow,
+            EmployeeId = employeeId,
+            WalletId = walletId,
+            Period = period,
+        };
+        _context.Payments.Add(payment);
+        await _context.SaveChangesAsync();
+
+        return payment.Id;
     }
 
     private async Task<int> CreateEmployeeAsync(decimal salary)

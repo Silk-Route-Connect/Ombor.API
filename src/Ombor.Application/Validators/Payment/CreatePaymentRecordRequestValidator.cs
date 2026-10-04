@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Ombor.Application.Helpers;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 
@@ -45,8 +46,9 @@ public sealed class CreatePaymentRecordRequestValidator : AbstractValidator<Crea
             .WithMessage($"Description must not exceed {ValidationConstants.MaxStringLength} characters.");
 
         RuleFor(x => x.Period)
-            .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Period must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .Must(PayrollPeriod.IsValid)
+            .When(x => !string.IsNullOrEmpty(x.Period))
+            .WithMessage(PayrollPeriod.FormatMessage);
 
         RuleFor(x => x.Attachments)
             .Must(files => files is null || files.Length <= ValidationConstants.MaxAttachments)
