@@ -18,6 +18,7 @@ internal sealed class OrderService(
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
     INumberSequenceAllocator allocator,
+    IOrganizationWriteLock writeLock,
     OrderQueries queries) : IOrderService
 {
     public async Task<OrderDto> CreateAsync(CreateOrderRequest request)
@@ -64,6 +65,11 @@ internal sealed class OrderService(
     public async Task<OrderDto> UpdateAsync(UpdateOrderRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+
+        // Under the write lock like every status change: an edit can't land on an order a parallel request just
+        // shipped or delivered.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         await EnsureReferencesOwnedAsync(
             request.CustomerId,
             request.WarehouseId.IsSpecified ? request.WarehouseId.Value : null,
@@ -104,6 +110,7 @@ internal sealed class OrderService(
         order.TotalAmount = order.Lines.Sum(line => line.TotalPrice);
 
         await context.SaveChangesAsync();
+        await write.CommitAsync();
 
         return await queries.GetProjectedOrThrowAsync(order.Id);
     }
@@ -121,11 +128,14 @@ internal sealed class OrderService(
     /// <summary>
     /// Confirms delivery and promotes the order to a real Sale at the chosen warehouse: hard stock check
     /// (rule 20), a Sale on account (receivable — payment is recorded separately later), the saleId link,
-    /// and the Delivered history event — all in one transaction so it can't half-apply.
+    /// and the Delivered history event — all in one transaction so it can't half-apply. The order and the stock are
+    /// read under the organization's write lock, so a double-clicked «Доставлен» promotes the order only once.
     /// </summary>
     public async Task<OrderDto> DeliverAsync(DeliverOrderRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+
+        await using var write = await writeLock.BeginOrgWriteAsync();
 
         var order = await context.Orders
             .Include(x => x.Lines)
@@ -139,45 +149,36 @@ internal sealed class OrderService(
             .Require(context.Warehouses, request.WarehouseId, nameof(request.WarehouseId))
             .ThrowIfMissingAsync();
 
-        await using var transaction = await context.Database.BeginTransactionAsync();
-        try
+        // Rule-20 hard block at the chosen warehouse; insufficient stock throws → rollback → 400.
+        await context.MoveStockAsync(
+            request.WarehouseId,
+            StockMovement.StockOut,
+            order.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+
+        var saleLines = order.Lines.Select(ToSaleLine).ToArray();
+        var sale = new TransactionRecord
         {
-            // Rule-20 hard block at the chosen warehouse; insufficient stock throws → rollback → 400.
-            await context.MoveStockAsync(
-                request.WarehouseId,
-                StockMovement.StockOut,
-                order.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+            PartnerId = order.CustomerId,
+            Partner = null!,
+            WarehouseId = request.WarehouseId,
+            DateUtc = DateTimeOffset.UtcNow,
+            Type = Domain.Enums.TransactionType.Sale,
+            Lines = saleLines,
+            TotalDue = saleLines.Sum(l => l.Total),
+            TotalPaid = 0m,
+            Status = Domain.Enums.TransactionStatus.Open,
+        };
+        sale.Number = await allocator.AllocateAsync(Ombor.Domain.Enums.NumberSeriesType.Transaction);
+        context.Transactions.Add(sale);
+        await context.SaveChangesAsync();
 
-            var saleLines = order.Lines.Select(ToSaleLine).ToArray();
-            var sale = new TransactionRecord
-            {
-                PartnerId = order.CustomerId,
-                Partner = null!,
-                WarehouseId = request.WarehouseId,
-                DateUtc = DateTimeOffset.UtcNow,
-                Type = Domain.Enums.TransactionType.Sale,
-                Lines = saleLines,
-                TotalDue = saleLines.Sum(l => l.Total),
-                TotalPaid = 0m,
-                Status = Domain.Enums.TransactionStatus.Open,
-            };
-            sale.Number = await allocator.AllocateAsync(Ombor.Domain.Enums.NumberSeriesType.Transaction);
-            context.Transactions.Add(sale);
-            await context.SaveChangesAsync();
+        var previous = order.Status;
+        order.Status = DomainOrderStatus.Delivered;
+        order.SaleId = sale.Id;
+        AppendStatusEvent(order, previous, DomainOrderStatus.Delivered);
+        await context.SaveChangesAsync();
 
-            var previous = order.Status;
-            order.Status = DomainOrderStatus.Delivered;
-            order.SaleId = sale.Id;
-            AppendStatusEvent(order, previous, DomainOrderStatus.Delivered);
-            await context.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        await write.CommitAsync();
 
         return await queries.GetProjectedOrThrowAsync(order.Id);
     }
@@ -211,6 +212,10 @@ internal sealed class OrderService(
     {
         await validator.ValidateAndThrowAsync(request);
 
+        // A transition racing a delivery must see the delivered order, or a cancel could overwrite Delivered while the
+        // sale it produced stays on the books.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         var order = await context.Orders.FirstOrDefaultAsync(x => x.Id == request.OrderId)
             ?? throw new EntityNotFoundException<Order>(request.OrderId);
         var targetStatus = request.TargetStatus.ToDomainStatus();
@@ -223,6 +228,8 @@ internal sealed class OrderService(
 
             await context.SaveChangesAsync();
         }
+
+        await write.CommitAsync();
 
         return await queries.GetProjectedOrThrowAsync(order.Id);
     }

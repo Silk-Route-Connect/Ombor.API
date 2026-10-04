@@ -18,6 +18,7 @@ internal sealed class PaymentService(
     IRequestValidator validator,
     IFileService fileService,
     INumberSequenceAllocator allocator,
+    IOrganizationWriteLock writeLock,
     PaymentQueries queries) : IPaymentService
 {
     // Uploaded payment files land here (originals + thumbnails under their standard sections).
@@ -26,6 +27,10 @@ internal sealed class PaymentService(
     public async Task<PaymentRecordDto> CreateRecordAsync(CreatePaymentRecordRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+
+        // The wallet balance, the remaining debts and the advance gate are read under the organization's write lock,
+        // so a parallel payment cannot spend the same money or settle the same debt twice.
+        await using var write = await writeLock.BeginOrgWriteAsync();
 
         var settlements = request.Settlements ?? [];
 
@@ -122,15 +127,13 @@ internal sealed class PaymentService(
             });
         }
 
-        // Allocate the number and insert in one transaction so a rolled-back create leaves no gap (rule 4).
-        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
-
+        // The number is allocated inside the same transaction, so a rolled-back create leaves no gap (rule 4).
         payment.Number = await allocator.AllocateAsync(NumberSeriesType.Payment);
         context.Payments.Add(payment);
         await AddAttachmentsAsync(request, payment);
         await context.SaveChangesAsync();
 
-        await databaseTransaction.CommitAsync();
+        await write.CommitAsync();
 
         return await GetRecordByIdAsync(payment.Id);
     }
@@ -138,6 +141,8 @@ internal sealed class PaymentService(
     public async Task<PaymentRecordDto> CreateAsync(CreatePayrollRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+
+        await using var write = await writeLock.BeginOrgWriteAsync();
 
         await OwnedReferences.Check()
             .Require(context.Employees, request.EmployeeId, nameof(request.EmployeeId))
@@ -170,14 +175,11 @@ internal sealed class PaymentService(
             Amount = request.Amount,
         });
 
-        // Allocate the number and insert in one transaction so a rolled-back create leaves no gap (rule 4).
-        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
-
         payment.Number = await allocator.AllocateAsync(NumberSeriesType.Payment);
         context.Payments.Add(payment);
         await context.SaveChangesAsync();
 
-        await databaseTransaction.CommitAsync();
+        await write.CommitAsync();
 
         return await GetRecordByIdAsync(payment.Id);
     }

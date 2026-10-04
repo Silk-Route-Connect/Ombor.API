@@ -9,7 +9,11 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class PartnerService(IApplicationDbContext context, IRequestValidator validator, IBusinessClock clock) : IPartnerService
+internal sealed class PartnerService(
+    IApplicationDbContext context,
+    IRequestValidator validator,
+    IBusinessClock clock,
+    IOrganizationWriteLock writeLock) : IPartnerService
 {
     public async Task<PartnerDto[]> GetAsync(GetPartnersRequest request)
     {
@@ -44,12 +48,16 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
     {
         await validator.ValidateAndThrowAsync(request);
 
+        // The opening balance is a money event, so it is written like every other one: under the write lock.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         var entity = request.ToEntity();
         // Opening balance is an immutable event stamped at creation.
         entity.OpeningDate = clock.Today;
 
         context.Partners.Add(entity);
         await context.SaveChangesAsync();
+        await write.CommitAsync();
 
         return entity.ToCreateResponse();
     }

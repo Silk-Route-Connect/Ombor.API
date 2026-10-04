@@ -66,6 +66,12 @@ public static class ErrorCodes
     public const string ConflictDuplicate = "conflict.duplicate";
 
     /// <summary>
+    /// Another money or stock write of the organization held its write lock for longer than the timeout (409). Nothing
+    /// was recorded; the same request can be sent again.
+    /// </summary>
+    public const string ConflictBusy = "conflict.busy";
+
+    /// <summary>
     /// An upload was rejected: empty, not an allowed type for this upload (images only for product images and logos),
     /// or its content does not match its extension (400).
     /// </summary>

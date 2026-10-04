@@ -12,8 +12,9 @@ namespace Ombor.Application.Services;
 
 /// <summary>
 /// Builds the payment a transaction create pays with (source/allocation model, rules 8–10, 15, 40). Split from
-/// <see cref="TransactionService"/>; the caller has already run <see cref="TransactionCreateGuard"/> and owns the
-/// surrounding database transaction.
+/// <see cref="TransactionService"/>; the caller has already run <see cref="TransactionCreateGuard"/> and holds the
+/// organization write lock, whose transaction this joins — so the advance gate and the overdraft check see every
+/// earlier write.
 /// </summary>
 internal sealed class TransactionPaymentBuilder(IApplicationDbContext context, INumberSequenceAllocator allocator)
 {

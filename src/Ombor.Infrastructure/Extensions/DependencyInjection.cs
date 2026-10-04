@@ -103,6 +103,8 @@ public static class DependencyInjection
 
         services.AddScoped<INumberSequenceAllocator, NumberSequenceAllocator>();
 
+        services.AddScoped<IOrganizationWriteLock, OrganizationWriteLock>();
+
         services.AddTransient<IImageThumbnailer, ImageSharpThumbnailer>();
 
         services.AddTransient<IFileStorage, LocalFileStorage>();

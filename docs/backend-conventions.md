@@ -41,7 +41,7 @@ Controller action (API) · service interface + implementation (Application, regi
 - **Every foreign id in a write body goes through `OwnedReferences`** (`Application/Helpers/OwnedReferences.cs`) right after validation, before mapping: `OwnedReferences.Check().Require(context.Partners, request.PartnerId, nameof(request.PartnerId)).Require(context.Products, request.Lines.Select((l, i) => (l.ProductId, $"Lines[{i}].ProductId"))).ThrowIfMissingAsync()`. It queries the organization-filtered sets and throws one 400 (`validation.failed`) listing every missing/foreign id on its property path. A body reference is never a 404, and never resolved with an unfiltered lookup — the global filter only guards reads; without this check an id from another organization satisfies the FK and corrupts that tenant's ledger (rule 34). A new write endpoint with an id in its body must use it.
 - Projection: **list queries project inline** in the LINQ `Select` with `AsNoTracking()`; **single-entity reads and writes** use the mapping extensions (`ToDto`, `ToEntity`, `ApplyUpdate`).
 - Business logic is procedural in services; entities are mostly anemic (domain methods only where they already exist, e.g. `TransactionRecord.AddPayment`).
-- Money/stock orchestration moves **stock + money + ledgers in one transaction** — partial application must be impossible (CLAUDE.md hard rule 4).
+- Money/stock orchestration moves **stock + money + ledgers in one transaction** — partial application must be impossible (CLAUDE.md hard rule 4). That transaction is the one the **organization write lock** opens (see «Concurrency» below), never a bare `BeginTransactionAsync`.
 - Services follow the shared file-structure rule (`../../Ombor.Docs/operating-code.md`): a service crossing the ~300-line tripwire is split by sub-concern (orchestration vs calculation vs mapping), keeping one public service surface.
 
 ## Validation & error shape
@@ -53,7 +53,7 @@ Controller action (API) · service interface + implementation (Application, regi
 - **Error codes (added 2026-10-03).** Every domain error body carries the extension members **`code`** (one of `Domain/Exceptions/ErrorCodes`) and optional **`params`** (camelCase keys the client interpolates), so the UI localizes by code and never shows raw server text. The mechanism is small — reuse it, don't add a parallel one:
   - Throw an exception that implements `ICodedError` (`Code` + `Params`): `AuthenticationFailedException` (401), `TooManyRequestsException` (429, `retryAfterSeconds`), or your own domain exception mapped by a handler. Handlers call `problem.WithCodeFrom(exception, fallback)` / `problem.WithCode(code, params)` (`API/ExceptionHandlers/ProblemDetailsCodeExtensions.cs`).
   - For a **400 with a field error** (e.g. `stock.insufficient`, `auth.phone_taken`) throw `CodedValidation.Failure(propertyName, message, code, params)` (`Application/Validators`), or attach `.WithErrorCode(ErrorCodes.X)` to a validator rule; the first failure with a domain code (it contains a dot) becomes the top-level `code`, its `CustomState` dictionary becomes `params`.
-  - Defaults when nothing more specific is thrown: 400 → `validation.failed`, 404 → `entity.not_found`, 409 (`ConflictException`) → `entity.referenced`.
+  - Defaults when nothing more specific is thrown: 400 → `validation.failed`, 404 → `entity.not_found`, 409 (`ConflictException`) → `entity.referenced`. A `ConflictException` built with a code carries it instead (`conflict.busy` from the write lock).
   - A uniqueness rule on a form field carries its code on the validator rule (`product.sku_taken` on `SKU`); if the field also has a unique index, register the index in `DbUpdateExceptionHandler.FieldUniqueIndexes` so a race past the check gets the same 400 field error, not a generic 409.
   - Shared coded errors — reuse, don't rebuild: the negative-stock block is thrown by `MoveStockAsync` (`stock.insufficient` with `productName`/`available`/`requested`; pass `propertyFor` when the line path is not `Lines[i].Quantity`); every wallet overdraft goes through `EnsureWalletCanCoverAsync(walletId, amount, propertyName)` or `WalletCalculationExtensions.InsufficientBalance` (`wallet.insufficient_balance`); a settlement in the wrong direction through `TransactionRecord.EnsureSettlableBy(direction, propertyName)` (`payment.direction_mismatch`); upload rejections are `InvalidFileException` subtypes, which carry `file.invalid` / `file.too_large` themselves.
   - A new code is added to `ErrorCodes` **and** to `Ombor.Docs/backend-contracts/conventions.md` in the same change.
@@ -97,6 +97,22 @@ Global query filter applied **by reflection over every `IOrganizationScoped` ent
 - **Negative stock is impossible** (rule 20): sale lines, decrease adjustments, transfer lines, order delivery — hard-blocked with **400 `ValidationProblemDetails`** carrying available-vs-requested detail.
 - **Settlement direction:** a payment settles only transactions of its own direction (Income → Sale/SupplyRefund, Expense → Supply/SaleRefund — `PaymentDirection.SettlableTypes()`), on both create paths; the same set drives the rule-40 advance gate.
 - **Refunds** are booked to the original's partner and priced from the original line (`TransactionCreateGuard.ApplyOriginalPricing`) — never from the request — so a refund cannot pay out more than was charged. Line quantities (transaction, transfer) use the quantity precision (18,3), like stock.
+
+## Concurrency — the organization write lock (added 2026-10-04, backend-7)
+
+Two cashiers pressing «Провести» at once must never both sell the last unit, both spend the same cash, or both settle the same debt. The rule:
+
+- **Every money or stock write runs inside `IOrganizationWriteLock.BeginOrgWriteAsync()`**: transactions (sale, supply, both refunds), payments (incl. payroll from either path), stock adjustments, warehouse transfers, opening stock, order edits / status changes / delivery (→ Sale), wallet transfers, and the partner and wallet creates that record an opening balance. The pattern, right after the request validator:
+  ```csharp
+  await using var write = await writeLock.BeginOrgWriteAsync();
+  // ownership checks, every read a check depends on, the writes, SaveChangesAsync
+  await write.CommitAsync();
+  ```
+  The helper begins the transaction and takes `sp_getapplock` on `ombor:org:{id}:writes` (exclusive, owner = transaction), so one organization's writes run one at a time and the lock is released by the commit or rollback. Disposing without a commit rolls back — no try/catch is needed. Do not open a second transaction inside it, and never start a money/stock write with a bare `context.Database.BeginTransactionAsync()`.
+- **Every read a check depends on happens after the lock is held**: stock on hand (`MoveStockAsync`), wallet balance (`EnsureWalletCanCoverAsync`, `ComputeWalletBalanceAsync`), remaining debt and the advance gate, the refund caps, an order's status, «not stocked yet». Load the entities the write changes after the lock too — EF hands back an already-tracked instance unchanged, so a `TransactionRecord` loaded before the lock would carry a stale `TotalPaid` into the write.
+- **Timeout → 409 `conflict.busy`** (`WriteLockSettings:TimeoutSeconds`, default 10, kept under the 30 s command timeout); nothing was recorded and the client may resend. File uploads inside the write hold the lock while they are processed — fine at small-shop volume.
+- **Not locked:** reads (GETs never wait), other organizations, order create (numbering has its own row lock), and master-data edits / archive / reference-gated deletes (no money or stock figure to protect; the Restrict foreign keys catch a delete racing a new reference).
+- **Tests:** `tests/Ombor.Tests.Integration/Endpoints/Concurrency` fires the same write 10 times at once and asserts the invariant (stock never below zero, no overdraft, `TotalPaid` = sum of its settling allocations, one sale per order). A new money or stock write path takes the lock and adds its case there.
 
 ## Time & calendar (added 2026-10-04)
 

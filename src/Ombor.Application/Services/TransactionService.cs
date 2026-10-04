@@ -20,6 +20,7 @@ internal sealed class TransactionService(
     ICurrentUserAccessor currentUser,
     IFileService fileService,
     INumberSequenceAllocator allocator,
+    IOrganizationWriteLock writeLock,
     IBusinessClock clock) : ITransactionService
 {
     // Uploaded transaction files land here (originals + thumbnails under their standard sections).
@@ -169,6 +170,10 @@ internal sealed class TransactionService(
 
     public async Task<TransactionDto> CreateAsync(CreateTransactionRequest request)
     {
+        // The guard reads stock, open debts and refund history, so it runs under the organization's write lock:
+        // a parallel sale, payment or refund cannot change those figures between the checks and the write.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         var original = await guard.ValidateAsync(request);
 
         // Package-entry lines are resolved to base units server-side from the product's package size (rule 21).
@@ -183,32 +188,23 @@ internal sealed class TransactionService(
             TransactionCreateGuard.ApplyOriginalPricing(transactionEntity, original);
         }
 
-        await using var databaseTransaction = await context.Database.BeginTransactionAsync();
-        try
+        await context.MoveStockAsync(
+            request.WarehouseId!.Value,
+            request.Type.ToDomainType().ToStockMovement(),
+            // Use the resolved entity lines so a package-entry line moves its base-unit quantity, not the raw request value.
+            transactionEntity.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+        transactionEntity.Number = await allocator.AllocateAsync(NumberSeriesType.Transaction);
+        context.Transactions.Add(transactionEntity);
+        await AddAttachmentsAsync(request, transactionEntity);
+        await context.SaveChangesAsync();
+
+        if (request.WalletId is int walletId && request.PaidAmount > 0m)
         {
-            await context.MoveStockAsync(
-                request.WarehouseId!.Value,
-                request.Type.ToDomainType().ToStockMovement(),
-                // Use the resolved entity lines so a package-entry line moves its base-unit quantity, not the raw request value.
-                transactionEntity.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
-            transactionEntity.Number = await allocator.AllocateAsync(NumberSeriesType.Transaction);
-            context.Transactions.Add(transactionEntity);
-            await AddAttachmentsAsync(request, transactionEntity);
+            await paymentBuilder.AddPaymentAsync(request, transactionEntity, walletId);
             await context.SaveChangesAsync();
-
-            if (request.WalletId is int walletId && request.PaidAmount > 0m)
-            {
-                await paymentBuilder.AddPaymentAsync(request, transactionEntity, walletId);
-                await context.SaveChangesAsync();
-            }
-
-            await databaseTransaction.CommitAsync();
         }
-        catch
-        {
-            await databaseTransaction.RollbackAsync();
-            throw;
-        }
+
+        await write.CommitAsync();
 
         return await GetByIdAsync(new GetTransactionByIdRequest(transactionEntity.Id));
     }

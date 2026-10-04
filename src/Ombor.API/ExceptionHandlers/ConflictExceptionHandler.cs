@@ -5,7 +5,8 @@ using Ombor.Domain.Exceptions;
 namespace Ombor.API.ExceptionHandlers;
 
 /// <summary>
-/// Maps a <see cref="ConflictException"/> (reference-gated delete) to a 409 ProblemDetails.
+/// Maps a <see cref="ConflictException"/> (a reference-gated delete, or a write that could not get its organization's
+/// write lock in time) to a 409 ProblemDetails carrying the exception's code.
 /// </summary>
 internal sealed class ConflictExceptionHandler(ILogger<ConflictExceptionHandler> logger) : IExceptionHandler
 {

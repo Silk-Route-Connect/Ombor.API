@@ -16,7 +16,8 @@ internal sealed class StockAdjustmentService(
     IApplicationDbContext context,
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
-    IMovementService movementService) : IStockAdjustmentService
+    IMovementService movementService,
+    IOrganizationWriteLock writeLock) : IStockAdjustmentService
 {
     public async Task<StockAdjustmentDto[]> GetAsync(GetStockAdjustmentsRequest request)
     {
@@ -64,6 +65,9 @@ internal sealed class StockAdjustmentService(
     {
         await validator.ValidateAndThrowAsync(request);
 
+        // Stock on hand is read under the organization's write lock, so parallel decreases cannot both pass rule 20.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         await OwnedReferences.Check()
             .Require(context.Warehouses, request.WarehouseId, nameof(request.WarehouseId))
             .Require(context.Products, request.ProductId, nameof(request.ProductId))
@@ -71,59 +75,51 @@ internal sealed class StockAdjustmentService(
 
         var direction = request.Direction.ToDomainDirection();
 
-        await using var transaction = await context.Database.BeginTransactionAsync();
-        try
+        // Snapshot the WAC before moving stock: a decrease records the loss at the current carrying cost, an
+        // increase restores units at that same cost (rule 18), so both serve a value.
+        var unitCost = await context.WarehouseItems
+            .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
+            .Select(i => i.AverageCost)
+            .FirstOrDefaultAsync();
+
+        var movement = direction == DomainDirection.Increase
+            ? StockMovement.StockInAtCarryingCost
+            : StockMovement.StockOut;
+
+        // Rule-20 hard block on a decrease; insufficient stock throws → rollback → 400.
+        await context.MoveStockAsync(
+            request.WarehouseId,
+            movement,
+            [(request.ProductId, request.Quantity, 0m)],
+            _ => nameof(request.Quantity));
+
+        var adjustment = new StockAdjustment
         {
-            // Snapshot the WAC before moving stock: a decrease records the loss at the current carrying cost, an
-            // increase restores units at that same cost (rule 18), so both serve a value.
-            var unitCost = await context.WarehouseItems
-                .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
-                .Select(i => i.AverageCost)
-                .FirstOrDefaultAsync();
+            DateUtc = DateTimeOffset.UtcNow,
+            WarehouseId = request.WarehouseId,
+            Warehouse = null!,
+            ProductId = request.ProductId,
+            Product = null!,
+            Direction = direction,
+            Quantity = request.Quantity,
+            Reason = request.Reason,
+            Note = request.Note,
+            UnitCost = unitCost,
+            CreatedById = currentUser.UserId,
+        };
+        context.StockAdjustments.Add(adjustment);
+        await context.SaveChangesAsync();
 
-            var movement = direction == DomainDirection.Increase
-                ? StockMovement.StockInAtCarryingCost
-                : StockMovement.StockOut;
+        // Read before the commit releases the lock: this adjustment is still the latest event for the product, so the
+        // stock now is exactly its post-adjustment balance.
+        var balanceAfter = await context.WarehouseItems
+            .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
+            .Select(i => i.Quantity)
+            .FirstOrDefaultAsync();
 
-            // Rule-20 hard block on a decrease; insufficient stock throws → rollback → 400.
-            await context.MoveStockAsync(
-                request.WarehouseId,
-                movement,
-                [(request.ProductId, request.Quantity, 0m)],
-                _ => nameof(request.Quantity));
+        await write.CommitAsync();
 
-            var adjustment = new StockAdjustment
-            {
-                DateUtc = DateTimeOffset.UtcNow,
-                WarehouseId = request.WarehouseId,
-                Warehouse = null!,
-                ProductId = request.ProductId,
-                Product = null!,
-                Direction = direction,
-                Quantity = request.Quantity,
-                Reason = request.Reason,
-                Note = request.Note,
-                UnitCost = unitCost,
-                CreatedById = currentUser.UserId,
-            };
-            context.StockAdjustments.Add(adjustment);
-            await context.SaveChangesAsync();
-
-            await transaction.CommitAsync();
-
-            // The adjustment is the latest event for this product, so its post-adjustment balance is the live stock.
-            var balanceAfter = await context.WarehouseItems
-                .Where(i => i.WarehouseId == request.WarehouseId && i.ProductId == request.ProductId)
-                .Select(i => i.Quantity)
-                .FirstOrDefaultAsync();
-
-            return await GetProjectedOrThrowAsync(adjustment.Id, balanceAfter);
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
+        return await GetProjectedOrThrowAsync(adjustment.Id, balanceAfter);
     }
 
     private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id, decimal balanceAfter)

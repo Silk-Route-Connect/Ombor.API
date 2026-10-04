@@ -14,7 +14,8 @@ namespace Ombor.Application.Services;
 internal sealed class TransferService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    ICurrentUserAccessor currentUser) : ITransferService
+    ICurrentUserAccessor currentUser,
+    IOrganizationWriteLock writeLock) : ITransferService
 {
     public async Task<TransferDto[]> GetAsync(GetTransfersRequest request)
     {
@@ -56,6 +57,10 @@ internal sealed class TransferService(
             throw new ValidationException("Source and destination warehouses must be different.");
         }
 
+        // The source's stock and WAC are read under the organization's write lock, so parallel transfers (or a sale)
+        // cannot send the same units twice.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         await OwnedReferences.Check()
             .Require(context.Warehouses, request.FromWarehouseId, nameof(request.FromWarehouseId))
             .Require(context.Warehouses, request.ToWarehouseId, nameof(request.ToWarehouseId))
@@ -73,8 +78,8 @@ internal sealed class TransferService(
             .Where(i => i.WarehouseId == request.FromWarehouseId && productIds.Contains(i.ProductId))
             .ToDictionaryAsync(i => i.ProductId, i => i.AverageCost);
 
-        // Send (rule-20 hard block) then receive (WAC-weighted at the source cost). A single SaveChanges
-        // moves both warehouses atomically; the hard block throws before any write on insufficient stock.
+        // Send (rule-20 hard block) then receive (WAC-weighted at the source cost). One transaction moves both
+        // warehouses atomically; the hard block throws before any write on insufficient stock.
         // The request lines (not the grouped ones) so an insufficient-stock error names the request's line index.
         await context.MoveStockAsync(
             request.FromWarehouseId,
@@ -106,6 +111,8 @@ internal sealed class TransferService(
 
         context.Transfers.Add(transfer);
         await context.SaveChangesAsync();
+
+        await write.CommitAsync();
 
         return await GetByIdAsync(new GetTransferByIdRequest(transfer.Id));
     }

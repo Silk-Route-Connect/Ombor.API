@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<PaymentQueries>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<WalletQueries>();
         services.AddScoped<IWalletService, WalletService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IPasswordResetService, PasswordResetService>();
@@ -102,6 +103,11 @@ public static class DependencyInjection
 
         services.AddOptions<AuthSecuritySettings>()
             .Bind(configuration.GetSection(AuthSecuritySettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<WriteLockSettings>()
+            .Bind(configuration.GetSection(WriteLockSettings.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

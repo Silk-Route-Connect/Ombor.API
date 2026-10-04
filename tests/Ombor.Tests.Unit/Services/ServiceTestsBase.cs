@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using Ombor.Application.Interfaces;
@@ -15,6 +16,7 @@ public abstract class ServiceTestsBase : UnitTestsBase
 
     protected readonly Mock<IRequestValidator> _mockValidator;
     protected readonly Mock<IApplicationDbContext> _mockContext;
+    protected readonly Mock<IOrganizationWriteLock> _mockWriteLock;
     protected readonly ITestDataBuilder _builder;
     private protected readonly IBusinessClock _clock = new BusinessClock(TimeProvider.System);
 
@@ -23,6 +25,11 @@ public abstract class ServiceTestsBase : UnitTestsBase
         _mockValidator = new Mock<IRequestValidator>();
         _mockContext = new Mock<IApplicationDbContext>();
         _builder = new TestDataBuilder();
+
+        // The lock itself is SQL Server behaviour (covered by the integration suite); here it hands out a no-op transaction.
+        _mockWriteLock = new Mock<IOrganizationWriteLock>();
+        _mockWriteLock.Setup(mock => mock.BeginOrgWriteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Mock.Of<IDbContextTransaction>());
     }
 
     protected virtual void VerifyNoOtherCalls()
