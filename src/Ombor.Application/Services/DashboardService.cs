@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Responses.Dashboard;
 using Ombor.Domain.Enums;
@@ -189,11 +189,12 @@ internal sealed class DashboardService(
             .OrderByDescending(t => t.DateUtc)
             .ThenByDescending(t => t.Id)
             .Take(RecentTransactionsLimit)
-            .Select(t => new { t.Id, t.DateUtc, PartnerName = t.Partner.Name, t.Type, t.TotalDue, t.TotalPaid })
+            .Select(t => new { t.Id, t.Number, t.DateUtc, t.PartnerId, PartnerName = t.Partner.Name, t.Type, t.TotalDue, t.TotalPaid })
             .ToArrayAsync();
 
         return [.. recent.Select(t => new DashboardRecentTransactionDto(
-            t.Id, t.DateUtc, t.PartnerName, t.Type.ToString(), t.TotalDue, t.TotalPaid, PaymentStatusOf(t.TotalDue, t.TotalPaid)))];
+            t.Id, t.DateUtc, t.PartnerName, t.Type.ToString(), t.TotalDue, t.TotalPaid, PaymentStatusOf(t.TotalDue, t.TotalPaid),
+            t.Number?.ToString(), t.PartnerId))];
     }
 
     private static string PaymentStatusOf(decimal totalDue, decimal totalPaid) =>

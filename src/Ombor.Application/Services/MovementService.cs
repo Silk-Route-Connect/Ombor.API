@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Contracts.Responses.Warehouse;
@@ -6,6 +6,7 @@ using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.Domain.Exceptions;
 using MovementKind = Ombor.Contracts.Enums.MovementKind;
+using MovementSource = Ombor.Contracts.Enums.MovementSource;
 
 namespace Ombor.Application.Services;
 
@@ -25,15 +26,16 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(o => new { o.Id, o.DateUtc, o.ProductId, ProductName = o.Product.Name, o.Product.Measurement, o.Quantity, o.Note })
             .ToListAsync();
         movements.AddRange(openings.Select(o => new Raw(
-            o.Id, o.DateUtc, MovementKind.Opening, o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, o.Note, o.Quantity)));
+            o.Id, o.DateUtc, MovementKind.Opening, o.ProductId, o.ProductName, o.Measurement.ToString(), warehouseId, string.Empty, null, o.Note, o.Quantity,
+            new Source(MovementSource.OpeningStock, o.Id, null))));
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.Transaction.WarehouseId == warehouseId)
-            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, Partner = l.Transaction.Partner.Name, l.Transaction.PartnerId, l.Transaction.RefundReason })
+            .Select(l => new { l.Id, l.TransactionId, l.Transaction.Number, l.Transaction.DateUtc, l.Transaction.Type, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, Partner = l.Transaction.Partner.Name, l.Transaction.PartnerId, l.Transaction.RefundReason })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
             l.Id, l.DateUtc, KindOf(l.Type), l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty, l.Partner, l.RefundReason, SignedOf(l.Type, l.Quantity),
-            CounterpartyPartnerId: l.PartnerId)));
+            new Source(MovementSource.Transaction, l.TransactionId, l.Number?.ToString()), CounterpartyPartnerId: l.PartnerId)));
 
         var adjustments = await context.StockAdjustments
             .Where(a => a.WarehouseId == warehouseId)
@@ -41,11 +43,12 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .ToListAsync();
         movements.AddRange(adjustments.Select(a => new Raw(
             a.Id, a.DateUtc, MovementKind.Adjustment, a.ProductId, a.ProductName, a.Measurement.ToString(), warehouseId, string.Empty, null, a.Note ?? a.Reason,
-            a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity)));
+            a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity,
+            new Source(MovementSource.StockAdjustment, a.Id, null))));
 
         var transferLines = await context.TransferLines
             .Where(l => l.Transfer.FromWarehouseId == warehouseId || l.Transfer.ToWarehouseId == warehouseId)
-            .Select(l => new { l.Id, l.Transfer.DateUtc, l.Transfer.FromWarehouseId, FromName = l.Transfer.FromWarehouse.Name, l.Transfer.ToWarehouseId, ToName = l.Transfer.ToWarehouse.Name, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, l.Transfer.Notes })
+            .Select(l => new { l.Id, l.TransferId, l.Transfer.DateUtc, l.Transfer.FromWarehouseId, FromName = l.Transfer.FromWarehouse.Name, l.Transfer.ToWarehouseId, ToName = l.Transfer.ToWarehouse.Name, l.ProductId, ProductName = l.Product.Name, l.Product.Measurement, l.Quantity, l.Transfer.Notes })
             .ToListAsync();
         movements.AddRange(transferLines.Select(l =>
         {
@@ -53,6 +56,7 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             return new Raw(
                 l.Id, l.DateUtc, MovementKind.Transfer, l.ProductId, l.ProductName, l.Measurement.ToString(), warehouseId, string.Empty,
                 isSend ? l.ToName : l.FromName, l.Notes, isSend ? -l.Quantity : l.Quantity,
+                new Source(MovementSource.Transfer, l.TransferId, null),
                 CounterpartyWarehouseId: isSend ? l.ToWarehouseId : l.FromWarehouseId);
         }));
 
@@ -63,7 +67,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(x => new WarehouseMovementDto(
                 x.Movement.Id, x.Movement.Date, x.Movement.Kind, x.Movement.ProductId, x.Movement.ProductName,
                 x.Movement.Measurement, x.Movement.Counterparty, x.Movement.CounterpartyWarehouseId, x.Movement.CounterpartyPartnerId,
-                x.Movement.Note, x.Movement.Quantity, x.Balance))];
+                x.Movement.Note, x.Movement.Quantity, x.Balance,
+                x.Movement.Source.Type, x.Movement.Source.Id, x.Movement.Source.Number))];
     }
 
     public async Task<ProductMovementDto[]> GetProductMovementsAsync(int productId)
@@ -80,14 +85,16 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(o => new { o.Id, o.DateUtc, o.WarehouseId, WarehouseName = o.Warehouse.Name, o.Quantity })
             .ToListAsync();
         movements.AddRange(openings.Select(o => new Raw(
-            o.Id, o.DateUtc, MovementKind.Opening, productId, string.Empty, string.Empty, o.WarehouseId, o.WarehouseName, null, null, o.Quantity)));
+            o.Id, o.DateUtc, MovementKind.Opening, productId, string.Empty, string.Empty, o.WarehouseId, o.WarehouseName, null, null, o.Quantity,
+            new Source(MovementSource.OpeningStock, o.Id, null))));
 
         var transactionLines = await context.TransactionLines
             .Where(l => l.ProductId == productId)
-            .Select(l => new { l.Id, l.Transaction.DateUtc, l.Transaction.Type, l.Transaction.WarehouseId, WarehouseName = l.Transaction.Warehouse!.Name, l.Quantity })
+            .Select(l => new { l.Id, l.TransactionId, l.Transaction.Number, l.Transaction.DateUtc, l.Transaction.Type, l.Transaction.WarehouseId, WarehouseName = l.Transaction.Warehouse!.Name, l.Quantity })
             .ToListAsync();
         movements.AddRange(transactionLines.Select(l => new Raw(
-            l.Id, l.DateUtc, KindOf(l.Type), productId, string.Empty, string.Empty, l.WarehouseId, l.WarehouseName, null, null, SignedOf(l.Type, l.Quantity))));
+            l.Id, l.DateUtc, KindOf(l.Type), productId, string.Empty, string.Empty, l.WarehouseId, l.WarehouseName, null, null, SignedOf(l.Type, l.Quantity),
+            new Source(MovementSource.Transaction, l.TransactionId, l.Number?.ToString()))));
 
         var adjustments = await context.StockAdjustments
             .Where(a => a.ProductId == productId)
@@ -95,18 +102,20 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .ToListAsync();
         movements.AddRange(adjustments.Select(a => new Raw(
             a.Id, a.DateUtc, MovementKind.Adjustment, productId, string.Empty, string.Empty, a.WarehouseId, a.WarehouseName, null, null,
-            a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity)));
+            a.Direction == StockAdjustmentDirection.Increase ? a.Quantity : -a.Quantity,
+            new Source(MovementSource.StockAdjustment, a.Id, null))));
 
         // A transfer of this product is two movements: send at the source, receive at the destination.
         var transferLines = await context.TransferLines
             .Where(l => l.ProductId == productId)
-            .Select(l => new { l.Id, l.Transfer.DateUtc, l.Transfer.FromWarehouseId, FromName = l.Transfer.FromWarehouse.Name, l.Transfer.ToWarehouseId, ToName = l.Transfer.ToWarehouse.Name, l.Quantity })
+            .Select(l => new { l.Id, l.TransferId, l.Transfer.DateUtc, l.Transfer.FromWarehouseId, FromName = l.Transfer.FromWarehouse.Name, l.Transfer.ToWarehouseId, ToName = l.Transfer.ToWarehouse.Name, l.Quantity })
             .ToListAsync();
         foreach (var l in transferLines)
         {
             // Each row's counterparty is the other warehouse, so a consumer can link the send and receive rows.
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, l.ToName, null, -l.Quantity, CounterpartyWarehouseId: l.ToWarehouseId));
-            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, l.FromName, null, l.Quantity, CounterpartyWarehouseId: l.FromWarehouseId));
+            var source = new Source(MovementSource.Transfer, l.TransferId, null);
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.FromWarehouseId, l.FromName, l.ToName, null, -l.Quantity, source, CounterpartyWarehouseId: l.ToWarehouseId));
+            movements.Add(new Raw(l.Id, l.DateUtc, MovementKind.Transfer, productId, string.Empty, string.Empty, l.ToWarehouseId, l.ToName, l.FromName, null, l.Quantity, source, CounterpartyWarehouseId: l.FromWarehouseId));
         }
 
         // Running total stock across all warehouses (reconciles to the product's total stock).
@@ -116,7 +125,8 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
             .Select(x => new ProductMovementDto(
                 x.Movement.Id, productId, x.Movement.Date, x.Movement.Kind, x.Movement.WarehouseId,
                 x.Movement.WarehouseName, x.Movement.CounterpartyWarehouseId, x.Movement.Counterparty,
-                x.Movement.Quantity, x.Balance))];
+                x.Movement.Quantity, x.Balance,
+                x.Movement.Source.Type, x.Movement.Source.Id, x.Movement.Source.Number))];
     }
 
     /// <summary>
@@ -173,6 +183,10 @@ internal sealed class MovementService(IApplicationDbContext context) : IMovement
         string? Counterparty,
         string? Note,
         decimal Quantity,
+        Source Source,
         int? CounterpartyWarehouseId = null,
         int? CounterpartyPartnerId = null);
+
+    // The document a row opens: Id is the transaction/transfer (not the line) so it routes; Number only for transactions.
+    private sealed record Source(MovementSource Type, int Id, string? Number);
 }

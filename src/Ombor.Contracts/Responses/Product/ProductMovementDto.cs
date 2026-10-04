@@ -1,4 +1,4 @@
-using Ombor.Contracts.Enums;
+﻿using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Responses.Product;
 
@@ -15,6 +15,12 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="CounterpartyWarehouseName">For a transfer row, the name of the other warehouse; otherwise null.</param>
 /// <param name="Quantity">The signed quantity delta (positive = in, negative = out).</param>
 /// <param name="BalanceAfter">The product's total stock across all warehouses after the movement.</param>
+/// <param name="SourceType">The document the row belongs to — what a client opens from it.</param>
+/// <param name="SourceId">
+/// The id of that document: the transaction (not its line), the transfer (not its line), the adjustment, or the
+/// opening-stock record.
+/// </param>
+/// <param name="SourceNumber">The source document's bare number for a transaction row; null for other sources, which carry no number.</param>
 public sealed record ProductMovementDto(
     int Id,
     int ProductId,
@@ -25,4 +31,7 @@ public sealed record ProductMovementDto(
     int? CounterpartyWarehouseId,
     string? CounterpartyWarehouseName,
     decimal Quantity,
-    decimal BalanceAfter);
+    decimal BalanceAfter,
+    MovementSource SourceType,
+    int SourceId,
+    string? SourceNumber);

@@ -1,4 +1,4 @@
-namespace Ombor.Contracts.Responses.Dashboard;
+﻿namespace Ombor.Contracts.Responses.Dashboard;
 
 /// <summary>
 /// The dashboard read model — an aggregated snapshot for the current organization. Debt figures
@@ -105,6 +105,8 @@ public sealed record DashboardDebtorDto(
 /// <param name="Total">The transaction's total due.</param>
 /// <param name="Paid">How much has been settled.</param>
 /// <param name="Status">Settlement status: "paid" / "partial" / "unpaid".</param>
+/// <param name="TransactionNumber">The transaction's bare document number (the client prepends «№»); null for a legacy row without one.</param>
+/// <param name="PartnerId">The partner id, to link the partner.</param>
 public sealed record DashboardRecentTransactionDto(
     int Id,
     DateTimeOffset Date,
@@ -112,4 +114,6 @@ public sealed record DashboardRecentTransactionDto(
     string Type,
     decimal Total,
     decimal Paid,
-    string Status);
+    string Status,
+    string? TransactionNumber,
+    int PartnerId);

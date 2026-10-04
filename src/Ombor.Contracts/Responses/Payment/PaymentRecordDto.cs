@@ -1,4 +1,4 @@
-namespace Ombor.Contracts.Responses.Payment;
+﻿namespace Ombor.Contracts.Responses.Payment;
 
 /// <summary>
 /// A payment in the source/allocation model (rules 8-14). <see cref="Sources"/> is where the
@@ -74,9 +74,14 @@ public sealed record PaymentSourceDto(
 /// The settled transaction's type (Sale, Supply, SaleRefund, SupplyRefund); null for advance/change
 /// allocations. Lets the frontend pick the right detail route (sales vs supplies) for a settlement row.
 /// </param>
+/// <param name="TransactionNumber">
+/// The settled transaction's bare document number (the client prepends «№»), so the row reads like the document's own
+/// page; null for advance/change allocations and for a legacy transaction without a number.
+/// </param>
 public sealed record PaymentAllocationEntryDto(
     int Id,
     string AllocationType,
     int? TransactionId,
     string? TransactionType,
-    decimal Amount);
+    decimal Amount,
+    string? TransactionNumber);

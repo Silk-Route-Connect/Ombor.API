@@ -93,7 +93,8 @@ internal sealed class ProductService(
             x.Quantity,
             x.Discount,
             x.UnitPrice,
-            x.DiscountType.ToString()))];
+            x.DiscountType.ToString(),
+            x.Transaction.Number?.ToString()))];
     }
 
     public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)

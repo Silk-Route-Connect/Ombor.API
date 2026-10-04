@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
@@ -28,11 +28,27 @@ internal static class WalletCalculationExtensions
             .Where(c => c.SourceType == PaymentSourceType.Wallet && c.Payment.Direction == PaymentDirection.Expense)
             .Sum(c => (decimal?)c.Amount) ?? 0m);
 
+    // The same formula as BalanceSelector, paired with the wallet id so many balances project in one query.
+    private static readonly Expression<Func<Wallet, WalletBalanceRow>> IdAndBalanceSelector = Expression.Lambda<Func<Wallet, WalletBalanceRow>>(
+        Expression.MemberInit(
+            Expression.New(typeof(WalletBalanceRow)),
+            Expression.Bind(typeof(WalletBalanceRow).GetProperty(nameof(WalletBalanceRow.Id))!, Expression.Property(BalanceSelector.Parameters[0], nameof(Wallet.Id))),
+            Expression.Bind(typeof(WalletBalanceRow).GetProperty(nameof(WalletBalanceRow.Balance))!, BalanceSelector.Body)),
+        BalanceSelector.Parameters);
+
     public static Task<decimal> ComputeWalletBalanceAsync(this IApplicationDbContext context, int walletId)
         => context.Wallets
             .Where(w => w.Id == walletId)
             .Select(BalanceSelector)
             .FirstAsync();
+
+    /// <summary>Balances of every wallet in <paramref name="wallets"/>, keyed by wallet id — one query, not one per wallet.</summary>
+    public static async Task<Dictionary<int, decimal>> ComputeWalletBalancesAsync(this IQueryable<Wallet> wallets)
+    {
+        var rows = await wallets.Select(IdAndBalanceSelector).ToArrayAsync();
+
+        return rows.ToDictionary(r => r.Id, r => r.Balance);
+    }
 
     /// <summary>
     /// Hard-blocks a wallet debit that would overdraw it (DR-25 — parity with the negative-stock block,
@@ -70,4 +86,11 @@ internal static class WalletCalculationExtensions
                 ["available"] = available,
                 ["requested"] = requested,
             });
+
+    private sealed class WalletBalanceRow
+    {
+        public int Id { get; init; }
+
+        public decimal Balance { get; init; }
+    }
 }

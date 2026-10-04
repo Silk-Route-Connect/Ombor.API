@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Payment;
@@ -59,22 +59,18 @@ internal sealed class PaymentQueries(IApplicationDbContext context)
             .Select(e => new PaymentFormEmployeeDto(e.Id, e.FullName, e.Position, e.Salary))
             .ToArrayAsync();
 
-        var walletRows = await context.Wallets
-            .Where(w => !w.IsArchived)
+        var activeWallets = context.Wallets.Where(w => !w.IsArchived);
+        var walletRows = await activeWallets
             .OrderBy(w => w.Name)
             .Select(w => new { w.Id, w.Name, Type = w.Type.ToString() })
             .ToArrayAsync();
 
-        var wallets = new PaymentFormWalletDto[walletRows.Length];
-        for (var i = 0; i < walletRows.Length; i++)
-        {
-            var w = walletRows[i];
-            // Full computed balance incl. payment activity, via the shared calculator — the form must
-            // match the wallets list (a payment-only wallet used to show 0 here while the list showed its
-            // real, possibly negative, balance).
-            var balance = await context.ComputeWalletBalanceAsync(w.Id);
-            wallets[i] = new PaymentFormWalletDto(w.Id, w.Name, w.Type, balance);
-        }
+        // Full computed balance incl. payment activity, via the shared calculator — the form must match the wallets
+        // list — in one query for all wallets (backend-19: it used to run one query per wallet).
+        var balances = await activeWallets.ComputeWalletBalancesAsync();
+        var wallets = walletRows
+            .Select(w => new PaymentFormWalletDto(w.Id, w.Name, w.Type, balances.GetValueOrDefault(w.Id)))
+            .ToArray();
 
         return new PaymentFormDataDto(partners, employees, wallets);
     }
@@ -90,7 +86,8 @@ internal sealed class PaymentQueries(IApplicationDbContext context)
                 t.Type.ToString(),
                 t.TotalDue,
                 t.TotalPaid,
-                t.TotalDue - t.TotalPaid))
+                t.TotalDue - t.TotalPaid,
+                t.Number.ToString()))
             .ToArrayAsync();
     }
 
@@ -174,7 +171,8 @@ internal sealed class PaymentQueries(IApplicationDbContext context)
                 a.Type.ToString(),
                 a.TransactionId,
                 a.Transaction != null ? a.Transaction.Type.ToString() : null,
-                a.Amount)).ToArray(),
+                a.Amount,
+                a.Transaction != null ? a.Transaction.Number.ToString() : null)).ToArray(),
             p.Attachments.Select(a => new PaymentAttachmentDto(
                 a.Id,
                 a.FileName,
