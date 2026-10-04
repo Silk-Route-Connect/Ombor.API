@@ -2,7 +2,7 @@ using Ombor.Domain.Common;
 
 namespace Ombor.Domain.Entities;
 
-public class Organization : AuditableEntity
+public class Organization : AuditableEntity, IAuditable
 {
     public required string Name { get; set; }
     public bool IsActive { get; set; }

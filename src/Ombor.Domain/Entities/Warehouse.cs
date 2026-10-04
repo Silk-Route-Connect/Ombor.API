@@ -5,7 +5,7 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a warehouse — a physical place that holds stock (its <see cref="WarehouseItems"/>).
 /// </summary>
-public class Warehouse : AuditableEntity, IOrganizationScoped
+public class Warehouse : AuditableEntity, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 

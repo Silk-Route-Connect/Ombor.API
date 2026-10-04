@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class PaymentAllocation : EntityBase, IOrganizationScoped, IAuditable
+public class PaymentAllocation : EntityBase, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(Payment), PaymentId);
+
     public int OrganizationId { get; set; }
 
     public decimal Amount { get; set; }

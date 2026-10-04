@@ -3,7 +3,7 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class Order : AuditableEntity, IOrganizationScoped
+public class Order : AuditableEntity, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 

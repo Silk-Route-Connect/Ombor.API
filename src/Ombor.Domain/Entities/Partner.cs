@@ -6,7 +6,7 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a partner entity.
 /// </summary>
-public class Partner : EntityBase, IOrganizationScoped
+public class Partner : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 
