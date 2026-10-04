@@ -4,10 +4,10 @@ using Ombor.Application.Extensions;
 using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
-using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.StockAdjustment;
 using Ombor.Contracts.Responses.StockAdjustment;
 using Ombor.Domain.Entities;
+using Ombor.Domain.Exceptions;
 using DomainDirection = Ombor.Domain.Enums.StockAdjustmentDirection;
 
 namespace Ombor.Application.Services;
@@ -16,20 +16,14 @@ internal sealed class StockAdjustmentService(
     IApplicationDbContext context,
     IRequestValidator validator,
     ICurrentUserAccessor currentUser,
-    IMovementService movementService,
+    StockAdjustmentBalances balances,
     IOrganizationWriteLock writeLock) : IStockAdjustmentService
 {
     public async Task<StockAdjustmentDto[]> GetAsync(GetStockAdjustmentsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var query = context.StockAdjustments
-            .Include(x => x.Warehouse)
-            .Include(x => x.CreatedByUser)
-            .Include(x => x.Product)
-            .ThenInclude(p => p.Category)
-            .IgnoreAutoIncludes()
-            .AsNoTracking();
+        var query = WithDetails();
 
         if (request.WarehouseId.HasValue)
         {
@@ -46,19 +40,21 @@ internal sealed class StockAdjustmentService(
             .ThenByDescending(x => x.Id)
             .ToArrayAsync();
 
-        // balanceAfter is the running stock right after each adjustment — reuse the warehouse movement
-        // ledger so this list and GET /warehouses/{id}/movements report the same figure for the same event.
-        var balanceByAdjustmentId = new Dictionary<int, decimal>();
-        foreach (var warehouseId in adjustments.Select(a => a.WarehouseId).Distinct())
-        {
-            var movements = await movementService.GetWarehouseMovementsAsync(warehouseId);
-            foreach (var movement in movements.Where(m => m.Kind == MovementKind.Adjustment))
-            {
-                balanceByAdjustmentId[movement.Id] = movement.BalanceAfter;
-            }
-        }
+        var balanceAfter = await balances.ComputeAsync([.. adjustments.Select(a => new AdjustmentKey(a.Id, a.WarehouseId, a.ProductId))]);
 
-        return [.. adjustments.Select(x => x.ToDto(balanceByAdjustmentId.GetValueOrDefault(x.Id)))];
+        return [.. adjustments.Select(x => x.ToDto(balanceAfter.GetValueOrDefault(x.Id)))];
+    }
+
+    public async Task<StockAdjustmentDto> GetByIdAsync(GetStockAdjustmentByIdRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        var adjustment = await WithDetails().FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new EntityNotFoundException<StockAdjustment>(request.Id);
+
+        var balanceAfter = await balances.ComputeAsync([new AdjustmentKey(adjustment.Id, adjustment.WarehouseId, adjustment.ProductId)]);
+
+        return adjustment.ToDto(balanceAfter.GetValueOrDefault(adjustment.Id));
     }
 
     public async Task<StockAdjustmentDto> CreateAsync(CreateStockAdjustmentRequest request)
@@ -124,15 +120,17 @@ internal sealed class StockAdjustmentService(
 
     private async Task<StockAdjustmentDto> GetProjectedOrThrowAsync(int id, decimal balanceAfter)
     {
-        var adjustment = await context.StockAdjustments
+        var adjustment = await WithDetails().FirstAsync(x => x.Id == id);
+
+        return adjustment.ToDto(balanceAfter);
+    }
+
+    private IQueryable<StockAdjustment> WithDetails() =>
+        context.StockAdjustments
             .Include(x => x.Warehouse)
             .Include(x => x.CreatedByUser)
             .Include(x => x.Product)
             .ThenInclude(p => p.Category)
             .IgnoreAutoIncludes()
-            .AsNoTracking()
-            .FirstAsync(x => x.Id == id);
-
-        return adjustment.ToDto(balanceAfter);
-    }
+            .AsNoTracking();
 }
