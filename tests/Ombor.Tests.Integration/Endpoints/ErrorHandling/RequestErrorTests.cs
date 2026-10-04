@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +61,25 @@ public sealed class RequestErrorTests(TestingWebApplicationFactory factory, ITes
     }
 
     [Fact]
+    public async Task DbUpdateHandler_ShouldMapSkuIndexViolation_To400SkuTaken()
+    {
+        // A create that races past the validator's SKU check hits the (OrganizationId, SKU) unique index.
+        await using var context = CreateContext();
+        var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
+        context.Categories.Add(category);
+        await context.SaveChangesAsync();
+        var sku = $"SKU-{Guid.NewGuid():N}";
+        context.Products.Add(NewProduct(category.Id, sku));
+        await context.SaveChangesAsync();
+        context.Products.Add(NewProduct(category.Id, sku));
+
+        var (status, code) = await HandleAsync(await CaptureAsync(() => context.SaveChangesAsync()));
+
+        Assert.Equal(StatusCodes.Status400BadRequest, status);
+        Assert.Equal("product.sku_taken", code);
+    }
+
+    [Fact]
     public async Task DbUpdateHandler_ShouldMapForeignKeyViolation_To409Referenced()
     {
         await using var context = CreateContext();
@@ -97,6 +116,14 @@ public sealed class RequestErrorTests(TestingWebApplicationFactory factory, ITes
         Assert.Equal(StatusCodes.Status400BadRequest, status);
         Assert.Equal("validation.failed", code);
     }
+
+    private static Product NewProduct(int categoryId, string sku) => new()
+    {
+        Name = $"Product {Guid.NewGuid():N}",
+        SKU = sku,
+        CategoryId = categoryId,
+        Category = null!,
+    };
 
     private static Wallet NewWallet(string name) => new()
     {

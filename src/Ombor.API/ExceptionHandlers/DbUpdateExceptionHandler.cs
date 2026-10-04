@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +8,8 @@ namespace Ombor.API.ExceptionHandlers;
 
 /// <summary>
 /// Safety net for a constraint the service layer missed: maps the SQL Server errors a client can cause to a 4xx
-/// instead of a 500 — a unique-index violation to 409 <c>conflict.duplicate</c>, a foreign-key violation to 409
+/// instead of a 500 — a unique-index violation to 409 <c>conflict.duplicate</c> (or, for an index that guards one
+/// form field such as the product SKU, the same 400 field error the validator gives), a foreign-key violation to 409
 /// <c>entity.referenced</c>, a too-long value to 400 <c>validation.failed</c>. Any other database failure stays a 500.
 /// Reaching this handler still means a guard is missing, so it logs a warning (which reaches Sentry) rather than
 /// staying silent like the plain 4xx handlers.
@@ -30,6 +31,8 @@ internal sealed class DbUpdateExceptionHandler(ILogger<DbUpdateExceptionHandler>
 
         var problemDetails = sqlException.Number switch
         {
+            UniqueIndexViolation or UniqueConstraintViolation when FieldUniqueIndexFor(sqlException) is { } field =>
+                FieldTaken(httpContext, field),
             UniqueIndexViolation or UniqueConstraintViolation => Conflict(
                 httpContext, "A record with the same value already exists.", ErrorCodes.ConflictDuplicate),
             ForeignKeyViolation => Conflict(
@@ -51,7 +54,8 @@ internal sealed class DbUpdateExceptionHandler(ILogger<DbUpdateExceptionHandler>
         }
 
         httpContext.Response.StatusCode = problemDetails.Status!.Value;
-        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+        // Serialize the runtime type so a ValidationProblemDetails keeps its field errors.
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, problemDetails.GetType(), cancellationToken);
 
         logger.LogWarning(
             exception,
@@ -63,6 +67,34 @@ internal sealed class DbUpdateExceptionHandler(ILogger<DbUpdateExceptionHandler>
 
         return true;
     }
+
+    /// <summary>
+    /// Unique indexes that guard a single form field: a race past the validator's uniqueness check still answers
+    /// with the same field error and code the validator gives, instead of a generic 409.
+    /// </summary>
+    private static readonly FieldUniqueIndex[] FieldUniqueIndexes =
+    [
+        new("IX_Product_OrganizationId_SKU", "SKU", "A product with the same SKU already exists.", ErrorCodes.ProductSkuTaken),
+    ];
+
+    private static FieldUniqueIndex? FieldUniqueIndexFor(SqlException exception) =>
+        FieldUniqueIndexes.FirstOrDefault(index => exception.Message.Contains(index.IndexName, StringComparison.Ordinal));
+
+    private static ValidationProblemDetails FieldTaken(HttpContext httpContext, FieldUniqueIndex index)
+    {
+        var problem = new ValidationProblemDetails(new Dictionary<string, string[]> { [index.Field] = [index.Message] })
+        {
+            Title = "One or more validation errors occurred.",
+            Status = StatusCodes.Status400BadRequest,
+            Type = "https://httpstatuses.com/400",
+            Instance = httpContext.Request.Path,
+        };
+        problem.WithCode(index.Code);
+
+        return problem;
+    }
+
+    private sealed record FieldUniqueIndex(string IndexName, string Field, string Message, string Code);
 
     private static ProblemDetails Conflict(HttpContext httpContext, string detail, string code) => new ProblemDetails
     {

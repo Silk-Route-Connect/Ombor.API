@@ -4,6 +4,7 @@ using Ombor.Application.Interfaces;
 using Ombor.Contracts.Common;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Validators.Product;
 
@@ -30,7 +31,8 @@ public sealed class CreateProductRequestValidator : AbstractValidator<CreateProd
             .WithMessage($"Product SKU must not exceed {ValidationConstants.CodeLength} characters.")
             .MustAsync(async (sku, cancellation) =>
                 !await context.Products.AnyAsync(p => p.SKU == sku, cancellation))
-            .WithMessage("A product with the same SKU already exists.");
+            .WithMessage("A product with the same SKU already exists.")
+            .WithErrorCode(ErrorCodes.ProductSkuTaken);
 
         RuleFor(x => x.Description)
             .MaximumLength(ValidationConstants.MaxStringLength)

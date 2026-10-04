@@ -1,4 +1,4 @@
-namespace Ombor.Domain.Exceptions;
+﻿namespace Ombor.Domain.Exceptions;
 
 /// <summary>
 /// Machine-readable error codes served as the <c>code</c> extension member of every error ProblemDetails, so a
@@ -52,6 +52,12 @@ public static class ErrorCodes
     /// only Sale/SupplyRefund, Expense only Supply/SaleRefund.
     /// </summary>
     public const string PaymentDirectionMismatch = "payment.direction_mismatch";
+
+    /// <summary>
+    /// The product SKU is already used by another product of the organization, archived ones included (400, field
+    /// error on <c>SKU</c>).
+    /// </summary>
+    public const string ProductSkuTaken = "product.sku_taken";
 
     /// <summary>A referenced record cannot be deleted (409) — archive it instead.</summary>
     public const string EntityReferenced = "entity.referenced";
