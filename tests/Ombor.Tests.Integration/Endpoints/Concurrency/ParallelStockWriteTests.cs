@@ -127,8 +127,8 @@ public sealed class ParallelStockWriteTests(TestingWebApplicationFactory factory
 
         var outcomes = await FireAsync(_ => Json($"{Routes.Order}/{order.Id}/deliver", new { warehouseId }), count: 5);
 
-        // The losers see the order already delivered: an illegal Delivered → Delivered transition (409, no code yet).
-        AssertOutcomes(outcomes, succeeded: 1, HttpStatusCode.OK, HttpStatusCode.Conflict, refusedCode: null);
+        // The losers see the order already delivered: an illegal Delivered → Delivered transition.
+        AssertOutcomes(outcomes, succeeded: 1, HttpStatusCode.OK, HttpStatusCode.Conflict, refusedCode: "order.invalid_transition");
         Assert.Equal(8m, await StockOfAsync(warehouseId, productId));
         Assert.Equal(1, await _context.Transactions.CountAsync(t => t.PartnerId == customerId));
     }
