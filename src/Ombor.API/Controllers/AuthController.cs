@@ -57,12 +57,12 @@ public class AuthController(
         {
             // Kept as a plain body (not ProblemDetails) for existing clients; `code` tells invalid / expired /
             // too many attempts apart.
-            return BadRequest(new { message = "Invalid verification code.", code = result.Code });
+            return BadRequest(new { message = "Invalid verification code.", code = result.ErrorCode });
         }
 
-        SetRefreshTokenCookie(result.RefreshToken);
+        SetRefreshTokenCookie(result.Session.RefreshToken);
 
-        return Ok(result);
+        return Ok(new VerifyOtpResponse(result.Session.AccessToken));
     }
 
     [HttpPost("login")]
@@ -72,27 +72,27 @@ public class AuthController(
     {
         logger.LogInformation("Login request received");
 
-        var response = await service.LoginAsync(request);
+        var session = await service.LoginAsync(request);
 
-        SetRefreshTokenCookie(response.RefreshToken);
+        SetRefreshTokenCookie(session.RefreshToken);
 
         logger.LogInformation("Login successful, cookie set");
 
-        return Ok(response);
+        return Ok(new LoginResponse(session.AccessToken, session.Language));
     }
 
     [HttpPost("refresh-token")]
     [EnableRateLimiting(RateLimitPolicies.Session)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<RefreshTokenResponse>> RefreshTokenAsync([FromBody] RefreshTokenRequest? request)
+    public async Task<ActionResult<RefreshTokenResponse>> RefreshTokenAsync()
     {
         logger.LogInformation("Refresh token request received");
         logger.LogInformation("Request origin: {Origin}", Request.Headers["Origin"].ToString());
         logger.LogInformation("Cookies present: {Cookies}", string.Join(", ", Request.Cookies.Keys));
 
-        var cookieToken = Request.Cookies[RefreshTokenCookieName];
-        var token = cookieToken ?? request?.RefreshToken;
+        // The cookie is the only carrier (backend-12): a token in a request body is not read.
+        var token = Request.Cookies[RefreshTokenCookieName];
 
         if (string.IsNullOrWhiteSpace(token))
         {
@@ -103,16 +103,13 @@ public class AuthController(
             return Unauthorized(new { message = "Refresh token is required", code = ErrorCodes.SessionExpired });
         }
 
-        logger.LogInformation("Refresh token found from: {Source}",
-            cookieToken != null ? "cookie" : "body");
+        var session = await service.RefreshTokenAsync(new RefreshTokenRequest(token));
 
-        var result = await service.RefreshTokenAsync(new RefreshTokenRequest(token));
-
-        SetRefreshTokenCookie(result.RefreshToken);
+        SetRefreshTokenCookie(session.RefreshToken);
 
         logger.LogInformation("Refresh successful");
 
-        return Ok(result);
+        return Ok(new RefreshTokenResponse(session.AccessToken));
     }
 
     [HttpPost("logout")]

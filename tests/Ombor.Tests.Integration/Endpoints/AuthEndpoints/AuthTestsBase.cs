@@ -114,7 +114,23 @@ public abstract class AuthTestsBase(TestingWebApplicationFactory factory, ITestO
             response.StatusCode,
             text,
             json as JObject ?? new JObject(),
-            response.Headers.RetryAfter?.Delta);
+            response.Headers.RetryAfter?.Delta,
+            RefreshTokenCookieOf(response));
+    }
+
+    /// <summary>The refresh token the response set in the httpOnly cookie — its only carrier (backend-12).</summary>
+    private static string? RefreshTokenCookieOf(HttpResponseMessage response)
+    {
+        if (!response.Headers.TryGetValues("Set-Cookie", out var cookies))
+        {
+            return null;
+        }
+
+        var prefix = $"{RefreshTokenCookie}=";
+        var cookie = cookies.FirstOrDefault(c => c.StartsWith(prefix, StringComparison.Ordinal));
+        var value = cookie?[prefix.Length..].Split(';')[0];
+
+        return string.IsNullOrEmpty(value) ? null : Uri.UnescapeDataString(value);
     }
 
     protected async Task<RawResponse> PostRawAsync(string url, object body, string? language = null)
@@ -124,8 +140,9 @@ public abstract class AuthTestsBase(TestingWebApplicationFactory factory, ITestO
         return await SendAsync(client, HttpMethod.Post, url, body, language: language);
     }
 
-    /// <summary>Status, raw text, parsed JSON body and the <c>Retry-After</c> delta of one response.</summary>
-    protected sealed record RawResponse(System.Net.HttpStatusCode Status, string Text, JObject Body, TimeSpan? RetryAfter)
+    /// <summary>Status, raw text, parsed JSON body, the <c>Retry-After</c> delta and the refresh-token cookie of one response.</summary>
+    protected sealed record RawResponse(
+        System.Net.HttpStatusCode Status, string Text, JObject Body, TimeSpan? RetryAfter, string? RefreshTokenCookie)
     {
         public string? Code => (string?)Body["code"];
     }

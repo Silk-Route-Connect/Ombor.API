@@ -60,7 +60,7 @@ internal sealed class AuthService(
             otpCodeProvider.ResendAfterSeconds);
     }
 
-    public async Task<VerifyOtpResponse> VerifyRegistrationOtpAsync(SmsVerificationRequest request, string language)
+    public async Task<RegistrationVerification> VerifyRegistrationOtpAsync(SmsVerificationRequest request, string language)
     {
         await validator.ValidateAndThrowAsync(request);
 
@@ -69,14 +69,14 @@ internal sealed class AuthService(
 
         if (check != OtpCheckResult.Valid)
         {
-            return new VerifyOtpResponse { Code = check.ToErrorCode() };
+            return new RegistrationVerification(null, check.ToErrorCode());
         }
 
         var registerRequest = await otpCodeProvider.GetRegisterRequestAsync(phoneNumber);
 
         if (registerRequest is null)
         {
-            return new VerifyOtpResponse { Code = ErrorCodes.CodeExpired };
+            return new RegistrationVerification(null, ErrorCodes.CodeExpired);
         }
 
         // Another registration may have claimed the phone or email while this code was in flight.
@@ -133,10 +133,10 @@ internal sealed class AuthService(
 
         var accessToken = tokenService.GenerateAccessToken(newUser);
 
-        return new VerifyOtpResponse(refreshToken, accessToken);
+        return new RegistrationVerification(new AuthSession(accessToken, refreshToken, newUser.Language), null);
     }
 
-    public async Task<LoginResponse> LoginAsync(LoginRequest request)
+    public async Task<AuthSession> LoginAsync(LoginRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
@@ -177,10 +177,10 @@ internal sealed class AuthService(
         var accessToken = tokenService.GenerateAccessToken(user);
         var refreshToken = await refreshTokens.IssueAsync(user);
 
-        return new LoginResponse(accessToken, refreshToken, user.Language);
+        return new AuthSession(accessToken, refreshToken, user.Language);
     }
 
-    public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
+    public async Task<AuthSession> RefreshTokenAsync(RefreshTokenRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -220,7 +220,7 @@ internal sealed class AuthService(
         var newAccessToken = tokenService.GenerateAccessToken(user);
         var newRefreshToken = await refreshTokens.IssueAsync(user);
 
-        return new RefreshTokenResponse(newAccessToken, newRefreshToken);
+        return new AuthSession(newAccessToken, newRefreshToken, user.Language);
     }
 
     public async Task RevokeRefreshTokenAsync(RevokeRefreshTokenRequest request)

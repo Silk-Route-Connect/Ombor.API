@@ -1,32 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Ombor.Contracts.Responses.Auth;
 
-namespace Ombor.Contracts.Responses.Auth;
-
-/// <summary>Result of confirming the registration code; carries the first session's tokens on success.</summary>
-public sealed record VerifyOtpResponse
+/// <summary>
+/// The registration code was confirmed and the account created: the first session's access token. The refresh token
+/// travels only in the httpOnly <c>ombor.refreshToken</c> cookie, never in the body. A refused code is a 400
+/// <c>{ message, code }</c> body instead.
+/// </summary>
+/// <param name="AccessToken">The JWT access token.</param>
+public sealed record VerifyOtpResponse(string AccessToken)
 {
-    [MemberNotNullWhen(true, nameof(RefreshToken), nameof(AccessToken))]
-    public bool Success { get; }
-    public string? RefreshToken { get; init; }
-    public string? AccessToken { get; init; }
-
-    /// <summary>
-    /// Machine-readable failure reason when <see cref="Success"/> is false: <c>auth.code_invalid</c>,
-    /// <c>auth.code_expired</c> or <c>auth.too_many_attempts</c>. Served in the 400 body as <c>code</c>.
-    /// </summary>
-    public string? Code { get; init; }
-
-    public VerifyOtpResponse(string refreshToken, string accessToken)
-    {
-        RefreshToken = refreshToken;
-        AccessToken = accessToken;
-        Success = true;
-    }
-
-    public VerifyOtpResponse()
-    {
-        Success = false;
-        RefreshToken = null;
-        AccessToken = null;
-    }
+    /// <summary>Always true: a refused code never produces this body.</summary>
+    public bool Success => true;
 }

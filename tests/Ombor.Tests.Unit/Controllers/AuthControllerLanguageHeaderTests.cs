@@ -7,8 +7,10 @@ using Moq;
 using Ombor.API.Controllers;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Models;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Tests.Unit.Controllers;
 
@@ -43,12 +45,29 @@ public sealed class AuthControllerLanguageHeaderTests
         var service = new Mock<IAuthService>();
         service
             .Setup(s => s.VerifyRegistrationOtpAsync(It.IsAny<SmsVerificationRequest>(), language))
-            .ReturnsAsync(new VerifyOtpResponse());
+            .ReturnsAsync(new RegistrationVerification(null, ErrorCodes.CodeInvalid));
         var controller = CreateController(service.Object, language);
 
         await controller.SmsVerificationAsync(new SmsVerificationRequest("+998900000000", "1234"));
 
         service.Verify(s => s.VerifyRegistrationOtpAsync(It.IsAny<SmsVerificationRequest>(), language), Times.Once);
+    }
+
+    [Fact]
+    public async Task SmsVerificationAsync_PutsTheRefreshTokenInTheCookieOnly()
+    {
+        var service = new Mock<IAuthService>();
+        service
+            .Setup(s => s.VerifyRegistrationOtpAsync(It.IsAny<SmsVerificationRequest>(), "ru"))
+            .ReturnsAsync(new RegistrationVerification(new AuthSession("access-token", "refresh-token", "ru"), null));
+        var controller = CreateController(service.Object, "ru");
+
+        var result = await controller.SmsVerificationAsync(new SmsVerificationRequest("+998900000000", "1234"));
+
+        var body = Assert.IsType<VerifyOtpResponse>(Assert.IsType<OkObjectResult>(result.Result).Value);
+        Assert.Equal("access-token", body.AccessToken);
+        Assert.True(body.Success);
+        Assert.Contains("ombor.refreshToken=refresh-token", controller.Response.Headers.SetCookie.ToString());
     }
 
     private static AuthController CreateController(IAuthService service, string? language)

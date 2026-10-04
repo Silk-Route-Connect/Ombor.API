@@ -39,7 +39,7 @@ public sealed class AuthSessionTests(JwtTestingWebApplicationFactory factory, IT
         Assert.Equal(ErrorCodes.AccountDeactivated, after.Code);
 
         // … and the refresh token cannot mint a new one.
-        var refresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", new { refreshToken = staff.RefreshToken });
+        var refresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", refreshTokenCookie: staff.RefreshToken);
         Assert.Equal(HttpStatusCode.Unauthorized, refresh.Status);
         Assert.Equal(ErrorCodes.AccountDeactivated, refresh.Code);
 
@@ -85,11 +85,11 @@ public sealed class AuthSessionTests(JwtTestingWebApplicationFactory factory, IT
             refreshTokenCookie: thisDevice.RefreshToken);
         Assert.Equal(HttpStatusCode.NoContent, change.Status);
 
-        var otherRefresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", new { refreshToken = otherDevice.RefreshToken });
+        var otherRefresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", refreshTokenCookie: otherDevice.RefreshToken);
         Assert.Equal(HttpStatusCode.Unauthorized, otherRefresh.Status);
         Assert.Equal(ErrorCodes.SessionExpired, otherRefresh.Code);
 
-        var thisRefresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", new { refreshToken = thisDevice.RefreshToken });
+        var thisRefresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", refreshTokenCookie: thisDevice.RefreshToken);
         Assert.Equal(HttpStatusCode.OK, thisRefresh.Status);
 
         var oldPassword = await SendAsync(client, HttpMethod.Post, "auth/login", new { phoneNumber = phone, password = Password });
@@ -139,7 +139,7 @@ public sealed class AuthSessionTests(JwtTestingWebApplicationFactory factory, IT
         var login = await SendAsync(client, HttpMethod.Post, "auth/login", new { phoneNumber = phone, password });
         Assert.Equal(HttpStatusCode.OK, login.Status);
 
-        return new Session((string)login.Body["accessToken"]!, (string)login.Body["refreshToken"]!);
+        return new Session((string)login.Body["accessToken"]!, login.RefreshTokenCookie!);
     }
 
     private sealed record Session(string AccessToken, string RefreshToken);

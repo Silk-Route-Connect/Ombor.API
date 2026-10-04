@@ -89,12 +89,12 @@ public sealed class AuthLoginSecurityTests(TestingWebApplicationFactory factory,
     public async Task Refresh_OfADeactivatedUser_Is401_AndRevokesTheirSessions()
     {
         var (userId, phone) = await SeedUserAsync(Password);
-        var login = await _client.PostAsync<LoginResponse>(
-            "auth/login", new { phoneNumber = phone, password = Password }, HttpStatusCode.OK);
+        using var client = CreateRawClient();
+        var login = await SendAsync(client, HttpMethod.Post, "auth/login", new { phoneNumber = phone, password = Password });
 
         await DeactivateAsync(userId);
 
-        var refresh = await PostRawAsync("auth/refresh-token", new { refreshToken = login.RefreshToken });
+        var refresh = await SendAsync(client, HttpMethod.Post, "auth/refresh-token", refreshTokenCookie: login.RefreshTokenCookie);
 
         Assert.Equal(HttpStatusCode.Unauthorized, refresh.Status);
         Assert.Equal(ErrorCodes.AccountDeactivated, refresh.Code);
@@ -104,7 +104,9 @@ public sealed class AuthLoginSecurityTests(TestingWebApplicationFactory factory,
     [Fact]
     public async Task Refresh_WithAnUnknownToken_Is401SessionExpired()
     {
-        var refresh = await PostRawAsync("auth/refresh-token", new { refreshToken = $"unknown-{Guid.NewGuid():N}" });
+        using var client = CreateRawClient();
+        var refresh = await SendAsync(
+            client, HttpMethod.Post, "auth/refresh-token", refreshTokenCookie: $"unknown-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Unauthorized, refresh.Status);
         Assert.Equal(ErrorCodes.SessionExpired, refresh.Code);
