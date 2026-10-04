@@ -11,6 +11,7 @@ using Ombor.Application.Services;
 using Ombor.Application.Services.Activity;
 using Ombor.Application.Services.Dashboard;
 using Ombor.Application.Services.DebtPositions;
+using Ombor.Application.Services.Reports;
 
 namespace Ombor.Application.Extensions;
 
@@ -68,9 +69,21 @@ public static class DependencyInjection
         services.AddScoped<IDebtService, DebtService>();
         services.AddScoped<DashboardSeriesBuilder>();
         services.AddScoped<DashboardMoney>();
+        services.AddScoped<DashboardProfit>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<ActivityQueries>();
         services.AddScoped<IActivityService, ActivityService>();
+        services.AddScoped<ReportLines>();
+        services.AddScoped<ReportGrouping>();
+        services.AddScoped<ReportExpenses>();
+        services.AddScoped<SalesReportBuilder>();
+        services.AddScoped<PurchasesReportBuilder>();
+        services.AddScoped<StockReportBuilder>();
+        services.AddScoped<CashFlowReportBuilder>();
+        services.AddScoped<ExpensesReportBuilder>();
+        services.AddScoped<LossesReportBuilder>();
+        services.AddScoped<ProfitReportBuilder>();
+        services.AddScoped<IReportService, ReportService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();

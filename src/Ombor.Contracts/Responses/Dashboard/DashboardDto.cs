@@ -20,6 +20,7 @@ namespace Ombor.Contracts.Responses.Dashboard;
 /// <param name="SaleRefunds">Sale refunds in the period (already netted out of <see cref="Revenue"/>); count = refund documents.</param>
 /// <param name="StockValue">The carrying value of all stock (Σ quantity × WAC), archived warehouses included (rule 31).</param>
 /// <param name="Cash">Money in all wallets, archived ones included (rule 31), with a trend and the per-wallet balances.</param>
+/// <param name="GrossProfit">Gross profit in the period (net revenue − cost of goods sold), with its trend — the sales report's figure for the same days.</param>
 public sealed record DashboardDto(
     string BusinessName,
     string Period,
@@ -34,7 +35,21 @@ public sealed record DashboardDto(
     DashboardRecentTransactionDto[] RecentTransactions,
     DashboardKpiDto SaleRefunds,
     DashboardStockValueDto StockValue,
-    DashboardCashDto Cash);
+    DashboardCashDto Cash,
+    DashboardGrossProfitDto GrossProfit);
+
+/// <summary>Gross profit in the period, from the cost snapshotted on each sale line.</summary>
+/// <param name="Value">Net revenue − cost of goods sold (sales minus sale refunds, each at its own cost).</param>
+/// <param name="DeltaPct">Percent change vs the preceding equal period; null when that was 0.</param>
+/// <param name="Trend">Gross profit within each series bucket; the buckets add up to <see cref="Value"/>.</param>
+/// <param name="MarginPercent">Gross profit ÷ net revenue × 100, 2 decimals; null unless net revenue is positive.</param>
+/// <param name="CostIsEstimated">True when any cost behind the value or its delta is an estimate (sales recorded before cost snapshots began on 2026-10-04) — show it with a warning.</param>
+public sealed record DashboardGrossProfitDto(
+    decimal Value,
+    decimal? DeltaPct,
+    decimal[] Trend,
+    decimal? MarginPercent,
+    bool CostIsEstimated);
 
 /// <summary>The value of the stock on hand.</summary>
 /// <param name="Value">Σ quantity × weighted-average cost over every warehouse, rounded to 2 decimals.</param>

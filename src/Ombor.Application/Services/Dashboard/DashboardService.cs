@@ -13,7 +13,8 @@ internal sealed class DashboardService(
     IBusinessClock clock,
     DebtPositionCalculator debtPositions,
     DashboardSeriesBuilder seriesBuilder,
-    DashboardMoney money) : IDashboardService
+    DashboardMoney money,
+    DashboardProfit profit) : IDashboardService
 {
     private const int TopDebtorsCount = 5;
     private const int RecentTransactionsLimit = 10;
@@ -33,6 +34,7 @@ internal sealed class DashboardService(
         var debts = await debtPositions.ComputeAsync(window.TrendCutoffs);
         var cash = await money.CashAsync(window);
         var stockValue = await money.StockValueAsync();
+        var grossProfit = await profit.GrossProfitAsync(window);
         var recent = await RecentTransactionsAsync();
 
         return new DashboardDto(
@@ -49,7 +51,8 @@ internal sealed class DashboardService(
             recent,
             saleRefunds,
             stockValue,
-            cash);
+            cash,
+            grossProfit);
     }
 
     /// <summary>

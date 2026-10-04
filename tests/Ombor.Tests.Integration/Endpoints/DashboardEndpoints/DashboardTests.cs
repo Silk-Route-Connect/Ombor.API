@@ -70,6 +70,8 @@ public sealed class DashboardTests(TestingWebApplicationFactory factory, ITestOu
         Assert.Equal(dashboard.Overdue.Value, dashboard.Overdue.Trend[^1]);
         Assert.Equal(dashboard.Cash.Value, dashboard.Cash.Trend[^1]);
         Assert.Equal(dashboard.Revenue.Value, dashboard.Revenue.Trend.Sum());
+        Assert.Equal(buckets, dashboard.GrossProfit.Trend.Length);
+        Assert.Equal(dashboard.GrossProfit.Value, dashboard.GrossProfit.Trend.Sum());
     }
 
     [Fact]
