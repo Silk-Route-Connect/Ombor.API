@@ -59,6 +59,12 @@ public static class ErrorCodes
     /// </summary>
     public const string ProductSkuTaken = "product.sku_taken";
 
+    /// <summary>
+    /// The order's state machine does not allow this status change (409), e.g. delivering a cancelled order or
+    /// shipping one that is still pending. Params: <c>from</c>, <c>to</c> (order status names).
+    /// </summary>
+    public const string OrderInvalidTransition = "order.invalid_transition";
+
     /// <summary>A referenced record cannot be deleted (409) — archive it instead.</summary>
     public const string EntityReferenced = "entity.referenced";
 
