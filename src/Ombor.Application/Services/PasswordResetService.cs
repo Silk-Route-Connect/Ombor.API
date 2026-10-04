@@ -32,12 +32,14 @@ internal sealed class PasswordResetService(
         await otpCodeProvider.EnsureCanSendAsync(phoneNumber, OtpPurpose.PasswordReset);
 
         // Generic acknowledgement whether or not the number has an account, so the response never reveals which
-        // phone numbers are registered (owner decision). The SMS is queued, not awaited: response time and status
-        // (no provider 503) must not depend on whether an account exists.
+        // phone numbers are registered (owner decision). A code is issued either way and only sent to an account, so
+        // verify-reset-code answers an unknown number exactly like a wrong guess (auth.code_invalid, the same attempt
+        // count, the same expiry) instead of «expired». The SMS is queued, not awaited: response time and status (no
+        // provider 503) must not depend on whether an account exists.
+        var code = await otpCodeProvider.GenerateOtpAsync(phoneNumber, OtpPurpose.PasswordReset);
+
         if (await context.Users.IgnoreQueryFilters().AnyAsync(u => u.PhoneNumber == phoneNumber))
         {
-            var code = await otpCodeProvider.GenerateOtpAsync(phoneNumber, OtpPurpose.PasswordReset);
-
             smsQueue.Enqueue(new SmsMessage(
                 phoneNumber,
                 $"Inventory Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
@@ -79,7 +81,8 @@ internal sealed class PasswordResetService(
 
         if (user is null)
         {
-            // The OTP is only ever issued for a real account, so a missing user means a stale/forged code.
+            // The code of a number without an account is never sent, so a match here is a lucky guess: same answer as
+            // a wrong code.
             return new ResetPasswordResponse(false, InvalidCodeMessage, OtpCheckResult.Invalid.ToErrorCode());
         }
 
