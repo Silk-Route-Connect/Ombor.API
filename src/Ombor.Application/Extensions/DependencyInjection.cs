@@ -12,6 +12,7 @@ using Ombor.Application.Services.Activity;
 using Ombor.Application.Services.Dashboard;
 using Ombor.Application.Services.DebtPositions;
 using Ombor.Application.Services.Reports;
+using Ombor.Application.Services.Search;
 
 namespace Ombor.Application.Extensions;
 
@@ -85,6 +86,10 @@ public static class DependencyInjection
         services.AddScoped<LossesReportBuilder>();
         services.AddScoped<ProfitReportBuilder>();
         services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<SearchCandidates>();
+        services.AddScoped<SearchDocuments>();
+        services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();
