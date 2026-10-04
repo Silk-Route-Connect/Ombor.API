@@ -23,8 +23,9 @@ public static class StartupExtensions
         // The seeder creates the organizations and pins each one (via this accessor, which
         // shares the context's scope) before stamping that organization's seeded rows.
         var organizationAccessor = scope.ServiceProvider.GetRequiredService<IOrganizationAccessor>();
+        var organizationSetup = scope.ServiceProvider.GetRequiredService<IOrganizationSetupService>();
 
-        await seeder.SeedDatabaseAsync(context, organizationAccessor);
+        await seeder.SeedDatabaseAsync(context, organizationAccessor, organizationSetup);
 
         return app;
     }

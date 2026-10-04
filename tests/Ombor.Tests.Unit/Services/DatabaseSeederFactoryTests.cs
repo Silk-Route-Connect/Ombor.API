@@ -22,13 +22,15 @@ public sealed class DatabaseSeederFactoryTests
         var seeder = CreateFactory(environmentName).CreateSeeder();
         var context = new Mock<IApplicationDbContext>(MockBehavior.Strict);
         var organizationAccessor = new Mock<IOrganizationAccessor>(MockBehavior.Strict);
+        var organizationSetup = new Mock<IOrganizationSetupService>(MockBehavior.Strict);
 
         // Act
-        await seeder.SeedDatabaseAsync(context.Object, organizationAccessor.Object);
+        await seeder.SeedDatabaseAsync(context.Object, organizationAccessor.Object, organizationSetup.Object);
 
         // Assert — no demo organization, user, default password or fabricated payment; nothing touched at all.
         context.VerifyNoOtherCalls();
         organizationAccessor.VerifyNoOtherCalls();
+        organizationSetup.VerifyNoOtherCalls();
     }
 
     [Theory]

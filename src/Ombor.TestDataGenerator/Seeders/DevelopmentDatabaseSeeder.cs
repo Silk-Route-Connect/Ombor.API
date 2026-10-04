@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
+using Ombor.Application.Localization;
 using Ombor.Domain.Entities;
 using Ombor.TestDataGenerator.Configurations;
 using Ombor.TestDataGenerator.Generators;
@@ -20,7 +21,10 @@ internal sealed class DevelopmentDatabaseSeeder(
 {
     private readonly PaymentSeedSettings _paymentOptions = seedSettings.PaymentSettings;
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
+    public async Task SeedDatabaseAsync(
+        IApplicationDbContext context,
+        IOrganizationAccessor organizationAccessor,
+        IOrganizationSetupService organizationSetup)
     {
         var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();
@@ -40,6 +44,10 @@ internal sealed class DevelopmentDatabaseSeeder(
             await SeedTransactionsAsync(context);
             await AddPaymentsAsync(context);
             await AddOrdersAsync(context);
+
+            // Last, so the generators above still see an empty organization: the walk-in customer, main warehouse
+            // and other starter rows registration creates (OrganizationSetupService), named in Russian.
+            await organizationSetup.SeedStarterDataAsync(organizationId, SupportedLanguages.Russian);
         }
     }
 

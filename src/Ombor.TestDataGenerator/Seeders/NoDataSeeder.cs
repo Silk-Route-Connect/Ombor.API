@@ -11,6 +11,9 @@ namespace Ombor.TestDataGenerator.Seeders;
 /// </summary>
 internal sealed class NoDataSeeder : IDatabaseSeeder
 {
-    public Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
+    public Task SeedDatabaseAsync(
+        IApplicationDbContext context,
+        IOrganizationAccessor organizationAccessor,
+        IOrganizationSetupService organizationSetup)
         => Task.CompletedTask;
 }

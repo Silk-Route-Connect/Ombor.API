@@ -38,4 +38,26 @@ public sealed class SeedStarterDataTests : ServiceTestsBase
         wallets.Verify(s => s.Add(It.Is<Wallet>(w => w.Name == wallet && w.Type == WalletType.Cash)), Times.Once);
         _mockContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task SeedStarterDataAsync_ShouldSkipRowsTheOrganizationAlreadyHas()
+    {
+        // Arrange — a demo organization that already has every starter row by name (the development seed re-runs).
+        var mockAccessor = new Mock<IOrganizationAccessor>();
+        var categories = SetupCategories([new Category { Name = "Без категории" }]);
+        var partners = SetupPartners([new Partner { Name = "Розничный покупатель", Type = PartnerType.Both }]);
+        var warehouses = SetupWarehouses([new Warehouse { Name = "Основной склад" }]);
+        var wallets = SetupWallets([new Wallet { Name = "Касса", Type = WalletType.Cash, CreatedAt = DateTimeOffset.UtcNow }]);
+
+        var service = new OrganizationSetupService(_mockContext.Object, mockAccessor.Object, _clock);
+
+        // Act
+        await service.SeedStarterDataAsync(7, "ru");
+
+        // Assert — nothing is duplicated.
+        categories.Verify(s => s.Add(It.IsAny<Category>()), Times.Never);
+        partners.Verify(s => s.Add(It.IsAny<Partner>()), Times.Never);
+        warehouses.Verify(s => s.Add(It.IsAny<Warehouse>()), Times.Never);
+        wallets.Verify(s => s.Add(It.IsAny<Wallet>()), Times.Never);
+    }
 }
