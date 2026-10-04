@@ -2,6 +2,7 @@
 using MockQueryable.Moq;
 using Moq;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Builders;
 using Ombor.Tests.Common.Interfaces;
@@ -15,6 +16,7 @@ public abstract class ServiceTestsBase : UnitTestsBase
     protected readonly Mock<IRequestValidator> _mockValidator;
     protected readonly Mock<IApplicationDbContext> _mockContext;
     protected readonly ITestDataBuilder _builder;
+    private protected readonly IBusinessClock _clock = new BusinessClock(TimeProvider.System);
 
     protected ServiceTestsBase()
     {

@@ -9,7 +9,7 @@ using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Services;
 
-internal sealed class PartnerService(IApplicationDbContext context, IRequestValidator validator) : IPartnerService
+internal sealed class PartnerService(IApplicationDbContext context, IRequestValidator validator, IBusinessClock clock) : IPartnerService
 {
     public async Task<PartnerDto[]> GetAsync(GetPartnersRequest request)
     {
@@ -46,7 +46,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
 
         var entity = request.ToEntity();
         // Opening balance is an immutable event stamped at creation.
-        entity.OpeningDate = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime);
+        entity.OpeningDate = clock.Today;
 
         context.Partners.Add(entity);
         await context.SaveChangesAsync();
@@ -139,7 +139,7 @@ internal sealed class PartnerService(IApplicationDbContext context, IRequestVali
             new(
                 0,
                 "opening",
-                new DateTimeOffset(partner.OpeningDate.ToDateTime(TimeOnly.MinValue), TimeSpan.Zero),
+                clock.StartOfDay(partner.OpeningDate),
                 partner.OpeningBalance,
                 null, // SourceId — opening has no underlying record
                 null,

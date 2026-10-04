@@ -14,7 +14,7 @@ public class PartnerTestsBase : ServiceTestsBase
         _defaultpartners = GenerateRandomPartners();
         SetupPartners(_defaultpartners);
 
-        _service = new PartnerService(_mockContext.Object, _mockValidator.Object);
+        _service = new PartnerService(_mockContext.Object, _mockValidator.Object, _clock);
     }
 
     protected Partner[] GenerateRandomPartners(int count = 5)

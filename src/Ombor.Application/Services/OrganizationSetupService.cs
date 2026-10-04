@@ -7,7 +7,8 @@ namespace Ombor.Application.Services;
 
 internal sealed class OrganizationSetupService(
     IApplicationDbContext context,
-    IOrganizationAccessor organizationAccessor) : IOrganizationSetupService
+    IOrganizationAccessor organizationAccessor,
+    IBusinessClock clock) : IOrganizationSetupService
 {
     private readonly record struct StarterNames(string Category, string Wallet, string Partner, string Warehouse);
 
@@ -40,7 +41,7 @@ internal sealed class OrganizationSetupService(
             Name = names.Partner,
             // Both, so the single starter partner is usable for sales and supplies (rule 42).
             Type = PartnerType.Both,
-            OpeningDate = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime),
+            OpeningDate = clock.Today,
         });
         context.Warehouses.Add(new Warehouse { Name = names.Warehouse });
         context.Wallets.Add(new Wallet

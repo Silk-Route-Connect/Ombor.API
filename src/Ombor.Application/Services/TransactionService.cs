@@ -19,7 +19,8 @@ internal sealed class TransactionService(
     TransactionPaymentBuilder paymentBuilder,
     ICurrentUserAccessor currentUser,
     IFileService fileService,
-    INumberSequenceAllocator allocator) : ITransactionService
+    INumberSequenceAllocator allocator,
+    IBusinessClock clock) : ITransactionService
 {
     // Uploaded transaction files land here (originals + thumbnails under their standard sections).
     private const string AttachmentsSubfolder = "transactions";
@@ -27,7 +28,7 @@ internal sealed class TransactionService(
     public async Task<TransactionDto[]> GetAsync(GetTransactionsRequest request)
     {
         var query = GetQuery(request);
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = clock.Today;
 
         // The served number and the due-date-driven Overdue status are plain C# (untranslatable to SQL), so
         // project the raw columns at the DB then map in memory — the shape DebtService already uses.
@@ -89,7 +90,7 @@ internal sealed class TransactionService(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = clock.Today;
 
         var row = await context.Transactions
             .AsNoTracking()
@@ -258,7 +259,7 @@ internal sealed class TransactionService(
 
         if (request.Status.HasValue)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = clock.Today;
             var domainStatus = request.Status.Value.ToDomainStatus();
 
             // Overdue is computed on read (a non-closed transaction past its due date), so it overrides the stored

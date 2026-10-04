@@ -1,5 +1,6 @@
 ﻿using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Enums;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -8,7 +9,7 @@ namespace Ombor.Tests.Integration.Endpoints.Transactions;
 public sealed class GetTransactionsTests(TestingWebApplicationFactory factory, ITestOutputHelper output)
     : TransactionsTestsBase(factory, output)
 {
-    private static DateOnly Today => DateOnly.FromDateTime(DateTime.UtcNow);
+    private static DateOnly Today => BusinessDay.Today;
 
     [Fact]
     public async Task GetList_ShouldServeProvisionalNumber_MatchingDetail()

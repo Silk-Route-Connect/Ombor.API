@@ -5,7 +5,7 @@ using Ombor.Contracts.Responses.Debt;
 
 namespace Ombor.Application.Services;
 
-internal sealed class DebtService(IApplicationDbContext context) : IDebtService
+internal sealed class DebtService(IApplicationDbContext context, IBusinessClock clock) : IDebtService
 {
     public async Task<DebtDto[]> GetDebtsAsync()
     {
@@ -29,7 +29,7 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
             })
             .ToArrayAsync();
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = clock.Today;
 
         return [.. rows
             .Select(r => new DebtDto(
@@ -52,8 +52,9 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
             .ThenByDescending(d => d.TransactionId)];
     }
 
-    private static int AgeDays(DateOnly today, DateTimeOffset date) =>
-        Math.Max(0, today.DayNumber - DateOnly.FromDateTime(date.UtcDateTime).DayNumber);
+    // Whole local days since the document's local date: a sale at 03:00 Tashkent time is 0 days old that day.
+    private int AgeDays(DateOnly today, DateTimeOffset date) =>
+        Math.Max(0, today.DayNumber - clock.DateOf(date).DayNumber);
 
     private static int OverdueDays(DateOnly today, DateOnly? dueDate) =>
         dueDate is { } due ? Math.Max(0, today.DayNumber - due.DayNumber) : 0;

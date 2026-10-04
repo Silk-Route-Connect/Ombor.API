@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
@@ -28,6 +29,8 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(CurrentAssembly);
         services.AddConfigurations(configuration);
 
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddSingleton<IBusinessClock, BusinessClock>();
         services.AddScoped<IRequestValidator, RequestValidator>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();

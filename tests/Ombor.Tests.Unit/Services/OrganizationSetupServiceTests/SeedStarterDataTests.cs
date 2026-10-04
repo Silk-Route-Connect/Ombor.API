@@ -24,7 +24,7 @@ public sealed class SeedStarterDataTests : ServiceTestsBase
         var wallets = SetupWallets([]);
         _mockContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(4);
 
-        var service = new OrganizationSetupService(_mockContext.Object, mockAccessor.Object);
+        var service = new OrganizationSetupService(_mockContext.Object, mockAccessor.Object, _clock);
 
         // Act
         await service.SeedStarterDataAsync(organizationId, language);

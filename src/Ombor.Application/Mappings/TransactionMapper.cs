@@ -1,4 +1,5 @@
 ﻿using Ombor.Application.Extensions;
+using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
@@ -11,7 +12,7 @@ internal interface ITransactionMapper
     TransactionDto ToDto(TransactionRecord transaction);
 }
 
-internal sealed class TransactionMapper : ITransactionMapper
+internal sealed class TransactionMapper(IBusinessClock clock) : ITransactionMapper
 {
     public TransactionRecord ToEntity(CreateTransactionRequest request, IReadOnlyDictionary<int, int> packageSizes)
     {
@@ -55,7 +56,7 @@ internal sealed class TransactionMapper : ITransactionMapper
 
     public TransactionDto ToDto(TransactionRecord transaction)
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = clock.Today;
 
         return new TransactionDto(
             transaction.Id,

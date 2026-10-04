@@ -1,4 +1,5 @@
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Contracts.Requests.Order;
 using Ombor.Contracts.Responses.Order;
 using Ombor.Domain.Common;
@@ -8,10 +9,6 @@ namespace Ombor.Application.Mappings;
 
 internal static class OrderMappings
 {
-    private static readonly TimeZoneInfo TashkentTimeZone =
-        TimeZoneInfo.FindSystemTimeZoneById(
-            OperatingSystem.IsWindows() ? "Central Asia Standard Time" : "Asia/Tashkent");
-
     public static Order ToEntity(this CreateOrderRequest request)
     {
         var lines = request.Lines.ToEntity();
@@ -54,7 +51,7 @@ internal static class OrderMappings
             OrderNumber: order.OrderNumber?.ToString(),
             Notes: order.Notes,
             Total: order.TotalAmount,
-            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, TashkentTimeZone),
+            Date: TimeZoneInfo.ConvertTimeFromUtc(order.DateUtc.UtcDateTime, BusinessTimeZone.Tashkent),
             Status: order.Status.ToString(),
             Source: order.Source.ToString(),
             DeliveryAddress: order.DeliveryAddress.Text,

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Domain.Enums;
 using Ombor.Tests.Common.Factories;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -106,7 +107,7 @@ public sealed class DebtTests(TestingWebApplicationFactory factory, ITestOutputH
         var productId = await CreateProductAsync();
         var warehouseId = await CreateWarehouseAsync();
         await AddOpeningStockAsync(warehouseId, productId, quantity: 10, unitCost: 50m);
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = BusinessDay.Today;
 
         // Act
         var overdue = await PostTransactionAsync(TransactionRequestFactory.Sale(
@@ -131,7 +132,7 @@ public sealed class DebtTests(TestingWebApplicationFactory factory, ITestOutputH
         // Arrange — seed directly so the transaction can be back-dated.
         var partnerId = await CreatePartnerAsync();
         var now = DateTimeOffset.UtcNow;
-        var today = DateOnly.FromDateTime(now.UtcDateTime);
+        var today = BusinessDay.DateOf(now);
 
         var id = await AddOutstandingTransactionAsync(
             _context, partnerId, TransactionType.Sale,
