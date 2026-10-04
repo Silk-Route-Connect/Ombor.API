@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Payment;

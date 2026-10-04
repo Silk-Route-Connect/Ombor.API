@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Helpers;

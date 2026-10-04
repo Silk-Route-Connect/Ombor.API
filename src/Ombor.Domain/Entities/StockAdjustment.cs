@@ -1,4 +1,4 @@
-﻿using Ombor.Domain.Common;
+using Ombor.Domain.Common;
 using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;

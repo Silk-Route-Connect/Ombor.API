@@ -1,4 +1,4 @@
-﻿namespace Ombor.Contracts.Responses.Payment;
+namespace Ombor.Contracts.Responses.Payment;
 
 /// <summary>
 /// A payment in the source/allocation model (rules 8-14). <see cref="Sources"/> is where the

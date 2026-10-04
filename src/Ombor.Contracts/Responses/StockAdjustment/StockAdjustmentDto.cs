@@ -1,4 +1,4 @@
-﻿namespace Ombor.Contracts.Responses.StockAdjustment;
+namespace Ombor.Contracts.Responses.StockAdjustment;
 
 /// <summary>A recorded stock adjustment.</summary>
 /// <param name="Id">The adjustment id.</param>

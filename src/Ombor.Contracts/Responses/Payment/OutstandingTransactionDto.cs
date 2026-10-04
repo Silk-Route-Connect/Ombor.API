@@ -1,4 +1,4 @@
-﻿namespace Ombor.Contracts.Responses.Payment;
+namespace Ombor.Contracts.Responses.Payment;
 
 /// <summary>An open transaction a payment can settle, with its remaining amount (oldest-first / FIFO).</summary>
 /// <param name="Id">The transaction id.</param>

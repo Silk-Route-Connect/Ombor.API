@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;

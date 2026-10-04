@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
 using Ombor.TestDataGenerator.Configurations;

@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Responses.StockAdjustment;

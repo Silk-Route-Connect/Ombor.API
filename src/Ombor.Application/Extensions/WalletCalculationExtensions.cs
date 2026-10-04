@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;

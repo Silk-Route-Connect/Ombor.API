@@ -1,4 +1,4 @@
-﻿using Ombor.Contracts.Enums;
+using Ombor.Contracts.Enums;
 
 namespace Ombor.Contracts.Responses.Warehouse;
 

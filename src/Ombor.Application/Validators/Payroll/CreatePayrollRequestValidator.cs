@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Ombor.Application.Helpers;
 using Ombor.Contracts.Requests.Payroll;
 

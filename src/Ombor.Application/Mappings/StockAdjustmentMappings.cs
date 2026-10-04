@@ -1,4 +1,4 @@
-﻿using Ombor.Application.Extensions;
+using Ombor.Application.Extensions;
 using Ombor.Contracts.Responses.StockAdjustment;
 using Ombor.Domain.Entities;
 

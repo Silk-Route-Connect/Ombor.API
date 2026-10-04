@@ -1,4 +1,4 @@
-﻿namespace Ombor.Domain.Exceptions;
+namespace Ombor.Domain.Exceptions;
 
 /// <summary>
 /// Machine-readable error codes served as the <c>code</c> extension member of every error ProblemDetails, so a
