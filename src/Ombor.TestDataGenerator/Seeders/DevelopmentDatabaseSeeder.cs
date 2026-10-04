@@ -26,6 +26,15 @@ internal sealed class DevelopmentDatabaseSeeder(
         IOrganizationAccessor organizationAccessor,
         IOrganizationSetupService organizationSetup)
     {
+        // Demo data goes into an empty database only. Once any organization exists — demo ones from an earlier start
+        // or one registered through the app — a restart leaves the data alone: re-running steps on a filled database
+        // fabricated unnumbered, future-dated payments against documents made in the app, and re-extracted the demo
+        // images under new names, deleting the files the stored product images point to.
+        if (await context.Organizations.AnyAsync())
+        {
+            return;
+        }
+
         var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();
 

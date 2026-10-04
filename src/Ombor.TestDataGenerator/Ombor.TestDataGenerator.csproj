@@ -14,6 +14,10 @@
     <ProjectReference Include="..\Ombor.Application\Ombor.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ombor.Tests.Integration" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<!-- Embed every file under Resources\Images\ into the DLL -->
 		<EmbeddedResource Include="Resources\Images\**\*.*">
