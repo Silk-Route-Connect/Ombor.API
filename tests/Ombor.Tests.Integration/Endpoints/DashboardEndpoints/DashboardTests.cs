@@ -31,7 +31,8 @@ public sealed class DashboardTests(TestingWebApplicationFactory factory, ITestOu
         Assert.Equal(summary.Payable, dashboard.Payable.Value);
         Assert.Equal(summary.PayablePartnerCount, dashboard.Payable.Count);
         Assert.Equal(summary.OlderThan30Days, dashboard.Overdue.Value);
-        Assert.Equal(summary.Receivable, dashboard.Aging.Sum(a => a.Amount));
+        Assert.Equal(summary.Receivable, dashboard.Aging.Sum(a => a.Amount) + dashboard.AdvanceReceivable);
+        Assert.Equal(summary.AdvanceReceivable, dashboard.AdvanceReceivable);
 
         // The partner nets to +800: the payable 700 settles the oldest item first, so 500 (new) + 300 (40 days) stay.
         var position = Assert.Single(summary.Partners, p => p.PartnerId == partnerId);

@@ -27,7 +27,8 @@ internal static class DebtAging
     /// Attributes a partner's net receivable to its receivable items, newest first. Whatever nets the items down —
     /// an advance the partner paid, what we owe them, a negative opening balance — is taken as settling the oldest
     /// items first, the order the settlement auto-allocation uses; so what stays owed sits on the newest items. A
-    /// remainder no item explains (a prepayment we made) is counted as current (0 days).
+    /// remainder no item explains is an advance we paid the partner: it has no age (null), so it sits in no aging
+    /// bucket and never makes a partner look 0 days overdue.
     /// </summary>
     public static IReadOnlyList<AgedPortion> Attribute(
         decimal netReceivable,
@@ -58,7 +59,7 @@ internal static class DebtAging
 
         if (left > 0m)
         {
-            portions.Add(new AgedPortion(left, 0, null));
+            portions.Add(new AgedPortion(left, null, null));
         }
 
         return portions;
@@ -67,7 +68,7 @@ internal static class DebtAging
     /// <summary>Organization totals from each partner's net balance and aged receivable.</summary>
     public static DebtTotals Totalize(IEnumerable<(decimal Balance, IReadOnlyList<AgedPortion> Aged)> partners)
     {
-        decimal receivable = 0m, payable = 0m, older = 0m;
+        decimal receivable = 0m, payable = 0m, older = 0m, advance = 0m;
         int receivablePartners = 0, payablePartners = 0, olderItems = 0, olderPartners = 0;
         var aging = new decimal[Buckets.Length];
 
@@ -87,9 +88,15 @@ internal static class DebtAging
             var olderHere = false;
             foreach (var portion in aged)
             {
-                aging[BucketOf(portion.AgeDays)] += portion.Amount;
+                if (portion.AgeDays is not { } age)
+                {
+                    advance += portion.Amount;
+                    continue;
+                }
 
-                if (portion.AgeDays > OlderThanDays)
+                aging[BucketOf(age)] += portion.Amount;
+
+                if (age > OlderThanDays)
                 {
                     older += portion.Amount;
                     olderItems++;
@@ -103,6 +110,6 @@ internal static class DebtAging
             }
         }
 
-        return new DebtTotals(receivable, receivablePartners, payable, payablePartners, older, olderItems, olderPartners, aging);
+        return new DebtTotals(receivable, receivablePartners, payable, payablePartners, older, olderItems, olderPartners, aging, advance);
     }
 }

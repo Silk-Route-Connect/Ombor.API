@@ -102,6 +102,30 @@ public sealed class DebtSummaryTests(TestingWebApplicationFactory factory, ITest
     }
 
     [Fact]
+    public async Task Summary_AnAdvanceWePaid_HasNoAge_AndSitsInNoAgingBucket()
+    {
+        // Arrange — we prepaid a supplier 800 and nothing was delivered yet: they owe us, but no document dates it.
+        var partnerId = await CreatePartnerAsync();
+        var walletId = await CreateWalletAsync();
+        var before = await GetSummaryAsync();
+        await _client.PostAsync<PaymentRecordDto>("payments", new CreatePaymentRecordRequest(
+            PaymentType.Deposit, PaymentDirection.Expense, partnerId, null, walletId, 800m, null, null, []).ToMultipartFormData());
+
+        // Act
+        var summary = await GetSummaryAsync();
+
+        // Assert — a receivable, but not «0 days old»: no age, no bucket, never older than 30 days.
+        var position = Assert.Single(summary.Partners, p => p.PartnerId == partnerId);
+        Assert.Equal("Receivable", position.Direction);
+        Assert.Equal(800m, position.Balance);
+        Assert.Equal(800m, position.CompanyAdvance);
+        Assert.Null(position.OldestAgeDays);
+        Assert.Equal(before.AdvanceReceivable + 800m, summary.AdvanceReceivable);
+        Assert.Equal(before.Aging.Select(a => a.Amount), summary.Aging.Select(a => a.Amount));
+        Assert.Equal(summary.Receivable, summary.Aging.Sum(a => a.Amount) + summary.AdvanceReceivable);
+    }
+
+    [Fact]
     public async Task Summary_ArchivedPartner_StillCounts()
     {
         var partnerId = await CreatePartnerAsync();
@@ -136,7 +160,7 @@ public sealed class DebtSummaryTests(TestingWebApplicationFactory factory, ITest
         Assert.Equal(-balances.Where(b => b < 0m).Sum(), summary.Payable);
         Assert.Equal(balances.Count(b => b > 0m), summary.ReceivablePartnerCount);
         Assert.Equal(summary.Receivable - summary.Payable, summary.Net);
-        Assert.Equal(summary.Receivable, summary.Aging.Sum(a => a.Amount));
+        Assert.Equal(summary.Receivable, summary.Aging.Sum(a => a.Amount) + summary.AdvanceReceivable);
 
         Assert.Equal(summary.Receivable, dashboard.Receivable.Value);
         Assert.Equal(summary.ReceivablePartnerCount, dashboard.Receivable.Count);

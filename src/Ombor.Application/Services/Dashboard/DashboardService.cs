@@ -52,7 +52,8 @@ internal sealed class DashboardService(
             saleRefunds,
             stockValue,
             cash,
-            grossProfit);
+            grossProfit,
+            debts.Totals.AdvanceReceivable);
     }
 
     /// <summary>

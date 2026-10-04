@@ -10,9 +10,10 @@ internal sealed record DebtCutoff(DateTimeOffset Before, DateOnly AsOf);
 
 /// <summary>A part of a partner's net receivable with the date it dates from.</summary>
 /// <param name="Amount">The portion of the net receivable.</param>
-/// <param name="AgeDays">Whole local days since the item it is attributed to.</param>
-/// <param name="TransactionId">The unpaid document it sits on; null for the opening balance or an undated remainder.</param>
-internal sealed record AgedPortion(decimal Amount, int AgeDays, int? TransactionId);
+/// <param name="AgeDays">Whole local days since the item it is attributed to; null for an advance we paid the partner,
+/// which no dated item carries.</param>
+/// <param name="TransactionId">The unpaid document it sits on; null for the opening balance or the advance.</param>
+internal sealed record AgedPortion(decimal Amount, int? AgeDays, int? TransactionId);
 
 /// <summary>One partner's position now: the signed net balance (the ledger figure) and what makes it up.</summary>
 internal sealed record PartnerPosition(
@@ -38,7 +39,8 @@ internal sealed record PartnerPosition(
 /// <param name="OlderThan30Days">The part of <see cref="Receivable"/> aged 31+ days.</param>
 /// <param name="OlderThan30DaysItems">Documents (or opening balances) carrying that part.</param>
 /// <param name="OlderThan30DaysPartners">Partners carrying that part.</param>
-/// <param name="Aging">The receivable split into the age buckets of <see cref="DebtAging.Buckets"/>.</param>
+/// <param name="Aging">The dated part of the receivable split into the age buckets of <see cref="DebtAging.Buckets"/>.</param>
+/// <param name="AdvanceReceivable">The undated part: advances we paid partners. Aging + this = <see cref="Receivable"/>.</param>
 internal sealed record DebtTotals(
     decimal Receivable,
     int ReceivablePartners,
@@ -47,7 +49,8 @@ internal sealed record DebtTotals(
     decimal OlderThan30Days,
     int OlderThan30DaysItems,
     int OlderThan30DaysPartners,
-    decimal[] Aging);
+    decimal[] Aging,
+    decimal AdvanceReceivable);
 
 /// <summary>The result of one calculation: positions and totals now, plus totals at each requested cutoff.</summary>
 internal sealed record DebtPositionSnapshot(

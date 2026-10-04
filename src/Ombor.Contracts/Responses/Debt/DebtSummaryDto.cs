@@ -12,7 +12,14 @@ namespace Ombor.Contracts.Responses.Debt;
 /// <param name="PayablePartnerCount">Partners we owe.</param>
 /// <param name="Net"><see cref="Receivable"/> − <see cref="Payable"/>.</param>
 /// <param name="OlderThan30Days">The part of <see cref="Receivable"/> older than 30 days (the aging definition).</param>
-/// <param name="Aging">The receivable by age; the buckets add up to <see cref="Receivable"/>.</param>
+/// <param name="Aging">
+/// The receivable by age: each part dated by the unpaid document or opening balance it sits on. The buckets plus
+/// <see cref="AdvanceReceivable"/> add up to <see cref="Receivable"/>.
+/// </param>
+/// <param name="AdvanceReceivable">
+/// The part of <see cref="Receivable"/> that is an advance we paid partners (no unpaid document or opening balance
+/// carries it). It has no age: it sits in no bucket and never counts as older than 30 days.
+/// </param>
 /// <param name="UnpaidDocuments">Document-level totals: what the unpaid documents themselves still claim, before advances net them.</param>
 /// <param name="Partners">Every partner with a non-zero balance or an unpaid document, largest amount first.</param>
 public sealed record DebtSummaryDto(
@@ -23,6 +30,7 @@ public sealed record DebtSummaryDto(
     decimal Net,
     decimal OlderThan30Days,
     DebtAgingBucketDto[] Aging,
+    decimal AdvanceReceivable,
     DebtDocumentTotalsDto UnpaidDocuments,
     DebtPartnerPositionDto[] Partners);
 
@@ -64,7 +72,10 @@ public sealed record DebtDocumentTotalsDto(
 /// <param name="UnpaidDocumentCount">How many unpaid documents the partner has.</param>
 /// <param name="PartnerAdvance">Money the partner paid in advance that we hold (lowers what they owe).</param>
 /// <param name="CompanyAdvance">Money we paid the partner in advance (raises what they owe).</param>
-/// <param name="OldestAgeDays">Age of the oldest part of what the partner owes us; null when they owe nothing.</param>
+/// <param name="OldestAgeDays">
+/// Age of the oldest dated part of what the partner owes us; null when they owe nothing, or when all they owe is an
+/// advance we paid them (no unpaid document or opening balance).
+/// </param>
 public sealed record DebtPartnerPositionDto(
     int PartnerId,
     string Name,

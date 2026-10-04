@@ -14,13 +14,14 @@ namespace Ombor.Contracts.Responses.Dashboard;
 /// <param name="Overdue">The part of <see cref="Receivable"/> older than 30 days (the aging definition, distinct from due-date overdue).</param>
 /// <param name="Series">Per-bucket sales/supplies/refunds/pay-in/pay-out time series for the period.</param>
 /// <param name="Wallets">Wallets, for the payments chart's per-wallet filter (aligned to the series wallet arrays).</param>
-/// <param name="Aging">The receivable bucketed by age; the buckets add up to <see cref="Receivable"/>.</param>
+/// <param name="Aging">The receivable bucketed by age; the buckets plus <see cref="AdvanceReceivable"/> add up to <see cref="Receivable"/>.</param>
 /// <param name="TopDebtors">Partners with the largest net receivable.</param>
 /// <param name="RecentTransactions">The most recent sales and supplies.</param>
 /// <param name="SaleRefunds">Sale refunds in the period (already netted out of <see cref="Revenue"/>); count = refund documents.</param>
 /// <param name="StockValue">The carrying value of all stock (Σ quantity × WAC), archived warehouses included (rule 31).</param>
 /// <param name="Cash">Money in all wallets, archived ones included (rule 31), with a trend and the per-wallet balances.</param>
 /// <param name="GrossProfit">Gross profit in the period (net revenue − cost of goods sold), with its trend — the sales report's figure for the same days.</param>
+/// <param name="AdvanceReceivable">The part of <see cref="Receivable"/> that is an advance we paid partners: undated, in no aging bucket.</param>
 public sealed record DashboardDto(
     string BusinessName,
     string Period,
@@ -36,7 +37,8 @@ public sealed record DashboardDto(
     DashboardKpiDto SaleRefunds,
     DashboardStockValueDto StockValue,
     DashboardCashDto Cash,
-    DashboardGrossProfitDto GrossProfit);
+    DashboardGrossProfitDto GrossProfit,
+    decimal AdvanceReceivable);
 
 /// <summary>Gross profit in the period, from the cost snapshotted on each sale line.</summary>
 /// <param name="Value">Net revenue − cost of goods sold (sales minus sale refunds, each at its own cost).</param>

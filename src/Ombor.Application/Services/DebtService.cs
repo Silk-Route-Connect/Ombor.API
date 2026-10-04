@@ -85,7 +85,7 @@ internal sealed class DebtService(
                 p.UnpaidDocumentCount,
                 p.PartnerAdvance,
                 p.CompanyAdvance,
-                p.AgedReceivable.Count == 0 ? null : p.AgedReceivable.Max(a => a.AgeDays)))
+                p.AgedReceivable.Max(a => a.AgeDays)))
             .ToArray();
 
         return new DebtSummaryDto(
@@ -96,6 +96,7 @@ internal sealed class DebtService(
             totals.Receivable - totals.Payable,
             totals.OlderThan30Days,
             [.. DebtAging.Buckets.Select((bucket, i) => new DebtAgingBucketDto(bucket, totals.Aging[i]))],
+            totals.AdvanceReceivable,
             new DebtDocumentTotalsDto(
                 receivableDocuments.Sum(d => d.Remaining),
                 receivableDocuments.Length,
