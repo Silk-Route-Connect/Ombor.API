@@ -8,6 +8,8 @@ using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Application.Services;
+using Ombor.Application.Services.Dashboard;
+using Ombor.Application.Services.DebtPositions;
 
 namespace Ombor.Application.Extensions;
 
@@ -59,7 +61,10 @@ public static class DependencyInjection
         services.AddScoped<ITransferService, TransferService>();
         services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
         services.AddScoped<IMovementService, MovementService>();
+        services.AddScoped<DebtPositionCalculator>();
         services.AddScoped<IDebtService, DebtService>();
+        services.AddScoped<DashboardSeriesBuilder>();
+        services.AddScoped<DashboardMoney>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddHttpClient();
 
