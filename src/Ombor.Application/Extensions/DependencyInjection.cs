@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<TransactionCreateGuard>();
         services.AddScoped<TransactionPaymentBuilder>();
+        services.AddScoped<TransactionStock>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<PaymentQueries>();
         services.AddScoped<IPaymentService, PaymentService>();

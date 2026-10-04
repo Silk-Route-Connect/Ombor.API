@@ -19,6 +19,7 @@ internal sealed class OrderService(
     ICurrentUserAccessor currentUser,
     INumberSequenceAllocator allocator,
     IOrganizationWriteLock writeLock,
+    TransactionStock stock,
     OrderQueries queries) : IOrderService
 {
     public async Task<OrderDto> CreateAsync(CreateOrderRequest request)
@@ -149,12 +150,6 @@ internal sealed class OrderService(
             .Require(context.Warehouses, request.WarehouseId, nameof(request.WarehouseId))
             .ThrowIfMissingAsync();
 
-        // Rule-20 hard block at the chosen warehouse; insufficient stock throws → rollback → 400.
-        await context.MoveStockAsync(
-            request.WarehouseId,
-            StockMovement.StockOut,
-            order.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
-
         var saleLines = order.Lines.Select(ToSaleLine).ToArray();
         var sale = new TransactionRecord
         {
@@ -168,6 +163,10 @@ internal sealed class OrderService(
             TotalPaid = 0m,
             Status = Domain.Enums.TransactionStatus.Open,
         };
+
+        // Rule-20 hard block at the chosen warehouse (insufficient stock throws → rollback → 400); the sale lines
+        // snapshot the WAC they leave at, like any sale.
+        await stock.MoveAsync(sale);
         sale.Number = await allocator.AllocateAsync(Ombor.Domain.Enums.NumberSeriesType.Transaction);
         context.Transactions.Add(sale);
         await context.SaveChangesAsync();

@@ -17,6 +17,7 @@ internal sealed class TransactionService(
     ITransactionMapper mapper,
     TransactionCreateGuard guard,
     TransactionPaymentBuilder paymentBuilder,
+    TransactionStock stock,
     ICurrentUserAccessor currentUser,
     IFileService fileService,
     INumberSequenceAllocator allocator,
@@ -47,7 +48,7 @@ internal sealed class TransactionService(
                 x.DateUtc,
                 x.TotalDue,
                 x.TotalPaid,
-                Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize)).ToArray(),
+                Lines = x.Lines.Select(l => new TransactionLineDto(l.Id, l.ProductId, l.Product.Name, l.TransactionId, l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize, l.UnitCost, l.Cost, l.CostIsEstimated)).ToArray(),
                 x.OriginalTransactionId,
                 OriginalNumber = x.OriginalTransaction != null ? x.OriginalTransaction.Number : null,
                 x.RefundReason,
@@ -122,7 +123,8 @@ internal sealed class TransactionService(
                     .ToArray(),
                 Lines = t.Lines.Select(l => new TransactionLineDto(
                     l.Id, l.ProductId, l.Product.Name, l.TransactionId,
-                    l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize)).ToArray(),
+                    l.UnitPrice, l.Discount, l.DiscountType.ToString(), l.Quantity, l.Total, l.PackageSize,
+                    l.UnitCost, l.Cost, l.CostIsEstimated)).ToArray(),
                 // Settling allocations only (rule 10), newest-first — same shape as GET /{id}/payments.
                 Payments = t.PaymentAllocations
                     .Where(a => a.Type == PaymentAllocationType.TransactionSettlement)
@@ -188,11 +190,9 @@ internal sealed class TransactionService(
             TransactionCreateGuard.ApplyOriginalPricing(transactionEntity, original);
         }
 
-        await context.MoveStockAsync(
-            request.WarehouseId!.Value,
-            request.Type.ToDomainType().ToStockMovement(),
-            // Use the resolved entity lines so a package-entry line moves its base-unit quantity, not the raw request value.
-            transactionEntity.Lines.Select(l => (l.ProductId, l.Quantity, l.UnitPrice)));
+        // The resolved entity lines move, so a package-entry line moves its base-unit quantity; each line's cost is
+        // snapshotted in this same write (scope-9).
+        await stock.MoveAsync(transactionEntity, original);
         transactionEntity.Number = await allocator.AllocateAsync(NumberSeriesType.Transaction);
         context.Transactions.Add(transactionEntity);
         await AddAttachmentsAsync(request, transactionEntity);

@@ -69,7 +69,7 @@ internal sealed class TransactionMapper(IBusinessClock clock) : ITransactionMapp
             transaction.TotalDue,
             transaction.TotalPaid,
             transaction.Lines.Select(
-                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total, x.PackageSize)),
+                x => new TransactionLineDto(x.Id, x.ProductId, x.Product.Name, x.TransactionId, x.UnitPrice, x.Discount, x.DiscountType.ToString(), x.Quantity, x.Total, x.PackageSize, x.UnitCost, x.Cost, x.CostIsEstimated)),
             transaction.OriginalTransactionId,
             transaction.OriginalTransaction?.Number?.ToString(),
             transaction.RefundReason);

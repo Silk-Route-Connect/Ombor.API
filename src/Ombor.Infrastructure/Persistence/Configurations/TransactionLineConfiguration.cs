@@ -51,6 +51,12 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
             .HasDefaultValue(DiscountType.Percentage)
             .IsRequired();
 
+        // Currency precision like the WAC it is snapshotted from (WarehouseItem.AverageCost).
+        builder
+            .Property(tl => tl.UnitCost)
+            .HasCurrencyPrecision();
+
         builder.Ignore(tl => tl.Total);
+        builder.Ignore(tl => tl.Cost);
     }
 }

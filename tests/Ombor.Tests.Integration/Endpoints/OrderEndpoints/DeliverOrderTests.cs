@@ -71,6 +71,26 @@ public sealed class DeliverOrderTests(TestingWebApplicationFactory factory, ITes
     }
 
     [Fact]
+    public async Task Deliver_SaleLinesShouldSnapshotTheWacTheyLeaveAt()
+    {
+        // scope-9: the sale a delivery becomes books its cost of goods sold like any sale.
+        var customerId = await CreateCustomerAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 50, averageCost: 64m);
+        var shipped = await CreateOrderInStatusAsync(customerId, productId, OrderStatus.Shipping);
+
+        var delivered = await _client.PostAsync<OrderDto>(
+            $"{Routes.Order}/{shipped.Id}/deliver", new { warehouseId }, HttpStatusCode.OK);
+
+        var saleLine = await _context.TransactionLines.AsNoTracking()
+            .SingleAsync(l => l.TransactionId == delivered.SaleId!.Value);
+        Assert.Equal(64m, saleLine.UnitCost);
+        Assert.Equal(128m, saleLine.Cost);
+        Assert.False(saleLine.CostIsEstimated);
+    }
+
+    [Fact]
     public async Task Deliver_ShouldReturnBadRequest_AndRollBack_WhenInsufficientStock()
     {
         // Arrange — only 1 unit in stock, but the order needs 2.
