@@ -8,6 +8,7 @@ using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
 using Ombor.Application.Mappings;
 using Ombor.Application.Services;
+using Ombor.Application.Services.Activity;
 using Ombor.Application.Services.Dashboard;
 using Ombor.Application.Services.DebtPositions;
 
@@ -67,6 +68,8 @@ public static class DependencyInjection
         services.AddScoped<DashboardSeriesBuilder>();
         services.AddScoped<DashboardMoney>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<ActivityQueries>();
+        services.AddScoped<IActivityService, ActivityService>();
         services.AddHttpClient();
 
         services.AddTransient<IFileService, FileService>();

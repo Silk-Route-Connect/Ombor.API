@@ -80,8 +80,17 @@ Manual, `internal static` extension classes per entity in `Application/Mappings`
 ## Persistence
 
 - One `internal sealed XxxConfiguration : IEntityTypeConfiguration<Xxx>` per entity in `Persistence/Configurations`, auto-applied via `ApplyConfigurationsFromAssembly`; `builder.ToTable(nameof(Xxx))`; shared lengths from `ConfigurationConstants`.
-- Cross-cutting persistence concerns go through **interceptors**. The one in place: `AuditSaveChangesInterceptor` — every `IAuditable` change writes an `AuditEntry` (actor, timestamp, entity type + id, action, before/after JSON, organization), with insert ids backfilled in `SavedChanges`. **A new auditable entity implements `IAuditable`;** never hand-roll audit writes.
+- Cross-cutting persistence concerns go through **interceptors**. The one in place: `AuditSaveChangesInterceptor` — every `IAuditable` change writes an `AuditEntry` (actor, timestamp, entity type + id, action, before/after JSON, organization), with insert ids backfilled in `SavedChanges`. **A new auditable entity implements `IAuditable`;** never hand-roll audit writes. See «Audit & Activity Log» below.
 - Migrations per CLAUDE.md: draft and apply to local/dev freely; production apply is human-gated; never destructive ops against the production connection string.
+
+## Audit & Activity Log (added 2026-10-04, scope-2)
+
+- **What is audited (rules 26–28):** every money/stock event and all mutable master data — Product, Category, Partner, Wallet, Warehouse, Employee, Template, Order, Organization, User — plus the parts of a record: transaction/order/transfer lines, template items, payment components/allocations, order status events, stock rows. A new mutable entity implements `IAuditable`; a part of another record implements **`IAuditableChild`** (`AuditParent => new(typeof(Parent), ParentId)`), so the parent's «История» includes it.
+- **The interceptor is generic** (`AuditChangeReader`): it diffs every audited column with EF's own value comparers (so `100.00` from SQL equals `100` from a request), folds complex properties and owned types into the owner as dotted columns (`Packaging.Size`, `ContactInfo.Email`), stores enums by name, skips an update whose only changes are excluded columns, and turns a flip of `IsArchived` into `Archived` / `Restored`.
+- **What never reaches the log** is decided in one place, `Domain/Common/AuditFieldPolicy`: ids, `OrganizationId`, `CreatedAt/By`, `UpdatedAt/By`, `IsDeleted`, `CreatedById` (the actor is on the row), plus any property marked **`[NotAudited]`**. Secrets use `[NotAudited(MaskedAs = "Password")]` — a change is logged by that name with no values. A new secret or token column on an audited entity **must** carry the attribute.
+- **Operations:** rows written while serving one HTTP request share an `OperationId` (one per save outside a request). Rows from before 2026-10-04 were grouped per organization + user + second by the `AuditOperationBackfill` data fix.
+- **Reading it:** `GET /api/activity` (`Services/Activity`): `ActivityQueries` filters and pages operations in SQL; `ActivityLookups` resolves names/numbers/amounts with one query per entity type per page; `ActivityAssembler` merges a record's rows within an operation into its net change, picks the primary record (`ActivityCatalog.RankOf`) and composes the `ActivityKind`. A new audited entity adds its kind to `ActivityCatalog` and `ActivityEntityKind`, and its label to `ActivityAssembler`. Contract: `Ombor.Docs/backend-contracts/activity.md`.
+- **Tests run with the interceptor:** the integration host adds it back after replacing the DbContext options, so API writes in tests record audit rows exactly as in production.
 
 ## Multi-tenancy
 
