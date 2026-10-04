@@ -27,6 +27,7 @@ public sealed class InvitedUserSignInTests(TestingWebApplicationFactory factory,
 
         Assert.Equal(phone, invited.Contact); // stored canonical
         Assert.Equal("Dilshod Karimov", invited.Name);
+        Assert.True(invited.PendingFirstLogin);
 
         // Before the reset the account is unconfirmed: the same 401 as any wrong credential.
         var beforeReset = await PostRawAsync("auth/login", new { phoneNumber = phone, password = Password });
@@ -44,6 +45,10 @@ public sealed class InvitedUserSignInTests(TestingWebApplicationFactory factory,
         var login = await _client.PostAsync<LoginResponse>(
             "auth/login", new { phoneNumber = phone, password = Password }, HttpStatusCode.OK);
         Assert.False(string.IsNullOrEmpty(login.AccessToken));
+
+        // The reset confirmed the phone: the Settings list no longer shows the user as waiting for a first sign-in.
+        var users = await _client.GetAsync<TenantUserDto[]>("settings/users");
+        Assert.False(Assert.Single(users, u => u.Id == invited.Id).PendingFirstLogin);
     }
 
     [Fact]

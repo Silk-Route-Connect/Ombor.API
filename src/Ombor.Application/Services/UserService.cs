@@ -27,10 +27,10 @@ internal sealed class UserService(
         var users = await context.Users
             .AsNoTracking()
             .OrderBy(u => u.Id)
-            .Select(u => new { u.Id, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive, u.DeactivatedAt })
+            .Select(u => new UserRow(u.Id, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive, u.DeactivatedAt, u.IsPhoneNumberConfirmed))
             .ToArrayAsync();
 
-        return [.. users.Select(u => Map(u.Id, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive, u.DeactivatedAt))];
+        return [.. users.Select(Map)];
     }
 
     public async Task<TenantUserDto> InviteAsync(InviteUserRequest request)
@@ -74,7 +74,7 @@ internal sealed class UserService(
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return Map(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt);
+        return Map(user);
     }
 
     public async Task<TenantUserDto> DeactivateAsync(int userId)
@@ -95,7 +95,7 @@ internal sealed class UserService(
         await context.SaveChangesAsync();
         await activeUsers.InvalidateAsync(user.Id);
 
-        return Map(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt);
+        return Map(user);
     }
 
     public async Task<TenantUserDto> ReactivateAsync(int userId)
@@ -107,7 +107,7 @@ internal sealed class UserService(
         await context.SaveChangesAsync();
         await activeUsers.InvalidateAsync(user.Id);
 
-        return Map(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt);
+        return Map(user);
     }
 
     public async Task SetLanguageAsync(SetLanguageRequest request)
@@ -160,14 +160,28 @@ internal sealed class UserService(
         await context.Users.FirstOrDefaultAsync(u => u.Id == userId)
         ?? throw new EntityNotFoundException<User>(userId);
 
-    private TenantUserDto Map(int id, string firstName, string lastName, string phone, bool isActive, DateTimeOffset? deactivatedAt) =>
+    private TenantUserDto Map(User user) =>
+        Map(new UserRow(user.Id, user.FirstName, user.LastName, user.PhoneNumber, user.IsActive, user.DeactivatedAt, user.IsPhoneNumberConfirmed));
+
+    private TenantUserDto Map(UserRow user) =>
         new(
-            id,
-            $"{firstName} {lastName}".Trim(),
-            phone,
+            user.Id,
+            $"{user.FirstName} {user.LastName}".Trim(),
+            user.PhoneNumber,
             "phone",
-            isActive,
-            Self: id == currentUser.UserId,
+            user.IsActive,
+            Self: user.Id == currentUser.UserId,
             Online: false,
-            LastActiveAt: deactivatedAt);
+            LastActiveAt: user.DeactivatedAt,
+            // Only an invite creates an unconfirmed user (registration confirms the phone before the account exists).
+            PendingFirstLogin: !user.IsPhoneNumberConfirmed);
+
+    private sealed record UserRow(
+        int Id,
+        string FirstName,
+        string LastName,
+        string PhoneNumber,
+        bool IsActive,
+        DateTimeOffset? DeactivatedAt,
+        bool IsPhoneNumberConfirmed);
 }
