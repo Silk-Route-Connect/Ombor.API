@@ -196,10 +196,16 @@ internal sealed class DevelopmentDatabaseSeeder(
 
     private async Task AddPaymentsAsync(IApplicationDbContext context)
     {
+        // Seed payments once, like every other step. Re-running on each start fabricated unnumbered, future-dated
+        // payments against documents created through the app since the last start.
+        if (context.Payments.Any())
+        {
+            return;
+        }
+
         // Wallet-sourced payments need a wallet to draw from (rule 9).
         var walletId = context.Wallets.Select(w => w.Id).First();
 
-        // Load all transactions that do not yet have any allocations OR still have unpaid amounts
         var transactions = await context.Transactions
             .Include(t => t.PaymentAllocations)
             .Include(t => t.Partner)
