@@ -69,6 +69,9 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
             .IsUnique()
             .HasFilter("[Number] IS NOT NULL");
 
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(t => new { t.OrganizationId, t.DateUtc });
+
         builder.Ignore(t => t.UnpaidAmount);
 
         builder

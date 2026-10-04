@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 using Ombor.Infrastructure.Extensions;
@@ -26,6 +26,9 @@ internal sealed class StockAdjustmentConfiguration : IEntityTypeConfiguration<St
             .IsRequired();
 
         builder.Property(x => x.DateUtc).IsRequired();
+
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(x => new { x.OrganizationId, x.DateUtc });
 
         builder.Property(x => x.Direction)
             .HasEnumConversion()

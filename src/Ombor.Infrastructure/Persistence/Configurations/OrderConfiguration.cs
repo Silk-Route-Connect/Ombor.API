@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ombor.Domain.Entities;
 using Ombor.Infrastructure.Extensions;
@@ -71,6 +71,9 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasIndex(o => new { o.OrganizationId, o.OrderNumber })
             .IsUnique()
             .HasFilter("[OrderNumber] IS NOT NULL");
+
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(o => new { o.OrganizationId, o.DateUtc });
 
         builder
             .Property(o => o.TotalAmount)
