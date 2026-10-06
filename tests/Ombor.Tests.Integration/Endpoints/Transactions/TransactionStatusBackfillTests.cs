@@ -38,6 +38,7 @@ public sealed class TransactionStatusBackfillTests(TestingWebApplicationFactory 
     [InlineData(1_000, 1_000, TransactionStatus.Open, TransactionStatus.Closed)]
     [InlineData(1_000, 0, TransactionStatus.PartiallyPaid, TransactionStatus.Open)]
     [InlineData(1_000, 0, TransactionStatus.Closed, TransactionStatus.Open)]
+    [InlineData(0, 0, TransactionStatus.Open, TransactionStatus.Closed)]
     public async Task Backfill_ShouldDeriveStatusFromAmounts(int totalDue, int totalPaid, TransactionStatus stored, TransactionStatus expected)
     {
         var partnerId = await CreatePartnerAsync();

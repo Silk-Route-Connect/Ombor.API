@@ -35,6 +35,8 @@ public partial class CreateTransactionTests
         var sale = await PostTransactionAsync(SaleLine(partnerId, productId, warehouseId, quantity: 1m, unitPrice: 0m, discount: 0m, DiscountType.Fixed));
 
         Assert.Equal(0m, sale.TotalDue);
+        // Nothing to pay means nothing owed: a free document is settled, never «Не оплачено».
+        Assert.Equal("Closed", sale.Status);
     }
 
     [Fact]

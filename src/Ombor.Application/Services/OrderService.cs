@@ -151,6 +151,7 @@ internal sealed class OrderService(
             .ThrowIfMissingAsync();
 
         var saleLines = order.Lines.Select(ToSaleLine).ToArray();
+        var totalDue = saleLines.Sum(l => l.Total);
         var sale = new TransactionRecord
         {
             PartnerId = order.CustomerId,
@@ -159,9 +160,9 @@ internal sealed class OrderService(
             DateUtc = DateTimeOffset.UtcNow,
             Type = Domain.Enums.TransactionType.Sale,
             Lines = saleLines,
-            TotalDue = saleLines.Sum(l => l.Total),
+            TotalDue = totalDue,
             TotalPaid = 0m,
-            Status = Domain.Enums.TransactionStatus.Open,
+            Status = TransactionRecord.SettlementStatusOf(totalDue, 0m),
         };
 
         // Rule-20 hard block at the chosen warehouse (insufficient stock throws → rollback → 400); the sale lines

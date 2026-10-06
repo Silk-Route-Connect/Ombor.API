@@ -90,6 +90,7 @@ internal sealed class TransactionCreateGuard(IApplicationDbContext context, IReq
         }
 
         refund.TotalDue = refund.Lines.Sum(l => l.Total);
+        refund.Status = TransactionRecord.SettlementStatusOf(refund.TotalDue, refund.TotalPaid);
     }
 
     private async Task ValidateSettlementsAsync(CreateTransactionRequest request)

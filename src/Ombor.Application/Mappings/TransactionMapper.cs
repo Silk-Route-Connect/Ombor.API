@@ -34,6 +34,9 @@ internal sealed class TransactionMapper(IBusinessClock clock) : ITransactionMapp
             };
         }).ToArray();
 
+        // Line totals already apply rule 37 (percentage vs fixed, clamped); sum them for the due.
+        var totalDue = lines.Sum(l => l.Total);
+
         return new TransactionRecord
         {
             PartnerId = request.PartnerId,
@@ -47,10 +50,9 @@ internal sealed class TransactionMapper(IBusinessClock clock) : ITransactionMapp
             Type = request.Type.ToDomainType(),
             Partner = null!,
             Lines = lines,
-            // Line totals already apply rule 37 (percentage vs fixed, clamped); sum them for the due.
-            TotalDue = lines.Sum(l => l.Total),
+            TotalDue = totalDue,
             TotalPaid = 0,
-            Status = Domain.Enums.TransactionStatus.Open,
+            Status = TransactionRecord.SettlementStatusOf(totalDue, 0m),
         };
     }
 
