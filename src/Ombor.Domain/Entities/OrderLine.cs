@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class OrderLine : AuditableEntity, IOrganizationScoped
+public class OrderLine : AuditableEntity, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(Order), OrderId);
+
     public int OrganizationId { get; set; }
 
     public required decimal Quantity { get; set; }

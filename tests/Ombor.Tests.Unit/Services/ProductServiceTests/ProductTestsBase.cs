@@ -27,12 +27,29 @@ public abstract class ProductTestsBase : ServiceTestsBase
         // The read + delete paths gate deletability on these (DR-20); default to unreferenced.
         SetupTransactionLines([]);
         SetupOrderLines([]);
+        SetupOpeningStocks([]);
+        SetupStockAdjustments([]);
+        SetupTransferLines([]);
+        SetupTemplateItems([]);
+        SetupWarehouseItems([]);
 
         _fileSettings = FileSettingsFactory.CreateDefault();
         var options = Options.Create(_fileSettings);
 
         _mockFileService = new Mock<IFileService>();
         _service = new ProductService(_mockContext.Object, _mockValidator.Object, _mockFileService.Object, options);
+    }
+
+    /// <summary>The reference predicate reads every set that can point at a product (one source for IsDeletable and delete).</summary>
+    protected void VerifyReferenceSetsRead()
+    {
+        _mockContext.Verify(mock => mock.TransactionLines, Times.Once);
+        _mockContext.Verify(mock => mock.OrderLines, Times.Once);
+        _mockContext.Verify(mock => mock.OpeningStocks, Times.Once);
+        _mockContext.Verify(mock => mock.StockAdjustments, Times.Once);
+        _mockContext.Verify(mock => mock.TransferLines, Times.Once);
+        _mockContext.Verify(mock => mock.TemplateItems, Times.Once);
+        _mockContext.Verify(mock => mock.WarehouseItems, Times.Once);
     }
 
     protected override void VerifyNoOtherCalls()

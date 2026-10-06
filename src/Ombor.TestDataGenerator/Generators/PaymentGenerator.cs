@@ -133,9 +133,8 @@ public static class PaymentGenerator
             currentDate = NextLaterDate(transaction.DateUtc, options.MaxDaysAfterTransaction, currentDate);
         }
 
-        transaction.Status = transaction.TotalPaid >= transaction.TotalDue
-            ? TransactionStatus.Closed
-            : TransactionStatus.Open;
+        // The same rule the live payment path applies — a part-paid row is PartiallyPaid, never Open.
+        transaction.Status = TransactionRecord.SettlementStatusOf(transaction.TotalDue, transaction.TotalPaid);
 
         return payments;
     }
@@ -150,7 +149,14 @@ public static class PaymentGenerator
             .AddDays(deltaDays)
             .AddHours(NextInt(0, 3))
             .AddMinutes(NextInt(0, 59));
+        // Never later than now: a seeded payment dated in the future breaks every "as of today" figure.
         var max = transactionDate.AddDays(maxDaysAfter);
+        var now = DateTimeOffset.UtcNow;
+        if (max > now)
+        {
+            max = now;
+        }
+
         return candidate <= max ? candidate : max;
     }
 

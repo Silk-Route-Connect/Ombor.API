@@ -22,7 +22,10 @@ internal sealed class TestingDatabaseSeeder(
     private readonly Random _random = new();
     private readonly Faker _faker = new(seedSettings.Locale);
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
+    public async Task SeedDatabaseAsync(
+        IApplicationDbContext context,
+        IOrganizationAccessor organizationAccessor,
+        IOrganizationSetupService organizationSetup)
     {
         var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();

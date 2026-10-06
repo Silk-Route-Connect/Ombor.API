@@ -1,4 +1,5 @@
 using FluentValidation;
+using Ombor.Application.Interfaces;
 using Ombor.Application.Validators.Common;
 using Ombor.Contracts.Requests.Employee;
 
@@ -6,7 +7,7 @@ namespace Ombor.Application.Validators.Employee;
 
 public sealed class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
 {
-    public UpdateEmployeeRequestValidator()
+    public UpdateEmployeeRequestValidator(IBusinessClock clock)
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
@@ -37,7 +38,7 @@ public sealed class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmp
         RuleFor(x => x.DateOfEmployment)
             .NotEmpty()
             .WithMessage("Date of employment is required.")
-            .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow))
+            .LessThanOrEqualTo(_ => clock.Today)
             .WithMessage("Date of employment cannot be in the future.");
 
         RuleFor(x => x.ContactInfo!)

@@ -9,6 +9,10 @@ namespace Ombor.Contracts.Responses.User;
 /// <param name="Self">Whether this row is the current user.</param>
 /// <param name="Online">Presence flag (always false — no presence tracking in v1).</param>
 /// <param name="LastActiveAt">The deactivation date when inactive; null while active.</param>
+/// <param name="PendingFirstLogin">
+/// Invited and not signed in yet: the phone is unconfirmed until the invitee sets a password through
+/// forgot-password (the SMS code confirms it).
+/// </param>
 public sealed record TenantUserDto(
     int Id,
     string Name,
@@ -17,4 +21,5 @@ public sealed record TenantUserDto(
     bool Active,
     bool Self,
     bool Online,
-    DateTimeOffset? LastActiveAt);
+    DateTimeOffset? LastActiveAt,
+    bool PendingFirstLogin);

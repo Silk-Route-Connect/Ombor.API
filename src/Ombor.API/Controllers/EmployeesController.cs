@@ -66,7 +66,7 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
         [FromRoute] int employeeId,
         [FromBody] CreatePayrollRequest request)
     {
-        if (employeeId != request.EmployeeId)
+        if (request is not null && employeeId != request.EmployeeId)
         {
             return BadRequest(new ProblemDetails
             {
@@ -76,7 +76,7 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
             });
         }
 
-        var response = await paymentService.CreateAsync(request);
+        var response = await paymentService.CreateAsync(request!);
 
         return CreatedAtAction(
             nameof(PaymentsController.GetPaymentByIdAsync),
@@ -93,7 +93,7 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
         [FromRoute] int id,
         [FromBody] UpdateEmployeeRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -103,7 +103,7 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
             });
         }
 
-        var response = await service.UpdateAsync(request);
+        var response = await service.UpdateAsync(request!);
 
         return Ok(response);
     }
@@ -111,6 +111,7 @@ public sealed class EmployeesController(IEmployeeService service, IPaymentServic
     [HttpDelete("{id:int:min(1)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> DeleteAsync(
         [FromRoute] int id)
     {

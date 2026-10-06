@@ -12,6 +12,9 @@ namespace Ombor.Contracts.Responses.Employee;
 /// <param name="Salary">Salary amount of the employee.</param>
 /// <param name="DateOfEmployment">Date of employement of the employee.</param>
 /// <param name="ContactInfo">Contact info of the employee.</param>
+/// <param name="IsDeletable">
+/// False once any payment (payroll) references the employee — DELETE then answers 409; set the status to inactive instead.
+/// </param>
 public sealed record EmployeeDto(
     int Id,
     string Name,
@@ -19,4 +22,5 @@ public sealed record EmployeeDto(
     string Status,
     decimal Salary,
     DateOnly DateOfEmployment,
-    ContactInfo? ContactInfo);
+    ContactInfo? ContactInfo,
+    bool IsDeletable = true);

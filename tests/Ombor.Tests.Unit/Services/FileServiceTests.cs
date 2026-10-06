@@ -47,15 +47,36 @@ public sealed class FileServiceTests
             new NullLogger<FileService>());
     }
 
+    // Real leading bytes per type: uploads are checked by content, not by name or the client's Content-Type.
+    private static readonly byte[] Png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3, 4];
+    private static readonly byte[] Jpeg = [0xFF, 0xD8, 0xFF, 0xE0, 1, 2, 3, 4];
+    private static readonly byte[] Gif = [.. "GIF89a"u8, 1, 2, 3];
+    private static readonly byte[] Webp = [.. "RIFF"u8, 0, 0, 0, 0, .. "WEBP"u8, 1, 2];
+    private static readonly byte[] Pdf = [.. "%PDF-1.7"u8, 1, 2, 3];
+
     public static TheoryData<byte[]?, string?, Type> InvalidFileData => new()
     {
-        { null, "file.png", typeof(ArgumentException) },
-        { Array.Empty<byte>(), "file.png", typeof(ArgumentException) },
-        { new byte[10], null, typeof(ArgumentException) },
-        { new byte[10], "", typeof(ArgumentException) },
-        { new byte[10], "  ", typeof(ArgumentException) },
+        { null, "file.png", typeof(InvalidFileContentException) },
+        { Array.Empty<byte>(), "file.png", typeof(InvalidFileContentException) },
+        { new byte[10], null, typeof(InvalidFileContentException) },
+        { new byte[10], "", typeof(InvalidFileContentException) },
+        { new byte[10], "  ", typeof(InvalidFileContentException) },
         { new byte[250], "file.png", typeof(FileTooLargeException) },
-        { new byte[10], "file.exe", typeof(UnsupportedFileFormatException) }
+        { new byte[10], "file.exe", typeof(UnsupportedFileFormatException) },
+        // A renamed file: the bytes are not what the extension claims.
+        { new byte[10], "file.png", typeof(InvalidFileContentException) },
+        { Pdf, "file.png", typeof(InvalidFileContentException) },
+        { Png, "file.pdf", typeof(InvalidFileContentException) },
+        { [.. "<svg xmlns"u8], "file.jpg", typeof(InvalidFileContentException) },
+    };
+
+    private static byte[] SignatureFor(string extension) => extension switch
+    {
+        ".png" => Png,
+        ".jpg" or ".jpeg" => Jpeg,
+        ".gif" => Gif,
+        ".webp" => Webp,
+        _ => Pdf,
     };
 
     [Theory]
@@ -80,7 +101,7 @@ public sealed class FileServiceTests
     public async Task UpdateAsync_ShouldSaveThumbnailWithCorrectExtensionFormat_WhenFileIsImage(string extension, ThumbnailFormat expectedFormat)
     {
         // Arrange
-        byte[] data = [1, 2, 3];
+        byte[] data = SignatureFor(extension);
         IFormFile file = CreateFormFile(data, $"test{extension}");
 
         string generated = Guid.NewGuid().ToString("N") + ".jpg";
@@ -126,7 +147,7 @@ public sealed class FileServiceTests
     public async Task UploadAsync_ShouldSaveOriginalOnly_WhenFileIsNotImage()
     {
         // Arrange
-        byte[] data = [1, 2, 3];
+        byte[] data = Pdf;
         IFormFile file = CreateFormFile(data, "document.pdf");
         string generated = Guid.NewGuid().ToString("N") + ".pdf";
         string originalPath = $"uploads/documents/originals/{generated}";
@@ -149,13 +170,26 @@ public sealed class FileServiceTests
         Assert.Equal("document.pdf", result.OriginalFileName);
         Assert.Equal(originalUrl, result.Url);
         Assert.Null(result.ThumbnailUrl);
+        Assert.Equal("application/pdf", result.ContentType);
+    }
+
+    [Fact]
+    public async Task UploadImageAsync_ShouldRejectPdf_BecauseImagesOnly()
+    {
+        // Arrange — a genuine PDF is a valid attachment but never a product image or a logo.
+        IFormFile file = CreateFormFile(Pdf, "logo.pdf");
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UnsupportedFileFormatException>(
+            () => _service.UploadImageAsync(file, "organizations", CancellationToken.None));
+        _storageMock.VerifyNoOtherCalls();
     }
 
     [Fact]
     public async Task UploadAsync_ShouldSwallowThumbnailException_WhenThumbnailerFails()
     {
         // Arrange
-        byte[] data = [1, 2, 3];
+        byte[] data = Png;
         IFormFile file = CreateFormFile(data, "image.png");
         string generated = Guid.NewGuid().ToString("N") + ".png";
         string originalPath = $"uploads/images/originals/{generated}";

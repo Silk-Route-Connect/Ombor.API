@@ -20,7 +20,7 @@ internal sealed class EntityNotFoundExceptionHandler(ILogger<EntityNotFoundExcep
             Detail = entityNotFoundException.Message,
             Type = entityNotFoundException.ExceptionType,
             Instance = httpContext.Request.Path
-        };
+        }.WithCodeFrom(exception, ErrorCodes.EntityNotFound);
 
         httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

@@ -19,7 +19,7 @@ internal sealed class InvalidFileExceptionHandler(ILogger<InvalidFileException> 
             Status = StatusCodes.Status400BadRequest,
             Detail = "Provided file is not valid.",
             Instance = httpContext.Request.Path
-        };
+        }.WithCodeFrom(exception, ErrorCodes.ValidationFailed);
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

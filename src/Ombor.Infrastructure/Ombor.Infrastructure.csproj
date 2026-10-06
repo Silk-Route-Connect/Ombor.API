@@ -17,8 +17,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.20" />
-	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
 	<PackageReference Include="StackExchange.Redis" Version="2.9.17" />
+    <!-- Pinned above the 8.0.2 that DataProtection pulls in transitively (GHSA-37gx-xxp4-5rgx and related, fixed in 8.0.3). -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>

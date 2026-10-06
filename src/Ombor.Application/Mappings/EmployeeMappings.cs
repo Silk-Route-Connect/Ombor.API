@@ -7,7 +7,7 @@ namespace Ombor.Application.Mappings;
 
 internal static class EmployeeMappings
 {
-    public static EmployeeDto ToDto(this Employee employee) =>
+    public static EmployeeDto ToDto(this Employee employee, bool isDeletable) =>
         new(
             Id: employee.Id,
             Name: employee.FullName,
@@ -15,7 +15,8 @@ internal static class EmployeeMappings
             Status: employee.Status.ToString(),
             Salary: employee.Salary,
             DateOfEmployment: employee.DateOfEmployment,
-            ContactInfo: employee.ContactInfo?.ToDto());
+            ContactInfo: employee.ContactInfo?.ToDto(),
+            IsDeletable: isDeletable);
 
     public static Employee ToEntity(this CreateEmployeeRequest request) =>
         new()

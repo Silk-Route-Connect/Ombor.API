@@ -38,9 +38,10 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
             .HasCurrencyPrecision()
             .IsRequired();
 
+        // Same precision as the stock it moves (WarehouseItem, OrderLine): a 1.125 kg line must not be stored as 1.13.
         builder
             .Property(tl => tl.Quantity)
-            .HasCurrencyPrecision()
+            .HasQuantityPrecision()
             .IsRequired();
 
         builder
@@ -50,6 +51,12 @@ internal sealed class TransactionLineConfiguration : IEntityTypeConfiguration<Tr
             .HasDefaultValue(DiscountType.Percentage)
             .IsRequired();
 
+        // Currency precision like the WAC it is snapshotted from (WarehouseItem.AverageCost).
+        builder
+            .Property(tl => tl.UnitCost)
+            .HasCurrencyPrecision();
+
         builder.Ignore(tl => tl.Total);
+        builder.Ignore(tl => tl.Cost);
     }
 }

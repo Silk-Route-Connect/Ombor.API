@@ -23,6 +23,7 @@ public sealed class CreatePartnerTests : PartnerTestsBase
             () => _service.CreateAsync(request));
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
+        _mockWriteLock.Verify(mock => mock.BeginOrgWriteAsync(It.IsAny<CancellationToken>()), Times.Never);
 
         VerifyNoOtherCalls();
     }
@@ -52,6 +53,8 @@ public sealed class CreatePartnerTests : PartnerTestsBase
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.Partners.Add(addedpartner), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        // The opening balance is a money event: it is written under the organization write lock.
+        _mockWriteLock.Verify(mock => mock.BeginOrgWriteAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         VerifyNoOtherCalls();
     }

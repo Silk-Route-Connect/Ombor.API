@@ -34,4 +34,9 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ombor.Tests.Unit" />
+    <InternalsVisibleTo Include="Ombor.Tests.Integration" />
+  </ItemGroup>
+
 </Project>

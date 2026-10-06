@@ -80,7 +80,7 @@ public sealed class WarehousesController(
         [FromRoute] int id,
         [FromBody] UpdateWarehouseRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ValidationProblemDetails
             {
@@ -90,7 +90,7 @@ public sealed class WarehousesController(
             });
         }
 
-        var response = await warehouseService.UpdateAsync(request);
+        var response = await warehouseService.UpdateAsync(request!);
 
         return Ok(response);
     }
@@ -104,7 +104,7 @@ public sealed class WarehousesController(
         [FromRoute] int id,
         [FromBody] AddOpeningStockRequest request)
     {
-        if (id != request.WarehouseId)
+        if (request is not null && id != request.WarehouseId)
         {
             return BadRequest(new ValidationProblemDetails
             {
@@ -114,7 +114,7 @@ public sealed class WarehousesController(
             });
         }
 
-        var response = await warehouseService.AddOpeningStockAsync(request);
+        var response = await warehouseService.AddOpeningStockAsync(request!);
 
         return Ok(response);
     }

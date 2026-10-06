@@ -24,6 +24,8 @@ public abstract class DashboardTestsBase(TestingWebApplicationFactory factory, I
 
     protected Task<DebtDto[]> GetDebtsAsync() => _client.GetAsync<DebtDto[]>(Routes.Debt);
 
+    protected Task<DebtSummaryDto> GetDebtSummaryAsync() => _client.GetAsync<DebtSummaryDto>($"{Routes.Debt}/summary");
+
     protected async Task<int> CreateWarehouseAsync()
     {
         var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };

@@ -15,7 +15,7 @@ public interface IUserService
     /// <summary>Invites a user by phone, creating a usable account immediately.</summary>
     Task<TenantUserDto> InviteAsync(InviteUserRequest request);
 
-    /// <summary>Deactivates a user (cannot be the current user).</summary>
+    /// <summary>Deactivates a user (cannot be the current user) and ends all of their sessions.</summary>
     Task<TenantUserDto> DeactivateAsync(int userId);
 
     /// <summary>Reactivates a previously deactivated user.</summary>
@@ -23,4 +23,11 @@ public interface IUserService
 
     /// <summary>Sets the current user's interface language.</summary>
     Task SetLanguageAsync(SetLanguageRequest request);
+
+    /// <summary>
+    /// Changes the current user's password after re-verifying the current one, and signs out every other session.
+    /// </summary>
+    /// <param name="request">Current, new and confirmation password.</param>
+    /// <param name="currentRefreshToken">The caller's own refresh token (from its cookie), which stays valid; null revokes all.</param>
+    Task ChangePasswordAsync(ChangePasswordRequest request, string? currentRefreshToken);
 }

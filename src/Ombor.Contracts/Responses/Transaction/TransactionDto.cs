@@ -4,7 +4,7 @@
 /// A transaction as it appears in the Sales/Supplies list.
 /// </summary>
 /// <param name="Id">The transaction id.</param>
-/// <param name="Number">Human-facing document number, sequential per organization. Rendered bare (the «№» prefix is added client-side).</param>
+/// <param name="Number">Human-facing document number, sequential per organization. Rendered bare (the «№» prefix is added client-side); null for a legacy row without one.</param>
 /// <param name="PartnerId">The partner this transaction is with.</param>
 /// <param name="PartnerName">The partner's name.</param>
 /// <param name="Date">When the transaction occurred.</param>
@@ -18,7 +18,7 @@
 /// <param name="RefundReason">For refunds, why it was issued; otherwise null.</param>
 public sealed record TransactionDto(
     int Id,
-    string Number,
+    string? Number,
     int PartnerId,
     string PartnerName,
     DateTimeOffset Date,
@@ -33,6 +33,9 @@ public sealed record TransactionDto(
 
 /// <summary>A single line of a transaction (shared by the list and detail views).</summary>
 /// <param name="PackageSize">When the line was entered in packages, the package size (base units per package) at entry time; null for a base-unit line. The entered pack count is <paramref name="Quantity"/> ÷ this value; <paramref name="Quantity"/> (base units) stays authoritative (rule 21).</param>
+/// <param name="UnitCost">Cost per base unit snapshotted when the transaction was recorded: the WAC a Sale / SupplyRefund left at (a Sale's COGS), the original sale's cost a SaleRefund restocked at, a Supply's net purchase cost. Null when unknown (Supply / SupplyRefund lines recorded before 2026-10-04).</param>
+/// <param name="LineCost"><paramref name="UnitCost"/> × <paramref name="Quantity"/>, rounded to 2 decimals; null when the cost is unknown.</param>
+/// <param name="CostIsEstimated">True when the cost is an estimate, not the cost at the moment of the event (Sale / SaleRefund lines recorded before 2026-10-04, backfilled from the WAC at the time of the backfill).</param>
 public sealed record TransactionLineDto(
     int Id,
     int ProductId,
@@ -43,4 +46,7 @@ public sealed record TransactionLineDto(
     string DiscountType,
     decimal Quantity,
     decimal Total,
-    int? PackageSize = null);
+    int? PackageSize = null,
+    decimal? UnitCost = null,
+    decimal? LineCost = null,
+    bool CostIsEstimated = false);

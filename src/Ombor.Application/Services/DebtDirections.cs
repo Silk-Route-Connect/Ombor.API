@@ -11,4 +11,10 @@ internal static class DebtDirections
 
     /// <summary>We owe the partner (unpaid Supply / SaleRefund).</summary>
     public const string Payable = "Payable";
+
+    /// <summary>A partner whose unpaid documents are fully netted by an advance — nobody owes anybody.</summary>
+    public const string Settled = "Settled";
+
+    /// <summary>The direction of a signed net partner balance (positive = the partner owes us).</summary>
+    public static string OfBalance(decimal balance) => balance > 0m ? Receivable : balance < 0m ? Payable : Settled;
 }

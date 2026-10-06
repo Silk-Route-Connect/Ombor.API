@@ -127,9 +127,15 @@ public class ProductValidator(IApplicationDbContext context, FileSettings fileSe
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
-        // Mirror the service: a product is deletable until transaction/order history references it (DR-20).
+        // Mirror the service: a product is deletable until any record references it (rule 32 / DR-20). Other tests in
+        // the shared database stock or template seeded products, so a narrower mirror fails depending on test order.
         var referencedIds = (await context.TransactionLines.Select(l => l.ProductId)
             .Concat(context.OrderLines.Select(l => l.ProductId))
+            .Concat(context.OpeningStocks.Select(o => o.ProductId))
+            .Concat(context.StockAdjustments.Select(a => a.ProductId))
+            .Concat(context.TransferLines.Select(l => l.ProductId))
+            .Concat(context.TemplateItems.Select(i => i.ProductId))
+            .Concat(context.WarehouseItems.Select(i => i.ProductId))
             .Distinct()
             .ToArrayAsync()).ToHashSet();
 

@@ -6,7 +6,7 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents an employee in the system.
 /// </summary>
-public class Employee : AuditableEntity, IOrganizationScoped
+public class Employee : AuditableEntity, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 

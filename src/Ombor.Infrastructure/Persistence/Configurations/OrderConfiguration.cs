@@ -72,6 +72,9 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .IsUnique()
             .HasFilter("[OrderNumber] IS NOT NULL");
 
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(o => new { o.OrganizationId, o.DateUtc });
+
         builder
             .Property(o => o.TotalAmount)
             .HasCurrencyPrecision()

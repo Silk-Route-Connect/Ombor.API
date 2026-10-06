@@ -27,7 +27,8 @@ public abstract class WarehouseTestsBase : ServiceTestsBase
         _service = new WarehouseService(
             _mockContext.Object,
             _mockValidator.Object,
-            Mock.Of<ICurrentUserAccessor>());
+            Mock.Of<ICurrentUserAccessor>(),
+            _mockWriteLock.Object);
     }
 
     protected Warehouse[] GenerateRandomWarehouses(int count = 5)

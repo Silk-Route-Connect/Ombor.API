@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Template;
@@ -35,6 +36,7 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
     public async Task<CreateTemplateResponse> CreateAsync(CreateTemplateRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+        await EnsureReferencesOwnedAsync(request.PartnerId, request.Items.Select(i => i.ProductId));
 
         // Package-entry items are resolved to base units server-side from the product's package size (rule 21).
         var packageSizes = await context.LoadPackageSizesAsync(
@@ -53,6 +55,7 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
     public async Task<UpdateTemplateResponse> UpdateAsync(UpdateTemplateRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
+        await EnsureReferencesOwnedAsync(request.PartnerId, request.Items.Select(i => i.ProductId));
 
         // Items must be tracked so the update can reconcile them (update existing, add new, remove dropped).
         var template = await context.Templates
@@ -83,6 +86,13 @@ internal sealed class TemplateService(IApplicationDbContext context, IRequestVal
         context.Templates.Remove(template);
         await context.SaveChangesAsync();
     }
+
+    // The partner and every item's product must belong to the caller's organization (rule 34).
+    private Task EnsureReferencesOwnedAsync(int partnerId, IEnumerable<int> productIds) =>
+        OwnedReferences.Check()
+            .Require(context.Partners, partnerId, nameof(CreateTemplateRequest.PartnerId))
+            .Require(context.Products, productIds.Select((id, i) => (id, $"Items[{i}].ProductId")))
+            .ThrowIfMissingAsync();
 
     private IQueryable<Template> GetQuery(GetTemplatesRequest request)
     {
