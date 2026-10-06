@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
@@ -211,11 +212,19 @@ internal sealed class TransactionCreateGuard(IApplicationDbContext context, IReq
             .Select(g => new { ProductId = g.Key, Quantity = g.Sum(l => l.Quantity) })
             .ToDictionaryAsync(x => x.ProductId, x => x.Quantity);
 
+        // A package-entry line refunds pack count × package size and its request Quantity is ignored, so the cap
+        // must count the same resolved base quantity the stock move will book (rule 21).
+        var packageSizes = await context.LoadPackageSizesAsync(
+            request.Lines.Where(l => l.PackageQuantity is > 0).Select(l => l.ProductId));
+
         // Aggregate this request's lines by product before the cap check. Two lines of the same product in
         // one request would otherwise each pass against the same persisted baseline while their sum exceeds
         // the original quantity (over-refund + over-restock).
         var requestedQuantities = request.Lines
-            .Select((l, index) => (l.ProductId, l.Quantity, Index: index))
+            .Select((l, index) => (
+                l.ProductId,
+                Quantity: PackageEntry.Resolve(l.ProductId, l.Quantity, l.PackageQuantity, packageSizes).Quantity,
+                Index: index))
             .GroupBy(l => l.ProductId)
             .Select(g => (ProductId: g.Key, Quantity: g.Sum(l => l.Quantity), FirstIndex: g.First().Index));
 

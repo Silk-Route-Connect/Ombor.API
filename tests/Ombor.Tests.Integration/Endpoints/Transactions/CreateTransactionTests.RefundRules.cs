@@ -67,6 +67,50 @@ public partial class CreateTransactionTests
         Assert.Equal(900m, refund.TotalDue);
     }
 
+    [Fact]
+    public async Task CreateAsync_ShouldRejectPackageRefund_WhenResolvedQuantityExceedsWhatWasSold()
+    {
+        // Sold one box of 12. The refund line claims base quantity 1 but enters 5 boxes; the server books
+        // 5 × 12 = 60, so the rule-5 cap must count 60, not the ignored 1.
+        var partnerId = await CreatePartnerAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync(packageSize: 12);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+        var sale = await PostTransactionAsync(BuildSale(partnerId, productId, warehouseId, quantity: 12m, packageQuantity: 1));
+
+        var refund = PackageRefund(partnerId, productId, warehouseId, sale.Id, quantity: 1m, packageQuantity: 5);
+        var problem = await _client.PostAsync<JObject>(Routes.Transaction, refund.ToMultipartFormData(), HttpStatusCode.BadRequest);
+
+        Assert.NotNull(problem["errors"]?["Lines[0].Quantity"]);
+        Assert.False(await _context.Transactions.AnyAsync(t => t.OriginalTransactionId == sale.Id));
+        var item = await _context.WarehouseItems.AsNoTracking()
+            .FirstAsync(i => i.WarehouseId == warehouseId && i.ProductId == productId);
+        Assert.Equal(88m, item.Quantity);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldCapPackageRefund_ByResolvedQuantity()
+    {
+        // Sold two boxes of 12 (24). Returning one box books 12 base units; the request's base quantity (999) is
+        // ignored for a package entry by the cap exactly as it is by the stock move.
+        var partnerId = await CreatePartnerAsync();
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync(packageSize: 12);
+        await SeedStockAsync(warehouseId, productId, quantity: 100);
+        var sale = await PostTransactionAsync(BuildSale(partnerId, productId, warehouseId, quantity: 24m, packageQuantity: 2));
+
+        var refund = await PostTransactionAsync(PackageRefund(partnerId, productId, warehouseId, sale.Id, quantity: 999m, packageQuantity: 1));
+
+        Assert.Equal(12m, Assert.Single(refund.Lines).Quantity);
+    }
+
+    private static CreateTransactionRequest PackageRefund(
+        int partnerId, int productId, int warehouseId, int originalId, decimal quantity, int packageQuantity)
+        => BuildRefund(partnerId, productId, warehouseId, originalId, quantities: [quantity]) with
+        {
+            Lines = [new CreateTransactionLine(productId, 1_000m, 0m, DiscountType.Percentage, quantity, packageQuantity)],
+        };
+
     private static CreateTransactionRequest SaleLine(
         int partnerId, int productId, int warehouseId, decimal quantity, decimal unitPrice, decimal discount, DiscountType discountType)
         => BuildSale(partnerId, productId, warehouseId, quantity) with
