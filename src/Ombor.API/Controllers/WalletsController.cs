@@ -95,7 +95,7 @@ public sealed class WalletsController(IWalletService walletService) : Controller
         [FromRoute] int id,
         [FromBody] UpdateWalletRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -105,7 +105,7 @@ public sealed class WalletsController(IWalletService walletService) : Controller
             });
         }
 
-        var response = await walletService.UpdateAsync(request);
+        var response = await walletService.UpdateAsync(request!);
 
         return Ok(response);
     }

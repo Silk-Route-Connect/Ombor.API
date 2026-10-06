@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Serialization;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -29,7 +30,7 @@ internal sealed class InvalidEnumExceptionHandler(ILogger<InvalidEnumExceptionHa
             {
                 [enumException.EnumTypeName] = [enumException.Message]
             }
-        };
+        }.WithCode(ErrorCodes.ValidationFailed);
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);

@@ -25,8 +25,7 @@ internal sealed class DatabaseSeederFactory(IServiceScopeFactory serviceScopeFac
         {
             "development" => new DevelopmentDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
             "testing" => new TestingDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
-            "production" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
-            "staging" => new ProductionDatabaseSeeder(seedSettings, fileSettings, hostEnvironment, imageThumbnailer, passwordHasher),
+            "production" or "staging" => new NoDataSeeder(),
             _ => throw new ArgumentOutOfRangeException($"Cannot create an instance of Database Seeder for environment: {environment.EnvironmentName}."),
         };
     }

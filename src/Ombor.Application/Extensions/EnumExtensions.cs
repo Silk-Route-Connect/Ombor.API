@@ -62,6 +62,16 @@ internal static class EnumExtensions
         throw new InvalidCastException($"Could not cast between domain payment type and contract payment type: {type}.");
     }
 
+    public static Contracts.Enums.PaymentType ToContractType(this Domain.Enums.PaymentType type)
+    {
+        if (Enum.TryParse<Contracts.Enums.PaymentType>(type.ToString(), ignoreCase: true, out var result))
+        {
+            return result;
+        }
+
+        throw new InvalidCastException($"Could not cast between domain payment type and contract payment type: {type}.");
+    }
+
     public static Domain.Enums.PaymentDirection ToDomainDirection(this Contracts.Enums.PaymentDirection direction)
     {
         if (Enum.TryParse<Domain.Enums.PaymentDirection>(direction.ToString(), ignoreCase: true, out var result))

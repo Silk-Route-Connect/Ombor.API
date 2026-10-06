@@ -105,6 +105,38 @@ public sealed class DeleteProductTests : ProductTestsBase
     }
 
     [Fact]
+    public async Task DeleteAsync_ShouldThrow_WhenProductReferencedOnlyByOpeningStock()
+    {
+        // Arrange — no transaction or order line; the opening stock alone references it (Restrict FK).
+        var productToDelete = _builder.ProductBuilder
+            .WithId(999)
+            .WithImages([])
+            .WithCategory(_defaultCategory)
+            .BuildAndPopulate();
+        var request = new DeleteProductRequest(productToDelete.Id);
+
+        var mockSet = SetupProducts([.. _defaultProducts, productToDelete]);
+        SetupOpeningStocks([new OpeningStock
+        {
+            Id = 1,
+            ProductId = productToDelete.Id,
+            Product = null!,
+            WarehouseId = 1,
+            Warehouse = null!,
+            Quantity = 5,
+            UnitCost = 10m,
+            DateUtc = DateTimeOffset.UtcNow,
+        }]);
+
+        // Act & Assert — 409 (archive instead), never the DbUpdateException 500 the narrower predicate let through.
+        await Assert.ThrowsAsync<Ombor.Domain.Exceptions.ConflictException>(
+            () => _service.DeleteAsync(request));
+
+        mockSet.Verify(mock => mock.Remove(It.IsAny<Product>()), Times.Never);
+        _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task ArchiveAsync_ShouldSetIsArchived_WhenProductExists()
     {
         // Arrange

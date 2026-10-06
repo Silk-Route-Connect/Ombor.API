@@ -45,21 +45,30 @@ internal sealed class ProductService(
         return entity.ToDto() with { IsDeletable = !await IsProductReferencedAsync(entity.Id) };
     }
 
-    // A product is deletable only until transaction or order history references it (rule 32 / DR-20);
-    // the same predicate backs both the served IsDeletable flag and the delete guard, so they can't drift.
+    // A product is deletable only until any record references it (rule 32 / DR-20): transaction or order lines,
+    // opening stock, adjustments, transfers, template items, or a stock row. Every one of those FKs is Restrict (or
+    // would cascade away stock), so a missed reference used to surface as a 500 on delete. This single source backs
+    // both the served IsDeletable flag and the delete guard, so they can't drift.
+    private IQueryable<int> ReferencedProductIds() =>
+        context.TransactionLines.Select(l => l.ProductId)
+            .Concat(context.OrderLines.Select(l => l.ProductId))
+            .Concat(context.OpeningStocks.Select(o => o.ProductId))
+            .Concat(context.StockAdjustments.Select(a => a.ProductId))
+            .Concat(context.TransferLines.Select(l => l.ProductId))
+            .Concat(context.TemplateItems.Select(i => i.ProductId))
+            .Concat(context.WarehouseItems.Select(i => i.ProductId));
+
     private async Task<HashSet<int>> GetReferencedProductIdsAsync()
     {
-        var ids = await context.TransactionLines.Select(l => l.ProductId)
-            .Concat(context.OrderLines.Select(l => l.ProductId))
+        var ids = await ReferencedProductIds()
             .Distinct()
             .ToArrayAsync();
 
         return [.. ids];
     }
 
-    private async Task<bool> IsProductReferencedAsync(int id)
-        => await context.TransactionLines.AnyAsync(l => l.ProductId == id)
-           || await context.OrderLines.AnyAsync(l => l.ProductId == id);
+    private Task<bool> IsProductReferencedAsync(int id)
+        => ReferencedProductIds().AnyAsync(productId => productId == id);
 
     public async Task<ProductTransactionDto[]> GetTransactionsAsync(GetProductTransactionsRequest request)
     {
@@ -83,7 +92,9 @@ internal sealed class ProductService(
             x.Transaction.DateUtc,
             x.Quantity,
             x.Discount,
-            x.UnitPrice))];
+            x.UnitPrice,
+            x.DiscountType.ToString(),
+            x.Transaction.Number?.ToString()))];
     }
 
     public async Task<CreateProductResponse> CreateAsync(CreateProductRequest request)
@@ -125,7 +136,7 @@ internal sealed class ProductService(
         if (await IsProductReferencedAsync(entity.Id))
         {
             throw new ConflictException(
-                "Product cannot be deleted because it is referenced by transaction or order history. Archive it instead.");
+                "Product cannot be deleted because other records (documents, stock or templates) reference it. Archive it instead.");
         }
 
         var imagesToDelete = entity.Images.Select(x => x.FileName).ToArray();
@@ -236,7 +247,7 @@ internal sealed class ProductService(
             return [];
         }
 
-        var fileUrls = await fileService.UploadAsync(attachments, fileSettings.ProductUploadsSection);
+        var fileUrls = await fileService.UploadImagesAsync(attachments, fileSettings.ProductUploadsSection);
         var images = fileUrls
             .Select(file => new ProductImage
             {

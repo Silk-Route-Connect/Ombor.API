@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Ombor.API.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Requests.Organization;
 using Ombor.Contracts.Requests.User;
@@ -88,6 +90,22 @@ public sealed class SettingsController(
     public async Task<IActionResult> SetLanguageAsync([FromBody] SetLanguageRequest request)
     {
         await userService.SetLanguageAsync(request);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Changes the current user's password. Every other session is signed out; the session whose refresh-token
+    /// cookie came with this request stays signed in.
+    /// </summary>
+    [HttpPut("password")]
+    [EnableRateLimiting(RateLimitPolicies.Auth)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+    public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordRequest request)
+    {
+        await userService.ChangePasswordAsync(request, Request.Cookies[AuthController.RefreshTokenCookieName]);
 
         return NoContent();
     }

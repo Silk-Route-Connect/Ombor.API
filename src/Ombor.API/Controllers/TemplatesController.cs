@@ -44,7 +44,7 @@ public class TemplatesController(ITemplateService templateService) : ControllerB
         [FromRoute] int id,
         [FromBody] UpdateTemplateRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -54,7 +54,7 @@ public class TemplatesController(ITemplateService templateService) : ControllerB
             });
         }
 
-        var response = await templateService.UpdateAsync(request);
+        var response = await templateService.UpdateAsync(request!);
 
         return Ok(response);
     }

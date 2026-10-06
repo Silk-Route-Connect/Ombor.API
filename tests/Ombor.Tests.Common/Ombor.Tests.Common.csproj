@@ -10,6 +10,9 @@
     <PackageReference Include="Bogus" Version="35.6.3" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
     <PackageReference Include="xunit.assert" Version="2.5.3" />
+    <!-- Pinned above the vulnerable 4.3.0 that the xunit packages pull in transitively. -->
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>

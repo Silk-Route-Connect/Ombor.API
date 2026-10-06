@@ -5,8 +5,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// A single product line of a <see cref="Transfer"/>.
 /// </summary>
-public class TransferLine : EntityBase, IOrganizationScoped, IAuditable
+public class TransferLine : EntityBase, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(Transfer), TransferId);
+
     public int OrganizationId { get; set; }
 
     public decimal Quantity { get; set; }

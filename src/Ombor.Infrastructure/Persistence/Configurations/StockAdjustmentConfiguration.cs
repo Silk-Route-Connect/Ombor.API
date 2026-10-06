@@ -27,6 +27,9 @@ internal sealed class StockAdjustmentConfiguration : IEntityTypeConfiguration<St
 
         builder.Property(x => x.DateUtc).IsRequired();
 
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(x => new { x.OrganizationId, x.DateUtc });
+
         builder.Property(x => x.Direction)
             .HasEnumConversion()
             .IsRequired();

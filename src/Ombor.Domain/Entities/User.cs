@@ -2,12 +2,16 @@
 
 namespace Ombor.Domain.Entities;
 
-public class User : AuditableEntity, IOrganizationScoped
+public class User : AuditableEntity, IOrganizationScoped, IAuditable
 {
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
+    [NotAudited(MaskedAs = "Password")]
     public required string PasswordHash { get; set; }
+
+    [NotAudited(MaskedAs = "Password")]
     public required string PasswordSalt { get; set; }
+
     public required string PhoneNumber { get; set; }
     public string? TelegramAccount { get; set; }
     public string? Email { get; set; }
@@ -19,7 +23,8 @@ public class User : AuditableEntity, IOrganizationScoped
     /// <summary>When the user was deactivated; null while active. Surfaces as the user's last-active date.</summary>
     public DateTimeOffset? DeactivatedAt { get; set; }
 
-    /// <summary>The user's interface language (ru / uz-Latn / uz-Cyrl). A per-user preference.</summary>
+    /// <summary>The user's interface language (ru / uz-Latn / uz-Cyrl). A per-user preference, not business activity, so not audited.</summary>
+    [NotAudited]
     public string Language { get; set; } = "ru";
 
     public int OrganizationId { get; set; }

@@ -69,8 +69,18 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<string>("OldValues")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("OperationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("ParentEntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ParentEntityType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTimeOffset>("TimestampUtc")
                         .HasColumnType("datetimeoffset");
@@ -82,7 +92,17 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("EntityType", "EntityId");
+                    b.HasIndex("OrganizationId", "OperationId");
+
+                    b.HasIndex("OrganizationId", "TimestampUtc")
+                        .IsDescending(false, true);
+
+                    b.HasIndex("OrganizationId", "EntityType", "EntityId");
+
+                    b.HasIndex("OrganizationId", "ParentEntityType", "ParentEntityId")
+                        .HasFilter("[ParentEntityType] IS NOT NULL");
+
+                    b.HasIndex("OrganizationId", "UserId", "TimestampUtc");
 
                     b.ToTable("AuditEntry", (string)null);
                 });
@@ -337,6 +357,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.HasIndex("SaleId");
 
                     b.HasIndex("WarehouseId");
+
+                    b.HasIndex("OrganizationId", "DateUtc");
 
                     b.HasIndex("OrganizationId", "OrderNumber")
                         .IsUnique()
@@ -648,6 +670,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.HasIndex("PartnerId");
 
                     b.HasIndex("WalletId");
+
+                    b.HasIndex("OrganizationId", "DateUtc");
 
                     b.HasIndex("OrganizationId", "Number")
                         .IsUnique()
@@ -1051,6 +1075,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("WarehouseId");
 
+                    b.HasIndex("OrganizationId", "DateUtc");
+
                     b.ToTable("StockAdjustment", (string)null);
                 });
 
@@ -1222,6 +1248,9 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("CostIsEstimated")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Discount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -1243,11 +1272,15 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("TransactionId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
@@ -1336,6 +1369,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("WarehouseId");
 
+                    b.HasIndex("OrganizationId", "DateUtc");
+
                     b.HasIndex("OrganizationId", "Number")
                         .IsUnique()
                         .HasFilter("[Number] IS NOT NULL");
@@ -1398,8 +1433,8 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("TransferId")
                         .HasColumnType("int");

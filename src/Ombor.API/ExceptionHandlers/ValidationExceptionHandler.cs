@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -29,6 +30,13 @@ internal sealed class ValidationExceptionHandler(ILogger<ValidationExceptionHand
             Instance = httpContext.Request.Path,
             Errors = errors
         };
+
+        // A failure raised with a domain code (CodedValidation / .WithErrorCode) names the whole error; plain rule
+        // failures carry FluentValidation's built-in codes, which are not part of the contract.
+        var codedFailure = validationException.Errors.FirstOrDefault(e => ErrorCodes.IsDomainCode(e.ErrorCode));
+        problem.WithCode(
+            codedFailure?.ErrorCode ?? ErrorCodes.ValidationFailed,
+            codedFailure?.CustomState as IReadOnlyDictionary<string, object?>);
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);

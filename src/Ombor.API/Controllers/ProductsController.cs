@@ -111,7 +111,7 @@ public sealed class ProductsController(
         [FromRoute] int id,
         [FromForm] UpdateProductRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -121,7 +121,7 @@ public sealed class ProductsController(
             });
         }
 
-        var response = await productService.UpdateAsync(request);
+        var response = await productService.UpdateAsync(request!);
 
         return Ok(response);
     }

@@ -15,6 +15,28 @@ public sealed class ReadPaymentTests(TestingWebApplicationFactory factory, ITest
     : PaymentTestsBase(factory, outputHelper)
 {
     [Fact]
+    public async Task FormData_WalletBalances_MatchTheWalletsList()
+    {
+        // Arrange — a wallet that moved money only through a payment, and one with an opening balance.
+        var paymentOnlyWallet = await CreateWalletAsync(0m);
+        var openingWallet = await CreateWalletAsync(7_500m);
+        var partnerId = await CreatePartnerAsync();
+        var saleId = await CreateOpenSaleAsync(partnerId, total: 2_000m);
+        await _client.PostAsync<PaymentRecordDto>(GetUrl(), new CreatePaymentRecordRequest(
+            PaymentType.Transaction, PaymentDirection.Income, partnerId, null, paymentOnlyWallet,
+            2_000m, null, null, [new SettlementInput(saleId, 2_000m)]).ToMultipartFormData());
+
+        // Act — balances now come from one batched query.
+        var formData = await _client.GetAsync<PaymentFormDataDto>($"{GetUrl()}/form-data");
+        var walletList = await _client.GetAsync<Contracts.Responses.Wallet.WalletDto[]>("wallets");
+
+        // Assert — every form wallet shows the same balance as the wallets list.
+        Assert.Equal(2_000m, formData.Wallets.Single(w => w.Id == paymentOnlyWallet).Balance);
+        Assert.Equal(7_500m, formData.Wallets.Single(w => w.Id == openingWallet).Balance);
+        Assert.All(formData.Wallets, w => Assert.Equal(walletList.Single(l => l.Id == w.Id).Balance, w.Balance));
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnTheRecordedPayment()
     {
         // Arrange — record a payment.

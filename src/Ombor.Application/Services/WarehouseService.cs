@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
+using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Warehouse;
@@ -15,7 +16,8 @@ namespace Ombor.Application.Services;
 internal sealed class WarehouseService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    ICurrentUserAccessor currentUser) : IWarehouseService
+    ICurrentUserAccessor currentUser,
+    IOrganizationWriteLock writeLock) : IWarehouseService
 {
     // A warehouse is "referenced" when any record links to it: stock (any item row, even zero-quantity),
     // an opening/adjustment movement, a transaction, a transfer on either side, or an order. Such a
@@ -148,8 +150,16 @@ internal sealed class WarehouseService(
     {
         await validator.ValidateAndThrowAsync(request);
 
+        // «Not stocked yet» is checked under the organization's write lock, so two parallel openings (or an opening
+        // racing a supply) can't both stock the same product.
+        await using var write = await writeLock.BeginOrgWriteAsync();
+
         // 404 if the warehouse doesn't exist.
         _ = await GetOrThrowAsync(request.WarehouseId);
+
+        await OwnedReferences.Check()
+            .Require(context.Products, request.Items.Select((x, i) => (x.ProductId, $"Items[{i}].ProductId")))
+            .ThrowIfMissingAsync();
 
         var productIds = request.Items.Select(x => x.ProductId).ToArray();
 
@@ -191,6 +201,7 @@ internal sealed class WarehouseService(
             request.Items.Select(i => (i.ProductId, i.Quantity, i.UnitCost)));
 
         await context.SaveChangesAsync();
+        await write.CommitAsync();
 
         return await GetByIdAsync(new GetWarehouseByIdRequest(request.WarehouseId));
     }

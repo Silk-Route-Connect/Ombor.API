@@ -1,8 +1,9 @@
 namespace Ombor.Domain.Common;
 
 /// <summary>
-/// Marks an entity whose every change (insert, update, delete) is a money- or
-/// stock-affecting event and must be recorded in the audit log. Non-financial
-/// entities (Product, Partner, Category, etc.) deliberately do not implement this.
+/// Marks an entity whose every change (insert, update, archive, delete) is recorded in the audit log that backs
+/// the Activity Log (rules 26–28): the money and stock events and the mutable master data. The audit interceptor
+/// writes the rows; an entity never writes its own. Properties that must never reach the log are marked
+/// <see cref="NotAuditedAttribute"/>.
 /// </summary>
 public interface IAuditable;

@@ -95,7 +95,7 @@ public partial class CreateTransactionTests
             TransactionRequestFactory.Supply(partnerId, productId, warehouseId, due: 5_000m, walletId: null, paidAmount: 0m));
 
         // Assert — one per-organization series across sub-types: the Supply continues the Sale's counter (+1).
-        Assert.Equal(int.Parse(sale.Number) + 1, int.Parse(supply.Number));
+        Assert.Equal(int.Parse(sale.Number!) + 1, int.Parse(supply.Number!));
     }
 
     [Theory]

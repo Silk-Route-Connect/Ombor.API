@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Localization;
 using Ombor.Domain.Entities;
@@ -7,7 +8,8 @@ namespace Ombor.Application.Services;
 
 internal sealed class OrganizationSetupService(
     IApplicationDbContext context,
-    IOrganizationAccessor organizationAccessor) : IOrganizationSetupService
+    IOrganizationAccessor organizationAccessor,
+    IBusinessClock clock) : IOrganizationSetupService
 {
     private readonly record struct StarterNames(string Category, string Wallet, string Partner, string Warehouse);
 
@@ -34,22 +36,39 @@ internal sealed class OrganizationSetupService(
         // JWT during registration). They are ordinary rows — no system flag (rule 42).
         organizationAccessor.SetOrganization(organizationId);
 
-        context.Categories.Add(new Category { Name = names.Category });
-        context.Partners.Add(new Partner
+        // Each row is added only while the organization has none of that name, so the development seed can run this
+        // over existing demo organizations. A new organization is empty, so registration always gets all four.
+        if (!await context.Categories.AnyAsync(c => c.Name == names.Category))
         {
-            Name = names.Partner,
-            // Both, so the single starter partner is usable for sales and supplies (rule 42).
-            Type = PartnerType.Both,
-            OpeningDate = DateOnly.FromDateTime(DateTimeOffset.UtcNow.UtcDateTime),
-        });
-        context.Warehouses.Add(new Warehouse { Name = names.Warehouse });
-        context.Wallets.Add(new Wallet
+            context.Categories.Add(new Category { Name = names.Category });
+        }
+
+        if (!await context.Partners.AnyAsync(p => p.Name == names.Partner))
         {
-            Name = names.Wallet,
-            Type = WalletType.Cash,
-            OpeningBalance = 0m,
-            CreatedAt = DateTimeOffset.UtcNow,
-        });
+            context.Partners.Add(new Partner
+            {
+                Name = names.Partner,
+                // Both, so the single starter partner is usable for sales and supplies (rule 42).
+                Type = PartnerType.Both,
+                OpeningDate = clock.Today,
+            });
+        }
+
+        if (!await context.Warehouses.AnyAsync(w => w.Name == names.Warehouse))
+        {
+            context.Warehouses.Add(new Warehouse { Name = names.Warehouse });
+        }
+
+        if (!await context.Wallets.AnyAsync(w => w.Name == names.Wallet))
+        {
+            context.Wallets.Add(new Wallet
+            {
+                Name = names.Wallet,
+                Type = WalletType.Cash,
+                OpeningBalance = 0m,
+                CreatedAt = clock.UtcNow,
+            });
+        }
 
         await context.SaveChangesAsync();
     }

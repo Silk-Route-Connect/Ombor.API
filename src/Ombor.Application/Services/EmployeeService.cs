@@ -21,7 +21,15 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
             .OrderBy(x => x.FullName)
             .ToArrayAsync();
 
-        return [.. employees.Select(x => x.ToDto())];
+        var ids = employees.Select(x => x.Id).ToArray();
+        var paidIds = (await context.Payments
+            .Where(p => p.EmployeeId != null && ids.Contains(p.EmployeeId.Value))
+            .Select(p => p.EmployeeId!.Value)
+            .Distinct()
+            .ToArrayAsync())
+            .ToHashSet();
+
+        return [.. employees.Select(x => x.ToDto(isDeletable: !paidIds.Contains(x.Id)))];
     }
 
     public async Task<EmployeeDto> GetByIdAsync(GetEmployeeByIdRequest request)
@@ -30,7 +38,7 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 
         var employee = await GetOrThrowAsync(request.Id);
 
-        return employee.ToDto();
+        return employee.ToDto(isDeletable: !await IsReferencedAsync(employee.Id));
     }
 
     public async Task<CreateEmployeeResponse> CreateAsync(CreateEmployeeRequest request)
@@ -62,9 +70,20 @@ internal sealed class EmployeeService(IApplicationDbContext context, IRequestVal
 
         var employee = await GetOrThrowAsync(request.Id);
 
+        // Payroll is an immutable money event (rule 1) that names the employee; deleting them would orphan it.
+        // Set the status to inactive instead.
+        if (await IsReferencedAsync(employee.Id))
+        {
+            throw new ConflictException("Employee cannot be deleted because payments reference them. Mark them inactive instead.");
+        }
+
         context.Employees.Remove(employee);
         await context.SaveChangesAsync();
     }
+
+    // One predicate for the served IsDeletable flag and the delete guard, so they can't drift (rule 32).
+    private Task<bool> IsReferencedAsync(int employeeId) =>
+        context.Payments.AnyAsync(p => p.EmployeeId == employeeId);
 
     private async Task<Employee> GetOrThrowAsync(int id) =>
         await context.Employees.FirstOrDefaultAsync(x => x.Id == id)

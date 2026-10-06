@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Services;
 using Ombor.Domain.Entities;
 using Ombor.Tests.Common.Builders;
 using Ombor.Tests.Common.Interfaces;
@@ -14,13 +16,20 @@ public abstract class ServiceTestsBase : UnitTestsBase
 
     protected readonly Mock<IRequestValidator> _mockValidator;
     protected readonly Mock<IApplicationDbContext> _mockContext;
+    protected readonly Mock<IOrganizationWriteLock> _mockWriteLock;
     protected readonly ITestDataBuilder _builder;
+    private protected readonly IBusinessClock _clock = new BusinessClock(TimeProvider.System);
 
     protected ServiceTestsBase()
     {
         _mockValidator = new Mock<IRequestValidator>();
         _mockContext = new Mock<IApplicationDbContext>();
         _builder = new TestDataBuilder();
+
+        // The lock itself is SQL Server behaviour (covered by the integration suite); here it hands out a no-op transaction.
+        _mockWriteLock = new Mock<IOrganizationWriteLock>();
+        _mockWriteLock.Setup(mock => mock.BeginOrgWriteAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Mock.Of<IDbContextTransaction>());
     }
 
     protected virtual void VerifyNoOtherCalls()
@@ -163,6 +172,30 @@ public abstract class ServiceTestsBase : UnitTestsBase
     {
         var mockSet = templates.AsQueryable().BuildMockDbSet();
         _mockContext.Setup(mock => mock.Templates).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<TransferLine>> SetupTransferLines(IEnumerable<TransferLine> lines)
+    {
+        var mockSet = lines.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.TransferLines).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<TemplateItem>> SetupTemplateItems(IEnumerable<TemplateItem> items)
+    {
+        var mockSet = items.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.TemplateItems).Returns(mockSet.Object);
+
+        return mockSet;
+    }
+
+    protected Mock<DbSet<WarehouseItem>> SetupWarehouseItems(IEnumerable<WarehouseItem> items)
+    {
+        var mockSet = items.AsQueryable().BuildMockDbSet();
+        _mockContext.Setup(mock => mock.WarehouseItems).Returns(mockSet.Object);
 
         return mockSet;
     }

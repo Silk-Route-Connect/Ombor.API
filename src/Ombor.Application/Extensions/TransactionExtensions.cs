@@ -35,14 +35,6 @@ internal static class TransactionExtensions
         }
 
         transaction.TotalPaid += amount;
-
-        if (transaction.UnpaidAmount > 0)
-        {
-            transaction.Status = Domain.Enums.TransactionStatus.PartiallyPaid;
-        }
-        else
-        {
-            transaction.Status = Domain.Enums.TransactionStatus.Closed;
-        }
+        transaction.Status = TransactionRecord.SettlementStatusOf(transaction.TotalDue, transaction.TotalPaid);
     }
 }

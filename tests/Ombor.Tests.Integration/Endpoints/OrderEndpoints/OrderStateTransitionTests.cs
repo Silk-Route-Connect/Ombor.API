@@ -1,5 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using Ombor.Domain.Exceptions;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -50,8 +52,13 @@ public sealed class OrderStateTransitionTests(TestingWebApplicationFactory facto
         var productId = await CreateProductAsync();
         var created = await PostOrderAsync(BuildCreateBody(customerId, productId));
 
-        // Act + Assert
-        await _client.PostAsync($"{Routes.Order}/{created.Id}/ship", HttpStatusCode.Conflict);
+        // Act
+        var problem = await _client.PostAsync<JObject>($"{Routes.Order}/{created.Id}/ship", new { }, HttpStatusCode.Conflict);
+
+        // Assert — the 409 carries its code and the two statuses, so the client can say what was refused.
+        Assert.Equal(ErrorCodes.OrderInvalidTransition, (string?)problem["code"]);
+        Assert.Equal("Pending", (string?)problem["params"]?["from"]);
+        Assert.Equal("Shipping", (string?)problem["params"]?["to"]);
     }
 
     [Fact]

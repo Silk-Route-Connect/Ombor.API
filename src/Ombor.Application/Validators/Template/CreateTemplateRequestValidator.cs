@@ -16,5 +16,17 @@ public sealed class CreateTemplateRequestValidator : AbstractValidator<CreateTem
         RuleFor(x => x.Items)
             .Must(x => x.Length > 0)
             .WithMessage("Template items cannot be empty.");
+
+        RuleForEach(x => x.Items)
+            .ChildRules(item =>
+            {
+                item.RuleFor(i => i.ProductId)
+                    .GreaterThan(0)
+                    .WithMessage("Invalid product ID.");
+
+                item.RuleFor(i => i.UnitPrice)
+                    .GreaterThanOrEqualTo(0m)
+                    .WithMessage("Unit price cannot be negative.");
+            });
     }
 }

@@ -7,7 +7,7 @@ namespace Ombor.Contracts.Responses.Transaction;
 /// payments that settled it. All money figures are server-computed (rule 2).
 /// </summary>
 /// <param name="Id">The transaction id.</param>
-/// <param name="Number">Human-facing document number, sequential per organization (matches the list and debts read models).</param>
+/// <param name="Number">Human-facing document number, sequential per organization (matches the list and debts read models); null for a legacy row without one.</param>
 /// <param name="Type">Sale, Supply, SaleRefund or SupplyRefund.</param>
 /// <param name="Direction">"Receivable" (the partner owes us) or "Payable" (we owe the partner) — the money direction, same split as the debts read model. Distinct from <see cref="Type"/>, which drives the sale/supply detail route.</param>
 /// <param name="Status">Settlement status (Open, PartiallyPaid, Closed).</param>
@@ -32,7 +32,7 @@ namespace Ombor.Contracts.Responses.Transaction;
 /// <param name="RefundReason">For refunds, why it was issued; otherwise null.</param>
 public sealed record TransactionDetailDto(
     int Id,
-    string Number,
+    string? Number,
     string Type,
     string Direction,
     string Status,

@@ -25,7 +25,10 @@ public class StockAdjustment : EntityBase, IOrganizationScoped, IAuditable
     /// <summary>Optional free-text note.</summary>
     public string? Note { get; set; }
 
-    /// <summary>The weighted-average unit cost at the time of the adjustment — the loss cost on a Decrease.</summary>
+    /// <summary>
+    /// The weighted-average unit cost at the time of the adjustment — the loss cost on a Decrease, the carrying cost
+    /// restored on an Increase (Increase rows before 2026-10-04 stored 0).
+    /// </summary>
     public decimal UnitCost { get; set; }
 
     /// <summary>The user who made the adjustment; null for seed/system rows. Resolved to a display name on read.</summary>

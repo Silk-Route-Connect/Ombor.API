@@ -66,9 +66,30 @@ public sealed class CreateStockAdjustmentTests(TestingWebApplicationFactory fact
         Assert.Equal(6, item.Quantity);       // −4
         Assert.Equal(50m, item.AverageCost);  // WAC unchanged on stock-out
 
-        // The loss is recorded at the carrying cost (WAC snapshot).
+        // The loss is recorded at the carrying cost (WAC snapshot) and served as the written-off amount.
         var adjustment = await _context.StockAdjustments.AsNoTracking().FirstAsync(a => a.Id == dto.Id);
         Assert.Equal(50m, adjustment.UnitCost);
+        Assert.Equal(50m, dto.UnitCost);
+        Assert.Equal(200m, dto.Value);
+
+        var listed = Assert.Single(await _client.GetAsync<StockAdjustmentDto[]>($"{Routes.StockAdjustment}?warehouseId={warehouseId}"));
+        Assert.Equal(200m, listed.Value);
+    }
+
+    [Fact]
+    public async Task Increase_ShouldSnapshotCarryingCost_AndServeRestoredValue()
+    {
+        // Arrange — 10 units @ WAC 37.5.
+        var warehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await SeedStockAsync(warehouseId, productId, quantity: 10, averageCost: 37.5m);
+
+        // Act
+        var dto = await PostAdjustmentAsync(warehouseId, productId, "Increase", quantity: 3, reason: "Found");
+
+        // Assert — 3 × 37.5 restored at the carrying cost.
+        Assert.Equal(37.5m, dto.UnitCost);
+        Assert.Equal(112.5m, dto.Value);
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Enums;
@@ -102,7 +102,7 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
     }
 
     [Fact]
-    public async Task PostAsync_ShouldReturnNotFound_WhenWalletMissing()
+    public async Task PostAsync_ShouldReturnBadRequestOnWalletId_WhenWalletMissing()
     {
         var partnerId = await CreatePartnerAsync();
 
@@ -110,6 +110,8 @@ public sealed class CreatePaymentRecordTests(TestingWebApplicationFactory factor
             PaymentType.Deposit, PaymentDirection.Income, partnerId, null, NonExistentEntityId,
             Amount: 1_000m, Description: null, Period: null, Settlements: []);
 
-        await _client.PostAsync<ProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.NotFound);
+        // A body reference that does not resolve in this organization is a field error, not a missing route resource.
+        var problem = await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
+        Assert.Contains(nameof(CreatePaymentRecordRequest.WalletId), problem.Errors.Keys);
     }
 }

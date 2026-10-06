@@ -33,6 +33,8 @@ internal static class StockAdjustmentMappings
             adjustment.Reason,
             adjustment.Note,
             adjustment.CreatedByUser.DisplayName(),
-            balanceAfter);
+            balanceAfter,
+            adjustment.UnitCost,
+            Math.Round(adjustment.Quantity * adjustment.UnitCost, 2, MidpointRounding.AwayFromZero));
     }
 }

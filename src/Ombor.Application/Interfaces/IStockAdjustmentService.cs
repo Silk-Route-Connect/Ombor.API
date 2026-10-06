@@ -12,6 +12,10 @@ public interface IStockAdjustmentService
     /// <summary>Lists stock adjustments (newest-first), optionally filtered by warehouse and/or product.</summary>
     Task<StockAdjustmentDto[]> GetAsync(GetStockAdjustmentsRequest request);
 
+    /// <summary>One stock adjustment with its balance after, as the list serves it.</summary>
+    /// <exception cref="Domain.Exceptions.EntityNotFoundException{TEntity}">If the adjustment does not exist in this organization.</exception>
+    Task<StockAdjustmentDto> GetByIdAsync(GetStockAdjustmentByIdRequest request);
+
     /// <summary>Records a stock adjustment and moves stock atomically.</summary>
     /// <exception cref="ValidationException">If validation fails or a decrease would drive stock below zero.</exception>
     Task<StockAdjustmentDto> CreateAsync(CreateStockAdjustmentRequest request);

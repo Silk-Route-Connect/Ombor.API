@@ -1,5 +1,6 @@
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
@@ -25,7 +26,15 @@ public sealed class WalletOverdraftTests(TestingWebApplicationFactory factory, I
             PaymentType.General, PaymentDirection.Expense, null, null, walletId,
             Amount: 5_000m, Description: "office supplies", Period: null, Settlements: []);
 
-        await _client.PostAsync<ValidationProblemDetails>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
+        var problem = await _client.PostAsync<JObject>(GetUrl(), request.ToMultipartFormData(), HttpStatusCode.BadRequest);
+
+        // The coded block names the wallet and the available-vs-requested amounts, on the Amount field.
+        var walletName = await _context.Wallets.Where(w => w.Id == walletId).Select(w => w.Name).FirstAsync();
+        Assert.Equal("wallet.insufficient_balance", (string?)problem["code"]);
+        Assert.Equal(walletName, (string?)problem["params"]?["walletName"]);
+        Assert.Equal(3_000m, (decimal?)problem["params"]?["available"]);
+        Assert.Equal(5_000m, (decimal?)problem["params"]?["requested"]);
+        Assert.NotNull(problem["errors"]?[nameof(CreatePaymentRecordRequest.Amount)]);
     }
 
     [Fact]

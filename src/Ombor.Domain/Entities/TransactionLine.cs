@@ -3,8 +3,10 @@ using Ombor.Domain.Enums;
 
 namespace Ombor.Domain.Entities;
 
-public class TransactionLine : EntityBase, IOrganizationScoped
+public class TransactionLine : EntityBase, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(TransactionRecord), TransactionId);
+
     public int OrganizationId { get; set; }
 
     public decimal UnitPrice { get; set; }
@@ -37,6 +39,27 @@ public class TransactionLine : EntityBase, IOrganizationScoped
         DiscountType == DiscountType.Fixed
             ? (UnitPrice * Quantity) - (Discount > UnitPrice * Quantity ? UnitPrice * Quantity : Discount)
             : (UnitPrice * Quantity) - (UnitPrice * Quantity * (Discount > 100m ? 100m : Discount) / 100m);
+
+    /// <summary>
+    /// Cost per base unit at the moment of the event, snapshotted in the same write that moved the stock: a Sale
+    /// (incl. a delivered order) and a SupplyRefund store the warehouse WAC the goods left at — for a Sale that is its
+    /// COGS (rule 19); a SaleRefund stores the original sale line's cost, at which the goods come back; a Supply
+    /// stores its net purchase cost (after the line discount), the cost that entered the WAC. Never re-derived later,
+    /// so a past period's profit does not move when prices change. Null on Supply and SupplyRefund lines recorded
+    /// before 2026-10-04.
+    /// </summary>
+    public decimal? UnitCost { get; set; }
+
+    /// <summary>
+    /// True when <see cref="UnitCost"/> is an estimate rather than the cost at the moment of the event: Sale and
+    /// SaleRefund lines recorded before 2026-10-04 were backfilled from the WAC at the time of the backfill.
+    /// Bookkeeping about the cost's origin, not business activity, so the Activity Log leaves it out.
+    /// </summary>
+    [NotAudited]
+    public bool CostIsEstimated { get; set; }
+
+    /// <summary>The line's cost (<see cref="UnitCost"/> × <see cref="Quantity"/>, 2 decimals); null when the cost is unknown.</summary>
+    public decimal? Cost => UnitCost is { } unitCost ? Math.Round(unitCost * Quantity, 2, MidpointRounding.AwayFromZero) : null;
 
     public int ProductId { get; set; }
     public virtual required Product Product { get; set; }

@@ -8,8 +8,10 @@ namespace Ombor.Domain.Entities;
 /// component carries the <see cref="WalletId"/> and the amount moved through that wallet (net of change);
 /// an <see cref="PaymentSourceType.Advance"/> component draws against the partner's advance claim and has no wallet.
 /// </summary>
-public class PaymentComponent : EntityBase, IOrganizationScoped, IAuditable
+public class PaymentComponent : EntityBase, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(Payment), PaymentId);
+
     public int OrganizationId { get; set; }
 
     public required decimal Amount { get; set; }

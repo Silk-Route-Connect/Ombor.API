@@ -1,22 +1,27 @@
-using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Ombor.Application.Interfaces;
 using Ombor.Domain.Common;
 using Ombor.Domain.Entities;
-using Ombor.Domain.Enums;
 
 namespace Ombor.Infrastructure.Persistence.Interceptors;
 
 /// <summary>
-/// Records every change to an <see cref="IAuditable"/> entity (money/stock events) as an
-/// immutable <see cref="AuditEntry"/> row, written in the same transaction as the change.
+/// Records every change to an <see cref="IAuditable"/> entity (money/stock events and master data) as an
+/// immutable <see cref="AuditEntry"/> row, written in the same transaction as the change. Rows written while
+/// serving one HTTP request share one operation id; outside a request every save is its own operation.
 /// </summary>
-internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUser) : SaveChangesInterceptor
+internal sealed class AuditSaveChangesInterceptor(
+    ICurrentUserAccessor currentUser,
+    IHttpContextAccessor httpContextAccessor) : SaveChangesInterceptor
 {
-    // Audit rows for inserts: the source row's identity key is only known after the save.
-    private readonly List<(AuditEntry Audit, EntityEntry Source)> _pendingInserts = [];
+    private readonly List<AuditEntry> _captured = [];
+
+    // Audit rows for inserts: the source row's identity key (and a new parent's) is only known after the save.
+    private readonly List<(AuditEntry Audit, object Source)> _pendingInserts = [];
+
+    private Guid? _requestOperationId;
 
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData,
@@ -45,6 +50,8 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
 
     public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
     {
+        _captured.Clear();
+
         if (eventData.Context is not null && ApplyBackfill())
         {
             eventData.Context.SaveChanges();
@@ -58,6 +65,8 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
         int result,
         CancellationToken cancellationToken = default)
     {
+        _captured.Clear();
+
         if (eventData.Context is not null && ApplyBackfill())
         {
             await eventData.Context.SaveChangesAsync(cancellationToken);
@@ -66,37 +75,62 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
+    public override void SaveChangesFailed(DbContextErrorEventData eventData)
+    {
+        Discard(eventData.Context);
+
+        base.SaveChangesFailed(eventData);
+    }
+
+    public override Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
+    {
+        Discard(eventData.Context);
+
+        return base.SaveChangesFailedAsync(eventData, cancellationToken);
+    }
+
     private void Capture(DbContext context)
     {
         // Start clean: a previous failed save may have left stale entries.
         _pendingInserts.Clear();
+        _captured.Clear();
 
-        var audited = context.ChangeTracker
-            .Entries<IAuditable>()
-            .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
-            .ToList();
+        var changes = AuditChangeReader.Read(context.ChangeTracker);
 
-        foreach (var entry in audited)
+        if (changes.Count == 0)
         {
-            var (oldValues, newValues) = SerializeValues(entry);
+            return;
+        }
+
+        var operationId = NextOperationId();
+        var timestamp = DateTimeOffset.UtcNow;
+
+        foreach (var change in changes)
+        {
+            var entity = change.Entry.Entity;
+            var parent = (entity as IAuditableChild)?.AuditParent;
 
             var audit = new AuditEntry
             {
-                EntityType = entry.Metadata.ClrType.Name,
-                EntityId = entry.State == EntityState.Added ? 0 : GetId(entry),
-                Action = ToAction(entry.State),
-                OldValues = oldValues,
-                NewValues = newValues,
+                OperationId = operationId,
+                EntityType = change.Entry.Metadata.ClrType.Name,
+                EntityId = ((EntityBase)entity).Id,
+                Action = change.Action,
+                ParentEntityType = parent?.EntityType.Name,
+                ParentEntityId = parent?.EntityId,
+                OldValues = change.OldValues,
+                NewValues = change.NewValues,
                 UserId = currentUser.UserId,
-                TimestampUtc = DateTimeOffset.UtcNow,
-                OrganizationId = (entry.Entity as IOrganizationScoped)?.OrganizationId ?? 0,
+                TimestampUtc = timestamp,
+                OrganizationId = OrganizationIdOf(entity),
             };
 
             context.Add(audit);
+            _captured.Add(audit);
 
-            if (entry.State == EntityState.Added)
+            if (change.Entry.State == EntityState.Added)
             {
-                _pendingInserts.Add((audit, entry));
+                _pendingInserts.Add((audit, entity));
             }
         }
     }
@@ -110,7 +144,13 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
 
         foreach (var (audit, source) in _pendingInserts)
         {
-            audit.EntityId = GetId(source);
+            audit.EntityId = ((EntityBase)source).Id;
+            audit.OrganizationId = OrganizationIdOf(source);
+
+            if (source is IAuditableChild child)
+            {
+                audit.ParentEntityId = child.AuditParent.EntityId;
+            }
         }
 
         _pendingInserts.Clear();
@@ -118,39 +158,29 @@ internal sealed class AuditSaveChangesInterceptor(ICurrentUserAccessor currentUs
         return true;
     }
 
-    private static int GetId(EntityEntry entry)
-        => (int)(entry.Property(nameof(EntityBase.Id)).CurrentValue ?? 0);
-
-    private static AuditAction ToAction(EntityState state) => state switch
+    // A failed save leaves its audit rows tracked as Added; a retried save must not persist them a second time.
+    private void Discard(DbContext? context)
     {
-        EntityState.Added => AuditAction.Created,
-        EntityState.Deleted => AuditAction.Deleted,
-        _ => AuditAction.Updated,
-    };
-
-    private static (string? Old, string? New) SerializeValues(EntityEntry entry)
-    {
-        var properties = entry.Properties.Where(p => !p.Metadata.IsPrimaryKey());
-
-        return entry.State switch
+        if (context is not null)
         {
-            EntityState.Added => (null, Serialize(properties, p => p.CurrentValue)),
-            EntityState.Deleted => (Serialize(properties, p => p.OriginalValue), null),
-            _ => SerializeModified(properties),
-        };
+            foreach (var audit in _captured)
+            {
+                context.Entry(audit).State = EntityState.Detached;
+            }
+        }
+
+        _captured.Clear();
+        _pendingInserts.Clear();
     }
 
-    private static (string? Old, string? New) SerializeModified(IEnumerable<PropertyEntry> properties)
+    private Guid NextOperationId() =>
+        httpContextAccessor.HttpContext is null ? Guid.NewGuid() : _requestOperationId ??= Guid.NewGuid();
+
+    // An organization is audited under its own id: it is the tenant, not scoped to one.
+    private static int OrganizationIdOf(object entity) => entity switch
     {
-        var changed = properties.Where(p => p.IsModified).ToList();
-
-        return (Serialize(changed, p => p.OriginalValue), Serialize(changed, p => p.CurrentValue));
-    }
-
-    private static string? Serialize(IEnumerable<PropertyEntry> properties, Func<PropertyEntry, object?> selector)
-    {
-        var values = properties.ToDictionary(p => p.Metadata.Name, selector);
-
-        return values.Count == 0 ? null : JsonSerializer.Serialize(values);
-    }
+        IOrganizationScoped scoped => scoped.OrganizationId,
+        Organization organization => organization.Id,
+        _ => 0,
+    };
 }

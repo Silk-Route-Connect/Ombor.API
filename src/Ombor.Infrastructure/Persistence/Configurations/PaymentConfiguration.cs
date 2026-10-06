@@ -59,6 +59,9 @@ internal sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .IsUnique()
             .HasFilter("[Number] IS NOT NULL");
 
+        // Lists sort and the dashboard windows filter by date within the organization (global filter) — backend-19.
+        builder.HasIndex(p => new { p.OrganizationId, p.DateUtc });
+
         builder
             .Property(p => p.Notes)
             .HasMaxLength(ConfigurationConstants.MaxStringLength)

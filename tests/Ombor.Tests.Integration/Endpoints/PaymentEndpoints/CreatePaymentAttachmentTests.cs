@@ -3,6 +3,7 @@ using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Payment;
 using Ombor.Contracts.Responses.Payment;
 using Ombor.Tests.Common.Extensions;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -17,7 +18,7 @@ public sealed class CreatePaymentAttachmentTests(TestingWebApplicationFactory fa
         // Arrange — a General expense payment carrying one uploaded file (F18).
         var walletId = await CreateWalletAsync(10_000m);
 
-        var content = new byte[] { 1, 2, 3, 4, 5 };
+        var content = TestFiles.Pdf;
         var request = new CreatePaymentRecordRequest(
             PaymentType.General, PaymentDirection.Expense, null, null, walletId,
             Amount: 4_000m, Description: "office supplies", Period: null, Settlements: [],

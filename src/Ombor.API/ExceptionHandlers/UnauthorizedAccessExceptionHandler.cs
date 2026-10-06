@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.API.ExceptionHandlers;
 
@@ -24,7 +25,7 @@ internal sealed class UnauthorizedAccessExceptionHandler(ILogger<UnauthorizedAcc
             Detail = unauthorizedException.Message,
             Type = "https://httpstatuses.com/401",
             Instance = httpContext.Request.Path
-        };
+        }.WithCodeFrom(exception, fallbackCode: null);
 
         httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

@@ -20,9 +20,10 @@ internal sealed class TransferLineConfiguration : IEntityTypeConfiguration<Trans
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
+        // Same precision as the stock it moves (WarehouseItem), so a fractional transfer is recorded exactly.
         builder
             .Property(l => l.Quantity)
-            .HasCurrencyPrecision()
+            .HasQuantityPrecision()
             .IsRequired();
     }
 }
