@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Localization;
 using Ombor.Application.Models;
 using Ombor.Contracts.Requests.Auth;
 using Ombor.Contracts.Responses.Auth;
@@ -38,12 +39,15 @@ internal sealed class PasswordResetService(
         // provider 503) must not depend on whether an account exists.
         var code = await otpCodeProvider.GenerateOtpAsync(phoneNumber, OtpPurpose.PasswordReset);
 
-        if (await context.Users.IgnoreQueryFilters().AnyAsync(u => u.PhoneNumber == phoneNumber))
+        // The account's interface language picks the SMS text; no row means no account, and nothing is sent.
+        var language = await context.Users.IgnoreQueryFilters()
+            .Where(u => u.PhoneNumber == phoneNumber)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync();
+
+        if (language is not null)
         {
-            smsQueue.Enqueue(new SmsMessage(
-                phoneNumber,
-                $"Inventory Management parolini tiklash uchun tasdiqlash kodi: {code}. Kod {ResetCodeLifetimeMinutes} daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-                "Inventory Management"));
+            smsQueue.Enqueue(new SmsMessage(phoneNumber, SmsTexts.PasswordReset(code, language), SmsTexts.Subject));
         }
 
         return new ForgotPasswordResponse(

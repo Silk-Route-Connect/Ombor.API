@@ -104,7 +104,7 @@ public sealed class AuthRegisterTests(TestingWebApplicationFactory factory, ITes
         Assert.Equal(ErrorCodes.CodeExpired, response.Code);
     }
 
-    private static object Registration(string phone) => new
+    internal static object Registration(string phone) => new
     {
         firstName = "Ali",
         lastName = "Valiyev",

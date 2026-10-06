@@ -2,6 +2,7 @@
 using Ombor.Application.Configurations;
 using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Localization;
 using Ombor.Application.Models;
 using Ombor.Application.Validators;
 using Ombor.Contracts.Requests.Auth;
@@ -26,7 +27,7 @@ internal sealed class AuthService(
 {
     private static readonly TimeSpan CodeLifetime = TimeSpan.FromMinutes(OtpSettings.CodeLifetimeMinutes);
 
-    public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
+    public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, string language)
     {
         await validator.ValidateAndThrowAsync(request);
 
@@ -44,14 +45,8 @@ internal sealed class AuthService(
         await otpCodeProvider.SetRegisterRequestAsync(request, CodeLifetime);
         var code = await otpCodeProvider.GenerateOtpAsync(request.PhoneNumber, OtpPurpose.Registration);
 
-        var message = new SmsMessage
-        (
-            request.PhoneNumber,
-            $"Inventory Management tizimiga ro‘yxatdan o‘tish uchun tasdiqlash kodi: {code}. Eslatma: Kod 5 daqiqa ichida amal qiladi, uni hech kim bilan ulashmang.",
-            "Inventory Management"
-        );
-
-        await smsService.SendMessageAsync(message);
+        await smsService.SendMessageAsync(
+            new SmsMessage(request.PhoneNumber, SmsTexts.Registration(code, language), SmsTexts.Subject));
 
         return new RegisterResponse(
             "Registration OTP code sent to your phone number.",
