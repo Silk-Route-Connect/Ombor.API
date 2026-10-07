@@ -136,6 +136,10 @@ internal sealed class WarehouseService(
         await context.SaveChangesAsync();
     }
 
+    public Task<WarehouseStockItemDto> SetLowStockThresholdAsync(
+        int warehouseId, int productId, SetLowStockThresholdRequest request) =>
+        stock.SetLowStockThresholdAsync(warehouseId, productId, request);
+
     public async Task<WarehouseDto> AddOpeningStockAsync(AddOpeningStockRequest request)
     {
         await stock.AddOpeningStockAsync(request);

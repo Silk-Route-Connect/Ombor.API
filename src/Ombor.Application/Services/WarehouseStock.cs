@@ -12,7 +12,8 @@ using Ombor.Domain.Exceptions;
 namespace Ombor.Application.Services;
 
 /// <summary>
-/// The stock side of a warehouse behind <see cref="IWarehouseService"/>: its «Остатки» rows and its opening stock.
+/// The stock side of a warehouse behind <see cref="IWarehouseService"/>: its «Остатки» rows, its opening stock and the
+/// low-stock threshold of each row (DR-41).
 /// </summary>
 internal sealed class WarehouseStock(
     IApplicationDbContext context,
@@ -89,8 +90,55 @@ internal sealed class WarehouseStock(
             StockMovement.StockInWeightedAverage,
             request.Items.Select(i => (i.ProductId, i.Quantity, i.UnitCost)));
 
+        ApplyOpeningThresholds(request);
+
         await context.SaveChangesAsync();
         await write.CommitAsync();
+    }
+
+    public async Task<WarehouseStockItemDto> SetLowStockThresholdAsync(
+        int warehouseId, int productId, SetLowStockThresholdRequest request)
+    {
+        await validator.ValidateAndThrowAsync(request);
+
+        // A setting on the row, not a stock movement: quantity and cost are untouched, so no write lock is taken.
+        var warehouse = await GetWarehouseOrThrowAsync(warehouseId);
+
+        var item = await context.WarehouseItems
+            .Include(x => x.Product)
+            .ThenInclude(p => p.Category)
+            .IgnoreAutoIncludes()
+            .FirstOrDefaultAsync(x => x.WarehouseId == warehouseId && x.ProductId == productId)
+            ?? throw new EntityNotFoundException<WarehouseItem>(
+                $"Product with ID {productId} has no stock row in warehouse with ID {warehouseId}.");
+
+        item.LowStockThreshold = request.LowStockThreshold;
+        await context.SaveChangesAsync();
+
+        return item.ToStockItemDto(warehouse.IsArchived);
+    }
+
+    // The stock rows MoveStockAsync just created are tracked, so the opening line's threshold lands in the same save.
+    // A line without one leaves the row untracked; the last line that names a threshold wins for a repeated product.
+    private void ApplyOpeningThresholds(AddOpeningStockRequest request)
+    {
+        var thresholds = request.Items
+            .Where(i => i.LowStockThreshold is not null)
+            .GroupBy(i => i.ProductId)
+            .ToDictionary(g => g.Key, g => g.Last().LowStockThreshold);
+
+        if (thresholds.Count == 0)
+        {
+            return;
+        }
+
+        var rows = context.WarehouseItems.Local
+            .Where(x => x.WarehouseId == request.WarehouseId && thresholds.ContainsKey(x.ProductId));
+
+        foreach (var row in rows)
+        {
+            row.LowStockThreshold = thresholds[row.ProductId];
+        }
     }
 
     private async Task<Warehouse> GetWarehouseOrThrowAsync(int id) =>

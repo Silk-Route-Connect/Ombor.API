@@ -33,6 +33,9 @@ public sealed class AddOpeningStockValidator : AbstractValidator<AddOpeningStock
                 item.RuleFor(i => i.UnitCost)
                     .GreaterThanOrEqualTo(0m)
                     .WithMessage("Unit cost cannot be negative.");
+
+                item.RuleFor(i => i.LowStockThreshold)
+                    .LowStockThreshold();
             });
     }
 }

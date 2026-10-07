@@ -336,4 +336,25 @@ public class WarehousesControllerTests : ControllerTestsBase
 
         _mockService.Verify(mock => mock.RestoreAsync(warehouseId), Times.Once);
     }
+
+    [Fact]
+    public async Task SetLowStockThresholdAsync_ShouldReturnOkResult_WithTheUpdatedRow()
+    {
+        // Arrange
+        var request = new SetLowStockThresholdRequest(LowStockThreshold: 5m);
+        var expected = _fixture.Create<WarehouseStockItemDto>();
+
+        _mockService.Setup(mock => mock.SetLowStockThresholdAsync(3, 7, request))
+            .ReturnsAsync(expected);
+
+        // Act
+        var response = await _controller.SetLowStockThresholdAsync(3, 7, request);
+
+        // Assert
+        var actual = Assert.IsType<OkObjectResult>(response.Result);
+
+        Assert.Equal(expected, actual.Value);
+
+        _mockService.Verify(mock => mock.SetLowStockThresholdAsync(3, 7, request), Times.Once);
+    }
 }
