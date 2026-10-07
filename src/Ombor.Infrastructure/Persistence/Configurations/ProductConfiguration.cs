@@ -97,10 +97,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasCurrencyPrecision();
 
         builder
-            .Property(p => p.LowStockThreshold)
-            .IsRequired();
-
-        builder
             .Property(p => p.Measurement)
             .HasConversion<string>()
             .IsRequired();

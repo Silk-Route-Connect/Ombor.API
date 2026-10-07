@@ -25,7 +25,6 @@ public sealed class ProductStockTests(TestingWebApplicationFactory factory, ITes
         // Assert — totalStock = 40; averageCost = (10*100 + 30*200) / 40 = 175.
         Assert.Equal(40, product.TotalStock);
         Assert.Equal(175m, product.AverageCost);
-        Assert.False(product.IsLowStock); // 40 > threshold (10)
         Assert.Equal(2, product.WarehouseItems.Length);
         Assert.All(product.WarehouseItems, item => Assert.False(string.IsNullOrEmpty(item.WarehouseName)));
     }
@@ -42,7 +41,6 @@ public sealed class ProductStockTests(TestingWebApplicationFactory factory, ITes
         // Assert
         Assert.Equal(0, product.TotalStock);
         Assert.Null(product.AverageCost);
-        Assert.True(product.IsLowStock); // 0 <= threshold
         Assert.Empty(product.WarehouseItems);
     }
 

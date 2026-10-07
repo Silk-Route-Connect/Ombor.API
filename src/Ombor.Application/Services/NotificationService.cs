@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Responses.Notification;
@@ -104,24 +105,15 @@ internal sealed class NotificationService(IApplicationDbContext context, IBusine
     }
 
     /// <summary>
-    /// Active products whose stock over all warehouses is at or below their threshold — the <c>ProductDto.isLowStock</c>
-    /// rule; the largest shortage first. Archived products are left out: nobody restocks them.
+    /// Warehouse items at or below their own threshold (<see cref="LowStock"/>) — one alert item per product per warehouse,
+    /// the largest shortage (threshold − quantity) first. Untracked items, archived products and archived warehouses
+    /// never count.
     /// </summary>
     private async Task<NotificationDto?> LowStockAsync()
     {
-        var low = context.Products
+        var low = context.WarehouseItems
             .AsNoTracking()
-            .Where(p => !p.IsArchived)
-            .Select(p => new
-            {
-                p.Id,
-                p.Name,
-                p.SKU,
-                p.Measurement,
-                p.LowStockThreshold,
-                Stock = p.WarehouseItems.Sum(i => i.Quantity),
-            })
-            .Where(p => p.Stock <= p.LowStockThreshold);
+            .Where(LowStock.IsLow);
 
         var count = await low.CountAsync();
 
@@ -131,10 +123,22 @@ internal sealed class NotificationService(IApplicationDbContext context, IBusine
         }
 
         var top = await low
-            .OrderByDescending(p => p.LowStockThreshold - p.Stock)
-            .ThenBy(p => p.Name)
-            .ThenBy(p => p.Id)
+            .OrderByDescending(i => i.LowStockThreshold - i.Quantity)
+            .ThenBy(i => i.Product.Name)
+            .ThenBy(i => i.Warehouse.Name)
+            .ThenBy(i => i.Id)
             .Take(MaxItems)
+            .Select(i => new
+            {
+                i.ProductId,
+                ProductName = i.Product.Name,
+                i.Product.SKU,
+                i.Product.Measurement,
+                i.Quantity,
+                i.LowStockThreshold,
+                i.WarehouseId,
+                WarehouseName = i.Warehouse.Name,
+            })
             .ToArrayAsync();
 
         return new NotificationDto(
@@ -142,14 +146,16 @@ internal sealed class NotificationService(IApplicationDbContext context, IBusine
             NotificationSeverity.Warning,
             count,
             null,
-            [.. top.Select(p => new NotificationItemDto(
+            [.. top.Select(i => new NotificationItemDto(
                 ActivityEntityKind.Product,
-                p.Id,
-                p.Name,
-                p.SKU,
-                Quantity: p.Stock,
-                Threshold: p.LowStockThreshold,
-                Measurement: p.Measurement.ToString()))]);
+                i.ProductId,
+                i.ProductName,
+                i.SKU,
+                Quantity: i.Quantity,
+                Threshold: i.LowStockThreshold,
+                Measurement: i.Measurement.ToString(),
+                WarehouseId: i.WarehouseId,
+                WarehouseName: i.WarehouseName))]);
     }
 
     private static NotificationDto? OrdersNotification(

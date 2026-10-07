@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.StockAdjustment;
@@ -40,16 +41,16 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
     protected Task<TReport> GetReportAsync<TReport>(string report, string query) =>
         _client.GetAsync<TReport>($"{Reports}/{report}?{query}");
 
-    protected async Task<int> CreateWarehouseAsync()
+    protected async Task<int> CreateWarehouseAsync(bool archived = false)
     {
-        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };
+        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent", IsArchived = archived };
         _context.Warehouses.Add(warehouse);
         await _context.SaveChangesAsync();
 
         return warehouse.Id;
     }
 
-    protected async Task<int> CreateProductAsync(decimal salePrice = 100m, int lowStockThreshold = 10)
+    protected async Task<int> CreateProductAsync(decimal salePrice = 100m, bool archived = false)
     {
         var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
         _context.Categories.Add(category);
@@ -62,7 +63,7 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
             SalePrice = salePrice,
             SupplyPrice = 50m,
             RetailPrice = salePrice,
-            LowStockThreshold = lowStockThreshold,
+            IsArchived = archived,
             Measurement = DomainUnit.Piece,
             Type = DomainProductType.All,
             CategoryId = category.Id,
@@ -119,6 +120,12 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
             $"warehouses/{warehouseId}/opening-stock",
             new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },
             HttpStatusCode.OK);
+
+    /// <summary>Sets a warehouse item's low-stock threshold directly (null = not tracked).</summary>
+    protected Task SetLowStockThresholdAsync(int warehouseId, int productId, decimal? threshold) =>
+        _context.WarehouseItems
+            .Where(i => i.WarehouseId == warehouseId && i.ProductId == productId)
+            .ExecuteUpdateAsync(item => item.SetProperty(i => i.LowStockThreshold, threshold));
 
     protected Task<StockAdjustmentDto> AdjustAsync(int warehouseId, int productId, string direction, decimal quantity, string reason) =>
         _client.PostAsync<StockAdjustmentDto>(

@@ -23,7 +23,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
     private decimal? _supplyPrice;
     private decimal? _retailPrice;
     private int? _quantityInStock;
-    private int? _lowStockThreshold;
     private UnitOfMeasurement? _measurement;
     private ProductType? _type;
     private List<ProductImage>? _images;
@@ -93,13 +92,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
         return this;
     }
 
-    public IProductBuilder WithLowStockThreshold(int? lowStockThreshold = null)
-    {
-        _lowStockThreshold = lowStockThreshold ?? GetRandomLowStockThresholdAmount();
-
-        return this;
-    }
-
     public IProductBuilder WithMeasurement(UnitOfMeasurement? measurement = null)
     {
         _measurement = measurement ?? _faker.Random.Enum<UnitOfMeasurement>();
@@ -156,7 +148,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             SalePrice = _salePrice ?? default,
             SupplyPrice = _supplyPrice ?? default,
             RetailPrice = _retailPrice ?? default,
-            LowStockThreshold = _lowStockThreshold ?? default,
             Measurement = _measurement ?? UnitOfMeasurement.None,
             Type = _type ?? ProductType.All,
             Images = _images ?? [],
@@ -182,7 +173,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
             SalePrice = _salePrice ?? GetRandomPrice(),
             SupplyPrice = _supplyPrice ?? GetRandomPrice(),
             RetailPrice = _retailPrice ?? GetRandomPrice(),
-            LowStockThreshold = _lowStockThreshold ?? GetRandomLowStockThresholdAmount(),
             Measurement = _measurement ?? _faker.Random.Enum<UnitOfMeasurement>(),
             Type = _type ?? _faker.Random.Enum<ProductType>(),
             Images = [.. images],
@@ -204,9 +194,6 @@ internal sealed class ProductBuilder(Faker faker) : BuilderBase(faker), IProduct
 
     private int GetRandomStockAmount() =>
         _faker.Random.Number(BuilderConstants.MinStockAmount, BuilderConstants.MaxStockAmount);
-
-    private int GetRandomLowStockThresholdAmount() =>
-        _faker.Random.Number(BuilderConstants.MinLowThresholdAmount, BuilderConstants.MaxLowThresholdAmount);
 
     private List<ProductImage> GetProductImages(int productId, int count) => Enumerable.Range(1, count + 1)
         .Select(i => new ProductImage

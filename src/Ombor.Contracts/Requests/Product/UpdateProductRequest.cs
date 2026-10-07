@@ -16,7 +16,6 @@ namespace Ombor.Contracts.Requests.Product;
 /// <param name="SalePrice">The new sale price (must be &gt; 0).</param>
 /// <param name="SupplyPrice">The new supply price (must be &gt; 0).</param>
 /// <param name="QuantityInStock">The updated stock quantity (must be ≥ 0).</param>
-/// <param name="LowStockThreshold">The updated low‑stock threshold (must be ≥ 0).</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
 /// <param name="Packaging">Optional packaging, send <see langword="null"/> to clear packaging.</param>
@@ -29,7 +28,6 @@ public sealed record UpdateProductRequest(
     string? Barcode,
     decimal SalePrice,
     decimal SupplyPrice,
-    int LowStockThreshold,
     UnitOfMeasurement Measurement,
     ProductType Type,
     IFormFile[]? Attachments,

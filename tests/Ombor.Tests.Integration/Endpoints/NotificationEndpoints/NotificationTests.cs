@@ -94,30 +94,57 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
     }
 
     [Fact]
-    public async Task LowStock_UsesTheProductThresholdRule_LargestShortageFirst_ArchivedLeftOut()
+    public async Task LowStock_IsOneItemPerTrackedWarehouseItem_WithItsWarehouse_LargestShortageFirst()
     {
         var before = await GetAsync(NotificationKind.LowStock);
-        var warehouseId = await EnsureWarehouseAsync();
+        var main = await AddWarehouseAsync(_context, archived: false);
+        var branch = await AddWarehouseAsync(_context, archived: false);
 
-        // Counted: stock 2 over all warehouses against a threshold of 1 000 000 — the largest shortage there is.
-        var low = await AddProductAsync(threshold: 1_000_000, archived: false, warehouseId, stock: 2m);
+        // Counted, once per warehouse: the same product low in two warehouses — the largest shortages there are — and
+        // a sold-out product tracked in the main warehouse.
+        var product = await AddProductAsync(_context, archived: false);
+        await AddItemAsync(_context, main.Id, product.Id, quantity: 2m, threshold: 1_000_000m);
+        await AddItemAsync(_context, branch.Id, product.Id, quantity: 3m, threshold: 1_000_000m);
+        var soldOut = await AddProductAsync(_context, archived: false);
+        await AddItemAsync(_context, main.Id, soldOut.Id, quantity: 0m, threshold: 5m);
 
-        // Not counted: stock above the threshold, and an archived product with nothing left.
-        await AddProductAsync(threshold: 5, archived: false, warehouseId, stock: 6m);
-        await AddProductAsync(threshold: 5, archived: true, warehouseId, stock: 0m);
+        // Not counted: above its threshold, not tracked (even at zero), an archived product, an archived warehouse,
+        // and another organization's low item.
+        await AddItemAsync(_context, main.Id, (await AddProductAsync(_context, archived: false)).Id, quantity: 6m, threshold: 5m);
+        await AddItemAsync(_context, main.Id, (await AddProductAsync(_context, archived: false)).Id, quantity: 0m, threshold: null);
+        await AddItemAsync(_context, main.Id, (await AddProductAsync(_context, archived: true)).Id, quantity: 0m, threshold: 5m);
+        var archivedWarehouse = await AddWarehouseAsync(_context, archived: true);
+        await AddItemAsync(_context, archivedWarehouse.Id, (await AddProductAsync(_context, archived: false)).Id, quantity: 1m, threshold: 5m);
+        await using (var foreign = CreateContext(ForeignOrganizationId))
+        {
+            var foreignWarehouse = await AddWarehouseAsync(foreign, archived: false);
+            await AddItemAsync(foreign, foreignWarehouse.Id, (await AddProductAsync(foreign, archived: false)).Id, quantity: 0m, threshold: 2_000_000m);
+        }
 
         var after = await GetAsync(NotificationKind.LowStock);
 
         Assert.NotNull(after);
-        Assert.Equal((before?.Count ?? 0) + 1, after.Count);
+        Assert.Equal(NotificationSeverity.Warning, after.Severity);
+        Assert.Equal((before?.Count ?? 0) + 3, after.Count);
         Assert.Null(after.Amount);
-        var item = after.Items[0];
-        Assert.Equal(low, item.Id);
-        Assert.Equal(ActivityEntityKind.Product, item.EntityKind);
-        Assert.Equal(2m, item.Quantity);
-        Assert.Equal(1_000_000m, item.Threshold);
-        Assert.Equal("Piece", item.Measurement);
         Assert.True(after.Items.Length <= 10);
+
+        var first = after.Items[0];
+        Assert.Equal(ActivityEntityKind.Product, first.EntityKind);
+        Assert.Equal(product.Id, first.Id);
+        Assert.Equal(product.Name, first.Label);
+        Assert.Equal(product.SKU, first.Detail);
+        Assert.Equal(2m, first.Quantity);
+        Assert.Equal(1_000_000m, first.Threshold);
+        Assert.Equal("Piece", first.Measurement);
+        Assert.Equal(main.Id, first.WarehouseId);
+        Assert.Equal(main.Name, first.WarehouseName);
+
+        var second = after.Items[1];
+        Assert.Equal(product.Id, second.Id);
+        Assert.Equal(3m, second.Quantity);
+        Assert.Equal(branch.Id, second.WarehouseId);
+        Assert.Equal(branch.Name, second.WarehouseName);
     }
 
     [Fact]
@@ -188,11 +215,20 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
         return order.Id;
     }
 
-    private async Task<int> AddProductAsync(int threshold, bool archived, int warehouseId, decimal stock)
+    private static async Task<Warehouse> AddWarehouseAsync(IApplicationDbContext context, bool archived)
+    {
+        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent", IsArchived = archived };
+        context.Warehouses.Add(warehouse);
+        await context.SaveChangesAsync();
+
+        return warehouse;
+    }
+
+    private static async Task<Product> AddProductAsync(IApplicationDbContext context, bool archived)
     {
         var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        context.Categories.Add(category);
+        await context.SaveChangesAsync();
 
         var product = new Product
         {
@@ -201,31 +237,32 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
             SalePrice = 100m,
             SupplyPrice = 50m,
             RetailPrice = 90m,
-            LowStockThreshold = threshold,
             IsArchived = archived,
             Measurement = DomainEnums.UnitOfMeasurement.Piece,
             Type = DomainEnums.ProductType.All,
             CategoryId = category.Id,
             Category = null!,
         };
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
+        context.Products.Add(product);
+        await context.SaveChangesAsync();
 
-        if (stock > 0m)
+        return product;
+    }
+
+    private static async Task AddItemAsync(
+        IApplicationDbContext context, int warehouseId, int productId, decimal quantity, decimal? threshold)
+    {
+        context.WarehouseItems.Add(new WarehouseItem
         {
-            _context.WarehouseItems.Add(new WarehouseItem
-            {
-                WarehouseId = warehouseId,
-                ProductId = product.Id,
-                Quantity = stock,
-                AverageCost = 50m,
-                Warehouse = null!,
-                Product = null!,
-            });
-            await _context.SaveChangesAsync();
-        }
-
-        return product.Id;
+            WarehouseId = warehouseId,
+            ProductId = productId,
+            Quantity = quantity,
+            AverageCost = 50m,
+            LowStockThreshold = threshold,
+            Warehouse = null!,
+            Product = null!,
+        });
+        await context.SaveChangesAsync();
     }
 
     private ApplicationDbContext CreateContext(int organizationId)

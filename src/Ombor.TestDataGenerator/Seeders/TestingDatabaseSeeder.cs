@@ -132,7 +132,6 @@ internal sealed class TestingDatabaseSeeder(
                 SalePrice = _faker.Finance.Amount(),
                 SupplyPrice = _faker.Finance.Amount(),
                 RetailPrice = _faker.Finance.Amount(),
-                LowStockThreshold = _faker.Random.Number(),
                 Measurement = _faker.Random.Enum<UnitOfMeasurement>(),
                 CategoryId = _faker.PickRandom<int>(categoryIds),
                 Category = null!
