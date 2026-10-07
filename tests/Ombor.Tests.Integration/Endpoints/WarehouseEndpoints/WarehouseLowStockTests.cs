@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Ombor.Contracts.Requests.Warehouse;
 using Ombor.Contracts.Responses.StockAdjustment;
 using Ombor.Contracts.Responses.Warehouse;
@@ -78,6 +79,14 @@ public sealed class WarehouseLowStockTests(TestingWebApplicationFactory factory,
         var productId = await StockAsync(warehouse.Id, quantity: 5m, threshold: null);
 
         var set = await PutThresholdAsync(warehouse.Id, productId, 10m);
+
+        // The Activity Log reads it as a stock row change with no document (collection tests run one at a time, so the
+        // newest operation is this one).
+        var activity = await _client.GetAsync<JObject>("activity?pageSize=1");
+        var operation = activity["items"]![0]!;
+        Assert.Equal("StockChanged", (string?)operation["kind"]);
+        var field = operation["changes"]![0]!["fields"]!.Single(f => (string?)f["field"] == "lowStockThreshold");
+        Assert.Equal(10m, (decimal?)field["new"]);
 
         Assert.Equal(productId, set.ProductId);
         Assert.Equal(5m, set.Quantity);
