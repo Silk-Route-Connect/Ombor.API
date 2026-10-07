@@ -51,7 +51,7 @@ internal sealed class DevelopmentDatabaseSeeder(
             await EnsureWarehousesAsync(context);
             await AddWalletsAsync(context);
             await SeedTransactionsAsync(context);
-            await SeedLowStockThresholdsAsync(context);
+            await LowStockThresholdSeeder.SeedAsync(context);
             await AddPaymentsAsync(context);
             await AddOrdersAsync(context);
 
