@@ -195,6 +195,7 @@ No count ceiling on create (`WarehouseService.CreateAsync`/validator); all per-w
 | F9 | **Orphan `AddressDto`** — used nowhere, diverges from domain `Address` | Nice-to-have | `AddressDto.cs:3` |
 | F10 | **Product delete uses 400 not 409** — inconsistent with Partner/Category | Nice-to-have | `ProductService.cs:113` |
 | F11 | **StockAdjustmentDto omits loss cost** — stored `UnitCost` not surfaced (may be intentional v2) | Nice-to-have | `StockAdjustmentDto.cs:19-34` |
+| F12 | **A mistyped JSON body reads as a missing one** — the automatic MVC 400 is suppressed, so a body the JSON reader rejects (text or an out-of-range number where a number belongs, e.g. `{"lowStockThreshold":"abc"}` or `1e30`) binds as `null` and the service answers 400 «Request body is required.» with no field key — the client cannot put the error on its field. Seen on the DR-41 threshold PUT (2026-10-07); pre-existing on every `[FromBody]` endpoint. Fix idea: serve ModelState's JSON errors as field-keyed `ValidationProblemDetails` | Nice-to-have | `RequestValidator.cs:11` (null path), `Ombor.API/Extensions/DependencyInjection.cs:44` (`SuppressModelStateInvalidFilter`) |
 
 ---
 
