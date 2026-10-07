@@ -17,10 +17,10 @@ public static class WarehouseAssertionHelper
         Assert.Equal(expected.Location, actual.Location);
         Assert.Equal(expected.IsArchived, actual.IsArchived);
 
-        // Totals are computed from the warehouse's items (rule 12 — server-computed, never stored).
+        // Totals are computed from the warehouse's items (rule 12 — server-computed, never stored); only products
+        // actually on hand are counted.
         var items = expected.WarehouseItems;
-        Assert.Equal(items.Count, actual.ProductCount);
-        Assert.Equal(items.Sum(i => i.Quantity), actual.TotalUnits);
+        Assert.Equal(items.Count(i => i.Quantity > 0m), actual.ProductCount);
         Assert.Equal(items.Sum(i => i.Quantity * i.AverageCost), actual.StockValue);
     }
 

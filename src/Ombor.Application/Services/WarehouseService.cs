@@ -3,7 +3,6 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
-using Ombor.Application.Helpers;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Mappings;
 using Ombor.Contracts.Requests.Warehouse;
@@ -16,8 +15,7 @@ namespace Ombor.Application.Services;
 internal sealed class WarehouseService(
     IApplicationDbContext context,
     IRequestValidator validator,
-    ICurrentUserAccessor currentUser,
-    IOrganizationWriteLock writeLock) : IWarehouseService
+    WarehouseStock stock) : IWarehouseService
 {
     // A warehouse is "referenced" when any record links to it: stock (any item row, even zero-quantity),
     // an opening/adjustment movement, a transaction, a transfer on either side, or an order. Such a
@@ -51,9 +49,13 @@ internal sealed class WarehouseService(
             .OrderBy(x => x.Name)
             .ToArrayAsync();
 
-        var referencedIds = await GetReferencedIdsAsync([.. warehouses.Select(x => x.Id)]);
+        var ids = warehouses.Select(x => x.Id).ToArray();
+        var referencedIds = await GetReferencedIdsAsync(ids);
+        var lowStockCounts = await GetLowStockCountsAsync(ids);
 
-        return [.. warehouses.Select(x => x.ToDto(isDeletable: !referencedIds.Contains(x.Id)))];
+        return [.. warehouses.Select(x => x.ToDto(
+            isDeletable: !referencedIds.Contains(x.Id),
+            lowStockCount: lowStockCounts.GetValueOrDefault(x.Id)))];
     }
 
     public async Task<WarehouseDto> GetByIdAsync(GetWarehouseByIdRequest request)
@@ -62,26 +64,14 @@ internal sealed class WarehouseService(
 
         var entity = await GetOrThrowAsync(request.Id);
 
-        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
+        return await ToDtoAsync(entity);
     }
 
     public async Task<WarehouseStockItemDto[]> GetStockAsync(GetWarehouseByIdRequest request)
     {
         await validator.ValidateAndThrowAsync(request);
 
-        // 404 if the warehouse doesn't exist.
-        _ = await GetOrThrowAsync(request.Id);
-
-        var items = await context.WarehouseItems
-            .Where(x => x.WarehouseId == request.Id)
-            .Include(x => x.Product)
-            .ThenInclude(p => p.Category)
-            .IgnoreAutoIncludes()
-            .AsNoTracking()
-            .OrderBy(x => x.Product.Name)
-            .ToArrayAsync();
-
-        return [.. items.Select(x => x.ToStockItemDto())];
+        return await stock.GetRowsAsync(request.Id);
     }
 
     public async Task<WarehouseDto> CreateAsync(CreateWarehouseRequest request)
@@ -93,8 +83,8 @@ internal sealed class WarehouseService(
         context.Warehouses.Add(entity);
         await context.SaveChangesAsync();
 
-        // A freshly created warehouse has no references yet, so it is always deletable.
-        return entity.ToDto(isDeletable: true);
+        // A freshly created warehouse has no references and no stock yet, so it is deletable and nothing runs low.
+        return entity.ToDto(isDeletable: true, lowStockCount: 0);
     }
 
     public async Task<WarehouseDto> UpdateAsync(UpdateWarehouseRequest request)
@@ -107,7 +97,7 @@ internal sealed class WarehouseService(
         entity.ApplyUpdate(request);
         await context.SaveChangesAsync();
 
-        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
+        return await ToDtoAsync(entity);
     }
 
     public async Task<WarehouseDto> ArchiveAsync(int id)
@@ -116,7 +106,7 @@ internal sealed class WarehouseService(
         entity.IsArchived = true;
         await context.SaveChangesAsync();
 
-        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
+        return await ToDtoAsync(entity);
     }
 
     public async Task<WarehouseDto> RestoreAsync(int id)
@@ -125,7 +115,7 @@ internal sealed class WarehouseService(
         entity.IsArchived = false;
         await context.SaveChangesAsync();
 
-        return entity.ToDto(isDeletable: !await IsReferencedAsync(entity.Id));
+        return await ToDtoAsync(entity);
     }
 
     public async Task DeleteAsync(DeleteWarehouseRequest request)
@@ -148,60 +138,7 @@ internal sealed class WarehouseService(
 
     public async Task<WarehouseDto> AddOpeningStockAsync(AddOpeningStockRequest request)
     {
-        await validator.ValidateAndThrowAsync(request);
-
-        // «Not stocked yet» is checked under the organization's write lock, so two parallel openings (or an opening
-        // racing a supply) can't both stock the same product.
-        await using var write = await writeLock.BeginOrgWriteAsync();
-
-        // 404 if the warehouse doesn't exist.
-        _ = await GetOrThrowAsync(request.WarehouseId);
-
-        await OwnedReferences.Check()
-            .Require(context.Products, request.Items.Select((x, i) => (x.ProductId, $"Items[{i}].ProductId")))
-            .ThrowIfMissingAsync();
-
-        var productIds = request.Items.Select(x => x.ProductId).ToArray();
-
-        var alreadyStocked = await context.WarehouseItems
-            .Where(x => x.WarehouseId == request.WarehouseId && productIds.Contains(x.ProductId))
-            .Select(x => x.ProductId)
-            .ToArrayAsync();
-
-        if (alreadyStocked.Length > 0)
-        {
-            throw new ValidationException(
-                $"Products [{string.Join(", ", alreadyStocked)}] are already stocked in this warehouse. " +
-                "Use a Supply transaction to add more stock.");
-        }
-
-        // Record the opening as an immutable event per product (gives the movement ledger an "Opening" row).
-        var now = DateTimeOffset.UtcNow;
-        var createdById = currentUser.UserId;
-        foreach (var item in request.Items)
-        {
-            context.OpeningStocks.Add(new OpeningStock
-            {
-                DateUtc = now,
-                WarehouseId = request.WarehouseId,
-                Warehouse = null!,
-                ProductId = item.ProductId,
-                Product = null!,
-                Quantity = item.Quantity,
-                UnitCost = item.UnitCost,
-                Note = request.Note,
-                CreatedById = createdById,
-            });
-        }
-
-        // Set the stock through the shared path — a fresh item weighted-averages to the opening cost.
-        await context.MoveStockAsync(
-            request.WarehouseId,
-            StockMovement.StockInWeightedAverage,
-            request.Items.Select(i => (i.ProductId, i.Quantity, i.UnitCost)));
-
-        await context.SaveChangesAsync();
-        await write.CommitAsync();
+        await stock.AddOpeningStockAsync(request);
 
         return await GetByIdAsync(new GetWarehouseByIdRequest(request.WarehouseId));
     }
@@ -220,6 +157,32 @@ internal sealed class WarehouseService(
                     $"A warehouse named '{name}' already exists."),
             ]);
         }
+    }
+
+    private async Task<WarehouseDto> ToDtoAsync(Warehouse entity)
+    {
+        var lowStockCounts = await GetLowStockCountsAsync([entity.Id]);
+
+        return entity.ToDto(
+            isDeletable: !await IsReferencedAsync(entity.Id),
+            lowStockCount: lowStockCounts.GetValueOrDefault(entity.Id));
+    }
+
+    // The «Заканчивается» figure per warehouse: rows meeting the one low-stock rule, counted in SQL because the rule
+    // reads the product's archive state, which the auto-included items don't carry.
+    private async Task<Dictionary<int, int>> GetLowStockCountsAsync(int[] ids)
+    {
+        if (ids.Length == 0)
+        {
+            return [];
+        }
+
+        return await context.WarehouseItems
+            .Where(x => ids.Contains(x.WarehouseId))
+            .Where(LowStock.IsLow)
+            .GroupBy(x => x.WarehouseId)
+            .Select(g => new { WarehouseId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.WarehouseId, x => x.Count);
     }
 
     private Task<bool> IsReferencedAsync(int id) =>

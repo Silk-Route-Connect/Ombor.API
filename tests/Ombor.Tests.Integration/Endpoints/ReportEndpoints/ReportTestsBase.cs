@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Net;
-using Microsoft.EntityFrameworkCore;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.StockAdjustment;
@@ -120,12 +119,6 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
             $"warehouses/{warehouseId}/opening-stock",
             new { warehouseId, items = new[] { new { productId, quantity, unitCost } } },
             HttpStatusCode.OK);
-
-    /// <summary>Sets a warehouse item's low-stock threshold directly (null = not tracked).</summary>
-    protected Task SetLowStockThresholdAsync(int warehouseId, int productId, decimal? threshold) =>
-        _context.WarehouseItems
-            .Where(i => i.WarehouseId == warehouseId && i.ProductId == productId)
-            .ExecuteUpdateAsync(item => item.SetProperty(i => i.LowStockThreshold, threshold));
 
     protected Task<StockAdjustmentDto> AdjustAsync(int warehouseId, int productId, string direction, decimal quantity, string reason) =>
         _client.PostAsync<StockAdjustmentDto>(

@@ -43,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<ITemplateService, TemplateService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IWarehouseService, WarehouseService>();
+        services.AddScoped<WarehouseStock>();
         services.AddScoped<ITransactionMapper, TransactionMapper>();
         services.AddScoped<TransactionCreateGuard>();
         services.AddScoped<TransactionPaymentBuilder>();
