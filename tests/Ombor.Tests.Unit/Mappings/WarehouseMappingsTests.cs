@@ -39,19 +39,20 @@ public class WarehouseMappingsTests : WarehouseTestsBase
                 new WarehouseItem { ProductId = 1, Quantity = 10, AverageCost = 100m, Warehouse = null!, Product = null! },
                 new WarehouseItem { ProductId = 2, Quantity = 5, AverageCost = 200m, Warehouse = null!, Product = null! },
                 new WarehouseItem { ProductId = 3, Quantity = 2, AverageCost = 50m, Warehouse = null!, Product = null! },
+                new WarehouseItem { ProductId = 4, Quantity = 0, AverageCost = 70m, Warehouse = null!, Product = null! },
             ]
         };
 
         // Act
-        var response = warehouse.ToDto(isDeletable: false);
+        var response = warehouse.ToDto(isDeletable: false, lowStockCount: 2);
 
         // Assert
         Assert.Equal(warehouse.Id, response.Id);
         Assert.Equal(warehouse.Name, response.Name);
         Assert.Equal(warehouse.Location, response.Location);
         Assert.True(response.IsArchived);
-        Assert.Equal(3, response.ProductCount);
-        Assert.Equal(17, response.TotalUnits); // 10 + 5 + 2
+        Assert.Equal(3, response.ProductCount); // the emptied row is not on hand
+        Assert.Equal(2, response.LowStockCount);
         Assert.Equal(2_100m, response.StockValue); // 10*100 + 5*200 + 2*50
         Assert.False(response.IsDeletable);
     }
@@ -70,11 +71,11 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act
-        var response = warehouse.ToDto(isDeletable: true);
+        var response = warehouse.ToDto(isDeletable: true, lowStockCount: 0);
 
         // Assert
         Assert.Equal(0, response.ProductCount);
-        Assert.Equal(0, response.TotalUnits);
+        Assert.Equal(0, response.LowStockCount);
         Assert.Equal(0m, response.StockValue);
         Assert.False(response.IsArchived);
         Assert.True(response.IsDeletable);
@@ -103,7 +104,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act
-        var response = item.ToStockItemDto();
+        var response = item.ToStockItemDto(warehouseIsArchived: false);
 
         // Assert
         Assert.Equal(product.Id, response.ProductId);
@@ -114,6 +115,44 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         Assert.Equal(item.Quantity, response.Quantity);
         Assert.Equal(item.AverageCost, response.AverageCost);
         Assert.Equal(300m, response.Value); // 12 * 25
+        Assert.Null(response.LowStockThreshold);
+        Assert.False(response.IsLowStock);
+    }
+
+    [Theory]
+    [InlineData(5, false, false, true)]
+    [InlineData(4, false, false, false)]
+    [InlineData(5, true, false, false)]
+    [InlineData(5, false, true, false)]
+    public void ToStockItemDto_ShouldFlagLowStock_OnlyForTrackedActiveRowsAtOrBelowTheThreshold(
+        int threshold, bool productIsArchived, bool warehouseIsArchived, bool expected)
+    {
+        // Arrange — 5 on hand.
+        var product = new Product
+        {
+            Id = 10,
+            Name = "Tea",
+            SKU = "SKU-10",
+            IsArchived = productIsArchived,
+            Measurement = UnitOfMeasurement.Piece,
+            Category = new Category { Name = "Drinks" },
+        };
+        var item = new WarehouseItem
+        {
+            ProductId = product.Id,
+            Quantity = 5,
+            AverageCost = 10m,
+            LowStockThreshold = threshold,
+            Product = product,
+            Warehouse = null!,
+        };
+
+        // Act
+        var response = item.ToStockItemDto(warehouseIsArchived);
+
+        // Assert
+        Assert.Equal((decimal?)threshold, response.LowStockThreshold);
+        Assert.Equal(expected, response.IsLowStock);
     }
 
     [Fact]
@@ -138,7 +177,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act
-        var response = item.ToStockItemDto();
+        var response = item.ToStockItemDto(warehouseIsArchived: false);
 
         // Assert
         Assert.Null(response.CategoryName);
@@ -159,7 +198,7 @@ public class WarehouseMappingsTests : WarehouseTestsBase
         };
 
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() => item.ToStockItemDto());
+        Assert.Throws<InvalidOperationException>(() => item.ToStockItemDto(warehouseIsArchived: false));
     }
 
     [Fact]

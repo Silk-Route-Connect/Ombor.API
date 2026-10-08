@@ -48,7 +48,7 @@ public abstract class WarehouseTestsBase : EndpointTestsBase
         return warehouse.Id;
     }
 
-    protected async Task<Product> CreateProductAsync()
+    protected async Task<Product> CreateProductAsync(bool archived = false)
     {
         var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
         _context.Categories.Add(category);
@@ -61,7 +61,7 @@ public abstract class WarehouseTestsBase : EndpointTestsBase
             SalePrice = 100m,
             SupplyPrice = 50m,
             RetailPrice = 90m,
-            LowStockThreshold = 10,
+            IsArchived = archived,
             Measurement = UnitOfMeasurement.Piece,
             Type = ProductType.All,
             CategoryId = category.Id,

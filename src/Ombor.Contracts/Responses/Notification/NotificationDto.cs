@@ -24,11 +24,13 @@ public sealed record NotificationDto(
 /// <param name="Label">The product name, or the document number (bare); null for a document without a number (old seed rows).</param>
 /// <param name="Detail">The product's SKU, or the partner of a sale / the customer of an order.</param>
 /// <param name="Amount">A sale's remaining amount, an order's total.</param>
-/// <param name="Quantity">Low stock: the product's stock over all warehouses.</param>
-/// <param name="Threshold">Low stock: the product's threshold.</param>
+/// <param name="Quantity">Low stock: the product's stock in that warehouse.</param>
+/// <param name="Threshold">Low stock: the threshold set for the product in that warehouse.</param>
 /// <param name="Measurement">Low stock: the product's unit (UnitOfMeasurement name).</param>
 /// <param name="Date">A sale's due date, an order's delivery date.</param>
 /// <param name="Days">Days past that date (0 = due today).</param>
+/// <param name="WarehouseId">Low stock: the warehouse the product is running low in; null for the other kinds.</param>
+/// <param name="WarehouseName">Low stock: that warehouse's name; null for the other kinds.</param>
 public sealed record NotificationItemDto(
     ActivityEntityKind EntityKind,
     int Id,
@@ -39,4 +41,6 @@ public sealed record NotificationItemDto(
     decimal? Threshold = null,
     string? Measurement = null,
     DateOnly? Date = null,
-    int? Days = null);
+    int? Days = null,
+    int? WarehouseId = null,
+    string? WarehouseName = null);

@@ -12,7 +12,12 @@ public sealed record AddOpeningStockRequest(
     OpeningStockLine[] Items,
     string? Note = null);
 
+/// <summary>One product of an opening stock.</summary>
 /// <param name="ProductId">The product being stocked.</param>
 /// <param name="Quantity">The opening quantity (must be &gt; 0).</param>
 /// <param name="UnitCost">The cost per unit, used as the initial weighted-average cost.</param>
-public sealed record OpeningStockLine(int ProductId, decimal Quantity, decimal UnitCost);
+/// <param name="LowStockThreshold">
+/// Optional low-stock threshold of the new stock row (DR-41, ≥ 0): the row counts as «Заканчивается» at or below it;
+/// <see langword="null"/> leaves the row untracked.
+/// </param>
+public sealed record OpeningStockLine(int ProductId, decimal Quantity, decimal UnitCost, decimal? LowStockThreshold = null);

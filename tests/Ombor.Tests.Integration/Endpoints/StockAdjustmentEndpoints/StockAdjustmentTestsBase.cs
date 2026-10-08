@@ -38,7 +38,6 @@ public abstract class StockAdjustmentTestsBase(
             SalePrice = 100m,
             SupplyPrice = 50m,
             RetailPrice = 90m,
-            LowStockThreshold = 10,
             Measurement = UnitOfMeasurement.Piece,
             Type = ProductType.All,
             CategoryId = category.Id,

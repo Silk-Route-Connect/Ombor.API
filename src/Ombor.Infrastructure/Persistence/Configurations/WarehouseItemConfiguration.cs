@@ -33,6 +33,10 @@ internal sealed class WarehouseItemConfiguration : IEntityTypeConfiguration<Ware
             .IsRequired();
 
         builder
+            .Property(x => x.LowStockThreshold)
+            .HasQuantityPrecision();
+
+        builder
             .Property(x => x.AverageCost)
             .HasCurrencyPrecision()
             .IsRequired();

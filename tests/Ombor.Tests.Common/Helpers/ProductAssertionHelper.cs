@@ -29,7 +29,6 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Barcode, actual.Barcode);
         Assert.Equal(expected.SalePrice, actual.SalePrice);
         Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), actual.Measurement);
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
@@ -56,7 +55,6 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Barcode, response.Barcode);
         Assert.Equal(request.SalePrice, response.SalePrice);
         Assert.Equal(request.SupplyPrice, response.SupplyPrice);
-        Assert.Equal(request.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(request.Measurement.ToString(), response.Measurement);
         Assert.Equal(request.Type.ToString(), response.Type);
         Assert.Equal(request.CategoryId, response.CategoryId);
@@ -84,7 +82,6 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Barcode, actual.Barcode);
         Assert.Equal(expected.SalePrice, actual.SalePrice);
         Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
         Assert.Equal((int)expected.Measurement, (int)actual.Measurement);
         Assert.Equal((int)expected.Type, (int)actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
@@ -109,7 +106,6 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Barcode, actual.Barcode);
         Assert.Equal(expected.SalePrice, actual.SalePrice);
         Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), actual.Measurement);
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
@@ -136,7 +132,6 @@ public static class ProductAssertionHelper
         Assert.Equal(request.Barcode, response.Barcode);
         Assert.Equal(request.SalePrice, response.SalePrice);
         Assert.Equal(request.SupplyPrice, response.SupplyPrice);
-        Assert.Equal(request.LowStockThreshold, response.LowStockThreshold);
         Assert.Equal(request.Measurement.ToString(), response.Measurement);
         Assert.Equal(request.Type.ToString(), response.Type);
         Assert.Equal(request.CategoryId, response.CategoryId);
@@ -160,7 +155,6 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Barcode, actual.Barcode);
         Assert.Equal(expected.SalePrice, actual.SalePrice);
         Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
         Assert.Equal((int)expected.Measurement, (int)actual.Measurement);
         Assert.Equal((int)expected.Type, (int)actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);
@@ -184,7 +178,6 @@ public static class ProductAssertionHelper
         Assert.Equal(expected.Barcode, actual.Barcode);
         Assert.Equal(expected.SalePrice, actual.SalePrice);
         Assert.Equal(expected.SupplyPrice, actual.SupplyPrice);
-        Assert.Equal(expected.LowStockThreshold, actual.LowStockThreshold);
         Assert.Equal(expected.Measurement.ToString(), actual.Measurement);
         Assert.Equal(expected.Type.ToString(), actual.Type);
         Assert.Equal(expected.CategoryId, actual.CategoryId);

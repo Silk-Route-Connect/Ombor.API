@@ -27,8 +27,11 @@ public sealed record StockReportDto(
 /// <param name="Value">Quantity × average cost, 2 decimals — what the stock cost.</param>
 /// <param name="SalePrice">The product's current sale price.</param>
 /// <param name="SaleValue">Quantity × sale price, 2 decimals — what it would sell for.</param>
-/// <param name="LowStockThreshold">The product's low-stock threshold.</param>
-/// <param name="IsLowStock">Quantity at or below the threshold in this warehouse (the warehouse stock tab's rule).</param>
+/// <param name="LowStockThreshold">This warehouse item's low-stock threshold; null when the item is not tracked.</param>
+/// <param name="IsLowStock">
+/// The item has a threshold and its quantity is at or below it (the warehouse stock tab's rule); always false for an
+/// untracked item, an archived product or an archived warehouse.
+/// </param>
 public sealed record StockReportRowDto(
     int WarehouseId,
     string WarehouseName,
@@ -44,7 +47,7 @@ public sealed record StockReportRowDto(
     decimal Value,
     decimal SalePrice,
     decimal SaleValue,
-    int LowStockThreshold,
+    decimal? LowStockThreshold,
     bool IsLowStock);
 
 /// <summary>One warehouse's stock totals.</summary>
@@ -54,7 +57,7 @@ public sealed record StockReportRowDto(
 /// <param name="ProductCount">Products with stock on hand.</param>
 /// <param name="Value">Σ row value — the same figure as <c>WarehouseDto.StockValue</c>.</param>
 /// <param name="SaleValue">Σ row sale value.</param>
-/// <param name="LowStockCount">Rows at or below their threshold.</param>
+/// <param name="LowStockCount">Rows flagged <c>IsLowStock</c> — tracked rows at or below their threshold (0 for an archived warehouse).</param>
 public sealed record StockReportWarehouseDto(
     int WarehouseId,
     string Name,
@@ -68,7 +71,7 @@ public sealed record StockReportWarehouseDto(
 /// <param name="ProductCount">Distinct products with stock on hand.</param>
 /// <param name="Value">Σ value — with no warehouse filter, the dashboard's stock value.</param>
 /// <param name="SaleValue">Σ sale value.</param>
-/// <param name="LowStockCount">Rows at or below their threshold.</param>
+/// <param name="LowStockCount">Rows flagged <c>IsLowStock</c> over every listed warehouse.</param>
 public sealed record StockReportTotalsDto(
     int ProductCount,
     decimal Value,

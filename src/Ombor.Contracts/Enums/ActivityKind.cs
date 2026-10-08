@@ -28,7 +28,10 @@ public enum ActivityKind
     OpeningStockCreated = 14,
     WalletTransferCreated = 15,
 
-    /// <summary>Stock changed with no document in the same operation (rows recorded before operations existed).</summary>
+    /// <summary>
+    /// Stock changed with no document in the same operation: rows recorded before operations existed, or a low-stock
+    /// threshold set on a stock row (DR-41).
+    /// </summary>
     StockChanged = 16,
 
     OrderCreated = 20,

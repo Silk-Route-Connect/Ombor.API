@@ -9,7 +9,7 @@ public enum NotificationKind
     /// <summary>Open orders whose delivery date has passed.</summary>
     OrdersOverdue = 2,
 
-    /// <summary>Active products at or below their low-stock threshold (the <c>ProductDto.isLowStock</c> rule).</summary>
+    /// <summary>Products at or below the low-stock threshold set for them in a warehouse — one item per product per warehouse.</summary>
     LowStock = 3,
 
     /// <summary>Open orders to deliver today.</summary>
