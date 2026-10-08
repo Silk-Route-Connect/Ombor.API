@@ -15,6 +15,9 @@ internal static class PropertyBuilderExtensions
     public static PropertyBuilder<decimal> HasQuantityPrecision(this PropertyBuilder<decimal> builder)
         => builder.HasPrecision(18, 3);
 
+    public static PropertyBuilder<decimal?> HasQuantityPrecision(this PropertyBuilder<decimal?> builder)
+        => builder.HasPrecision(18, 3);
+
     public static PropertyBuilder<T> HasEnumConversion<T>(this PropertyBuilder<T> builder) where T : Enum
         => builder.HasConversion<string>().HasMaxLength(ConfigurationConstants.EnumLength);
 }

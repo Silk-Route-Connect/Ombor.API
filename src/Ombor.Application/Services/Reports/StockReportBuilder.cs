@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Responses.Report;
 
@@ -7,7 +8,7 @@ namespace Ombor.Application.Services.Reports;
 /// <summary>
 /// The stock report: today's stock rows valued at their warehouse WAC and at the sale price. Every row with stock is
 /// listed, archived warehouses and products included (rule 31); an empty row only while its product and warehouse are
-/// active, so a sold-out product still shows as low.
+/// active, so a sold-out product still shows. Low stock follows the warehouse item's own threshold (<see cref="LowStock"/>).
 /// </summary>
 internal sealed class StockReportBuilder(IApplicationDbContext context)
 {
@@ -36,7 +37,7 @@ internal sealed class StockReportBuilder(IApplicationDbContext context)
                 i.Quantity,
                 i.AverageCost,
                 i.Product.SalePrice,
-                i.Product.LowStockThreshold,
+                i.LowStockThreshold,
             })
             .ToArrayAsync();
 
@@ -59,7 +60,7 @@ internal sealed class StockReportBuilder(IApplicationDbContext context)
                 i.SalePrice,
                 Money(i.Quantity * i.SalePrice),
                 i.LowStockThreshold,
-                i.Quantity <= i.LowStockThreshold))
+                LowStock.IsLowStock(i.Quantity, i.LowStockThreshold, i.ProductIsArchived, i.WarehouseIsArchived)))
             .ToArray();
 
         // Values are summed unrounded and rounded once, the dashboard's stock-value rule.
@@ -72,7 +73,7 @@ internal sealed class StockReportBuilder(IApplicationDbContext context)
                 g.Count(i => i.Quantity > 0m),
                 Money(g.Sum(i => i.Quantity * i.AverageCost)),
                 Money(g.Sum(i => i.Quantity * i.SalePrice)),
-                g.Count(i => i.Quantity <= i.LowStockThreshold)))
+                g.Count(i => LowStock.IsLowStock(i.Quantity, i.LowStockThreshold, i.ProductIsArchived, i.WarehouseIsArchived))))
             .OrderBy(w => w.Name, StringComparer.Ordinal)
             .ToArray();
 

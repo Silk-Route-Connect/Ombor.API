@@ -92,8 +92,10 @@ public sealed class UpdateWarehouseTests : WarehouseTestsBase
 
         _mockValidator.Verify(mock => mock.ValidateAndThrowAsync(request, It.IsAny<CancellationToken>()), Times.Once);
         _mockContext.Verify(mock => mock.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        // Warehouses getter is hit three times: load the entity, the unique-name query, the IsDeletable check.
+        // Warehouses getter is hit three times: load the entity, the unique-name query, the IsDeletable check;
+        // WarehouseItems once, for the low-stock count.
         _mockContext.Verify(mock => mock.Warehouses, Times.Exactly(3));
+        _mockContext.Verify(mock => mock.WarehouseItems, Times.Once);
 
         VerifyNoOtherCalls();
     }

@@ -40,16 +40,16 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
     protected Task<TReport> GetReportAsync<TReport>(string report, string query) =>
         _client.GetAsync<TReport>($"{Reports}/{report}?{query}");
 
-    protected async Task<int> CreateWarehouseAsync()
+    protected async Task<int> CreateWarehouseAsync(bool archived = false)
     {
-        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };
+        var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent", IsArchived = archived };
         _context.Warehouses.Add(warehouse);
         await _context.SaveChangesAsync();
 
         return warehouse.Id;
     }
 
-    protected async Task<int> CreateProductAsync(decimal salePrice = 100m, int lowStockThreshold = 10)
+    protected async Task<int> CreateProductAsync(decimal salePrice = 100m, bool archived = false)
     {
         var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
         _context.Categories.Add(category);
@@ -62,7 +62,7 @@ public abstract class ReportTestsBase(TestingWebApplicationFactory factory, ITes
             SalePrice = salePrice,
             SupplyPrice = 50m,
             RetailPrice = salePrice,
-            LowStockThreshold = lowStockThreshold,
+            IsArchived = archived,
             Measurement = DomainUnit.Piece,
             Type = DomainProductType.All,
             CategoryId = category.Id,

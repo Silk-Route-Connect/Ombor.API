@@ -20,6 +20,12 @@ public class WarehouseItem : EntityBase, IOrganizationScoped, IAuditable
     public required decimal Quantity { get; set; }
 
     /// <summary>
+    /// Gets or sets the optional low-stock threshold of this product in this warehouse (DR-41): the item counts as
+    /// «Заканчивается» when its quantity is at or below it. <see langword="null"/> means the item is not tracked.
+    /// </summary>
+    public decimal? LowStockThreshold { get; set; }
+
+    /// <summary>
     /// Gets or sets product ID of the <see cref="WarehouseItem"/>.
     /// </summary>
     public int ProductId { get; set; }

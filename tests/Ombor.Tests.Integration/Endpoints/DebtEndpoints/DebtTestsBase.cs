@@ -45,7 +45,6 @@ public abstract class DebtTestsBase(TestingWebApplicationFactory factory, ITestO
             SalePrice = 100m,
             SupplyPrice = 50m,
             RetailPrice = 90m,
-            LowStockThreshold = 10,
             Measurement = UnitOfMeasurement.Piece,
             Type = ProductType.All,
             CategoryId = category.Id,

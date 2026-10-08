@@ -1,10 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Enums;
 using Ombor.Contracts.Responses.Notification;
 using Ombor.Domain.Entities;
-using Ombor.Infrastructure.Persistence;
 using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
@@ -13,20 +10,12 @@ using DomainEnums = Ombor.Domain.Enums;
 namespace Ombor.Tests.Integration.Endpoints.NotificationEndpoints;
 
 /// <summary>
-/// GET /api/notifications — alerts computed from the ledger on every read. The shared test database holds other tests'
-/// rows, so each test plants its own records and asserts the change they make (and, for the top-10 list, makes its
-/// record the most pressing one).
+/// GET /api/notifications — the money and order alerts, and the alert list as a whole. Low stock has its own tests
+/// (<see cref="LowStockNotificationTests"/>).
 /// </summary>
 public sealed class NotificationTests(TestingWebApplicationFactory factory, ITestOutputHelper output)
-    : EndpointTestsBase(factory, output)
+    : NotificationTestsBase(factory, output)
 {
-    private const string Route = "notifications";
-    private const int ForeignOrganizationId = 2;
-
-    protected override string GetUrl() => Route;
-
-    protected override string GetUrl(int id) => $"{Route}/{id}";
-
     [Fact]
     public async Task OverdueReceivables_CountUnpaidSalesPastTheirDueDate_WithWhatIsLeftToPay()
     {
@@ -94,33 +83,6 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
     }
 
     [Fact]
-    public async Task LowStock_UsesTheProductThresholdRule_LargestShortageFirst_ArchivedLeftOut()
-    {
-        var before = await GetAsync(NotificationKind.LowStock);
-        var warehouseId = await EnsureWarehouseAsync();
-
-        // Counted: stock 2 over all warehouses against a threshold of 1 000 000 — the largest shortage there is.
-        var low = await AddProductAsync(threshold: 1_000_000, archived: false, warehouseId, stock: 2m);
-
-        // Not counted: stock above the threshold, and an archived product with nothing left.
-        await AddProductAsync(threshold: 5, archived: false, warehouseId, stock: 6m);
-        await AddProductAsync(threshold: 5, archived: true, warehouseId, stock: 0m);
-
-        var after = await GetAsync(NotificationKind.LowStock);
-
-        Assert.NotNull(after);
-        Assert.Equal((before?.Count ?? 0) + 1, after.Count);
-        Assert.Null(after.Amount);
-        var item = after.Items[0];
-        Assert.Equal(low, item.Id);
-        Assert.Equal(ActivityEntityKind.Product, item.EntityKind);
-        Assert.Equal(2m, item.Quantity);
-        Assert.Equal(1_000_000m, item.Threshold);
-        Assert.Equal("Piece", item.Measurement);
-        Assert.True(after.Items.Length <= 10);
-    }
-
-    [Fact]
     public async Task Notifications_ServeOnlyAlertsWithSomethingToReport_InKindOrder()
     {
         var partnerId = await AddPartnerAsync(_context);
@@ -133,9 +95,6 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
         Assert.Equal(all.Select(n => n.Kind).Order(), all.Select(n => n.Kind));
         Assert.Equal(all.Length, all.Select(n => n.Kind).Distinct().Count());
     }
-
-    private async Task<NotificationDto?> GetAsync(NotificationKind kind) =>
-        (await _client.GetAsync<NotificationDto[]>(Route)).SingleOrDefault(n => n.Kind == kind);
 
     private static async Task<int> AddPartnerAsync(IApplicationDbContext context)
     {
@@ -186,52 +145,5 @@ public sealed class NotificationTests(TestingWebApplicationFactory factory, ITes
         await _context.SaveChangesAsync();
 
         return order.Id;
-    }
-
-    private async Task<int> AddProductAsync(int threshold, bool archived, int warehouseId, decimal stock)
-    {
-        var category = new Category { Name = $"Category {Guid.NewGuid():N}" };
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
-
-        var product = new Product
-        {
-            Name = $"Product {Guid.NewGuid():N}",
-            SKU = $"SKU-{Guid.NewGuid():N}",
-            SalePrice = 100m,
-            SupplyPrice = 50m,
-            RetailPrice = 90m,
-            LowStockThreshold = threshold,
-            IsArchived = archived,
-            Measurement = DomainEnums.UnitOfMeasurement.Piece,
-            Type = DomainEnums.ProductType.All,
-            CategoryId = category.Id,
-            Category = null!,
-        };
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-
-        if (stock > 0m)
-        {
-            _context.WarehouseItems.Add(new WarehouseItem
-            {
-                WarehouseId = warehouseId,
-                ProductId = product.Id,
-                Quantity = stock,
-                AverageCost = 50m,
-                Warehouse = null!,
-                Product = null!,
-            });
-            await _context.SaveChangesAsync();
-        }
-
-        return product.Id;
-    }
-
-    private ApplicationDbContext CreateContext(int organizationId)
-    {
-        var options = _factory.Services.GetRequiredService<DbContextOptions<ApplicationDbContext>>();
-
-        return new ApplicationDbContext(options, new FakeOrganizationAccessor(organizationId));
     }
 }

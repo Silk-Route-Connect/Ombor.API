@@ -855,9 +855,6 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("int");
-
                     b.Property<string>("Measurement")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1691,6 +1688,10 @@ namespace Ombor.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("AverageCost")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("LowStockThreshold")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("int");

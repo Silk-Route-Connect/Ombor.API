@@ -9,6 +9,13 @@ namespace Ombor.Contracts.Responses.Warehouse;
 /// <param name="Quantity">Units on hand in this warehouse.</param>
 /// <param name="AverageCost">Warehouse-local weighted-average cost.</param>
 /// <param name="Value">Stock value (quantity × average cost).</param>
+/// <param name="LowStockThreshold">
+/// The row's low-stock threshold (DR-41); <see langword="null"/> when the row is not tracked (omitted from the JSON).
+/// </param>
+/// <param name="IsLowStock">
+/// The row has a threshold and its quantity is at or below it; always false for an untracked row (even at zero), an
+/// archived product or an archived warehouse.
+/// </param>
 public sealed record WarehouseStockItemDto(
     int ProductId,
     string ProductName,
@@ -17,4 +24,6 @@ public sealed record WarehouseStockItemDto(
     string Measurement,
     decimal Quantity,
     decimal AverageCost,
-    decimal Value);
+    decimal Value,
+    decimal? LowStockThreshold,
+    bool IsLowStock);

@@ -93,14 +93,6 @@ public interface IProductBuilder
     IProductBuilder WithQuantityInStock(int? quantityInStock = null);
 
     /// <summary>
-    /// Specifies the <see cref="Product.LowStockThreshold"/>.
-    /// If <paramref name="lowStockThreshold"/> is <c>null</c>, a random integer will be assigned.
-    /// </summary>
-    /// <param name="lowStockThreshold">The low stock threshold, or <c>null</c> to generate a random one.</param>
-    /// <returns>The same builder instance.</returns>
-    IProductBuilder WithLowStockThreshold(int? lowStockThreshold = null);
-
-    /// <summary>
     /// Specifies the <see cref="Product.Measurement"/>.
     /// If <paramref name="measurement"/> is <c>null</c>, a random one will be assigned.
     /// </summary>
@@ -153,7 +145,6 @@ public interface IProductBuilder
     ///   <item><term><c>SupplyPrice</c></term><description> <c>0</c> if not set.</description></item>
     ///   <item><term><c>RetailPrice</c></term><description> <c>0</c> if not set.</description></item>
     ///   <item><term><c>QuantityInStock</c></term><description> <c>0</c> if not set.</description></item>
-    ///   <item><term><c>LowStockThreshold</c></term><description> <c>0</c> if not set.</description></item>
     ///   <item><term><c>Measurement</c></term><description> <see cref="UnitOfMeasurement.None"/> if not set.</description></item>
     ///   <item><term><c>Type</c></term><description> <see cref="ProductType.All"/> if not set.</description></item>
     ///   <item><term><c>Images</c></term><description> empty <see cref="List{T}"/> if not set.</description></item>
@@ -176,7 +167,6 @@ public interface IProductBuilder
     ///   <item><term><c>SupplyPrice</c></term><description> random if not set.</description></item>
     ///   <item><term><c>RetailPrice</c></term><description> random if not set.</description></item>
     ///   <item><term><c>QuantityInStock</c></term><description> random if not set.</description></item>
-    ///   <item><term><c>LowStockThreshold</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Measurement</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Type</c></term><description> random if not set.</description></item>
     ///   <item><term><c>Images</c></term><description> generated via <see cref="ProductGenerator.GenerateImages(int, string)"/> if not set.</description></item>

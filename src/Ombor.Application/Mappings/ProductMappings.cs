@@ -30,8 +30,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
             IsArchived: product.IsArchived,
@@ -52,7 +50,6 @@ internal static class ProductMappings
             Barcode = request.Barcode,
             SalePrice = request.SalePrice,
             SupplyPrice = request.SupplyPrice,
-            LowStockThreshold = request.LowStockThreshold,
             Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString()),
             Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString()),
             Packaging = (request.Packaging ?? new(0, null, null)).ToEntity(), // TODO: Remove default value when upgraded to .NET 10
@@ -81,8 +78,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: totalStock <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
             IsArchived: product.IsArchived,
@@ -110,8 +105,6 @@ internal static class ProductMappings
             Barcode: product.Barcode,
             SalePrice: product.SalePrice,
             SupplyPrice: product.SupplyPrice,
-            LowStockThreshold: product.LowStockThreshold,
-            IsLowStock: product.TotalStock() <= product.LowStockThreshold,
             Measurement: product.Measurement.ToString(),
             Type: product.Type.ToString(),
             IsArchived: product.IsArchived,
@@ -126,7 +119,6 @@ internal static class ProductMappings
         product.Barcode = request.Barcode;
         product.SalePrice = request.SalePrice;
         product.SupplyPrice = request.SupplyPrice;
-        product.LowStockThreshold = request.LowStockThreshold;
         product.Measurement = Enum.Parse<Domain.Enums.UnitOfMeasurement>(request.Measurement.ToString());
         product.Type = Enum.Parse<Domain.Enums.ProductType>(request.Type.ToString());
         product.CategoryId = request.CategoryId;
