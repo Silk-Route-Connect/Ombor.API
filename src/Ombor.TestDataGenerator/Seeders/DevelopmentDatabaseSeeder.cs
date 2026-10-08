@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Application.Interfaces.File;
+using Ombor.Application.Localization;
 using Ombor.Domain.Entities;
 using Ombor.TestDataGenerator.Configurations;
 using Ombor.TestDataGenerator.Generators;
@@ -20,8 +21,20 @@ internal sealed class DevelopmentDatabaseSeeder(
 {
     private readonly PaymentSeedSettings _paymentOptions = seedSettings.PaymentSettings;
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
+    public async Task SeedDatabaseAsync(
+        IApplicationDbContext context,
+        IOrganizationAccessor organizationAccessor,
+        IOrganizationSetupService organizationSetup)
     {
+        // Demo data goes into an empty database only. Once any organization exists — demo ones from an earlier start
+        // or one registered through the app — a restart leaves the data alone: re-running steps on a filled database
+        // fabricated unnumbered, future-dated payments against documents made in the app, and re-extracted the demo
+        // images under new names, deleting the files the stored product images point to.
+        if (await context.Organizations.AnyAsync())
+        {
+            return;
+        }
+
         var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();
 
@@ -38,8 +51,13 @@ internal sealed class DevelopmentDatabaseSeeder(
             await EnsureWarehousesAsync(context);
             await AddWalletsAsync(context);
             await SeedTransactionsAsync(context);
+            await LowStockThresholdSeeder.SeedAsync(context);
             await AddPaymentsAsync(context);
             await AddOrdersAsync(context);
+
+            // Last, so the generators above still see an empty organization: the walk-in customer, main warehouse
+            // and other starter rows registration creates (OrganizationSetupService), named in Russian.
+            await organizationSetup.SeedStarterDataAsync(organizationId, SupportedLanguages.Russian);
         }
     }
 
@@ -196,10 +214,16 @@ internal sealed class DevelopmentDatabaseSeeder(
 
     private async Task AddPaymentsAsync(IApplicationDbContext context)
     {
+        // Seed payments once, like every other step. Re-running on each start fabricated unnumbered, future-dated
+        // payments against documents created through the app since the last start.
+        if (context.Payments.Any())
+        {
+            return;
+        }
+
         // Wallet-sourced payments need a wallet to draw from (rule 9).
         var walletId = context.Wallets.Select(w => w.Id).First();
 
-        // Load all transactions that do not yet have any allocations OR still have unpaid amounts
         var transactions = await context.Transactions
             .Include(t => t.PaymentAllocations)
             .Include(t => t.Partner)

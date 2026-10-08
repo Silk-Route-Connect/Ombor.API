@@ -1,0 +1,16 @@
+using FluentValidation;
+using Ombor.Contracts.Requests.Report;
+
+namespace Ombor.Application.Validators.Report;
+
+/// <summary>The period itself (order, length, defaults) is checked where it is resolved, <c>ReportRange</c>, since its defaults depend on today's business date.</summary>
+public sealed class GetCashFlowReportRequestValidator : AbstractValidator<GetCashFlowReportRequest>
+{
+    public GetCashFlowReportRequestValidator()
+    {
+        RuleFor(x => x.WalletId)
+            .GreaterThan(0)
+            .When(x => x.WalletId.HasValue)
+            .WithMessage(x => $"Invalid wallet ID: {x.WalletId}.");
+    }
+}

@@ -24,10 +24,17 @@ public abstract class WarehouseTestsBase : ServiceTestsBase
         SetupTransfers([]);
         SetupOrders([]);
 
+        // No stock rows: the low-stock count query finds nothing to count.
+        SetupWarehouseItems([]);
+
         _service = new WarehouseService(
             _mockContext.Object,
             _mockValidator.Object,
-            Mock.Of<ICurrentUserAccessor>());
+            new WarehouseStock(
+                _mockContext.Object,
+                _mockValidator.Object,
+                Mock.Of<ICurrentUserAccessor>(),
+                _mockWriteLock.Object));
     }
 
     protected Warehouse[] GenerateRandomWarehouses(int count = 5)

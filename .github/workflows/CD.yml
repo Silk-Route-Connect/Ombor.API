@@ -65,7 +65,7 @@ jobs:
             }
             Sentry = @{
               Dsn = "${{ secrets.SENTRY_DSN }}"
-              SendDefaultPii = $true
+              SendDefaultPii = $false
               MaxRequestBodySize = "Always"
               MinimumBreadcrumbLevel = "Debug"
               MinimumEventLevel = "Warning"

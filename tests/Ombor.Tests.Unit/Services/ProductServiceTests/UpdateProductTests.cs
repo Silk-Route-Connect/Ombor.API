@@ -100,7 +100,7 @@ public sealed class UpdateProductTests : ProductTestsBase
 
         _mockFileService.Setup(mock => mock.DeleteAsync(filesToDelete, _fileSettings.ProductUploadsSection, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
-        _mockFileService.Setup(mock => mock.UploadAsync(request.Attachments!, _fileSettings.ProductUploadsSection, It.IsAny<CancellationToken>()))
+        _mockFileService.Setup(mock => mock.UploadImagesAsync(request.Attachments!, _fileSettings.ProductUploadsSection, It.IsAny<CancellationToken>()))
             .ReturnsAsync(fileUploadResults);
 
         // Act
@@ -117,7 +117,7 @@ public sealed class UpdateProductTests : ProductTestsBase
         _mockContext.Verify(mock => mock.Categories, Times.Once);
         _mockContext.Verify(mock => mock.ProductImages, Times.Once);
         _mockFileService.Verify(
-            mock => mock.UploadAsync(
+            mock => mock.UploadImagesAsync(
                 request.Attachments!,
                 _fileSettings.ProductUploadsSection,
                 It.IsAny<CancellationToken>()),

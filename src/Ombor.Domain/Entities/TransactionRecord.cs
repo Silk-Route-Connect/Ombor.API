@@ -22,6 +22,18 @@ public class TransactionRecord : EntityBase, IOrganizationScoped, IAuditable
 
     public decimal UnpaidAmount => TotalDue - TotalPaid;
 
+    /// <summary>
+    /// The stored settlement status the amounts imply: nothing due → Closed (a free or fully discounted document
+    /// has nothing to pay), nothing paid → Open, part → PartiallyPaid, all → Closed. The one rule every writer
+    /// (create, payments, seed data, the status backfill) uses; Overdue is never stored — it is computed on read
+    /// from the due date.
+    /// </summary>
+    public static TransactionStatus SettlementStatusOf(decimal totalDue, decimal totalPaid) =>
+        totalDue <= 0m ? TransactionStatus.Closed
+        : totalPaid <= 0m ? TransactionStatus.Open
+        : totalPaid < totalDue ? TransactionStatus.PartiallyPaid
+        : TransactionStatus.Closed;
+
     /// <summary>Optional free-text note captured when the transaction was created.</summary>
     public string? Notes { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ namespace Ombor.Infrastructure.Services;
 internal sealed class SmsService(
     IRequestValidator validator,
     HttpClient client,
+    IEskizTokenProvider tokenProvider,
     IOptions<SmsSettings> smsSettings) : ISmsService
 {
     private readonly SmsSettings options = smsSettings.Value;
@@ -20,47 +22,25 @@ internal sealed class SmsService(
     {
         await validator.ValidateAndThrowAsync(message);
 
-        var apiUrl = options.ApiUrl;
-        var token = options.Token;
-        var from = options.FromNumber;
-
-        if (string.IsNullOrWhiteSpace(apiUrl) ||
-           string.IsNullOrWhiteSpace(token) ||
-           string.IsNullOrWhiteSpace(from))
+        if (string.IsNullOrWhiteSpace(options.ApiUrl) || string.IsNullOrWhiteSpace(options.FromNumber))
         {
             throw new InvalidOperationException("SMS configuration is missing required values.");
         }
 
-        if (!Uri.TryCreate(apiUrl, UriKind.Absolute, out var _))
+        if (!Uri.TryCreate(options.ApiUrl, UriKind.Absolute, out var _))
         {
             throw new InvalidOperationException("SMS provider Api URL is invalid.");
         }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var token = await tokenProvider.GetTokenAsync();
+        var response = await SendAsync(message, token);
 
-        var payload = new
+        // An expired or revoked token: renew it once and resend (the account login issues a fresh one).
+        if (response.StatusCode == HttpStatusCode.Unauthorized && tokenProvider.CanRenew)
         {
-            mobile_phone = message.ToNumber,
-            message = message.Message,
-            from = from
-        };
-
-        request.Content = new StringContent(
-            JsonSerializer.Serialize(payload),
-            Encoding.UTF8,
-            "application/json"
-        );
-
-        HttpResponseMessage response;
-        try
-        {
-            response = await client.SendAsync(request);
-        }
-        catch (HttpRequestException ex)
-        {
-            // Network/DNS failure reaching the provider — surface as a retryable outage, not a 500.
-            throw new SmsDeliveryException("SMS provider is temporarily unavailable.", ex);
+            response.Dispose();
+            token = await tokenProvider.GetTokenAsync(rejectedToken: token);
+            response = await SendAsync(message, token);
         }
 
         using (response)
@@ -71,6 +51,34 @@ internal sealed class SmsService(
 
                 throw new SmsDeliveryException($"SMS provider request failed with status {(int)response.StatusCode} {response.ReasonPhrase}. Response: {error}");
             }
+        }
+    }
+
+    private async Task<HttpResponseMessage> SendAsync(SmsMessage message, string token)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, options.ApiUrl);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var payload = new
+        {
+            mobile_phone = message.ToNumber,
+            message = message.Message,
+            from = options.FromNumber,
+        };
+
+        request.Content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            Encoding.UTF8,
+            "application/json");
+
+        try
+        {
+            return await client.SendAsync(request);
+        }
+        catch (HttpRequestException ex)
+        {
+            // Network/DNS failure reaching the provider — surface as a retryable outage, not a 500.
+            throw new SmsDeliveryException("SMS provider is temporarily unavailable.", ex);
         }
     }
 }

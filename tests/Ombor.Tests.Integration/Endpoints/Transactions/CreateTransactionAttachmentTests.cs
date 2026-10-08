@@ -4,6 +4,7 @@ using Ombor.Contracts.Enums;
 using Ombor.Contracts.Requests.Transaction;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Tests.Common.Extensions;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -22,7 +23,7 @@ public sealed class CreateTransactionAttachmentTests(TestingWebApplicationFactor
         var productId = await CreateProductAsync();
         await SeedStockAsync(warehouseId, productId, quantity: 100);
 
-        var content = new byte[] { 1, 2, 3, 4, 5 };
+        var content = TestFiles.Jpeg;
         var request = new CreateTransactionRequest(
             PartnerId: partnerId,
             Type: TransactionType.Sale,

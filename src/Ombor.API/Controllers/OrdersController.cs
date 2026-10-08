@@ -42,7 +42,7 @@ public class OrdersController(IOrderService service) : ControllerBase
         [FromRoute] int id,
         [FromBody] UpdateOrderRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -52,7 +52,7 @@ public class OrdersController(IOrderService service) : ControllerBase
             });
         }
 
-        var response = await service.UpdateAsync(request);
+        var response = await service.UpdateAsync(request!);
 
         return Ok(response);
     }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Ombor.Application.Configurations;
 using Ombor.Application.Interfaces;
 using Ombor.Infrastructure.Persistence;
+using Ombor.Infrastructure.Persistence.Interceptors;
 using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers.ResponseValidators;
 
@@ -57,10 +58,13 @@ public class TestingWebApplicationFactory : WebApplicationFactory<Program>
                 services.Remove(context);
             }
 
+            // Replacing the options drops the production configuration, so the audit interceptor is added back:
+            // writes made through the API record their audit rows exactly as in production.
             services.AddDbContext<ApplicationDbContext>(
-                options => options.LogTo(Console.WriteLine, LogLevel.Information)
+                (serviceProvider, options) => options.LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
-                .UseSqlServer(_databaseFixture.DatabaseConnectionString));
+                .UseSqlServer(_databaseFixture.DatabaseConnectionString)
+                .AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>()));
 
             // The real SmsService makes a live HTTP call to the provider; swap it for a no-op so the auth
             // flows (register/forgot-password) can be exercised in tests without sending real messages.

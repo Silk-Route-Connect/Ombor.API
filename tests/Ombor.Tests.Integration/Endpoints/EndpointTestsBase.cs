@@ -78,6 +78,12 @@ public abstract class EndpointTestsBase(TestingWebApplicationFactory factory, IT
         return warehouse.Id;
     }
 
+    /// <summary>Sets a warehouse item's low-stock threshold straight in the database (null = not tracked).</summary>
+    protected Task SetLowStockThresholdAsync(int warehouseId, int productId, decimal? threshold) =>
+        _context.WarehouseItems
+            .Where(i => i.WarehouseId == warehouseId && i.ProductId == productId)
+            .ExecuteUpdateAsync(item => item.SetProperty(i => i.LowStockThreshold, threshold));
+
     private static ApiClient CreateApiClient(TestingWebApplicationFactory factory, ITestOutputHelper outputHelper)
     {
         var uri = new Uri("https://localhost/api/");

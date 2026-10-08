@@ -89,7 +89,7 @@ public sealed class PartnersController(
         [FromRoute] int id,
         [FromBody] UpdatePartnerRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -99,7 +99,7 @@ public sealed class PartnersController(
             });
         }
 
-        var response = await partnerService.UpdateAsync(request);
+        var response = await partnerService.UpdateAsync(request!);
 
         return Ok(response);
     }

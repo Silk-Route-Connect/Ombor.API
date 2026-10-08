@@ -46,6 +46,27 @@ public sealed class WarehousesController(
         return Ok(response);
     }
 
+    /// <summary>
+    /// Sets the low-stock threshold of a product's stock row in the warehouse; a null threshold stops tracking the row.
+    /// </summary>
+    /// <param name="id">The warehouse id.</param>
+    /// <param name="productId">The product whose stock row is set.</param>
+    /// <param name="request">The threshold (≥ 0) or null.</param>
+    /// <returns>The updated stock row.</returns>
+    [HttpPut("{id:int:min(1)}/stock/{productId:int:min(1)}/threshold")]
+    [ProducesResponseType(typeof(WarehouseStockItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<WarehouseStockItemDto>> SetLowStockThresholdAsync(
+        [FromRoute] int id,
+        [FromRoute] int productId,
+        [FromBody] SetLowStockThresholdRequest request)
+    {
+        var response = await warehouseService.SetLowStockThresholdAsync(id, productId, request);
+
+        return Ok(response);
+    }
+
     /// <summary>Retrieves the warehouse's stock-movement ledger (newest-first) with running per-product balances.</summary>
     [HttpGet("{id:int:min(1)}/movements")]
     [ProducesResponseType(typeof(WarehouseMovementDto[]), StatusCodes.Status200OK)]
@@ -80,7 +101,7 @@ public sealed class WarehousesController(
         [FromRoute] int id,
         [FromBody] UpdateWarehouseRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ValidationProblemDetails
             {
@@ -90,7 +111,7 @@ public sealed class WarehousesController(
             });
         }
 
-        var response = await warehouseService.UpdateAsync(request);
+        var response = await warehouseService.UpdateAsync(request!);
 
         return Ok(response);
     }
@@ -104,7 +125,7 @@ public sealed class WarehousesController(
         [FromRoute] int id,
         [FromBody] AddOpeningStockRequest request)
     {
-        if (id != request.WarehouseId)
+        if (request is not null && id != request.WarehouseId)
         {
             return BadRequest(new ValidationProblemDetails
             {
@@ -114,7 +135,7 @@ public sealed class WarehousesController(
             });
         }
 
-        var response = await warehouseService.AddOpeningStockAsync(request);
+        var response = await warehouseService.AddOpeningStockAsync(request!);
 
         return Ok(response);
     }

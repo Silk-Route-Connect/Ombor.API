@@ -34,7 +34,8 @@ public abstract class SettingsTestsBase(TestingWebApplicationFactory factory, IT
     protected Task SetLanguageAsync(string language, HttpStatusCode expected = HttpStatusCode.NoContent) =>
         _client.PutAsync($"{Routes.Settings}/language", new { language }, expected);
 
-    protected static string UniquePhone() => $"+998{Math.Abs(Guid.NewGuid().GetHashCode())}";
+    // Canonical Uzbek mobile (+998 9XXXXXXXX): invites are validated and stored in this form.
+    protected static string UniquePhone() => $"+9989{Math.Abs(Guid.NewGuid().GetHashCode()) % 100_000_000:D8}";
 
     protected Task<OrganizationProfileDto> GetOrganizationAsync() =>
         _client.GetAsync<OrganizationProfileDto>(OrganizationUrl);

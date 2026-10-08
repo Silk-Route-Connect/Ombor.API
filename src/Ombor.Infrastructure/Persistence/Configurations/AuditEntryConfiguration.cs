@@ -35,6 +35,18 @@ internal sealed class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEn
             .Property(a => a.TimestampUtc)
             .IsRequired();
 
-        builder.HasIndex(a => new { a.EntityType, a.EntityId });
+        builder
+            .Property(a => a.ParentEntityType)
+            .HasMaxLength(ConfigurationConstants.DefaultStringLength);
+
+        // The Activity Log reads newest-first per organization, by actor, by operation, and by entity (the
+        // «История» tabs, whose child lines are found through the parent columns).
+        builder.HasIndex(a => new { a.OrganizationId, a.TimestampUtc }).IsDescending(false, true);
+        builder.HasIndex(a => new { a.OrganizationId, a.UserId, a.TimestampUtc });
+        builder.HasIndex(a => new { a.OrganizationId, a.OperationId });
+        builder.HasIndex(a => new { a.OrganizationId, a.EntityType, a.EntityId });
+        builder
+            .HasIndex(a => new { a.OrganizationId, a.ParentEntityType, a.ParentEntityId })
+            .HasFilter($"[{nameof(AuditEntry.ParentEntityType)}] IS NOT NULL");
     }
 }

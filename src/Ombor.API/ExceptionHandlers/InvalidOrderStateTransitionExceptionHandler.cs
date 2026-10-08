@@ -5,7 +5,8 @@ using Ombor.Domain.Exceptions;
 namespace Ombor.API.ExceptionHandlers;
 
 /// <summary>
-/// Maps an <see cref="InvalidOrderStateTransitionException"/> (an illegal order status change) to a 409 ProblemDetails.
+/// Maps an <see cref="InvalidOrderStateTransitionException"/> (an illegal order status change) to a 409 ProblemDetails
+/// carrying <c>order.invalid_transition</c> and the two statuses.
 /// </summary>
 internal sealed class InvalidOrderStateTransitionExceptionHandler(
     ILogger<InvalidOrderStateTransitionExceptionHandler> logger) : IExceptionHandler
@@ -24,7 +25,7 @@ internal sealed class InvalidOrderStateTransitionExceptionHandler(
             Detail = transitionException.Message,
             Type = "https://httpstatuses.com/409",
             Instance = httpContext.Request.Path
-        };
+        }.WithCodeFrom(exception, ErrorCodes.OrderInvalidTransition);
 
         httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);

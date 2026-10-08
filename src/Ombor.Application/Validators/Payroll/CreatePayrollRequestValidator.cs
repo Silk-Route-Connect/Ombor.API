@@ -1,4 +1,5 @@
 using FluentValidation;
+using Ombor.Application.Helpers;
 using Ombor.Contracts.Requests.Payroll;
 
 namespace Ombor.Application.Validators.Payroll;
@@ -20,8 +21,9 @@ public sealed class CreatePayrollRequestValidator : AbstractValidator<CreatePayr
             .WithMessage("Amount must be greater than 0.");
 
         RuleFor(x => x.Period)
-            .MaximumLength(ValidationConstants.DefaultStringLength)
-            .WithMessage($"Period must not exceed {ValidationConstants.DefaultStringLength} characters.");
+            .Must(PayrollPeriod.IsValid)
+            .When(x => !string.IsNullOrEmpty(x.Period))
+            .WithMessage(PayrollPeriod.FormatMessage);
 
         RuleFor(x => x.Notes)
             .MaximumLength(ValidationConstants.MaxStringLength)

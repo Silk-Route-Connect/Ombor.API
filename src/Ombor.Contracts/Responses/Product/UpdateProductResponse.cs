@@ -15,8 +15,6 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="SalePrice">The updated sale price.</param>
 /// <param name="SupplyPrice">The updated supply price.</param>
 /// <param name="QuantityInStock">The updated stock level.</param>
-/// <param name="LowStockThreshold">The updated low‑stock threshold.</param>
-/// <param name="IsLowStock">Whether stock ≤ threshold post‑update.</param>
 /// <param name="Measurement">The updated measurement.</param>
 /// <param name="Type">The updated type.</param>
 /// <param name="Packaging">Optional packaging info; <see langword="null"/> when not applicable.</param>
@@ -30,8 +28,6 @@ public sealed record UpdateProductResponse(
     string? Barcode,
     decimal SalePrice,
     decimal SupplyPrice,
-    int LowStockThreshold,
-    bool IsLowStock,
     string Measurement,
     string Type,
     bool IsArchived,

@@ -78,7 +78,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
         [FromRoute] int id,
         [FromBody] UpdateCategoryRequest request)
     {
-        if (id != request.Id)
+        if (request is not null && id != request.Id)
         {
             return BadRequest(new ProblemDetails
             {
@@ -88,7 +88,7 @@ public sealed class CategoriesController(ICategoryService categoryService) : Con
             });
         }
 
-        var response = await categoryService.UpdateAsync(request);
+        var response = await categoryService.UpdateAsync(request!);
 
         return Ok(response);
     }

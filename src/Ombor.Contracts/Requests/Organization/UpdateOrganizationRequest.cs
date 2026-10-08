@@ -10,10 +10,12 @@ namespace Ombor.Contracts.Requests.Organization;
 /// <param name="Address">The business address.</param>
 /// <param name="Phone">The business phone.</param>
 /// <param name="Email">The business email.</param>
-/// <param name="Logo">Optional new logo image; when omitted the existing logo is kept.</param>
+/// <param name="Logo">Optional new logo image (PNG, JPEG or GIF); when omitted the existing logo is kept.</param>
+/// <param name="RemoveLogo">True clears the current logo (ignored when a new <paramref name="Logo"/> is sent).</param>
 public sealed record UpdateOrganizationRequest(
     string Name,
     string? Address,
     string? Phone,
     string? Email,
-    IFormFile? Logo);
+    IFormFile? Logo,
+    bool RemoveLogo = false);

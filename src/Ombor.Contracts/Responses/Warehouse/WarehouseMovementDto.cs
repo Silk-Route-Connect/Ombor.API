@@ -17,6 +17,12 @@ namespace Ombor.Contracts.Responses.Warehouse;
 /// <param name="Note">Optional note.</param>
 /// <param name="Quantity">The signed quantity delta (positive = in, negative = out).</param>
 /// <param name="BalanceAfter">The product's stock in this warehouse after the movement.</param>
+/// <param name="SourceType">The document the row belongs to — what a client opens from it.</param>
+/// <param name="SourceId">
+/// The id of that document: the transaction (not its line), the transfer (not its line), the adjustment, or the
+/// opening-stock record.
+/// </param>
+/// <param name="SourceNumber">The source document's bare number for a transaction row; null for other sources, which carry no number.</param>
 public sealed record WarehouseMovementDto(
     int Id,
     DateTimeOffset Date,
@@ -29,4 +35,7 @@ public sealed record WarehouseMovementDto(
     int? CounterpartyPartnerId,
     string? Note,
     decimal Quantity,
-    decimal BalanceAfter);
+    decimal BalanceAfter,
+    MovementSource SourceType,
+    int SourceId,
+    string? SourceNumber);

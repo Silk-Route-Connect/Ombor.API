@@ -15,7 +15,9 @@ internal sealed class GlobalExceptionHandler(
         {
             Title = "Internal Server Error",
             Status = StatusCodes.Status500InternalServerError,
-            Detail = hostEnvironment.IsProduction() ? "An error occurred while processing the request." : exception.Message,
+            // Raw exception text (SQL timeouts, stack details) reaches the client only on a developer's machine;
+            // everywhere else the body is generic and the traceId correlates it with the logged exception.
+            Detail = hostEnvironment.IsDevelopment() ? exception.Message : "An error occurred while processing the request.",
             Type = "https://httpstatuses.com/500",
             Instance = httpContext.Request.Path
         };

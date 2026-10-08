@@ -15,8 +15,6 @@ namespace Ombor.Contracts.Responses.Product;
 /// <param name="SalePrice">The sale price.</param>
 /// <param name="SupplyPrice">The supply price.</param>
 /// <param name="QuantityInStock">The stock level.</param>
-/// <param name="LowStockThreshold">The low‑stock threshold.</param>
-/// <param name="IsLowStock">Whether stock ≤ threshold.</param>
 /// <param name="Measurement">The unit of measurement (e.g. “Piece”, “Kilogram”).</param>
 /// <param name="Type">The type of product (e.g. “Sale”, “Supply”, or “SaleAndSupply”).</param>
 /// <param name="Images">Associated product images.</param>
@@ -32,8 +30,6 @@ public sealed record CreateProductResponse(
     string? Barcode,
     decimal SalePrice,
     decimal SupplyPrice,
-    int LowStockThreshold,
-    bool IsLowStock,
     string Measurement,
     string Type,
     bool IsArchived,

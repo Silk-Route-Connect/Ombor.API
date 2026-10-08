@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Extensions;
 using Ombor.Application.Interfaces;
+using Ombor.Application.Services.DebtPositions;
 using Ombor.Contracts.Responses.Debt;
 
 namespace Ombor.Application.Services;
 
-internal sealed class DebtService(IApplicationDbContext context) : IDebtService
+internal sealed class DebtService(
+    IApplicationDbContext context,
+    IBusinessClock clock,
+    DebtPositionCalculator positions) : IDebtService
 {
     public async Task<DebtDto[]> GetDebtsAsync()
     {
@@ -29,12 +33,12 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
             })
             .ToArrayAsync();
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = clock.Today;
 
         return [.. rows
             .Select(r => new DebtDto(
                 r.Id,
-                r.Number.ToString(),
+                r.Number?.ToString(),
                 r.Type.ToDebtDirection(),
                 r.Type.ToString(),
                 r.PartnerId,
@@ -52,8 +56,60 @@ internal sealed class DebtService(IApplicationDbContext context) : IDebtService
             .ThenByDescending(d => d.TransactionId)];
     }
 
-    private static int AgeDays(DateOnly today, DateTimeOffset date) =>
-        Math.Max(0, today.DayNumber - DateOnly.FromDateTime(date.UtcDateTime).DayNumber);
+    public async Task<DebtSummaryDto> GetSummaryAsync()
+    {
+        var snapshot = await positions.ComputeAsync();
+        var documents = await GetDebtsAsync();
+        var totals = snapshot.Totals;
+
+        var receivableDocuments = documents.Where(d => d.Direction == DebtDirections.Receivable).ToArray();
+        var payableDocuments = documents.Where(d => d.Direction == DebtDirections.Payable).ToArray();
+        var pastDue = documents.Where(d => d.OverdueDays > 0).ToArray();
+
+        var partners = snapshot.Partners
+            .Where(p => p.Balance != 0m || p.UnpaidDocumentCount > 0)
+            .OrderByDescending(p => Math.Abs(p.Balance))
+            .ThenBy(p => p.Name)
+            .Select(p => new DebtPartnerPositionDto(
+                p.PartnerId,
+                p.Name,
+                p.Company,
+                p.Type.ToString(),
+                p.IsArchived,
+                DebtDirections.OfBalance(p.Balance),
+                p.Balance,
+                Math.Abs(p.Balance),
+                p.OpeningBalance,
+                p.UnpaidReceivable,
+                p.UnpaidPayable,
+                p.UnpaidDocumentCount,
+                p.PartnerAdvance,
+                p.CompanyAdvance,
+                p.AgedReceivable.Max(a => a.AgeDays)))
+            .ToArray();
+
+        return new DebtSummaryDto(
+            totals.Receivable,
+            totals.ReceivablePartners,
+            totals.Payable,
+            totals.PayablePartners,
+            totals.Receivable - totals.Payable,
+            totals.OlderThan30Days,
+            [.. DebtAging.Buckets.Select((bucket, i) => new DebtAgingBucketDto(bucket, totals.Aging[i]))],
+            totals.AdvanceReceivable,
+            new DebtDocumentTotalsDto(
+                receivableDocuments.Sum(d => d.Remaining),
+                receivableDocuments.Length,
+                payableDocuments.Sum(d => d.Remaining),
+                payableDocuments.Length,
+                pastDue.Sum(d => d.Remaining),
+                pastDue.Length),
+            partners);
+    }
+
+    // Whole local days since the document's local date: a sale at 03:00 Tashkent time is 0 days old that day.
+    private int AgeDays(DateOnly today, DateTimeOffset date) =>
+        Math.Max(0, today.DayNumber - clock.DateOf(date).DayNumber);
 
     private static int OverdueDays(DateOnly today, DateOnly? dueDate) =>
         dueDate is { } due ? Math.Max(0, today.DayNumber - due.DayNumber) : 0;

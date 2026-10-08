@@ -8,7 +8,7 @@ namespace Ombor.Domain.Entities;
 /// stored — it is computed per read from the opening balance, wallet-sourced payment
 /// components, and inter-wallet transfers (rules 12, 15, 16).
 /// </summary>
-public class Wallet : EntityBase, IOrganizationScoped
+public class Wallet : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 

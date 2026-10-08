@@ -6,7 +6,7 @@ namespace Ombor.Contracts.Responses.Order;
 /// <param name="CustomerName">The customer's display name.</param>
 /// <param name="CustomerType">The customer's partner type.</param>
 /// <param name="CustomerBalance">The customer's net balance (positive = owes us).</param>
-/// <param name="OrderNumber">The human-friendly order number.</param>
+/// <param name="OrderNumber">The human-friendly order number; null for a legacy row without one.</param>
 /// <param name="Notes">Optional free-text note.</param>
 /// <param name="Total">The order total (sum of line totals).</param>
 /// <param name="Date">The order date, in the organization's local time.</param>
@@ -26,7 +26,7 @@ public sealed record OrderDto(
     string CustomerName,
     string CustomerType,
     decimal CustomerBalance,
-    string OrderNumber,
+    string? OrderNumber,
     string? Notes,
     decimal Total,
     DateTime Date,

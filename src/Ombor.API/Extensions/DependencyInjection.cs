@@ -25,6 +25,7 @@ internal static class DependencyInjection
             .AddAuthorization()
             .AddSwagger(configuration)
             .AddErrorHandlers()
+            .AddAuthSecurity()
             .AddCors(configuration);
     }
 
@@ -60,6 +61,8 @@ internal static class DependencyInjection
         services.AddExceptionHandler<InvalidFileExceptionHandler>();
         services.AddExceptionHandler<SmsDeliveryExceptionHandler>();
         services.AddExceptionHandler<UnauthorizedAccessExceptionHandler>();
+        services.AddExceptionHandler<TooManyRequestsExceptionHandler>();
+        services.AddExceptionHandler<DbUpdateExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
 
         services.AddProblemDetails();

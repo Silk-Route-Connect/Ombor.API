@@ -282,8 +282,8 @@ internal abstract class SeederBase(
                 {
                     var quantity = _random.Next(MinSupplyQuantity, MaxSupplyQuantity + 1);
                     var unitPrice = UnitPriceFor(product, isSale: false);
-                    ApplyStockIn(context, stock, warehouseId, product.Id, quantity, unitPrice, recomputeWac: true);
-                    lines.Add(NewLine(product.Id, quantity, unitPrice));
+                    ApplyStockIn(context, stock, warehouseId, product.Id, quantity, unitPrice);
+                    lines.Add(NewLine(product.Id, quantity, unitPrice, unitCost: unitPrice));
                 }
 
                 if (lines.Count == 0)
@@ -327,13 +327,13 @@ internal abstract class SeederBase(
                 foreach (var product in PickDistinctProducts(saleProducts, _random.Next(1, MaxLinesPerTransaction + 1)))
                 {
                     // Stock-out clamped to what's on hand — rule 20 forbids going negative.
-                    var moved = TakeStock(stock, warehouseId, product.Id, _random.Next(1, MaxSaleQuantity + 1));
+                    var (moved, cost) = TakeStock(stock, warehouseId, product.Id, _random.Next(1, MaxSaleQuantity + 1));
                     if (moved <= 0)
                     {
                         continue;
                     }
 
-                    lines.Add(NewLine(product.Id, moved, UnitPriceFor(product, isSale: true)));
+                    lines.Add(NewLine(product.Id, moved, UnitPriceFor(product, isSale: true), cost));
                 }
 
                 if (lines.Count == 0)
@@ -366,9 +366,10 @@ internal abstract class SeederBase(
             foreach (var line in sale.Lines)
             {
                 var refundQuantity = _random.Next(1, (int)line.Quantity + 1); // never exceeds the original (rules 5-6)
-                // Returned goods re-enter at the existing carrying cost (rule 18 stock-in, no WAC recompute).
-                ApplyStockIn(context, stock, sale.WarehouseId, line.ProductId, refundQuantity, 0m, recomputeWac: false);
-                refundLines.Add(NewLine(line.ProductId, refundQuantity, line.UnitPrice));
+                // Returned goods re-enter at the cost the sale booked (rule 18 stock-in), like the live refund path.
+                var cost = line.UnitCost ?? 0m;
+                ApplyStockIn(context, stock, sale.WarehouseId, line.ProductId, refundQuantity, cost);
+                refundLines.Add(NewLine(line.ProductId, refundQuantity, line.UnitPrice, cost));
             }
 
             var refund = NewTransaction(sale.PartnerId, sale.WarehouseId, TransactionType.SaleRefund, refundLines);
@@ -395,13 +396,13 @@ internal abstract class SeederBase(
             {
                 // Returning supplied goods is a stock-out: clamp to on-hand (rule 20) and to the original (rules 5-6).
                 var desired = _random.Next(1, (int)line.Quantity + 1);
-                var moved = TakeStock(stock, supply.WarehouseId, line.ProductId, desired);
+                var (moved, cost) = TakeStock(stock, supply.WarehouseId, line.ProductId, desired);
                 if (moved <= 0)
                 {
                     continue;
                 }
 
-                refundLines.Add(NewLine(line.ProductId, moved, line.UnitPrice));
+                refundLines.Add(NewLine(line.ProductId, moved, line.UnitPrice, cost));
             }
 
             if (refundLines.Count == 0)
@@ -422,11 +423,12 @@ internal abstract class SeederBase(
         return price > 0m ? price : 1_000m;
     }
 
-    private static TransactionLine NewLine(int productId, decimal quantity, decimal unitPrice) => new()
+    private static TransactionLine NewLine(int productId, decimal quantity, decimal unitPrice, decimal unitCost) => new()
     {
         ProductId = productId,
         Quantity = quantity,
         UnitPrice = unitPrice,
+        UnitCost = Math.Round(unitCost, 2, MidpointRounding.AwayFromZero),
         Discount = 0m,
         DiscountType = DiscountType.Fixed,
         Product = null!,
@@ -449,15 +451,14 @@ internal abstract class SeederBase(
 
     private static string RandomRefundReason() => RefundReasons[_random.Next(RefundReasons.Length)];
 
-    /// <summary>Weighted-average stock-in (rule 18) or carrying-cost re-entry; creates the row if absent.</summary>
+    /// <summary>Weighted-average stock-in at <paramref name="unitCost"/> (rule 18); creates the row if absent.</summary>
     private static void ApplyStockIn(
         IApplicationDbContext context,
         Dictionary<(int, int), WarehouseItem> stock,
         int warehouseId,
         int productId,
         int quantity,
-        decimal unitPrice,
-        bool recomputeWac)
+        decimal unitCost)
     {
         if (!stock.TryGetValue((warehouseId, productId), out var item))
         {
@@ -474,32 +475,28 @@ internal abstract class SeederBase(
             stock[(warehouseId, productId)] = item;
         }
 
-        if (recomputeWac)
-        {
-            var newQuantity = item.Quantity + quantity;
-            item.AverageCost = newQuantity == 0
-                ? 0m
-                : ((item.Quantity * item.AverageCost) + (quantity * unitPrice)) / newQuantity;
-            item.Quantity = newQuantity;
-        }
-        else
-        {
-            item.Quantity += quantity;
-        }
+        var newQuantity = item.Quantity + quantity;
+        item.AverageCost = newQuantity == 0
+            ? 0m
+            : ((item.Quantity * item.AverageCost) + (quantity * unitCost)) / newQuantity;
+        item.Quantity = newQuantity;
     }
 
-    /// <summary>Stock-out clamped to what's on hand so it never goes negative (rule 20). Returns units moved.</summary>
-    private static decimal TakeStock(
+    /// <summary>
+    /// Stock-out clamped to what's on hand so it never goes negative (rule 20). Returns the units moved and the WAC they
+    /// left at (rule 19).
+    /// </summary>
+    private static (decimal Moved, decimal Cost) TakeStock(
         Dictionary<(int, int), WarehouseItem> stock, int warehouseId, int productId, decimal desiredQuantity)
     {
         if (!stock.TryGetValue((warehouseId, productId), out var item) || item.Quantity <= 0)
         {
-            return 0;
+            return (0m, 0m);
         }
 
         var moved = Math.Min(desiredQuantity, item.Quantity);
-        item.Quantity -= moved; // stock leaves at WAC (rule 19)
-        return moved;
+        item.Quantity -= moved;
+        return (moved, item.AverageCost);
     }
 
     private static List<Product> PickDistinctProducts(Product[] products, int count)

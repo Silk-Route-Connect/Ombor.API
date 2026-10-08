@@ -6,7 +6,7 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a product with pricing, stock, and categorization information.
 /// </summary>
-public class Product : EntityBase, IOrganizationScoped
+public class Product : EntityBase, IOrganizationScoped, IAuditable
 {
     public int OrganizationId { get; set; }
 
@@ -33,9 +33,6 @@ public class Product : EntityBase, IOrganizationScoped
 
     /// <summary>Gets or sets the retail price.</summary>
     public decimal RetailPrice { get; set; }
-
-    /// <summary>Gets or sets the threshold below which total stock is considered low.</summary>
-    public int LowStockThreshold { get; set; }
 
     /// <summary>Gets or sets the unit of measurement for the product.</summary>
     public UnitOfMeasurement Measurement { get; set; }

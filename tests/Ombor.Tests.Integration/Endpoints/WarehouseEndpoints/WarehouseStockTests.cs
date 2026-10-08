@@ -60,15 +60,16 @@ public class WarehouseStockTests(
         // Act
         var afterOpeningStock = await _client.PostAsync<WarehouseDto>(openingStockUrl, request, System.Net.HttpStatusCode.OK);
 
-        // Assert — totals are server-computed (rule 12): 2 products, 15 units, 10*100 + 5*200 = 2000.
+        // Assert — totals are server-computed (rule 12): 2 products, 10*100 + 5*200 = 2000; nothing tracked, so
+        // nothing runs low.
         Assert.Equal(2, afterOpeningStock.ProductCount);
-        Assert.Equal(15, afterOpeningStock.TotalUnits);
+        Assert.Equal(0, afterOpeningStock.LowStockCount);
         Assert.Equal(2_000m, afterOpeningStock.StockValue);
 
         // GET {id} recomputes the same totals.
         var fetched = await _client.GetAsync<WarehouseDto>(GetUrl(warehouse.Id));
         Assert.Equal(2, fetched.ProductCount);
-        Assert.Equal(15, fetched.TotalUnits);
+        Assert.Equal(0, fetched.LowStockCount);
         Assert.Equal(2_000m, fetched.StockValue);
 
         // GET {id}/stock returns one row per product with its WAC and value.
@@ -76,6 +77,8 @@ public class WarehouseStockTests(
         Assert.Equal(2, stock.Length);
 
         var rowA = Assert.Single(stock, x => x.ProductId == productA.Id);
+        Assert.Null(rowA.LowStockThreshold);
+        Assert.False(rowA.IsLowStock);
         Assert.Equal(productA.Name, rowA.ProductName);
         Assert.Equal(productA.SKU, rowA.Sku);
         Assert.Equal(10, rowA.Quantity);

@@ -22,7 +22,10 @@ internal sealed class TestingDatabaseSeeder(
     private readonly Random _random = new();
     private readonly Faker _faker = new(seedSettings.Locale);
 
-    public async Task SeedDatabaseAsync(IApplicationDbContext context, IOrganizationAccessor organizationAccessor)
+    public async Task SeedDatabaseAsync(
+        IApplicationDbContext context,
+        IOrganizationAccessor organizationAccessor,
+        IOrganizationSetupService organizationSetup)
     {
         var organizationIds = await EnsureOrganizationsWithUsersAsync(context);
         var nameMap = await EnsureImagesCopiedAsync();
@@ -129,7 +132,6 @@ internal sealed class TestingDatabaseSeeder(
                 SalePrice = _faker.Finance.Amount(),
                 SupplyPrice = _faker.Finance.Amount(),
                 RetailPrice = _faker.Finance.Amount(),
-                LowStockThreshold = _faker.Random.Number(),
                 Measurement = _faker.Random.Enum<UnitOfMeasurement>(),
                 CategoryId = _faker.PickRandom<int>(categoryIds),
                 Category = null!

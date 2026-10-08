@@ -24,6 +24,8 @@ public abstract class DashboardTestsBase(TestingWebApplicationFactory factory, I
 
     protected Task<DebtDto[]> GetDebtsAsync() => _client.GetAsync<DebtDto[]>(Routes.Debt);
 
+    protected Task<DebtSummaryDto> GetDebtSummaryAsync() => _client.GetAsync<DebtSummaryDto>($"{Routes.Debt}/summary");
+
     protected async Task<int> CreateWarehouseAsync()
     {
         var warehouse = new Warehouse { Name = $"Warehouse {Guid.NewGuid():N}", Location = "Tashkent" };
@@ -46,7 +48,6 @@ public abstract class DashboardTestsBase(TestingWebApplicationFactory factory, I
             SalePrice = 100m,
             SupplyPrice = 50m,
             RetailPrice = 90m,
-            LowStockThreshold = 10,
             Measurement = UnitOfMeasurement.Piece,
             Type = ProductType.All,
             CategoryId = category.Id,

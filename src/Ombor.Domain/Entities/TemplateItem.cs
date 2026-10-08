@@ -6,8 +6,10 @@ namespace Ombor.Domain.Entities;
 /// <summary>
 /// Represents a single item of a <see cref="Template"/>.
 /// </summary>
-public class TemplateItem : AuditableEntity, IOrganizationScoped
+public class TemplateItem : AuditableEntity, IOrganizationScoped, IAuditableChild
 {
+    AuditParent IAuditableChild.AuditParent => new(typeof(Template), TemplateId);
+
     public int OrganizationId { get; set; }
 
     /// <summary>

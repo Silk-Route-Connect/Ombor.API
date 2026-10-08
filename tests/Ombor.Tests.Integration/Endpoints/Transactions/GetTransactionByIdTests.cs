@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ombor.Contracts.Responses.Transaction;
 using Ombor.Domain.Entities;
 using Ombor.Domain.Enums;
+using Ombor.Tests.Common.Helpers;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -20,7 +21,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
     private const string AttachmentUrl = "/files/transactions/originals/receipt.pdf";
 
     // A future due date keeps this shape-focused sale PartiallyPaid (not Overdue) regardless of when the test runs.
-    private static readonly DateOnly SettledSaleDueDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(30);
+    private static readonly DateOnly SettledSaleDueDate = BusinessDay.Today.AddDays(30);
 
     [Fact]
     public async Task GetById_ShouldReturnFullDetail_WithLinesAndSettlingPayments()
@@ -84,7 +85,7 @@ public sealed class GetTransactionByIdTests(TestingWebApplicationFactory factory
         // Arrange — an Open sale two days past due.
         var partnerId = await CreatePartnerAsync();
         var id = await SeedTransactionAsync(partnerId, TransactionType.Sale, TransactionStatus.Open,
-            dueDate: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2));
+            dueDate: BusinessDay.Today.AddDays(-2));
 
         // Act
         var detail = await _client.GetAsync<TransactionDetailDto>(GetUrl(id));

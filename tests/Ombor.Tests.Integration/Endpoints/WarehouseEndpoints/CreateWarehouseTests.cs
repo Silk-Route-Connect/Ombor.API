@@ -25,7 +25,7 @@ public class CreateWarehouseTests(
         // Assert — a new warehouse is created empty (zero totals) and not archived.
         await _responseValidator.Warehouse.ValidatePostAsync(request, response);
         Assert.Equal(0, response.ProductCount);
-        Assert.Equal(0, response.TotalUnits);
+        Assert.Equal(0, response.LowStockCount);
         Assert.Equal(0m, response.StockValue);
         Assert.False(response.IsArchived);
     }

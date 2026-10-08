@@ -1,6 +1,7 @@
 using FluentValidation;
 using Ombor.Contracts.Requests.Warehouse;
 using Ombor.Contracts.Responses.Warehouse;
+using Ombor.Domain.Entities;
 using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Interfaces;
@@ -48,8 +49,17 @@ public interface IWarehouseService
     Task DeleteAsync(DeleteWarehouseRequest request);
 
     /// <summary>
+    /// Sets or clears (null) the low-stock threshold of one product's stock row in a warehouse (DR-41) and returns the
+    /// row. A setting, not a stock movement: quantity and cost are untouched.
+    /// </summary>
+    /// <exception cref="ValidationException">If the threshold is negative or does not fit a stock quantity.</exception>
+    /// <exception cref="EntityNotFoundException{Warehouse}">If no warehouse with the given ID exists.</exception>
+    /// <exception cref="EntityNotFoundException{WarehouseItem}">If the product has no stock row in the warehouse.</exception>
+    Task<WarehouseStockItemDto> SetLowStockThresholdAsync(int warehouseId, int productId, SetLowStockThresholdRequest request);
+
+    /// <summary>
     /// Records the opening (initial) stock of a warehouse as an auditable stock-in event, creating a
-    /// warehouse item per product with its initial weighted-average cost.
+    /// warehouse item per product with its initial weighted-average cost and optional low-stock threshold.
     /// </summary>
     /// <exception cref="ValidationException">If validation fails or a product is already stocked.</exception>
     /// <exception cref="EntityNotFoundException{Warehouse}">If no warehouse with the given ID exists.</exception>

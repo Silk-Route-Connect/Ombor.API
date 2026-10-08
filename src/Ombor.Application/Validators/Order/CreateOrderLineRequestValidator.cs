@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Ombor.Contracts.Requests.Order;
 
 namespace Ombor.Application.Validators.Order;
@@ -11,9 +11,14 @@ public sealed class CreateOrderLineRequestValidator : AbstractValidator<CreateOr
             .GreaterThan(0)
             .WithMessage("All order lines must have a quantity greater than zero.");
 
-        RuleFor(x => x.UnitPrice)
+        RuleFor(x => x.ProductId)
             .GreaterThan(0)
-            .WithMessage("All order lines must have a unit price greater than zero.");
+            .WithMessage("Invalid product ID.");
+
+        // Zero is allowed for free items, matching transaction and template lines.
+        RuleFor(x => x.UnitPrice)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Unit price cannot be negative.");
 
         RuleFor(x => x.DiscountType)
             .IsInEnum()

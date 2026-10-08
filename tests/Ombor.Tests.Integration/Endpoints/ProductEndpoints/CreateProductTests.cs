@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Ombor.Contracts.Requests.Product;
 using Ombor.Contracts.Responses.Product;
 using Ombor.Tests.Common.Extensions;
@@ -46,5 +47,24 @@ public class CreateProductTests(TestingWebApplicationFactory factory, ITestOutpu
         Assert.NotNull(response);
         Assert.Contains(nameof(UpdateProductRequest.Name), response.Errors.Keys);
         Assert.Contains(nameof(UpdateProductRequest.SKU), response.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldReturnSkuTaken_WhenSkuBelongsToAnotherProduct()
+    {
+        // Arrange — the first product takes the SKU.
+        var sku = $"SKU-{Guid.NewGuid():N}"[..20];
+        await _client.PostAsync<CreateProductResponse>(
+            GetUrl(), ProductRequestFactory.GenerateValidCreateRequestWithoutAttachments(DefaultCategoryId, sku).ToMultipartFormData());
+
+        // Act — a second product with the same SKU.
+        var problem = await _client.PostAsync<JObject>(
+            GetUrl(),
+            ProductRequestFactory.GenerateValidCreateRequestWithoutAttachments(DefaultCategoryId, sku).ToMultipartFormData(),
+            HttpStatusCode.BadRequest);
+
+        // Assert — a coded field error on SKU, not a generic failure.
+        Assert.Equal("product.sku_taken", (string?)problem["code"]);
+        Assert.NotNull(problem["errors"]?[nameof(CreateProductRequest.SKU)]);
     }
 }

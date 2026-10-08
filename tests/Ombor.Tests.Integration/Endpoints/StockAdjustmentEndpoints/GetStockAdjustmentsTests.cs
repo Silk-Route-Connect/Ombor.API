@@ -1,4 +1,7 @@
+using System.Net;
+using Ombor.Contracts.Enums;
 using Ombor.Contracts.Responses.StockAdjustment;
+using Ombor.Contracts.Responses.Warehouse;
 using Ombor.Tests.Integration.Helpers;
 using Xunit.Abstractions;
 
@@ -50,6 +53,44 @@ public sealed class GetStockAdjustmentsTests(TestingWebApplicationFactory factor
 
         // The listed figure matches what create returned for the same event.
         Assert.Equal(decrease.BalanceAfter, list[1].BalanceAfter);
+    }
+
+    [Fact]
+    public async Task GetById_ShouldServeTheBalanceAfter_OfTheWarehouseLedger()
+    {
+        // Arrange — later events (another adjustment, a transfer out) must not move this row's historical figure.
+        var warehouseId = await CreateWarehouseAsync();
+        var otherWarehouseId = await CreateWarehouseAsync();
+        var productId = await CreateProductAsync();
+        await AddOpeningStockAsync(warehouseId, productId, quantity: 100, unitCost: 10m);
+        var decrease = await PostAdjustmentAsync(warehouseId, productId, "Decrease", 30, "Damage"); // 70
+        await _client.PostAsync<object>(
+            Routes.Transfer,
+            new { fromWarehouseId = warehouseId, toWarehouseId = otherWarehouseId, lines = new[] { new { productId, quantity = 20 } } }); // 50
+        var increase = await PostAdjustmentAsync(warehouseId, productId, "Increase", 5, "Found"); // 55
+
+        // Act
+        var first = await _client.GetAsync<StockAdjustmentDto>($"{Routes.StockAdjustment}/{decrease.Id}");
+        var second = await _client.GetAsync<StockAdjustmentDto>($"{Routes.StockAdjustment}/{increase.Id}");
+        var list = await _client.GetAsync<StockAdjustmentDto[]>($"{Routes.StockAdjustment}?warehouseId={warehouseId}");
+        var ledger = await _client.GetAsync<WarehouseMovementDto[]>($"{Routes.Warehouse}/{warehouseId}/movements");
+
+        // Assert — one figure per event, whichever endpoint serves it.
+        Assert.Equal(decrease.Id, first.Id);
+        Assert.Equal(70, first.BalanceAfter);
+        Assert.Equal(55, second.BalanceAfter);
+        Assert.Equal(30, first.Quantity);
+        foreach (var adjustment in list)
+        {
+            var row = Assert.Single(ledger, m => m.Kind == MovementKind.Adjustment && m.Id == adjustment.Id);
+            Assert.Equal(row.BalanceAfter, adjustment.BalanceAfter);
+        }
+    }
+
+    [Fact]
+    public async Task GetById_ShouldBeNotFound_ForAnUnknownId()
+    {
+        await _client.GetAsync($"{Routes.StockAdjustment}/{NonExistentEntityId}", HttpStatusCode.NotFound);
     }
 
     [Fact]

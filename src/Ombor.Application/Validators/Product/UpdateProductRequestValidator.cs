@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Ombor.Application.Interfaces;
 using Ombor.Contracts.Common;
 using Ombor.Contracts.Requests.Product;
+using Ombor.Domain.Exceptions;
 
 namespace Ombor.Application.Validators.Product;
 
@@ -33,7 +34,8 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .WithMessage($"Product SKU must not exceed {ValidationConstants.CodeLength} characters.")
             .MustAsync(async (request, sku, cancellation) =>
                 !await context.Products.AnyAsync(p => p.SKU == sku && p.Id != request.Id, cancellation))
-            .WithMessage("A product with the same SKU already exists.");
+            .WithMessage("A product with the same SKU already exists.")
+            .WithErrorCode(ErrorCodes.ProductSkuTaken);
 
         RuleFor(x => x.Description)
             .MaximumLength(ValidationConstants.MaxStringLength)
@@ -54,10 +56,6 @@ public sealed class UpdateProductRequestValidator : AbstractValidator<UpdateProd
             .GreaterThan(x => x.SupplyPrice)
             .WithMessage("Sale price must be greater than supply price.")
             .When(x => x.Type != Contracts.Enums.ProductType.Supply);
-
-        RuleFor(x => x.LowStockThreshold)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Low stock threshold must be greater than or equal to zero.");
 
         RuleFor(x => x.Packaging!)
             .SetValidator(packagingValidator)

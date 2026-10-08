@@ -48,11 +48,16 @@ internal sealed class OrganizationService(
         organization.Phone = request.Phone;
         organization.Email = request.Email;
 
-        // A new file replaces the logo; omitting it keeps the existing one.
+        // A new file replaces the logo; RemoveLogo clears it; omitting both keeps the existing one. The old file stays
+        // on disk: its URL may still be cached by clients and print views, and logos are tiny.
         if (request.Logo is not null)
         {
-            var upload = await fileService.UploadAsync(request.Logo, LogoSubfolder);
+            var upload = await fileService.UploadImageAsync(request.Logo, LogoSubfolder);
             organization.LogoUrl = upload.Url;
+        }
+        else if (request.RemoveLogo)
+        {
+            organization.LogoUrl = null;
         }
 
         await context.SaveChangesAsync();
@@ -63,7 +68,7 @@ internal sealed class OrganizationService(
     private async Task<Organization> GetCurrentOrganizationAsync()
     {
         var organizationId = organizationAccessor.OrganizationId
-            ?? throw new InvalidOperationException("No organization in the current context.");
+            ?? throw new UnauthorizedAccessException("No organization in the current context.");
 
         return await context.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId)
             ?? throw new EntityNotFoundException<Organization>(organizationId);
