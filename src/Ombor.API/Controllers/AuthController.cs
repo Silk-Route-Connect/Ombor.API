@@ -38,11 +38,9 @@ public class AuthController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegisterResponse>> RegisterAsync([FromBody] RegisterRequest request)
     {
-        // Reject a missing/unsupported language before an OTP is sent; the value is persisted to
-        // User.Language and drives the starter-data names at verification.
-        ResolveLanguageOrThrow();
-
-        var result = await service.RegisterAsync(request);
+        // Reject a missing/unsupported language before an OTP is sent; the value picks the SMS language here and, at
+        // verification, is persisted to User.Language and names the starter data.
+        var result = await service.RegisterAsync(request, ResolveLanguageOrThrow());
         return Ok(result);
     }
 

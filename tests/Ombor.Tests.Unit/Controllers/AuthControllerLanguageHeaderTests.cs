@@ -33,7 +33,23 @@ public sealed class AuthControllerLanguageHeaderTests
         await Assert.ThrowsAsync<ValidationException>(() => controller.RegisterAsync(request));
 
         // The OTP is never sent when the language header is rejected.
-        service.Verify(s => s.RegisterAsync(It.IsAny<RegisterRequest>()), Times.Never);
+        service.Verify(s => s.RegisterAsync(It.IsAny<RegisterRequest>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData("ru")]
+    [InlineData("uz-Latn")]
+    [InlineData("uz-Cyrl")]
+    public async Task RegisterAsync_ShouldForwardTheValidatedLanguage(string language)
+    {
+        var service = new Mock<IAuthService>();
+        var controller = CreateController(service.Object, language);
+        var request = new RegisterRequest("F", "L", "+998900000000", "pass", "pass", "Org", null, null);
+
+        await controller.RegisterAsync(request);
+
+        // The language picks the SMS text, so the one the header carried must reach the service.
+        service.Verify(s => s.RegisterAsync(request, language), Times.Once);
     }
 
     [Theory]
